@@ -17,13 +17,13 @@ void MapBuilderState::grid(RenderWindow* window, int x_win, int y_win)
 	//draws grid lines, "G" to activate/deactivate
 	if (active_grid) {
 		RectangleShape rect;
-		rect.setSize(Vector2f(3, y_win));
+		rect.setSize(Vector2f(2, y_win));
 		rect.setFillColor(Color::Black);
 		for (int i = 0; i < x_win - x % (int)(scale * 16); i += 16 * scale) {
 			rect.setPosition(i + x % (int)(scale * 16), 0);
 			window->draw(rect);
 		}
-		rect.setSize(Vector2f(x_win, 3));
+		rect.setSize(Vector2f(x_win, 2));
 		for (int i = 0; i < y_win - y % (int)(scale * 16); i += 16 * scale) {
 			rect.setPosition(0, i + y % (int)(scale * 16));
 			window->draw(rect);
@@ -33,6 +33,7 @@ void MapBuilderState::grid(RenderWindow* window, int x_win, int y_win)
 
 void MapBuilderState::render_tiles(string Tex, RenderWindow* window, int x_win, int y_win, int layer)
 {
+	//renders the map in active screen area only
 	Sprite tile;
 	tile.setTexture(*textures[Tex]);
 	tile.setScale(scale, scale);
@@ -63,13 +64,11 @@ void MapBuilderState::render(RenderWindow* window)
 	int x_win = window->getSize().x, y_win = window->getSize().y; //<-- window boundaries
 	x_mid = x_offset + (x_win / (16 * scale) / 2), y_mid = y_offset + (y_win / (16 * scale) / 2); // updates offset
 
-	//renders the map in active screen area only
+
 	render_tiles("Outdoors_Spring", window, x_win, y_win, 0);
 	render_tiles("Outdoors_Spring", window, x_win, y_win, 1);
-	//render entities
-
+	//----------render entities herre in game--------------
 	render_tiles("Outdoors_Spring", window, x_win, y_win, 2);
-
 	grid(window, x_win, y_win);
 }
 
