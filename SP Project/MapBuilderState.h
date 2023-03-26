@@ -8,7 +8,7 @@ class MapBuilderState : public State
 private:
 	//variables:
 	struct Tile {
-		Vector2i layers[3]{ {21,49}, {0,0}, {5,6} }; //<-- cords of texture in sprite sheet
+		Vector2i layers[3]{ {21,49}, {5,6}, {5,6} }; //<-- cords of texture in sprite sheet
 		bool blocked = 0, hitbox = 0;
 	};
 	struct tex_props {
