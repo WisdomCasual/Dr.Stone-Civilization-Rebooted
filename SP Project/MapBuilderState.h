@@ -36,6 +36,7 @@ private:
 	//private functions:
 	void grid(RenderWindow*, int, int);
 	void render_tiles(string, RenderWindow*, int, int, int);
+	void update_info_text();
 
 public:
 	//constructors/destructors:
