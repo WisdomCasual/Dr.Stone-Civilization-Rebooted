@@ -3,7 +3,7 @@ void CreativeMode::change_tex()
 {
 	delete this->Tex;
 	Tex = new Sprite;
-	Tex->setTexture(*it->second);
+	Tex->setTexture(**it);
 	a = Tex->getGlobalBounds().width * 1.15, b = Tex->getGlobalBounds().height * 1.15;
 	videomode = { a,b };
 	window_pos = sidewindow->getPosition();
@@ -12,7 +12,7 @@ void CreativeMode::change_tex()
 	sidewindow->setPosition(window_pos);
 	Tex->setScale(1.15, 1.15);
 }
-CreativeMode::CreativeMode(map<string, Texture*>* textures, Vector2i& picked_tile)
+CreativeMode::CreativeMode(vector<Texture*>* textures, Vector2i& picked_tile)
 {
 	sidewindow = new RenderWindow(videomode, "Texture Picker", Style::Titlebar | Style::Close);
 	sidewindow->setPosition({ 0,0 });

@@ -19,7 +19,7 @@ public:
 	virtual ~State();
 
 	//public variables:
-	map<string, Texture*> textures; //<-- current loaded Textures
+	vector <Texture*> textures; //<-- current loaded Textures
 	Vector2f delta_movement();
 
 	//public functions:

@@ -11,8 +11,8 @@ private:
 	VideoMode videomode {800, 600};
 	Vector2i window_pos{ 0,0 };
 	Vector2i mouse_pos = { 0, 0 }, current_tile = { 0,0 };
-	map<string, Texture*>* textures;
-	map<string, Texture*>::iterator it;
+	vector<Texture*>* textures;
+	vector<Texture*>::iterator it;
 	Sprite* Tex;
 	Event event;
 	Vector2i* picked_tile;
@@ -24,7 +24,7 @@ private:
 
 public:
 	//constructors/destructors
-	CreativeMode(map<string, Texture*>*, Vector2i&);
+	CreativeMode(vector<Texture*>*, Vector2i&);
 	~CreativeMode();
 
 	//public functions:

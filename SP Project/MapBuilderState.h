@@ -10,7 +10,7 @@ private:
 	//variables:
 	struct Tile {
 		Vector2i layers[3]{ {21,49}, {5,6}, {5,6} }; //<-- cords of texture in sprite sheet
-		bool blocked = 0, hitbox = 0;
+		bool blocked = 0, hitbox = 0; char texture_id = 0;
 	};
 	struct tex_props {
 		bool blocked = 0, hitbox = 0; int layer = 0;
