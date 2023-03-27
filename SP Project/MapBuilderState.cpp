@@ -2,14 +2,14 @@
 
 
 MapBuilderState::MapBuilderState(int a, int b) : size_x(a), size_y(b)
-{
+{	
 	//loads "game" textures
 	intial_textures("game");
 }
 
 MapBuilderState::~MapBuilderState()
 {
-
+	delete this->tex_picker;
 }
 
 void MapBuilderState::grid(RenderWindow* window, int x_win, int y_win)
@@ -56,7 +56,8 @@ void MapBuilderState::update(float dt)
 	y -= dt * cam_speed * movement.y * scale;
 	x_offset = -x / (scale * 16);
 	y_offset = -y / (scale * 16);
-
+	if (!picker)
+		tex_picker->run(picker);
 }
 
 void MapBuilderState::render(RenderWindow* window)
@@ -82,7 +83,12 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 			switch (event.key.code) {
 			case Keyboard::Escape:
 				window->close(); break;
-
+			case Keyboard::E:
+				if (picker)
+					tex_picker = new CreativeMode(&textures, picked_tile);
+				else
+					delete this->tex_picker;
+				picker = !picker; break;
 				//activate deactivate grid lines
 			case Keyboard::G:
 				active_grid = !active_grid; break;

@@ -1,5 +1,6 @@
 #pragma once
 #include"State.h"
+#include "CreativeMode.h"
 
 using namespace std;
 
@@ -15,6 +16,9 @@ private:
 		bool blocked = 0, hitbox = 0; int layer = 0;
 	};
 
+	bool picker = 1;
+	CreativeMode* tex_picker;
+	Vector2i picked_tile = { 0,0 };
 	int size_x, size_y;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
 	int x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
