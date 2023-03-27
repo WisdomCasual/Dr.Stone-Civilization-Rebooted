@@ -21,7 +21,9 @@ public:
 	//public variables:
 	vector <Texture*> textures; //<-- current loaded Textures
 	Vector2f delta_movement();
-
+	struct tex_tile {
+		int x, y, tex_id;
+	};
 	//public functions:
 	void intial_textures(string);	
 

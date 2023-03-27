@@ -5,6 +5,11 @@ MapBuilderState::MapBuilderState(int a, int b) : size_x(a), size_y(b)
 {	
 	//loads "game" textures
 	intial_textures("game");
+	
+	
+	font.loadFromFile("Resources/font.ttf");
+	info.setFont(font);
+	info.setCharacterSize(40);
 }
 
 MapBuilderState::~MapBuilderState()
@@ -48,7 +53,7 @@ void MapBuilderState::render_tiles(string Tex, RenderWindow* window, int x_win, 
 void MapBuilderState::update(float dt)
 {
 	//moves the Camera, increase cam screen with "Left Ctrl"
-	cam_speed = 150; this->dt = dt;
+	 this->dt = dt; cam_speed = 150;
 	if (Keyboard::isKeyPressed(Keyboard::LControl))
 		cam_speed = 500;
 	Vector2f movement = delta_movement();
@@ -58,6 +63,10 @@ void MapBuilderState::update(float dt)
 	y_offset = -y / (scale * 16);
 	if (!picker)
 		tex_picker->run(picker);
+	info.setString("Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id)
+	+ "\nBlocked (b) " + to_string(props[picked_tile.x][picked_tile.y].blocked) + " - hitbox (h) " + to_string(props[picked_tile.x][picked_tile.y].hitbox)
+	+ " - Layer (0,1,2) " + to_string(props[picked_tile.x][picked_tile.y].layer));
+
 }
 
 void MapBuilderState::render(RenderWindow* window)
@@ -71,6 +80,7 @@ void MapBuilderState::render(RenderWindow* window)
 	//----------render entities herre in game--------------
 	render_tiles("Outdoors_Spring", window, x_win, y_win, 2);
 	grid(window, x_win, y_win);
+	window->draw(info);
 }
 
 void MapBuilderState::pollevent(Event event, RenderWindow* window)
