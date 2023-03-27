@@ -4,13 +4,14 @@ void CreativeMode::change_tex()
 	delete this->Tex;
 	Tex = new Sprite;
 	Tex->setTexture(**it);
-	a = Tex->getGlobalBounds().width * 1.15, b = Tex->getGlobalBounds().height * 1.15;
+	a = Tex->getGlobalBounds().width * scale, b = Tex->getGlobalBounds().height * scale;
 	videomode = { a,b };
 	window_pos = sidewindow->getPosition();
 	delete this->sidewindow;
 	sidewindow = new RenderWindow(videomode, "Texture picker", Style::Titlebar | Style::Close);
+	sidewindow->clear();
 	sidewindow->setPosition(window_pos);
-	Tex->setScale(1.15, 1.15);
+	Tex->setScale(scale, scale);
 }
 CreativeMode::CreativeMode(vector<Texture*>* textures, Vector2i& picked_tile)
 {
@@ -19,7 +20,7 @@ CreativeMode::CreativeMode(vector<Texture*>* textures, Vector2i& picked_tile)
 	this->textures = textures;
 	this->picked_tile = &picked_tile;
 	it = textures->begin();
-	change_tex();	
+	change_tex();
 }
 
 CreativeMode::~CreativeMode()
@@ -56,6 +57,10 @@ void CreativeMode::pollevent(bool& picker)
 			case Keyboard::Escape:
 			case Keyboard::E:
 				sidewindow->close(); picker = 1; break;
+			case Keyboard::Equal:
+				scale += 0.05; change_tex(); break;
+			case Keyboard::Hyphen:
+				scale -= 0.05; change_tex(); break;
 			case Keyboard::Comma:
 
 				if (it == textures->begin())
