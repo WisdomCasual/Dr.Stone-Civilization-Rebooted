@@ -12,6 +12,23 @@ void CreativeMode::change_tex()
 	sidewindow->setPosition(window_pos);
 	Tex->setScale(1.15, 1.15);
 }
+void CreativeMode::grid_lines()
+{
+	RectangleShape rect;
+	rect.setSize(Vector2f(1, b));
+	rect.setFillColor(Color::Black);
+	rect.setPosition({ 0, 0 });
+	for (int i = 0; i < a; i += 16) {
+		rect.setPosition(i, 0);
+		sidewindow->draw(rect);
+	}
+	cout << a;
+	rect.setSize(Vector2f(a, 1));
+	for (int i = 0; i < b; i += 16) {
+		rect.setPosition(0, i);
+		sidewindow->draw(rect);
+	}
+}
 CreativeMode::CreativeMode(vector<Texture*>* textures, Vector2i& picked_tile)
 {
 	sidewindow = new RenderWindow(videomode, "Texture Picker", Style::Titlebar | Style::Close);
@@ -42,6 +59,7 @@ void CreativeMode::render()
 {
 	sidewindow->clear();
 	sidewindow->draw(*Tex);
+	grid_lines();
 	sidewindow->display();
 }
 

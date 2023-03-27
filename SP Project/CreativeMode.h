@@ -20,6 +20,7 @@ private:
 
 	//private functions:
 	void change_tex();
+	void grid_lines();
 
 
 public:
