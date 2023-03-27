@@ -12,6 +12,7 @@ void CreativeMode::change_tex()
 	sidewindow->setPosition(window_pos);
 	Tex->setScale(1.15, 1.15);
 }
+//display grid lines
 void CreativeMode::grid_lines()
 {
 	RectangleShape rect;
