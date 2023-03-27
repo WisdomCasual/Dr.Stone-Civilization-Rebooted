@@ -12,6 +12,13 @@ MapBuilderState::MapBuilderState(int a, int b) : size_x(a), size_y(b)
 	info.setCharacterSize(40);
 }
 
+void MapBuilderState::update_info_text()
+{
+	info.setString("Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id)
+		+ "\nBlocked (b) " + to_string(props[picked_tile.x][picked_tile.y].blocked) + " - hitbox (h) " + to_string(props[picked_tile.x][picked_tile.y].hitbox)
+		+ " - Layer (0,1,2) " + to_string(props[picked_tile.x][picked_tile.y].layer));
+}
+
 MapBuilderState::~MapBuilderState()
 {
 	delete this->tex_picker;
@@ -63,10 +70,7 @@ void MapBuilderState::update(float dt)
 	y_offset = -y / (scale * 16);
 	if (!picker)
 		tex_picker->run(picker);
-	info.setString("Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id)
-	+ "\nBlocked (b) " + to_string(props[picked_tile.x][picked_tile.y].blocked) + " - hitbox (h) " + to_string(props[picked_tile.x][picked_tile.y].hitbox)
-	+ " - Layer (0,1,2) " + to_string(props[picked_tile.x][picked_tile.y].layer));
-
+	update_info_text();
 }
 
 void MapBuilderState::render(RenderWindow* window)
