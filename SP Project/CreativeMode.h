@@ -17,6 +17,7 @@ private:
 	Event event;
 	Vector2i* picked_tile;
 	unsigned int a = 0, b = 0;
+	float scale = 1.15;
 
 	//private functions:
 	void change_tex();
