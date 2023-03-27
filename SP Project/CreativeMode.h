@@ -15,7 +15,7 @@ private:
 	vector<Texture*>::iterator it;
 	Sprite* Tex;
 	Event event;
-	Vector2i* picked_tile;
+	State::tex_tile* picked_tile;
 	unsigned int a = 0, b = 0;
 	float scale = 1.15;
 
@@ -26,7 +26,7 @@ private:
 
 public:
 	//constructors/destructors
-	CreativeMode(vector<Texture*>*, Vector2i&);
+	CreativeMode(vector<Texture*>*, State::tex_tile&);
 	~CreativeMode();
 
 	//public functions:
