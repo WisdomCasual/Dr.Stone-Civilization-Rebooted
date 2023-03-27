@@ -9,8 +9,8 @@ void State::intial_textures(string file)
 	if (ifs.is_open()) {
 		while (!ifs.eof()) {
 			getline(ifs, tex);
-			textures[tex] = new Texture;
-			textures[tex]->loadFromFile("textures/" + file + "/" + tex + ".png");
+			textures.push_back(new Texture);
+			textures.back()->loadFromFile("textures/" + file + "/" + tex + ".png");
 		}
 	}
 	ifs.close();
@@ -41,7 +41,7 @@ State::~State()
 	//destructor for:
 	//textures map
 	for (auto tex : textures) {
-		delete tex.second;
+		delete tex;
 	}
 	textures.clear();
 }
