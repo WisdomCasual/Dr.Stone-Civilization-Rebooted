@@ -2,18 +2,18 @@
 
 void SavesState::render_save(RenderWindow* window,int a,int b,int c,Font font)
 {
-	save[c].setTexture(*textures["Saves"]);
+	save[c].setTexture(*textures[0]);
 	save[c].setScale(scale, scale);
 	save[c].setPosition(a, b);
 	
 	// save_intersection->mouse
 		if (save[c].getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			if (Mouse::isButtonPressed(Mouse::Left)) {
-				save[c].setTexture(*textures["Saves1"]);
+				save[c].setTexture(*textures[1]);
 		 }
 
 		 else {
-				save[c].setTexture(*textures["Saves2"]);
+				save[c].setTexture(*textures[2]);
 		 }
 		}
 		window->draw(save[c]);
@@ -61,12 +61,12 @@ void SavesState::render_save(RenderWindow* window,int a,int b,int c,Font font)
 
 void SavesState::render_arrow(RenderWindow* window)
 {
-	arrow.setTexture(*textures["arrowBrown_left"]);
+	arrow.setTexture(*textures[4]);
 	arrow.setScale(scale, scale);
 	arrow.setPosition(368, 136);
 	// arrow_intersection->mouse
 		if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			arrow.setTexture(*textures["arrowBrown_left1"]);
+			arrow.setTexture(*textures[5]);
 			if (Mouse::isButtonPressed(Mouse::Left)) {
 				bob=2;
 				back_ground=1;
@@ -90,7 +90,7 @@ void SavesState::render_savesBG(RenderWindow* window,Font font)
 	text.setPosition(816,120);
 	text.setCharacterSize(60);
 	//render_savesBG
-	savesBG.setTexture(*textures["SavesBG"]);
+	savesBG.setTexture(*textures[3]);
 	savesBG.setScale(scale, scale);
 	//savesBG.setOrigin((921 ) / 2.0, (573) / 2);
 	savesBG.setPosition(280,80);
@@ -103,7 +103,7 @@ SavesState::SavesState()
 {  
 	
 	//loads "saves" textures
-	intial_textures("saves");
+	initial_textures("saves");
 }
 
 SavesState::~SavesState()
