@@ -1,7 +1,7 @@
 #include "State.h"
 
 
-void State::intial_textures(string file)
+void State::initial_textures(string file)
 {
 	//loads the current state's texture files
 	string tex;
@@ -9,11 +9,26 @@ void State::intial_textures(string file)
 	if (ifs.is_open()) {
 		while (!ifs.eof()) {
 			getline(ifs, tex);
-			textures[tex] = new Texture;
-			textures[tex]->loadFromFile("textures/" + file + "/" + tex + ".png");
+			textures.push_back(new Texture);
+			textures.back()->loadFromFile("textures/" + file + "/" + tex + ".png");
 		}
 	}
 	ifs.close();
+}
+
+void State::initial_fps()
+{
+	font.loadFromFile("Resources/font.ttf");
+	fps_text.setFont(font);
+	fps_text.setCharacterSize(40);
+}
+
+void State::calc_fps(float dt)
+{
+		//calculates framerate per second
+	delay += dt; frame_sum += 1.0 / dt; frame_count++;
+    if (delay > 1.0) { fps = frame_sum / frame_count; delay = 0, frame_sum = 0, frame_count = 0; }
+	     fps_text.setString("  FPS " + to_string(fps));
 }
 
 Vector2f State::delta_movement()
@@ -41,7 +56,7 @@ State::~State()
 	//destructor for:
 	//textures map
 	for (auto tex : textures) {
-		delete tex.second;
+		delete tex;
 	}
 	textures.clear();
 }

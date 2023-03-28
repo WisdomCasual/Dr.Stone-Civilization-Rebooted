@@ -11,20 +11,26 @@ private:
 	VideoMode videomode {800, 600};
 	Vector2i window_pos{ 0,0 };
 	Vector2i mouse_pos = { 0, 0 }, current_tile = { 0,0 };
-	map<string, Texture*>* textures;
-	map<string, Texture*>::iterator it;
+	vector<Texture*>* textures;
 	Sprite* Tex;
 	Event event;
-	Vector2i* picked_tile;
+	State::tex_tile* picked_tile;
+	RectangleShape hover_rect, selected_rect;
 	unsigned int a = 0, b = 0;
+	int curr_tex_set = 0;
+	float scale = 1.15;
 
 	//private functions:
 	void change_tex();
+	void grid_lines();
+	void initial_rectangles();
+	void hover_tile();
+	void selected();
 
 
 public:
 	//constructors/destructors
-	CreativeMode(map<string, Texture*>*, Vector2i&);
+	CreativeMode(vector<Texture*>*, State::tex_tile&);
 	~CreativeMode();
 
 	//public functions:

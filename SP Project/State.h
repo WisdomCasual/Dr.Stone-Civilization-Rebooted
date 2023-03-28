@@ -22,11 +22,21 @@ public:
 	virtual ~State();
 
 	//public variables:
-	map<string, Texture*> textures; //<-- current loaded Textures
+	vector <Texture*> textures; //<-- current loaded Textures
 	Vector2f delta_movement();
+	struct tex_tile {
+		int x, y, tex_id;
+	};
+	Font font;
+	Text fps_text;
+	float delay = 0;
+	int fps = 0, frame_count = 0, frame_sum = 0;
+	bool fps_active = 0;
 
 	//public functions:
-	void intial_textures(string);	
+	void initial_textures(string);
+	void initial_fps();
+	void calc_fps(float);
 
 	virtual void pollevent(Event, RenderWindow*) = 0;
 	virtual void update(float) = 0;
