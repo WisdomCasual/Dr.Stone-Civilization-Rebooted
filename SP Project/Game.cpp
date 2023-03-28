@@ -23,11 +23,12 @@ void Game::intial_states()
 	//sets intial states (will probably push MainMenuState)
 	states.push_back(new MapBuilderState);  /////////////////////////////////////
 }
+
 Game::Game()
 {
 	//runs all intializers 
-	this->intial_window();
-	this->intial_states();
+	intial_window();
+	intial_states();
 }
 
 Game::~Game()
@@ -60,6 +61,7 @@ void Game::update()
 {
 	updatedt();
 	pollevent();
+
 	//calls update function of the top state in the deque
 	if (!states.empty())
 		this->states.back()->update(dt);
@@ -69,13 +71,12 @@ void Game::render()
 {
 	//renders all states in the deque (from buttom to top)
 
-	this->window->clear();
+	window->clear();
 
 	//draw objects
 	for (auto state : states)
 		state->render(window);
-
-	this->window->display();
+	window->display();
 }
 
 void Game::run()

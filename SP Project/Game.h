@@ -18,6 +18,7 @@ private:
 	map<string,Texture*> textures;
 	float dt = 0;
 
+
 	//private functions:
 	void intial_window();
 	void intial_states();
