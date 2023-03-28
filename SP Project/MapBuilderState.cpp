@@ -6,19 +6,15 @@ MapBuilderState::MapBuilderState(int a, int b) : size_x(a), size_y(b)
 	//loads "game" textures
 	intial_textures("game");
 	
-	
-	font.loadFromFile("Resources/font.ttf");
+	intial_fps();
 	info.setFont(font);
 	info.setCharacterSize(40);
 }
 
 void MapBuilderState::update_info_text()
 {
-	//calculates framerate per second
-	delay += dt; frame_sum += 1 / dt; frame_count++;
-	if (delay > 1.0) { fps = frame_sum/frame_count; delay = 0, frame_sum=0, frame_count = 0; } 
-	//displays frames and picked tile properties
-	info.setString("FPS "+ to_string(fps) + "\nSelected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id)
+	//displays picked tile properties
+	info.setString("\nSelected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id)
 		+ "\nBlocked (b) " + to_string(props[picked_tile.x][picked_tile.y].blocked) + " - hitbox (h) " + to_string(props[picked_tile.x][picked_tile.y].hitbox)
 		+ " - Layer (0,1,2) " + to_string(props[picked_tile.x][picked_tile.y].layer));
 }
@@ -63,6 +59,8 @@ void MapBuilderState::render_tiles(string Tex, RenderWindow* window, int x_win, 
 
 void MapBuilderState::update(float dt)
 {
+	if (fps_active)
+		calc_fps(dt);
 	//moves the Camera, increase cam screen with "Left Ctrl"
 	 this->dt = dt; cam_speed = 150;
 	if (Keyboard::isKeyPressed(Keyboard::LControl))
@@ -89,6 +87,8 @@ void MapBuilderState::render(RenderWindow* window)
 	render_tiles("Outdoors_Spring", window, x_win, y_win, 2);
 	grid(window, x_win, y_win);
 	window->draw(info);
+	if (fps_active)
+		window->draw(fps_text);
 }
 
 void MapBuilderState::pollevent(Event event, RenderWindow* window)
@@ -103,6 +103,8 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 				window->close(); break;
 			case Keyboard::Space:
 				x = 0, y = 0; break;
+			case Keyboard::F3:
+				fps_active = !fps_active; break;
 			case Keyboard::E:
 				if (picker)
 					tex_picker = new CreativeMode(&textures, picked_tile);

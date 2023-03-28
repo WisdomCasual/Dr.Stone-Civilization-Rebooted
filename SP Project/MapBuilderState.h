@@ -17,7 +17,6 @@ private:
 	};
 
 
-	Font font;
 	bool picker = 1;
 	CreativeMode* tex_picker;
 	tex_tile picked_tile = { 0,0 };
@@ -29,8 +28,6 @@ private:
 	bool active_grid = 1; //<-- grid active/inactive
 	float scale = 10;
 	float dt = 0;
-	float delay = 0;
-	int fps = 0, frame_count = 0, frame_sum = 0;
 	Text info;
 	Tile tiles[256][256];    //the level map
 	tex_props props[96][96]{};
