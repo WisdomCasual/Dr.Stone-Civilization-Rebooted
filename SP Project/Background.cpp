@@ -32,6 +32,5 @@ void Background::render(RenderWindow* window)
 		bg.setScale(scale, scale);
 		bg.setPosition({ -(bg_x * scale - win_x) / 2 , 0 });
 	}
-	cout << bg.getPosition().x << " " << bg.getPosition().y << endl;
 	window->draw(bg);
 }
