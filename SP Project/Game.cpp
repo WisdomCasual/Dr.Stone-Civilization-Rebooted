@@ -21,7 +21,8 @@ void Game::intial_window()
 void Game::intial_states()
 {
 	//sets intial states (will probably push MainMenuState)
-	states.push_back(new MapBuilderState);  /////////////////////////////////////
+	states.push_back(new Background);  /////////////////////////////////////
+	states.push_back(new MapBuilderState);
 }
 Game::Game()
 {
@@ -82,7 +83,6 @@ void Game::run()
 {
 	//game loop
 	while (this->window->isOpen()) {
-		cout << 1.0 / dt << endl; //<----- framerate on console
 		update();
 		render();
 	}

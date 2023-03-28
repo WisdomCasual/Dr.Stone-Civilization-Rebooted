@@ -25,7 +25,7 @@ public:
 		int x, y, tex_id;
 	};
 	//public functions:
-	void intial_textures(string);	
+	void intial_textures(string);
 
 	virtual void pollevent(Event, RenderWindow*) = 0;
 	virtual void update(float) = 0;

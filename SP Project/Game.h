@@ -1,6 +1,7 @@
 #pragma once
 #include"State.h"
 #include"MapBuilderState.h"
+#include"Background.h"
 
 using namespace std;
 using namespace sf;
