@@ -30,7 +30,7 @@ void CreativeMode::grid_lines()
 		sidewindow->draw(rect);
 	}
 }
-void CreativeMode::highlight()
+void CreativeMode::hover_tile()
 {
 	RectangleShape rect;
 	rect.setSize(Vector2f(16, 16));
