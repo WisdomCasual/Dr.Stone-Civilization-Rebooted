@@ -22,6 +22,7 @@ private:
 	//private functions:
 	void change_tex();
 	void grid_lines();
+	void highlight();
 
 
 public:
