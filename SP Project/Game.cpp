@@ -84,7 +84,6 @@ void Game::run()
 {
 	//game loop
 	while (this->window->isOpen()) {
-		cout << 1.0 / dt << endl; //<----- framerate on console
 		update();
 		render();
 	}
