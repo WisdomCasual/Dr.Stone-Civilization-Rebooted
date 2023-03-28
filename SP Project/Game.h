@@ -2,6 +2,7 @@
 #include"State.h"
 #include"MapBuilderState.h"
 #include"Background.h"
+#include"SavesState.h"
 
 using namespace std;
 using namespace sf;
