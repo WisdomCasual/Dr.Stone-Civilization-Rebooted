@@ -12,17 +12,20 @@ private:
 	Vector2i window_pos{ 0,0 };
 	Vector2i mouse_pos = { 0, 0 }, current_tile = { 0,0 };
 	vector<Texture*>* textures;
-	vector<Texture*>::iterator it;
 	Sprite* Tex;
 	Event event;
 	State::tex_tile* picked_tile;
+	RectangleShape hover_rect, selected_rect;
 	unsigned int a = 0, b = 0;
+	int curr_tex_set = 0;
 	float scale = 1.15;
 
 	//private functions:
 	void change_tex();
 	void grid_lines();
+	void init_rectangles();
 	void hover_tile();
+	void selected();
 
 
 public:

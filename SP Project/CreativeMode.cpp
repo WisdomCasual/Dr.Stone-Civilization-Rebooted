@@ -3,7 +3,7 @@ void CreativeMode::change_tex()
 {
 	delete this->Tex;
 	Tex = new Sprite;
-	Tex->setTexture(**it);
+	Tex->setTexture(*textures->at(curr_tex_set));
 	a = Tex->getGlobalBounds().width, b = Tex->getGlobalBounds().height;
 	videomode = { a,b };
 	window_pos = sidewindow->getPosition();
@@ -30,15 +30,32 @@ void CreativeMode::grid_lines()
 		sidewindow->draw(rect);
 	}
 }
+void CreativeMode::init_rectangles()
+{
+	//hover rectangle
+	hover_rect.setSize(Vector2f(16, 16));
+	hover_rect.setFillColor(Color::Transparent);
+	hover_rect.setOutlineThickness(1);
+	hover_rect.setOutlineColor(Color::White);
+
+	//selected rectangle
+	selected_rect.setSize(Vector2f(16, 16));
+	selected_rect.setFillColor(Color::Transparent);
+	selected_rect.setOutlineThickness(1);
+	selected_rect.setOutlineColor(Color::Green);
+	selected_rect.setPosition(Vector2f(picked_tile->x, picked_tile->y));
+
+}
 void CreativeMode::hover_tile()
 {
-	RectangleShape rect;
-	rect.setSize(Vector2f(16, 16));
-	rect.setFillColor(Color::Transparent);
-	rect.setOutlineThickness(1);
-	rect.setOutlineColor(Color::White);
-	rect.setPosition(Vector2f( current_tile.x * 16 , current_tile.y * 16));
-	sidewindow->draw(rect);
+	hover_rect.setPosition(Vector2f( current_tile.x * 16 , current_tile.y * 16));
+	sidewindow->draw(hover_rect);
+}
+void CreativeMode::selected()
+{
+	selected_rect.setPosition(Vector2f(current_tile.x * 16, current_tile.y * 16));
+	picked_tile->x = current_tile.x, picked_tile->y = current_tile.y;
+	picked_tile->tex_id = curr_tex_set;
 }
 CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile)
 {
@@ -46,8 +63,8 @@ CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_t
 	sidewindow->setPosition({ 0,0 });
 	this->textures = textures;
 	this->picked_tile = &picked_tile;
-	it = textures->begin();
 	change_tex();
+	init_rectangles();
 }
 
 CreativeMode::~CreativeMode()
@@ -70,6 +87,7 @@ void CreativeMode::render()
 	sidewindow->clear();
 	sidewindow->draw(*Tex);
 	grid_lines();
+	sidewindow->draw(selected_rect);
 	hover_tile();
 	sidewindow->display();
 }
@@ -103,17 +121,22 @@ void CreativeMode::pollevent(bool& picker)
 				break;
 			case Keyboard::Comma:
 
-				if (it == textures->begin())
-					it = textures->end(); 
-				--it; 
+				if (curr_tex_set == 0)
+					curr_tex_set = textures->size();
+				--curr_tex_set;
 				change_tex();
 				break;
 			case Keyboard::Period:
-				++it;
-				if (it == textures->end())
-					it = textures->begin();
+				++curr_tex_set;
+				if (curr_tex_set == textures->size())
+					curr_tex_set = 0;
 				change_tex();
 				break;
+			}
+		case Event::MouseButtonPressed:
+			switch (event.key.code) {
+			case Mouse::Left:
+				selected();
 			}
 		}
 	}
