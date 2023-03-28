@@ -36,6 +36,9 @@
     <ClCompile Include="CreativeMode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SavesState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -51,6 +54,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CreativeMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SavesState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -14,6 +14,9 @@ class State
 private:
 
 public:
+	//variables:
+	bool back_ground = 0, main_menu = 0, map_builder = 0;
+	int bob = 0;
 	//constructors/destructors:	
 	State();
 	virtual ~State();
