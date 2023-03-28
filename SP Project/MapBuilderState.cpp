@@ -16,7 +16,7 @@ void MapBuilderState::update_info_text()
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id)
 		+ "\n        Blocked (b) " + to_string(props[picked_tile.x][picked_tile.y].blocked) + " - hitbox (h) " + to_string(props[picked_tile.x][picked_tile.y].hitbox)
-		+ " - Layer (0,1,2) " + to_string(props[picked_tile.x][picked_tile.y].layer));
+		+ " - Layer (1,2,3) " + to_string(props[picked_tile.x][picked_tile.y].layer+1));
 }
 
 void MapBuilderState::dash_cam()
