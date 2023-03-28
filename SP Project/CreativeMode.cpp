@@ -104,7 +104,7 @@ void CreativeMode::pollevent(bool& picker)
 			case Keyboard::E:
 				sidewindow->close(); picker = 1; break;
 			case Keyboard::O:
-				window_pos = sidewindow->getPosition(); 
+				window_pos = sidewindow->getPosition();
 				window_pos.y -= 48;
 				sidewindow->setPosition(window_pos); break;
 			case Keyboard::L:
@@ -113,7 +113,7 @@ void CreativeMode::pollevent(bool& picker)
 				sidewindow->setPosition(window_pos); break;
 			case Keyboard::Equal:
 				scale += 0.05;
-				sidewindow->setSize({ (unsigned int)(a*scale),(unsigned int)(b*scale) });
+				sidewindow->setSize({ (unsigned int)(a * scale),(unsigned int)(b * scale) });
 				break;
 			case Keyboard::Hyphen:
 				scale -= 0.05;
@@ -133,11 +133,11 @@ void CreativeMode::pollevent(bool& picker)
 				change_tex();
 				break;
 			}
-		case Event::MouseButtonPressed:
-			switch (event.key.code) {
-			case Mouse::Left:
-				selected();
-			}
+		}
+		if (event.type == Event::MouseButtonPressed) {
+		switch (event.key.code)
+		case Mouse::Left:
+			selected(); break;
 		}
 	}
 }

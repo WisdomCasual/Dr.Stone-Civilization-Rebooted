@@ -34,8 +34,9 @@ private:
 
 	//private functions:
 	void grid(RenderWindow*, int, int);
-	void render_tiles(string, RenderWindow*, int, int, int);
+	void render_tiles(RenderWindow*, int, int, int);
 	void update_info_text();
+	void dash_cam();
 
 public:
 	//constructors/destructors:

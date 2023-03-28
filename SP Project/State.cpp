@@ -28,7 +28,7 @@ void State::calc_fps(float dt)
 		//calculates framerate per second
 	delay += dt; frame_sum += 1.0 / dt; frame_count++;
     if (delay > 1.0) { fps = frame_sum / frame_count; delay = 0, frame_sum = 0, frame_count = 0; }
-	     fps_text.setString("FPS " + to_string(fps));
+	     fps_text.setString("  FPS " + to_string(fps));
 }
 
 Vector2f State::delta_movement()
