@@ -43,7 +43,7 @@ void CreativeMode::initial_rectangles()
 	selected_rect.setFillColor(Color::Transparent);
 	selected_rect.setOutlineThickness(1);
 	selected_rect.setOutlineColor(Color::Green);
-	selected_rect.setPosition(Vector2f(picked_tile->x, picked_tile->y));
+	selected_rect.setPosition(Vector2f(picked_tile->x * 16, picked_tile->y * 16));
 
 }
 void CreativeMode::hover_tile()
