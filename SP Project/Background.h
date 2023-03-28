@@ -5,16 +5,15 @@ class Background : public State
 {
 private:
 	Sprite bg;
-	RenderWindow* window;
-	float win_x = 0, win_y = 0;
-	float bg_x = 0, bg_y = 0;
+	float win_x = 0, win_y = 0; //<-- window dimentions
+	float bg_x = 0, bg_y = 0;   //<-- image dimentions
 	float scale = 0;
 
 public:
 	Background();
 	~Background();
-	void pollevent(Event, RenderWindow*) = 0;
-	void update(float) = 0;
+	void pollevent(Event, RenderWindow*);
+	void update(float);
 	void render(RenderWindow*);
 };
 
