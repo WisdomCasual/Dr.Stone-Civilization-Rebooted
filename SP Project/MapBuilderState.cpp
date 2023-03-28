@@ -4,9 +4,9 @@
 MapBuilderState::MapBuilderState(int a, int b) : size_x(a), size_y(b)
 {	
 	//loads "game" textures
-	intial_textures("game");
+	initial_textures("game");
 	
-	intial_fps();
+	initial_fps();
 	info.setFont(font);
 	info.setCharacterSize(40);
 }

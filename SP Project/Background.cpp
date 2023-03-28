@@ -2,7 +2,7 @@
 
 Background::Background()
 {
-	intial_textures("background");
+	initial_textures("background");
 	bg.setTexture(*textures[0]);
 	bg_x = bg.getGlobalBounds().width, bg_y = bg.getGlobalBounds().height;
 }

@@ -1,7 +1,7 @@
 #include "State.h"
 
 
-void State::intial_textures(string file)
+void State::initial_textures(string file)
 {
 	//loads the current state's texture files
 	string tex;
@@ -16,7 +16,7 @@ void State::intial_textures(string file)
 	ifs.close();
 }
 
-void State::intial_fps()
+void State::initial_fps()
 {
 	font.loadFromFile("Resources/font.ttf");
 	fps_text.setFont(font);

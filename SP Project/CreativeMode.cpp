@@ -30,7 +30,7 @@ void CreativeMode::grid_lines()
 		sidewindow->draw(rect);
 	}
 }
-void CreativeMode::init_rectangles()
+void CreativeMode::initial_rectangles()
 {
 	//hover rectangle
 	hover_rect.setSize(Vector2f(16, 16));
@@ -64,7 +64,7 @@ CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_t
 	this->textures = textures;
 	this->picked_tile = &picked_tile;
 	change_tex();
-	init_rectangles();
+	initial_rectangles();
 }
 
 CreativeMode::~CreativeMode()
