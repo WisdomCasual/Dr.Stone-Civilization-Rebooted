@@ -11,6 +11,14 @@ Background::~Background()
 {
 }
 
+void Background::pollevent(Event, RenderWindow*)
+{
+}
+
+void Background::update(float)
+{
+}
+
 void Background::render(RenderWindow* window)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
