@@ -29,6 +29,8 @@ private:
 	bool active_grid = 1; //<-- grid active/inactive
 	float scale = 10;
 	float dt = 0;
+	float delay = 0;
+	int fps = 0, frame_count = 0, frame_sum = 0;
 	Text info;
 	Tile tiles[256][256];    //the level map
 	tex_props props[96][96]{};

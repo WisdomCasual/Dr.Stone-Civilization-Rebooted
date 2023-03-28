@@ -14,7 +14,11 @@ MapBuilderState::MapBuilderState(int a, int b) : size_x(a), size_y(b)
 
 void MapBuilderState::update_info_text()
 {
-	info.setString("Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id)
+	//calculates framerate per second
+	delay += dt; frame_sum += 1 / dt; frame_count++;
+	if (delay > 1.0) { fps = frame_sum/frame_count; delay = 0, frame_sum=0, frame_count = 0; } 
+	//displays frames and picked tile properties
+	info.setString("FPS "+ to_string(fps) + "\nSelected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id)
 		+ "\nBlocked (b) " + to_string(props[picked_tile.x][picked_tile.y].blocked) + " - hitbox (h) " + to_string(props[picked_tile.x][picked_tile.y].hitbox)
 		+ " - Layer (0,1,2) " + to_string(props[picked_tile.x][picked_tile.y].layer));
 }
@@ -97,6 +101,8 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 			switch (event.key.code) {
 			case Keyboard::Escape:
 				window->close(); break;
+			case Keyboard::Space:
+				x = 0, y = 0; break;
 			case Keyboard::E:
 				if (picker)
 					tex_picker = new CreativeMode(&textures, picked_tile);
