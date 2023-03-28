@@ -35,7 +35,7 @@ void CreativeMode::hover_tile()
 	RectangleShape rect;
 	rect.setSize(Vector2f(16, 16));
 	rect.setFillColor(Color::Transparent);
-	rect.setOutlineThickness(2);
+	rect.setOutlineThickness(1);
 	rect.setOutlineColor(Color::White);
 	rect.setPosition(Vector2f( current_tile.x * 16 , current_tile.y * 16));
 	sidewindow->draw(rect);
