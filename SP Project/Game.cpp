@@ -1,5 +1,5 @@
 #include "Game.h"
-void Game::intial_window()
+void Game::initial_window()
 {
 	//gets window properties from "config/window.ini";
 	string title = "none";
@@ -18,7 +18,7 @@ void Game::intial_window()
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
 }
-void Game::intial_states()
+void Game::initial_states()
 {
 	//sets intial states (will probably push MainMenuState)
 	states.push_back(new MapBuilderState);  /////////////////////////////////////
@@ -27,8 +27,8 @@ void Game::intial_states()
 Game::Game()
 {
 	//runs all intializers 
-	intial_window();
-	intial_states();
+	initial_window();
+	initial_states();
 }
 
 Game::~Game()

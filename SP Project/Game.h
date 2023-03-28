@@ -20,8 +20,8 @@ private:
 
 
 	//private functions:
-	void intial_window();
-	void intial_states();
+	void initial_window();
+	void initial_states();
 
 public:
 	//constructors/destructors:

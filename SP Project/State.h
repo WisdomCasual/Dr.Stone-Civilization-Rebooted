@@ -31,8 +31,8 @@ public:
 	bool fps_active = 0;
 
 	//public functions:
-	void intial_textures(string);
-	void intial_fps();
+	void initial_textures(string);
+	void initial_fps();
 	void calc_fps(float);
 
 	virtual void pollevent(Event, RenderWindow*) = 0;

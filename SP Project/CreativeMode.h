@@ -23,7 +23,7 @@ private:
 	//private functions:
 	void change_tex();
 	void grid_lines();
-	void init_rectangles();
+	void initial_rectangles();
 	void hover_tile();
 	void selected();
 
