@@ -21,7 +21,7 @@ void Game::intial_window()
 void Game::intial_states()
 {
 	//sets intial states (will probably push MainMenuState)
-	states.push_back(new MapBuilderState);  /////////////////////////////////////
+	states.push_back(new SavesState);  /////////////////////////////////////
 }
 Game::Game()
 {
@@ -68,7 +68,6 @@ void Game::update()
 void Game::render()
 {
 	//renders all states in the deque (from buttom to top)
-
 	this->window->clear();
 
 	//draw objects
@@ -82,7 +81,8 @@ void Game::run()
 {
 	//game loop
 	while (this->window->isOpen()) {
-		cout << 1.0 / dt << endl; //<----- framerate on console
+		//cout << 1.0 / dt << endl; //<----- framerate on console
+		cout << sf::Mouse::getPosition().x << "   " << sf::Mouse::getPosition().y << "\n";
 		update();
 		render();
 	}
