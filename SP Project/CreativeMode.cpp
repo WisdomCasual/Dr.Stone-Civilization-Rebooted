@@ -70,7 +70,7 @@ void CreativeMode::render()
 	sidewindow->clear();
 	sidewindow->draw(*Tex);
 	grid_lines();
-	highlight();
+	hover_tile();
 	sidewindow->display();
 }
 
