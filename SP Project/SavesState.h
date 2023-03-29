@@ -17,7 +17,7 @@ private:
 	void render_save(RenderWindow*,int,int,int,Font);
 	void render_arrow(RenderWindow*);
 	void render_savesBG(RenderWindow*,Font);
-	void update_save(RenderWindow*, int,int,int);
+	void update_save(RenderWindow*,int);
 	void update_arrow(RenderWindow*);
 	void draw_text(RenderWindow* ,string, int, int, int,Font);
 	void draw_level(RenderWindow*, string, int, int, int, Font);
