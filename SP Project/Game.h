@@ -3,6 +3,7 @@
 #include"MapBuilderState.h"
 #include"Background.h"
 #include"SavesState.h"
+#include"MainMenuState.h"
 
 using namespace std;
 using namespace sf;
