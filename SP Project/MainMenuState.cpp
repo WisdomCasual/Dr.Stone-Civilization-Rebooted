@@ -26,7 +26,7 @@ void MainMenuState::render_buttons(RenderWindow* window)
 {
 	mouse_cords = window->mapPixelToCoords(Mouse::getPosition(*window));
 	buttontex.setScale(scale, scale);
-	text.setCharacterSize(28.69*scale);
+	text.setCharacterSize(25.69*scale);
 	for (auto& button : buttons) {
 		buttontex.setTextureRect(IntRect(0, button.pressed * 49, 190, 49));
 		buttontex.setPosition(x+button.x*scale, y+button.y * scale);
@@ -51,7 +51,6 @@ MainMenuState::MainMenuState()
 	logo.setTexture(*textures[1]);
 	logo.setOrigin(2280/2,772/2);
 	text.setFont(font);
-	text.setCharacterSize(28.69);
 	buttons.push_back({ "Play",0,0, play});
 	buttons.push_back({ "Settings",0,64, settings});
 	buttons.push_back({ "Exit" ,0,128, exit});
