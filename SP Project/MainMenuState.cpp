@@ -1,12 +1,12 @@
 #include "MainMenuState.h"
 
 
-void MainMenuState::update_buttons()
+void MainMenuState::update_buttons(RenderWindow* window)
 {
 	for (auto& button : buttons) {
 		buttontex.setTextureRect(IntRect(0,button.pressed * 49, 190, 49));
 		buttontex.setPosition(x+button.x * scale, y+button.y * scale);
-		if (buttontex.getGlobalBounds().contains(mouse_cords)) {
+		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			if (Mouse::isButtonPressed(Mouse::Left))button.pressed = 1;
 			else {
 				if (button.pressed)
@@ -24,7 +24,6 @@ void MainMenuState::update_buttons()
 
 void MainMenuState::render_buttons(RenderWindow* window)
 {
-	mouse_cords = window->mapPixelToCoords(Mouse::getPosition(*window));
 	buttontex.setScale(scale, scale);
 	text.setCharacterSize(25.69*scale);
 	for (auto& button : buttons) {
@@ -76,7 +75,7 @@ void MainMenuState::update(float dt, RenderWindow* window, int* terminator, dequ
 	}
 	if (exit) { exit = 0; window->close(); }
 
-	update_buttons();
+	update_buttons(window);
 	if (fps_active)
 		calc_fps(dt);
 }
