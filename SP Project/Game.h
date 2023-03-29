@@ -19,7 +19,7 @@ private:
 	deque<State*> states;
 	map<string,Texture*> textures;
 	float dt = 0;
-
+	int terminator;
 
 	//private functions:
 	void initial_window();

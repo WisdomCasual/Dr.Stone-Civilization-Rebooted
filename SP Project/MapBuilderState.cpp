@@ -74,7 +74,7 @@ void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, i
 	window->draw(tile);
 }
 
-void MapBuilderState::update(float dt)
+void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	this->dt = dt;
 
