@@ -20,13 +20,14 @@ void Game::initial_window()
 }
 void Game::initial_states()
 {
-	//sets intial states (will probably push MainMenuState)
-	states.push_back(new Background);  /////////////////////////////////////
+	//sets intial states 
+	states.push_back(new Background);
 	states.push_back(new MainMenuState);
 }
 
 void Game::initial_icon()
 {
+	Image icon;
 	icon.loadFromFile("Resources/mainicon.png"); // File/Image/Pixel
 	window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 }
