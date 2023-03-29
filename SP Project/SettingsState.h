@@ -22,7 +22,7 @@ public:
 
 	~SettingsState();
 
-	void update(float);
+	void update(float, RenderWindow*, int*, deque<State*>*);
 
 	void pollevent(Event, RenderWindow*);
 
