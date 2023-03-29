@@ -20,10 +20,12 @@ private:
 	map<string,Texture*> textures;
 	float dt = 0;
 	int terminator;
+	Image icon;
 
 	//private functions:
 	void initial_window();
 	void initial_states();
+	void initial_icon();
 
 public:
 	//constructors/destructors:
