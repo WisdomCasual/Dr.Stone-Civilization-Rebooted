@@ -26,7 +26,7 @@ public:
 	SavesState();
 	~SavesState();
 	//public functions:
-	void update(float);
+	void update(float, RenderWindow*, int*, deque<State*>*);
 	void render(RenderWindow*);
 	void pollevent(Event, RenderWindow*);
 };

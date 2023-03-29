@@ -15,7 +15,7 @@ void Background::pollevent(Event, RenderWindow*)
 {
 }
 
-void Background::update(float)
+void Background::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 }
 

@@ -13,7 +13,7 @@ public:
 	Background();
 	~Background();
 	void pollevent(Event, RenderWindow*);
-	void update(float);
+	void update(float, RenderWindow*, int*, deque<State*>*);
 	void render(RenderWindow*);
 };
 

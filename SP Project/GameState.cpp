@@ -11,7 +11,7 @@ GameState::~GameState()
 }
 
 
-void GameState::update(float dt)
+void GameState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 
 }
