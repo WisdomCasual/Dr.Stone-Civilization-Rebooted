@@ -69,7 +69,7 @@ void MainMenuState::update(float dt, RenderWindow* window, int* terminator, dequ
 	}
 	if (settings) { 
 		settings = 0; 
-		/*states->push_front(new SettingsState);*/ 
+		states->push_front(new SettingsState);
 		states->push_front(new Background); 
 		*terminator += 2;
 	}

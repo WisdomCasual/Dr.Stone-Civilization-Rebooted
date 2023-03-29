@@ -12,10 +12,12 @@ SettingsState::~SettingsState()
 
 }
 
-void update(float, RenderWindow*, int*, deque<State*>*);
+void SettingsState::update(float, RenderWindow*, int*, deque<State*>*)
 {
 
 }
+
+
 
 void SettingsState::render(RenderWindow* window)
 {
