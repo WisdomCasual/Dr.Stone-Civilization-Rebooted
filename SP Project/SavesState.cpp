@@ -132,7 +132,7 @@ void SavesState::render_savesBG(RenderWindow* window,Font font)
 	  
 }
 
-void SavesState::update_save(RenderWindow*window,int a,int b, int c)
+void SavesState::update_save(RenderWindow*window, int c)
 {
 	if (save_empty[c] == 0) {
 			if ((save[c].getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window))))&&Mouse::isButtonPressed(Mouse::Left)) {
@@ -194,7 +194,7 @@ SavesState::~SavesState()
 {
 }
 
-void SavesState::update(float dt)
+void SavesState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 
 }
@@ -230,7 +230,7 @@ void SavesState::pollevent(Event event, RenderWindow* window)
 		}
 	}
     update_arrow(window);
-	update_save(window, 398, 218, 0);
-	update_save(window, 816, 218, 1);
-	update_save(window, 1230, 218, 2);
+	update_save(window, 0);
+	update_save(window, 1);
+	update_save(window, 2);
 }
