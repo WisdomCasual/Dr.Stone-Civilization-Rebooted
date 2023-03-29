@@ -8,7 +8,7 @@ void SavesState::render_save(RenderWindow* window, int a, int b, int c, Font fon
 	save[c].setTexture(*textures[0]);
 	save[c].setScale(scale, scale);
 	save[c].setOrigin(save[c].getGlobalBounds().width / 2.0, save[c].getGlobalBounds().height / 2.0);
-	save[c].setPosition(pos_x, pos_y);
+	save[c].setPosition(pos_x,pos_y);
 
 	// save_intersection->mouse
 	if (save[c].getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
@@ -41,7 +41,7 @@ void SavesState::render_save(RenderWindow* window, int a, int b, int c, Font fon
 		ifstream ifs("Saves/" + c1 + ".ini");
 		if (ifs.is_open()) {
 			Sprite character;
-			string name, level;
+			string name ,level ;
 			int chara;
 			ifs >> name;
 			ifs >> chara;
@@ -49,19 +49,19 @@ void SavesState::render_save(RenderWindow* window, int a, int b, int c, Font fon
 			ifs.close();
 			//draw_text
 			dis = save[c].getGlobalBounds().height / 12.0;
-			draw_text(window, name, pos_x, pos_y - dis * 4.5, 55 * scale, font);
-			draw_text(window, "Re_Civilization Level:", pos_x, pos_y + dis * .45, 40 * scale, font);
-			draw_text(window, "Progress", pos_x, pos_y + dis * 3.5, 45 * scale, font);
-			draw_level(window, "Electirc", pos_x, pos_y + dis * 1.3, 50 * scale, font);
-			draw_level(window, "Generator", pos_x, pos_y + dis * 2, 50 * scale, font);
-			draw_text(window, level + "%", pos_x, pos_y + dis * 4.3, 42 * scale, font);
+			draw_text(window,name, pos_x ,pos_y-dis*4.5, 55 * scale,font);
+			draw_text(window, "Re_Civilization Level:", pos_x, pos_y+dis*.45, 40 * scale, font);
+			draw_text(window,"Progress", pos_x, pos_y+dis*3.5, 45*scale, font);
+			draw_level(window, "Electirc", pos_x, pos_y+dis*1.3, 50 * scale, font);
+			draw_level(window, "Generator", pos_x, pos_y+dis*2, 50 * scale, font);
+			draw_text(window,level+"%" , pos_x, pos_y+dis*4.3, 42 * scale, font);
 			//draw_delete
 			Delete[c].setFillColor(Color(128, 0, 0));
 			Delete[c].setFont(font);
 			Delete[c].setString("Delete");
 			Delete[c].setCharacterSize(45 * scale);
 			Delete[c].setOrigin(Delete[c].getGlobalBounds().width / 2.0, Delete[c].getGlobalBounds().height / 2.0);
-			if (Delete[c].getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			if (Delete[c].getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))){
 				if (Mouse::isButtonPressed(Mouse::Left))
 				{
 					Delete[c].setFillColor(Color(255, 0, 0)); del_presse[c] = 1;
@@ -73,9 +73,9 @@ void SavesState::render_save(RenderWindow* window, int a, int b, int c, Font fon
 						save_empty[c] = 0;
 					}
 				}
-
-			}
-			Delete[c].setPosition(pos_x, pos_y + dis * 6.5);
+				
+				}
+			Delete[c].setPosition(pos_x, pos_y+dis*6.5);
 			window->draw(Delete[c]);
 			//draw_character
 			/*character.setTexture(*textures[chara]);
@@ -93,25 +93,25 @@ void SavesState::render_save(RenderWindow* window, int a, int b, int c, Font fon
 void SavesState::render_arrow(RenderWindow* window)
 {
 	dis = savesBG.getGlobalBounds().width / 3.5;
-	pos_x = savesBG.getPosition().x - dis * 1.5;
+	pos_x = savesBG.getPosition().x -dis*1.5;
 	pos_y = save[0].getPosition().y - (save[0].getGlobalBounds().height / 2.0 + arrow.getGlobalBounds().height);
 	arrow.setTexture(*textures[4]);
 	arrow.setScale(scale, scale);
 	arrow.setOrigin(arrow.getGlobalBounds().width / 2.0, arrow.getGlobalBounds().height / 2.0);
-	arrow.setPosition(pos_x, pos_y);
+	arrow.setPosition(pos_x,pos_y);
 	// arrow_intersection->mouse
-	if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-		arrow.setTexture(*textures[5]);
-		if (Mouse::isButtonPressed(Mouse::Left)) {
-			bob = 2;
-			back_ground = 1;
-			main_menu = 1;
+		if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			arrow.setTexture(*textures[5]);
+			if (Mouse::isButtonPressed(Mouse::Left)) {
+				bob=2;
+				back_ground=1;
+				main_menu=1;
+			}
 		}
-	}
-	window->draw(arrow);
+		window->draw(arrow);
 }
 
-void SavesState::render_savesBG(RenderWindow* window, Font font)
+void SavesState::render_savesBG(RenderWindow* window,Font font)
 {
 	// render_rec
 	RectangleShape rec(Vector2f(0, 0));
@@ -121,26 +121,26 @@ void SavesState::render_savesBG(RenderWindow* window, Font font)
 	//render_savesBG
 	savesBG.setTexture(*textures[3]);
 	savesBG.setScale(scale, scale);
-	savesBG.setOrigin(savesBG.getGlobalBounds().width / 2.0, savesBG.getGlobalBounds().height / 2.0);
-	savesBG.setPosition(window->getSize().x / 2.0, window->getSize().y / 2.0);
+	savesBG.setOrigin(savesBG.getGlobalBounds().width/ 2.0, savesBG.getGlobalBounds().height / 2.0);
+	savesBG.setPosition(window->getSize().x/2.0, window->getSize().y / 2.0);
 	window->draw(savesBG);
 	//cout << savesBG.getPosition().x << " " << savesBG.getOrigin().x <<" "<< window->getSize().x << "\n";
 	// text
 	pos_x = savesBG.getPosition().x;
-	pos_y = arrow.getPosition().y - arrow.getGlobalBounds().height / 2.0;
+	pos_y = arrow.getPosition().y-arrow.getGlobalBounds().height/2.0;
 	draw_text(window, "Choose save file", pos_x, pos_y, 60 * scale, font);
-
+	  
 }
 
-void SavesState::update_save(RenderWindow* window, int c)
+void SavesState::update_save(RenderWindow*window, int c)
 {
 	if (save_empty[c] == 0) {
-		if ((save[c].getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) && Mouse::isButtonPressed(Mouse::Left)) {
-			bob = 2;
-			//map_builder = 1;
-			save_empty[c] = 1;
+			if ((save[c].getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window))))&&Mouse::isButtonPressed(Mouse::Left)) {
+					bob = 2;
+					//map_builder = 1;
+					save_empty[c] = 1;
+			}
 		}
-	}
 	else {
 		if ((save[c].getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) && Mouse::isButtonPressed(Mouse::Left)) {
 			bob = 2;
@@ -160,7 +160,7 @@ void SavesState::update_arrow(RenderWindow* window)
 	}
 }
 
-void SavesState::draw_text(RenderWindow* window, string tex, int a, int b, int c, Font font)
+void SavesState::draw_text(RenderWindow* window,string tex, int a, int b, int c,Font font)
 {
 	Text text;
 	text.setFillColor(Color::Black);
@@ -172,10 +172,10 @@ void SavesState::draw_text(RenderWindow* window, string tex, int a, int b, int c
 	window->draw(text);
 }
 
-void SavesState::draw_level(RenderWindow* window, string tex, int a, int b, int c, Font font)
+void SavesState::draw_level(RenderWindow* window, string tex, int a, int b , int c, Font font)
 {
 	Text text;
-	text.setFillColor(Color(170, 170, 170));
+	text.setFillColor(Color(170,170,170));
 	text.setFont(font);
 	text.setString(tex);
 	text.setCharacterSize(c);
@@ -201,13 +201,13 @@ void SavesState::update(float dt, RenderWindow* window, int* terminator, deque<S
 
 void SavesState::render(RenderWindow* window)
 {
-	scale = min(window->getSize().x / 1920.0, window->getSize().y / 1080.0);
+	scale = min( window->getSize().x/1920.0,  window->getSize().y/1080.0);
 	Font font;
 	font.loadFromFile("font.ttf");
-	render_savesBG(window, font);
-	render_save(window, 398, 218, 0, font);
-	render_save(window, 816, 218, 1, font);
-	render_save(window, 1230, 218, 2, font);
+	render_savesBG(window,font);
+	render_save(window, 398, 218,0,font);
+	render_save(window, 816, 218,1,font);
+	render_save(window,1230, 218,2,font);
 	render_arrow(window);
 	/*Sprite save;
 	save.setTexture(*textures[6]);
@@ -229,7 +229,7 @@ void SavesState::pollevent(Event event, RenderWindow* window)
 			}
 		}
 	}
-	update_arrow(window);
+    update_arrow(window);
 	update_save(window, 0);
 	update_save(window, 1);
 	update_save(window, 2);
