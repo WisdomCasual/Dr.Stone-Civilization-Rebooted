@@ -2,6 +2,7 @@
 #include"State.h"
 #include"SavesState.h"
 #include"Background.h"
+#include"SettingsState.h"
 using namespace sf;
 using namespace std;
 class MainMenuState :public State
