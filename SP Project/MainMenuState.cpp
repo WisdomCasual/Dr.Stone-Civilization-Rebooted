@@ -45,6 +45,7 @@ MainMenuState::MainMenuState()
 	buttontex.setTextureRect(IntRect(0, 0, 190, 49));
 	buttontex.setOrigin(190/2,49/2);
 	logo.setTexture(*textures[1]);
+	logo.setOrigin(2280/2,772/2);
 	text.setFont(font);
 	text.setCharacterSize(28.69);
 	buttons.push_back({ "Play",0,0});
@@ -73,6 +74,9 @@ void MainMenuState::render(RenderWindow* window)
 	if (win_x / 620.0 < win_y / 370.0) scale = win_x / 620.0;
 	else scale = win_y / 370.0;
 	render_buttons(window);
+	logo.setScale(scale * 0.13, scale * 0.13);
+	logo.setPosition(x,y-110*scale);
+	window->draw(logo);
 	if (fps_active)
 		window->draw(fps_text);
 }
