@@ -14,7 +14,7 @@ void Game::initial_window()
 		ifs >> vsync;
 	}
 	ifs.close();
-	this->window = new RenderWindow(windowbounds, title);
+	this->window = new RenderWindow(windowbounds, title, Style::Fullscreen);
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
 }
