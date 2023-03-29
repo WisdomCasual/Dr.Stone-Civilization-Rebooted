@@ -22,7 +22,7 @@ void MainMenuState::render_buttons(RenderWindow* window)
 {
 	mouse_cords = window->mapPixelToCoords(Mouse::getPosition(*window));
 	buttontex.setScale(scale, scale);
-	text.setScale(scale, scale);
+	text.setCharacterSize(28.69*scale);
 	for (auto& button : buttons) {
 		buttontex.setTextureRect(IntRect(0, button.pressed * 49, 190, 49));
 		buttontex.setPosition(x+button.x*scale, y+button.y * scale);
