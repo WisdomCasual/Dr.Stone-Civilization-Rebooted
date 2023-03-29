@@ -17,7 +17,7 @@ private:
 	Clock dtclock;
 	VideoMode* videomode;
 	deque<State*> states;
-	map<string,Texture*> textures;
+	map<string, Texture*> textures;
 	float dt = 0;
 	int terminator;
 
