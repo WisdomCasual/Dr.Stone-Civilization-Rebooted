@@ -21,7 +21,8 @@ void Game::initial_window()
 void Game::initial_states()
 {
 	//sets intial states (will probably push MainMenuState)
- 	states.push_back(new MapBuilderState); /////////////////////////////////////
+	states.push_back(new Background);  /////////////////////////////////////
+	states.push_back(new MainMenuState);
 }
 
 Game::Game()
