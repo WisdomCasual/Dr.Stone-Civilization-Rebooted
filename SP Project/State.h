@@ -9,6 +9,7 @@
 using namespace std;
 using namespace sf;
 
+
 class State
 {
 private:
@@ -39,7 +40,7 @@ public:
 	void calc_fps(float);
 
 	virtual void pollevent(Event, RenderWindow*) = 0;
-	virtual void update(float) = 0;
+	virtual void update(float, RenderWindow*, int*, deque<State*>*) = 0;
 	virtual void render(RenderWindow*) = 0;
 
 };

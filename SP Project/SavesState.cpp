@@ -110,7 +110,7 @@ SavesState::~SavesState()
 {
 }
 
-void SavesState::update(float dt)
+void SavesState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	//scale=max()
 

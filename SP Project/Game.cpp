@@ -60,12 +60,17 @@ void Game::pollevent()
 
 void Game::update()
 {
+	while (terminator != 0) {
+		delete states.back();
+		states.pop_back();
+		terminator--;
+	}
 	updatedt();
 	pollevent();
 
 	//calls update function of the top state in the deque
 	if (!states.empty())
-		this->states.back()->update(dt);
+		this->states.back()->update(dt, window, &terminator, &states);
 }
 
 void Game::render()

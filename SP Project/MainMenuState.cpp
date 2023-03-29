@@ -8,7 +8,11 @@ void MainMenuState::update_buttons()
 		buttontex.setPosition(x+button.x * scale, y+button.y * scale);
 		if (buttontex.getGlobalBounds().contains(mouse_cords)) {
 			if (Mouse::isButtonPressed(Mouse::Left))button.pressed = 1;
-			else button.pressed = 0;
+			else {
+				if (button.pressed)
+					button.execute = 1;
+				button.pressed = 0; 
+			}
 			button.hover = 1;
 		}
 		else {
@@ -48,31 +52,42 @@ MainMenuState::MainMenuState()
 	logo.setOrigin(2280/2,772/2);
 	text.setFont(font);
 	text.setCharacterSize(28.69);
-	buttons.push_back({ "Play",0,0});
-	buttons.push_back({ "Settings",0,64});
-	buttons.push_back({ "Exit" ,0,128});
+	buttons.push_back({ "Play",0,0, play});
+	buttons.push_back({ "Settings",0,64, settings});
+	buttons.push_back({ "Exit" ,0,128, exit});
 }
 
 MainMenuState::~MainMenuState()
 {
 }
 
-void MainMenuState::update(float dt)
+void MainMenuState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
 {
-
+	if (play) {
+		play = 0;
+		states->push_front(new SavesState);
+		states->push_front(new Background);
+		*terminator += 2;
+	}
+	if (settings) { 
+		settings = 0; 
+		/*states->push_front(new SettingsState);*/ 
+		states->push_front(new Background); 
+		*terminator += 2;
+	}
+	if (exit) { exit = 0; window->close(); }
 
 	update_buttons();
 	if (fps_active)
 		calc_fps(dt);
-
 }
 
 void MainMenuState::render(RenderWindow* window)
 {
 	float win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
-	if (win_x / 620.0 < win_y / 370.0) scale = win_x / 620.0;
-	else scale = win_y / 370.0;
+	if (win_x / 640.0 < win_y / 390.0) scale = win_x / 640.0;
+	else scale = win_y / 390.0;
 	render_buttons(window);
 	logo.setScale(scale * 0.13, scale * 0.13);
 	logo.setPosition(x,y-110*scale);

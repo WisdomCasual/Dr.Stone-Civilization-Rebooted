@@ -13,7 +13,7 @@ public:
 	~GameState();
 
 	//public functions:
-	void update(float);
+	void update(float, RenderWindow*, int*, deque<State*>*);
 	void render();
 	void pollevent(Event, RenderWindow*);
 };
