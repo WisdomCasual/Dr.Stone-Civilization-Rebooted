@@ -25,11 +25,18 @@ void Game::initial_states()
 	states.push_back(new MainMenuState);
 }
 
+void Game::initial_icon()
+{
+	icon.loadFromFile("Resources/mainicon.png"); // File/Image/Pixel
+	window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+}
+
 Game::Game()
 {
 	//runs all intializers 
 	initial_window();
 	initial_states();
+	initial_icon();
 }
 
 Game::~Game()
