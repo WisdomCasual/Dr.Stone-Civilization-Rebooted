@@ -9,8 +9,8 @@ class MapBuilderState : public State
 private:
 	//variables:
 	struct Tile {
-		Vector2i layers[3]{ {21,49}, {5,6}, {5,6} }; //<-- cords of texture in sprite sheet
-		bool blocked = 0, hitbox = 0; char texture_id[3] = {1, 1, 1};
+		Vector2i layers[4]{ {21,49}, {5,6}, {5,6}, {5,6} }; //<-- cords of texture in sprite sheet
+		bool blocked = 0, hitbox = 0; char texture_id[4] = {1, 1, 1, 1};
 	};
 
 
