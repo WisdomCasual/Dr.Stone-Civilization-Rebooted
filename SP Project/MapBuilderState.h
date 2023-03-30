@@ -45,7 +45,7 @@ private:
 
 public:
 	//constructors/destructors:
-	MapBuilderState(int a = 64, int b = 64);
+	MapBuilderState(int a = 128, int b = 256);
 	~MapBuilderState();
 
 	//public functions:

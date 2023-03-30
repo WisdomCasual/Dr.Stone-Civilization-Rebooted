@@ -307,8 +307,12 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 			case Keyboard::Num4:
 				layer = 3; break;
 			case Keyboard::Equal:
+				picked_tile.global_select_done = 0;
+				picked_tile.select_done = 0;
 				brush_size += (brush_size < 15); break;
 			case Keyboard::Hyphen:
+				picked_tile.global_select_done = 0;
+				picked_tile.select_done = 0;
 				brush_size -= (brush_size > 1); break;
 			}
 		case Event::MouseButtonPressed:
@@ -326,7 +330,7 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 			//camera zoom
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved)
-				if (scale + event.mouseWheel.delta > 1 && scale + event.mouseWheel.delta < 20) {
+				if (scale + event.mouseWheel.delta > 0.5 && scale + event.mouseWheel.delta < 20) {
 					x -= event.mouseWheel.delta * 16 * x_mid;
 					y -= event.mouseWheel.delta * 16 * y_mid;
 					scale += event.mouseWheel.delta;
