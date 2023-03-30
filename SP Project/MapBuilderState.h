@@ -26,13 +26,14 @@ private:
 	float scale = 10;
 	float dt = 0;
 	int layer = 0;
-	bool blocked = 0, hitbox = 0, drawn_selection = 0;
+	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0;
 	int brush_size = 1;
 	Vector2f mouse_pos = { 0, 0 }, relative_mouse_pos = {0, 0}, hover_tile = { 0 , 0 };
-	Vector2i selected_tile = { 0, 0 }; 
+	Vector2i selected_tile = { 0, 0 }, selection_start = { 0,0 }, selection_end = { 0,0 };;
 	Text info;
 	Tile tiles[256][256];    //the level map
-	RectangleShape hover_rect, hitbox_rect;
+	RectangleShape hover_rect, hitbox_rect, select_rect;
+	int wdth = 0, hght = 0, start_x = 0, start_y = 0;
 
 	//private functions:
 	void grid(RenderWindow*, int, int);
@@ -40,7 +41,7 @@ private:
 	void update_info_text();
 	void dash_cam();
 	void hover();
-
+	void selection();
 
 public:
 	//constructors/destructors:
