@@ -22,7 +22,7 @@ void Game::initial_states()
 {
 	//sets intial states 
 	states.push_back(new Background);
-	states.push_back(new MapBuilderState);
+	states.push_back(new MainMenuState);
 }
 
 void Game::initial_icon()
