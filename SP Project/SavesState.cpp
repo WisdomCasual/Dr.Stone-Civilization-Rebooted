@@ -13,7 +13,7 @@ void SavesState::update_saves(RenderWindow* window)
 {
 	del.setOrigin(del.getLocalBounds().width / 2.0, del.getLocalBounds().top + del.getLocalBounds().height / 2.0);
 	savesBG.setPosition(x, y);
-	savesBG.setScale(scale * 3.1, scale * 3.1);
+	savesBG.setScale(scale * 3.05, scale * 3.05);
 	save_bg.setScale(scale, scale);
 	for (int i = 0; i < 3; i++) {
 		save_bg.setTextureRect(IntRect(0, saves[i].pressed * 100, 100, 200));
@@ -195,7 +195,7 @@ void SavesState::update(float dt, RenderWindow* window, int* terminator, deque<S
 {
 	float win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
-	scale = min(win_x / 500.0, win_y / 300.0);
+	scale = min(win_x / 570.0, win_y / 350.0);
 	
 	tint.setSize({ win_x, win_y });
 	update_saves(window);
