@@ -141,13 +141,14 @@ SavesState::~SavesState()
 
 void SavesState::update_arrow(RenderWindow* window, int* terminator, deque<State*>* states)
 {
-	arrow.setScale(scale*0.8, scale*0.8);
 	arrow.setPosition(x - 180 * scale, y - 120 * scale);
 	if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		arrow.setTextureRect(IntRect(22, 0, 22, 21));
+		arrow.setScale(scale * 0.8, scale * 0.8);
 		if (Mouse::isButtonPressed(Mouse::Left)) {
 			arrow_pressed = 1;
 			arrow.setTextureRect(IntRect(44, 0, 22, 21));
+			arrow.setScale(scale * 0.75, scale * 0.75);
 		}
 		else {
 			if (arrow_pressed) {
@@ -162,6 +163,7 @@ void SavesState::update_arrow(RenderWindow* window, int* terminator, deque<State
 	else {
 		arrow_pressed = 0;
 		arrow.setTextureRect(IntRect(0, 0, 22, 21));
+		arrow.setScale(scale * 0.8, scale * 0.8);
 	}
 }
 
