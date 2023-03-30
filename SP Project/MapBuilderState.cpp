@@ -23,7 +23,7 @@ void MapBuilderState::update_info_text()
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
 		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox)
-		+ " - Layer (1,2,3) " + to_string(layer+1));
+		+ " - Layer (1,2,3,4) " + to_string(layer+1));
 }
 
 void MapBuilderState::dash_cam()
@@ -85,7 +85,7 @@ void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, i
 			tile.setTextureRect(IntRect(tiles[i][j].layers[layer].x * 16, tiles[i][j].layers[layer].y * 16, 16, 16));
 			tile.setPosition(x + (16 * scale * i), y + (16 * scale * j));
 			window->draw(tile);
-			if ((fps_active || hitbox) && layer == 2 && tiles[i][j].hitbox) {
+			if ((fps_active || hitbox) && layer == 3 && tiles[i][j].hitbox) {
 				hitbox_rect.setPosition(x + (16 * scale * i), y + (16 * scale * j));
 				window->draw(hitbox_rect);
 			}
@@ -173,6 +173,7 @@ void MapBuilderState::render(RenderWindow* window)
 	render_tiles(window, x_win, y_win, 1);
 	//----------render entities herre in game--------------
 	render_tiles(window, x_win, y_win, 2);
+	render_tiles(window, x_win, y_win, 3);
 	window->draw(hover_rect);
 	window->draw(info);
 	if (fps_active)
@@ -213,6 +214,8 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 				layer = 1; break;
 			case Keyboard::Num3:
 				layer = 2; break;
+			case Keyboard::Num4:
+				layer = 3; break;
 			}
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
