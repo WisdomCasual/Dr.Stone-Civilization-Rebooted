@@ -222,10 +222,39 @@ SavesState::SavesState()
 	text.setFont(font);
 	del.setFont(font);
 	del.setString("Delete");
+	arrow.setTexture(*textures[3]);
+	arrow.setTextureRect(IntRect(0, 0, 22, 21));
+	arrow.setOrigin(22/2, 21/2);
 }
 
 SavesState::~SavesState()
 {
+}
+
+void SavesState::update_arrow(RenderWindow* window, int* terminator, deque<State*>* states)
+{
+	arrow.setScale(scale*0.8, scale*0.8);
+	arrow.setPosition(x - 180 * scale, y - 120 * scale);
+	if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		arrow.setTextureRect(IntRect(22, 0, 22, 21));
+		if (Mouse::isButtonPressed(Mouse::Left)) {
+			arrow_pressed = 1;
+			arrow.setTextureRect(IntRect(44, 0, 22, 21));
+		}
+		else {
+			if (arrow_pressed) {
+				arrow_pressed = 0;
+				*terminator += 2;
+				states->push_front(new MainMenuState);
+				states->push_front(new Background);
+			}
+		}
+		
+	}
+	else {
+		arrow_pressed = 0;
+		arrow.setTextureRect(IntRect(0, 0, 22, 21));
+	}
 }
 
 void SavesState::initial_saves()
@@ -260,7 +289,7 @@ void SavesState::update(float dt, RenderWindow* window, int* terminator, deque<S
 	
 	tint.setSize({ win_x, win_y });
 	update_saves(window);
-
+	update_arrow(window, terminator, states);
 
 	if (fps_active)
 		calc_fps(dt);
@@ -271,7 +300,7 @@ void SavesState::render(RenderWindow* window)
 
 	window->draw(tint);
 	render_saves(window);
-
+	window->draw(arrow);
 
 	if (fps_active)
 		window->draw(fps_text);

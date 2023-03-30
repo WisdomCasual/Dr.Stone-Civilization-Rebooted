@@ -1,6 +1,9 @@
 #pragma once
 #include"State.h"
 #include "CreativeMode.h"
+#include"Background.h"
+#include"MainMenuState.h"
+
 class SavesState :
 	public State
 {
@@ -19,7 +22,7 @@ private:
 	save saves[3] = { {-130,0,1}, {0,0,2}, {130,0,3} };
 
 
-	Sprite save_bg, savesBG, charactertex, arrow;
+	Sprite save_bg, savesBG, charactertex, back_arrow, arrow;
 	Text Delete[3];
 	bool del_presse[3] = { 0,0,0 };
 	
@@ -29,10 +32,12 @@ private:
 	float x_win = 0, y_win = 0;
 	float x = 0, y = 0;
 	float pos_x = 0, pos_y = 0, dis = 0;
+	bool arrow_pressed = 0;
 
 	//private functions:
 	void initial_saves();
 	void update_saves(RenderWindow*);
+	void update_arrow(RenderWindow*, int*, deque<State*>*);
 	void render_saves(RenderWindow*);
 
 	void draw_text(RenderWindow*, string, int, int, int);
