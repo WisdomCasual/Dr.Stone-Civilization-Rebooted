@@ -205,6 +205,7 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 			case Keyboard::B:
 				blocked = !blocked; break;
 			case Keyboard::H:
+				picked_tile.select_done = 0;
 				hitbox = !hitbox; break;
 			case Keyboard::Num1:
 				layer = 0; break;
