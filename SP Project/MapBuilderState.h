@@ -48,7 +48,7 @@ private:
 
 public:
 	//constructors/destructors:
-	MapBuilderState(int a = 128, int b = 256);
+	MapBuilderState(int a = 128, int b = 256, string map_name = "unnamed");
 	~MapBuilderState();
 
 	//public functions:
