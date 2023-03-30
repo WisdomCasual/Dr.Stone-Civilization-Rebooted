@@ -41,6 +41,10 @@ void MapBuilderState::dash_cam()
 
 void MapBuilderState::hover()
 {
+	if(picked_tile.select_done)
+		hover_rect.setSize(Vector2f(picked_tile.wdth * 16, picked_tile.hght * 16));
+	else
+		hover_rect.setSize({ 16, 16 });
 	hover_rect.setPosition(hover_tile);
 	hover_rect.setScale(scale, scale);
 }
@@ -140,8 +144,17 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 	if (Mouse::isButtonPressed(Mouse::Right) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
 		if (!hitbox) {
 			for (int i = 0; i < 3; i++) {
-				tiles[selected_tile.x][selected_tile.y].layers[i] = { 5,6 };
-				tiles[selected_tile.x][selected_tile.y].texture_id[i] = 1;
+				if (!picked_tile.select_done) {
+					tiles[selected_tile.x][selected_tile.y].layers[i] = { 5,6 };
+					tiles[selected_tile.x][selected_tile.y].texture_id[i] = 1;
+				}
+				else {
+					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
+						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+							tiles[i2][j2].layers[layer] = { 5,6 };
+							tiles[i2][j2].texture_id[layer] = picked_tile.tex_id;
+						}
+				}
 			}
 		}
 		else
