@@ -10,10 +10,7 @@ private:
 	//variables:
 	struct Tile {
 		Vector2i layers[3]{ {21,49}, {5,6}, {5,6} }; //<-- cords of texture in sprite sheet
-		bool blocked = 0, hitbox = 0; char texture_id = 0;
-	};
-	struct tex_props {
-		bool blocked = 0, hitbox = 0; int layer = 0;
+		bool blocked = 0, hitbox = 0; char texture_id[3] = {1, 1, 1};
 	};
 
 
@@ -28,15 +25,21 @@ private:
 	bool active_grid = 1; //<-- grid active/inactive
 	float scale = 10;
 	float dt = 0;
+	int layer = 0;
+	bool blocked = 0, hitbox = 0;
+	Vector2f mouse_pos = { 0, 0 }, relative_mouse_pos = {0, 0}, hover_tile = { 0 , 0 };
+	Vector2i selected_tile = { 0, 0 }; 
 	Text info;
 	Tile tiles[256][256];    //the level map
-	tex_props props[96][96]{};
+	RectangleShape hover_rect, hitbox_rect;
 
 	//private functions:
 	void grid(RenderWindow*, int, int);
 	void render_tiles(RenderWindow*, int, int, int);
 	void update_info_text();
 	void dash_cam();
+	void hover();
+
 
 public:
 	//constructors/destructors:

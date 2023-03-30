@@ -63,6 +63,7 @@ CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_t
 	sidewindow->setPosition({ 0,0 });
 	this->textures = textures;
 	this->picked_tile = &picked_tile;
+	curr_tex_set = picked_tile.tex_id;
 	change_tex();
 	initial_rectangles();
 }
