@@ -1,7 +1,7 @@
 #include "MapBuilderState.h"
 
 
-MapBuilderState::MapBuilderState(int a, int b) : size_x(a), size_y(b)
+MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), size_y(b)
 {	
 	//loads "game" textures
 	initial_textures("game");
