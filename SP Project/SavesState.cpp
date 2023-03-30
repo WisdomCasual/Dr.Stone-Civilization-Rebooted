@@ -306,13 +306,8 @@ void SavesState::render(RenderWindow* window)
 {
 
 	window->draw(tint);
-	/*render_saves(window);*/
+	render_saves(window);
 
-	render_savesBG(window, font);
-	render_save(window, 398, 218, 0, font);
-	render_save(window, 816, 218, 1, font);
-	render_save(window, 1230, 218, 2, font);
-	render_arrow(window);
 
 
 	if (fps_active)
