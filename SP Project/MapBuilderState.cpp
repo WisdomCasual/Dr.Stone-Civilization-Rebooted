@@ -81,7 +81,7 @@ void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, i
 			tile.setTextureRect(IntRect(tiles[i][j].layers[layer].x * 16, tiles[i][j].layers[layer].y * 16, 16, 16));
 			tile.setPosition(x + (16 * scale * i), y + (16 * scale * j));
 			window->draw(tile);
-			if (fps_active && layer == 2 && tiles[i][j].hitbox) {
+			if ((fps_active || hitbox) && layer == 2 && tiles[i][j].hitbox) {
 				hitbox_rect.setPosition(x + (16 * scale * i), y + (16 * scale * j));
 				window->draw(hitbox_rect);
 			}
@@ -116,13 +116,27 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 	hover();
 	if (Mouse::isButtonPressed(Mouse::Left) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
 		if (!hitbox) {
-			tiles[selected_tile.x][selected_tile.y].layers[layer] = { picked_tile.x, picked_tile.y };
-			tiles[selected_tile.x][selected_tile.y].texture_id[layer] = picked_tile.tex_id;
+			if (!picked_tile.select_done) {
+				tiles[selected_tile.x][selected_tile.y].layers[layer] = { picked_tile.x, picked_tile.y };
+				tiles[selected_tile.x][selected_tile.y].texture_id[layer] = picked_tile.tex_id;
+			}
+			else {
+				if (!drawn_selection) {
+					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
+						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+							tiles[i2][j2].layers[layer] = { i1, j1 };
+							tiles[i2][j2].texture_id[layer] = picked_tile.tex_id;
+						}
+					drawn_selection = 1;
+				}
+			}
 		}
 		else
 			tiles[selected_tile.x][selected_tile.y].hitbox = 1;
 		tiles[selected_tile.x][selected_tile.y].blocked = blocked;
 	}
+	else
+		drawn_selection = 0;
 	if (Mouse::isButtonPressed(Mouse::Right) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
 		if (!hitbox) {
 			for (int i = 0; i < 3; i++) {
@@ -189,6 +203,7 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 				case Mouse::Middle:
+					picked_tile.select_done = 0;
 					picked_tile.tex_id = tiles[selected_tile.x][selected_tile.y].texture_id[layer];
 					picked_tile.x = tiles[selected_tile.x][selected_tile.y].layers[layer].x;
 					picked_tile.y = tiles[selected_tile.x][selected_tile.y].layers[layer].y;
