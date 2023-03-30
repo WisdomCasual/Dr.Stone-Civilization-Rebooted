@@ -100,6 +100,7 @@ void CreativeMode::update()
 	if (Mouse::isButtonPressed(Mouse::Right)) {
 		if (!selecting) {
 			picked_tile->selection_start = current_tile;
+			picked_tile->tex_id = curr_tex_set;
 		}
 		selecting = 1;
 		picked_tile->select_done = 0;
