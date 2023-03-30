@@ -41,7 +41,10 @@ private:
 	void update_info_text();
 	void dash_cam();
 	void hover();
-	void selection();
+	void selection(RenderWindow*);
+	void draw_tools(RenderWindow*);
+	void erase_tools(RenderWindow*);
+	void mouse_cords(RenderWindow*);
 
 public:
 	//constructors/destructors:
@@ -53,4 +56,3 @@ public:
 	void render(RenderWindow*);
 	void pollevent(Event, RenderWindow*);
 };
-

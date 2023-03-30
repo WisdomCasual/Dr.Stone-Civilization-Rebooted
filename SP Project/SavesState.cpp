@@ -188,6 +188,7 @@ void SavesState::render_saves(RenderWindow* window)
 		    ////////////place holder/////////
 			charactertex.setTextureRect(IntRect( saves[i].character_id * (496 / 6.0), 0, 496 / 6.0, 373 / 2.0));
 			charactertex.setPosition(x + saves[i].x * scale, y - 30 * scale);
+			charactertex.setScale(scale * 0.35, scale * 0.35);
 			window->draw(charactertex);
 			/////////////////////
 

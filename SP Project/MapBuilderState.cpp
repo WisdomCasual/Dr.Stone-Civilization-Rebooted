@@ -106,26 +106,32 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 {
 	this->dt = dt;
 
-	if (fps_active)
-		calc_fps(dt);
+	mouse_cords(window);
 
 	dash_cam();
+
+    update_info_text();
+
+	hover();
+
+	selection(window);
+
+	draw_tools(window);
+
+	erase_tools(window);
 
 	if (!picker)
 		tex_picker->run(picker);
 
-	selection();
-	update_info_text();
+	if (fps_active)
+		calc_fps(dt);
+}
 
-	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
-	relative_mouse_pos = mouse_pos;
-	relative_mouse_pos.x -= x % int(16 * scale), relative_mouse_pos.y -= y % int(16 * scale);
-
-	//inmap copy selection
+void MapBuilderState::selection(RenderWindow* window)
+{
 	if (Keyboard::isKeyPressed(Keyboard::LShift) && window->hasFocus()) {
-		if (!selecting) {
+		if (!selecting)
 			selection_start = selected_tile;
-		}
 		selecting = 1;
 		picked_tile.global_select_done = 0;
 	}
@@ -138,12 +144,29 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 	}
 
 
+	if (selecting) {
+		start_x = min(selection_start.x, selected_tile.x), start_y = min(selection_start.y, selected_tile.y);
 
-	if (mouse_pos.x > 0 && mouse_pos.x < window->getSize().x && mouse_pos.y > 0 && mouse_pos.y < window->getSize().y) {
-		hover_tile = { int(relative_mouse_pos.x / scale / 16) * 16 * scale + x % int(16*scale), int(relative_mouse_pos.y / scale / 16) * 16 * scale + y % int(16 * scale) };
+		if (start_x < 0) start_x = 0; 
+		if (start_y < 0) start_y = 0;
+
+		select_rect.setPosition(x+start_x*16*scale, y+start_y*16*scale);
+
+		wdth = abs(selection_start.x - selected_tile.x) + 1, hght = abs(selection_start.y - selected_tile.y) + 1;
+
+
+		select_rect.setSize(Vector2f(wdth * 16 * scale, hght * 16 * scale));
+		picked_tile.select_done = 0;
 	}
-	selected_tile = { int((mouse_pos.x - x) / scale / 16), int((mouse_pos.y - y) / scale / 16) };
-	hover();
+	if (picked_tile.global_select_done) {
+		select_rect.setSize(Vector2f(wdth * 16 * scale, hght * 16 * scale));
+		select_rect.setPosition(x + start_x * 16 * scale, y + start_y * 16 * scale);
+	}
+
+}
+
+void MapBuilderState::draw_tools(RenderWindow* window)
+{
 	if (Mouse::isButtonPressed(Mouse::Left) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
 		if (!hitbox) {
 			if (picked_tile.select_done) {
@@ -159,8 +182,8 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 			else if (picked_tile.global_select_done) {
 
 				if (!drawn_map_selection) {
-					for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x; i1++, i2++)
-						for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y; j1++, j2++) {
+					for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x && i1 < size_x; i1++, i2++)
+						for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_x; j1++, j2++) {
 							tiles[i2][j2] = tiles[i1][j1];
 						}
 					drawn_map_selection = 1;
@@ -193,6 +216,10 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 		tiles[selected_tile.x][selected_tile.y].blocked = blocked;
 	}
 	else { drawn_selection = 0; drawn_map_selection = 0; }
+}
+
+void MapBuilderState::erase_tools(RenderWindow* window)
+{
 	if (Mouse::isButtonPressed(Mouse::Right) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
 		if (!hitbox) {
 			for (int i = 0; i < 4; i++) {
@@ -230,24 +257,15 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 	}
 }
 
-void MapBuilderState::selection()
+void MapBuilderState::mouse_cords(RenderWindow* window)
 {
-	if (selecting) {
-		start_x = min(selection_start.x, selected_tile.x), start_y = min(selection_start.y, selected_tile.y);
-
-		select_rect.setPosition(x+start_x*16*scale, y+start_y*16*scale);
-
-		wdth = abs(selection_start.x - selected_tile.x) + 1, hght = abs(selection_start.y - selected_tile.y) + 1;
-
-
-		select_rect.setSize(Vector2f(wdth * 16 * scale, hght * 16 * scale));
-		picked_tile.select_done = 0;
+	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
+	relative_mouse_pos = mouse_pos;
+	relative_mouse_pos.x -= x % int(16 * scale), relative_mouse_pos.y -= y % int(16 * scale);
+	if (mouse_pos.x > 0 && mouse_pos.x < window->getSize().x && mouse_pos.y > 0 && mouse_pos.y < window->getSize().y) {
+		hover_tile = { int(relative_mouse_pos.x / scale / 16) * 16 * scale + x % int(16 * scale), int(relative_mouse_pos.y / scale / 16) * 16 * scale + y % int(16 * scale) };
 	}
-	if (picked_tile.global_select_done) {
-		select_rect.setSize(Vector2f(wdth * 16 * scale, hght * 16 * scale));
-		select_rect.setPosition(x + start_x * 16 * scale, y + start_y * 16 * scale);
-	}
-
+	selected_tile = { int((mouse_pos.x - x) / scale / 16), int((mouse_pos.y - y) / scale / 16) };
 }
 
 void MapBuilderState::render(RenderWindow* window)
