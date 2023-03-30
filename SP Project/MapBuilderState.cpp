@@ -9,7 +9,6 @@ MapBuilderState::MapBuilderState(int a, int b) : size_x(a), size_y(b)
 	info.setFont(font);
 	info.setCharacterSize(40);
 	//hover rectangle
-	hover_rect.setSize({ 16, 16 });
 	hover_rect.setFillColor(Color::Transparent);
 	hover_rect.setOutlineThickness(1);
 	hover_rect.setOutlineColor(Color::White);
@@ -22,7 +21,7 @@ void MapBuilderState::update_info_text()
 {
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
-		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox)
+		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox) + " - brush size (+/-): " + to_string(brush_size)
 		+ " - Layer (1,2,3) " + to_string(layer+1));
 }
 
@@ -44,7 +43,7 @@ void MapBuilderState::hover()
 	if(picked_tile.select_done)
 		hover_rect.setSize(Vector2f(picked_tile.wdth * 16, picked_tile.hght * 16));
 	else
-		hover_rect.setSize({ 16, 16 });
+		hover_rect.setSize(Vector2f( 16*brush_size, 16*brush_size ));
 	hover_rect.setPosition(hover_tile);
 	hover_rect.setScale(scale, scale);
 }
@@ -121,13 +120,18 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 	if (Mouse::isButtonPressed(Mouse::Left) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
 		if (!hitbox) {
 			if (!picked_tile.select_done) {
+				for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
+					for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+						tiles[i][j].layers[layer] = {picked_tile.x, picked_tile.y};
+						tiles[i][j].texture_id[layer] = picked_tile.tex_id;
+					}
 				tiles[selected_tile.x][selected_tile.y].layers[layer] = { picked_tile.x, picked_tile.y };
 				tiles[selected_tile.x][selected_tile.y].texture_id[layer] = picked_tile.tex_id;
 			}
 			else {
 				if (!drawn_selection) {
-					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
-						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth && i2 < size_x; i1++, i2++)
+						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght && j2 < size_y; j1++, j2++) {
 							tiles[i2][j2].layers[layer] = { i1, j1 };
 							tiles[i2][j2].texture_id[layer] = picked_tile.tex_id;
 						}
@@ -135,8 +139,20 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 				}
 			}
 		}
-		else
-			tiles[selected_tile.x][selected_tile.y].hitbox = 1;
+		else {
+			if (!picked_tile.select_done) {
+				for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
+					for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+						tiles[i][j].hitbox = 1;
+					}
+			}
+			else {
+				for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
+					for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+						tiles[i2][j2].hitbox = 1;
+					}
+			}
+		}
 		tiles[selected_tile.x][selected_tile.y].blocked = blocked;
 	}
 	else
@@ -145,8 +161,11 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 		if (!hitbox) {
 			for (int i = 0; i < 3; i++) {
 				if (!picked_tile.select_done) {
-					tiles[selected_tile.x][selected_tile.y].layers[i] = { 5,6 };
-					tiles[selected_tile.x][selected_tile.y].texture_id[i] = 1;
+					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
+						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+							tiles[i][j].layers[layer] = { 5,6 };
+							tiles[i][j].texture_id[layer] = 1;
+						}
 				}
 				else {
 					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
@@ -157,8 +176,20 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 				}
 			}
 		}
-		else
-			tiles[selected_tile.x][selected_tile.y].hitbox = 0;
+		else {
+			if (!picked_tile.select_done) {
+				for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
+					for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+						tiles[i][j].hitbox = 0;
+					}
+			}
+			else {
+				for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
+					for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+						tiles[i2][j2].hitbox = 0;
+					}
+			}
+		}
 		tiles[selected_tile.x][selected_tile.y].blocked = 0;
 	}
 }
@@ -212,6 +243,10 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 				layer = 1; break;
 			case Keyboard::Num3:
 				layer = 2; break;
+			case Keyboard::Equal:
+				brush_size += (brush_size < 10); break;
+			case Keyboard::Hyphen:
+				brush_size -= (brush_size > 1); break;
 			}
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
