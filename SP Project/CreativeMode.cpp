@@ -45,6 +45,12 @@ void CreativeMode::initial_rectangles()
 	selected_rect.setOutlineColor(Color::Green);
 	selected_rect.setPosition(Vector2f(picked_tile->x * 16, picked_tile->y * 16));
 
+	//selection rectangle
+	select_rect.setSize(Vector2f(16, 16));
+	select_rect.setFillColor(Color::Transparent);
+	select_rect.setOutlineThickness(1);
+	select_rect.setOutlineColor(Color::Green);
+
 }
 void CreativeMode::hover_tile()
 {
@@ -56,6 +62,21 @@ void CreativeMode::selected()
 	selected_rect.setPosition(Vector2f(current_tile.x * 16, current_tile.y * 16));
 	picked_tile->x = current_tile.x, picked_tile->y = current_tile.y;
 	picked_tile->tex_id = curr_tex_set;
+}
+void CreativeMode::selection()
+{
+	if (selecting) {
+		picked_tile->start_x = min(picked_tile->selection_start.x, current_tile.x), 
+		picked_tile->start_y = min(picked_tile->selection_start.y, current_tile.y);
+		select_rect.setPosition(16 * picked_tile->start_x,16 * picked_tile->start_y);
+		picked_tile->wdth = abs(picked_tile->selection_start.x - current_tile.x) + 1, picked_tile->hght = abs(picked_tile->selection_start.y - current_tile.y) + 1;
+		select_rect.setSize(Vector2f(picked_tile->wdth * 16,picked_tile->hght * 16));
+		sidewindow->draw(select_rect);
+		
+	}
+	if (picked_tile->select_done) {
+		sidewindow->draw(select_rect);
+	}
 }
 CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile)
 {
@@ -76,11 +97,26 @@ CreativeMode::~CreativeMode()
 
 void CreativeMode::update()
 {
+	if (Mouse::isButtonPressed(Mouse::Right)) {
+		if (!selecting) {
+			picked_tile->selection_start = current_tile;
+		}
+		selecting = 1;
+		picked_tile->select_done = 0;
+	}
+	else {
+		if (selecting) {
+			picked_tile->select_done = 1;
+			picked_tile->selection_end = current_tile;
+		}
+		selecting = 0;
+	}
+
+
 	mouse_pos = Mouse::getPosition(*sidewindow);
 	if(mouse_pos.x>0 && mouse_pos.x<sidewindow->getSize().x && mouse_pos.y > 0 && mouse_pos.y < sidewindow->getSize().y){
 		current_tile = { int(mouse_pos.x / scale / 16), int(mouse_pos.y / scale / 16) };
 	}
-
 }
 
 void CreativeMode::render()
@@ -88,8 +124,10 @@ void CreativeMode::render()
 	sidewindow->clear();
 	sidewindow->draw(*Tex);
 	grid_lines();
-	sidewindow->draw(selected_rect);
+	if (!selecting && !picked_tile->select_done)
+		sidewindow->draw(selected_rect);
 	hover_tile();
+	selection();
 	sidewindow->display();
 }
 
@@ -134,11 +172,11 @@ void CreativeMode::pollevent(bool& picker)
 				change_tex();
 				break;
 			}
-		}
-		if (event.type == Event::MouseButtonPressed) {
-		switch (event.key.code)
-		case Mouse::Left:
-			selected(); break;
+		case Event::MouseButtonPressed:
+			switch (event.mouseButton.button) {
+			case Mouse::Left:
+				picked_tile->select_done = 0; selected(); break;
+			}
 		}
 	}
 }

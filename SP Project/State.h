@@ -27,6 +27,9 @@ public:
 	Vector2f delta_movement();
 	struct tex_tile {
 		int x, y, tex_id;
+		bool select_done = 0;
+		Vector2i selection_start = { 0,0 }, selection_end = { 0,0 };
+		int start_x, start_y, wdth = 0, hght = 0;
 	};
 	Font font;
 	Text fps_text;
