@@ -61,6 +61,14 @@ MainMenuState::~MainMenuState()
 
 void MainMenuState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
 {
+	float win_x = window->getSize().x, win_y = window->getSize().y;
+	x = win_x / 2, y = win_y / 2;
+	if (win_x / 390.0 < win_y / 390.0) scale = win_x / 390.0;
+	else scale = win_y / 390.0;
+
+	logo.setScale(scale * 0.13, scale * 0.13);
+	logo.setPosition(x, y - 110 * scale);
+
 	if (play) {
 		play = 0;
 		states->push_front(new SavesState);
@@ -82,13 +90,7 @@ void MainMenuState::update(float dt, RenderWindow* window, int* terminator, dequ
 
 void MainMenuState::render(RenderWindow* window)
 {
-	float win_x = window->getSize().x, win_y = window->getSize().y;
-	x = win_x / 2, y = win_y / 2;
-	if (win_x / 390.0 < win_y / 390.0) scale = win_x / 390.0;
-	else scale = win_y / 390.0;
 	render_buttons(window);
-	logo.setScale(scale * 0.13, scale * 0.13);
-	logo.setPosition(x,y-110*scale);
 	window->draw(logo);
 	if (fps_active)
 		window->draw(fps_text);
