@@ -7,19 +7,8 @@ SettingsState::SettingsState()
 	tissue.setTexture(*textures.at(0));
 	tissue.setTextureRect(buttons[3]);
 	tissue.setOrigin(92 / 2, 92 / 2);
-
-	hollowSliderLeft.setTextureRect(tipsleft[3]);
-	hollowSliderLeft.setOrigin(9/2,18/2);
-	
-	hollowSliderRight.setTextureRect(tipsright[3]);
-	hollowSliderRight.setOrigin(9 / 2, 18 / 2);
-
-	hollowSliderMid.setTextureRect(mids[3]);
-	hollowSliderMid.setOrigin(18 / 2, 18 / 2);
-
 	tint.setSize({1920, 1080});
 	tint.setFillColor(Color(0,0,0,154));
-
 	
 }
 
@@ -41,8 +30,6 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, dequ
 	tissue.setPosition(x, y);
 	tissue.setScale(scale, scale);
 
-	hollowSliderLeft.setPosition(win_x - (92*scale) + 61, win_y);
-
 	if (fps_active)
 		calc_fps(dt);
 }
@@ -53,8 +40,6 @@ void SettingsState::render(RenderWindow* window)
 {
 	window->draw(tint);
 	window->draw(tissue);
-	window->draw(hollowSliderLeft);
-
 	if (fps_active)
 		window->draw(fps_text);
 }
