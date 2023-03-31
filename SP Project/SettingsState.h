@@ -13,8 +13,8 @@ private:
 		arrow = { 303,486,22,21 },
 		buttons[4] = { {290,139,93,94} ,{240,0,93,94} ,{290,49,93,94},{201,296,92,92} },
 		checkMark = { 370,45,16,15 };
-	//Colors loaded in arrangment : Yellow -> Red -> Blue
-	Sprite tipleft, tipright, mid,tissue;
+	//Colors loaded in arrangment : Yellow -> Red -> Blue -> Hollow
+	Sprite tipleft, tipright, mid,tissue,hollowSliderLeft,hollowSliderRight,hollowSliderMid;
 	RectangleShape tint;
 	float x = 0, y = 0;
 	float win_x = 0, win_y = 0,scale = 1;
