@@ -18,7 +18,7 @@ private:
 		checkMark = { 370,45,16,15 };
 	//Colors loaded in arrangment : Yellow -> Red -> Blue
 	Sprite tipleft, tipright, mid, tissue, back_arrow, devbutton;
-	Text devtext;
+	Text text, devtext;
 	RectangleShape tint;
 	float x = 0, y = 0;
 	float win_x = 0, win_y = 0,scale = 1;

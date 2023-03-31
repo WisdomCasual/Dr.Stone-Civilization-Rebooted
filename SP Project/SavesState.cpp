@@ -1,14 +1,5 @@
 #include "SavesState.h"
 
-void SavesState::draw_text(RenderWindow* window,string tex, int a, int b, int c)
-{
-	text.setString(tex);
-	text.setCharacterSize(c);
-	text.setOrigin(text.getLocalBounds().width / 2.0, text.getLocalBounds().top + text.getLocalBounds().height / 2.0);
-	text.setPosition(a, b);
-	window->draw(text);
-}
-
 void SavesState::update_saves(RenderWindow* window)
 {
 	del.setOrigin(del.getLocalBounds().width / 2.0, del.getLocalBounds().top + del.getLocalBounds().height / 2.0);

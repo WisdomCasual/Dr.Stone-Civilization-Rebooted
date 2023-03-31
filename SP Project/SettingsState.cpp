@@ -58,7 +58,6 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 	}
 }
 
-
 SettingsState::SettingsState()
 {
 	initial_fps();

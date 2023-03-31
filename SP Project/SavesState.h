@@ -15,14 +15,12 @@ private:
 		bool empty = 1, hover = 0, del_hover = 0, pressed = 0, del_pressed = 0, del = 0;
 	};
 
-	Text text, del;
+	Text del;
     float scale = 1;
 	save saves[3] = { {-130,0,1}, {0,0,2}, {130,0,3} };
 
 
-	Sprite save_bg, savesBG, charactertex, back_arrow, arrow;
-	Text Delete[3];
-	bool del_presse[3] = { 0,0,0 };
+	Sprite save_bg, savesBG, charactertex, arrow;
 	
 	RectangleShape tint;
 	
@@ -36,8 +34,6 @@ private:
 	void update_saves(RenderWindow*);
 	void update_arrow(RenderWindow*, int*, deque<State*>*);
 	void render_saves(RenderWindow*);
-
-	void draw_text(RenderWindow*, string, int, int, int);
 
 public:
 	//constructors/destructors:
