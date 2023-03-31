@@ -58,7 +58,7 @@ Vector2f State::delta_movement()
 
 State::State()
 {
-
+	text.setFont(font);
 }
 
 State::~State()

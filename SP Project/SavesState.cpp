@@ -77,7 +77,7 @@ void SavesState::render_saves(RenderWindow* window)
 		else {
 			text.setFillColor(Color::Black);
 			draw_text(window, saves[i].name, x + saves[i].x * scale, y - 70 * scale, 18 * scale);
-			draw_text(window, "Re_Civilization Level:", x + saves[i].x * scale, y + 12 * scale, 12 * scale);
+			draw_text(window, "Re-Civilization Level:", x + saves[i].x * scale, y + 12 * scale, 12 * scale);
 			draw_text(window, "Progress", x + saves[i].x * scale, y + 65 * scale, 14 * scale);
 			draw_text(window, to_string(saves[i].progress) + "%", x + saves[i].x * scale, y + 78 * scale, 14 * scale);
 			text.setFillColor(Color(170, 170, 170));

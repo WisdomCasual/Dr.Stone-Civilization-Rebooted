@@ -118,6 +118,10 @@ void SettingsState::render(RenderWindow* window)
 	window->draw(devbutton);
 	window->draw(devtext);
 	window->draw(back_arrow);
+
+	text.setFillColor(Color::Black);
+	draw_text(window, "Settings", x, y - 35 * scale, 6.5 * scale);
+
 	if (fps_active)
 		window->draw(fps_text);
 }
