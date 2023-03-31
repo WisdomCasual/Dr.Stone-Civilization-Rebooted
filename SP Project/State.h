@@ -25,7 +25,8 @@ public:
 	struct tex_tile {   //<-- stores texture tile info 
 		int x, y, tex_id;
 		bool select_done = 0, global_select_done = 0;;
-		Vector2i selection_start = { 0,0 }, selection_end = { 0,0 };
+		Vector2i selection_start = { 0,0 }, selection_end = { 0,0 },
+			     previous_drawn_tile = { -1,-1 }, previous_erased_tile = { -1,-1 };;
 		int start_x, start_y, wdth = 0, hght = 0;
 	};
 	Font font;

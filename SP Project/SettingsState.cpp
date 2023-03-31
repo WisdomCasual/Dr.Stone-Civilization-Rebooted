@@ -34,11 +34,11 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 	devbutton.setPosition(x + 35 * scale, y + 35 * scale);
 	devtext.setCharacterSize(4.45 * scale);
 	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
-	devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
+	devtext.setPosition(x + 35 * scale, y + 35 * scale - 0.4 * scale);
 	if (devbutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		if (Mouse::isButtonPressed(Mouse::Left)) { 
 			button_pressed = 1; 
-			devtext.setPosition(x + 35 * scale, y + 35 * scale + 2 * 0.2 * scale);
+			devtext.setPosition(x + 35 * scale, y + 35 * scale +  0.4 * scale);
 			devbutton.setTextureRect(IntRect(45, 0, 45, 49));
 		}
 		else {

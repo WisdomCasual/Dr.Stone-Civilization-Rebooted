@@ -13,6 +13,15 @@ private:
 		bool blocked = 0, hitbox = 0; char texture_id[4] = {1, 1, 1, 1};
 	};
 
+	struct change {
+		Vector2i start = { 0,0 }, end = { 0,0 };
+		vector <Tile> tiles;
+	};
+
+	bool ctrl_pressed = 0, z_pressed = 0, y_pressed = 0, undid = 0, redone = 0;
+
+	deque<change> changes;
+	deque<change> undid_changes;
 
 	bool picker = 1;
 	CreativeMode* tex_picker;
@@ -29,7 +38,7 @@ private:
 	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0;
 	int brush_size = 1;
 	Vector2f mouse_pos = { 0, 0 }, relative_mouse_pos = {0, 0}, hover_tile = { 0 , 0 };
-	Vector2i selected_tile = { 0, 0 }, selection_start = { 0,0 }, selection_end = { 0,0 };;
+	Vector2i selected_tile = { 0, 0 }, selection_start = { 0,0 }, selection_end = { 0,0 };
 	Text info;
 	Tile tiles[256][256];    //the level map
 	RectangleShape hover_rect, hitbox_rect, select_rect;
@@ -44,6 +53,7 @@ private:
 	void selection(RenderWindow*);
 	void draw_tools(RenderWindow*);
 	void erase_tools(RenderWindow*);
+	void undo(RenderWindow*);
 	void mouse_cords(RenderWindow*);
 
 public:

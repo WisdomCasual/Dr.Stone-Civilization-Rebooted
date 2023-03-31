@@ -119,6 +119,8 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 
 	erase_tools(window);
 
+	undo(window);
+
 	if (!picker)
 		tex_picker->run(picker);
 
@@ -167,52 +169,86 @@ void MapBuilderState::selection(RenderWindow* window)
 void MapBuilderState::draw_tools(RenderWindow* window)
 {
 	if (Mouse::isButtonPressed(Mouse::Left) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
-		if (!hitbox) {
-			if (picked_tile.select_done) {
-				if (!drawn_selection) {
-					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth && i2 < size_x; i1++, i2++)
-						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght && j2 < size_y; j1++, j2++) {
-							tiles[i2][j2].layers[layer] = { i1, j1 };
-							tiles[i2][j2].texture_id[layer] = picked_tile.tex_id;
-						}
-					drawn_selection = 1;
-				}
-			}
-			else if (picked_tile.global_select_done) {
+		if (selected_tile != picked_tile.previous_drawn_tile) {
+			picked_tile.previous_drawn_tile = selected_tile;
+			picked_tile.previous_erased_tile = { -1, -1 };
+			if (!undid_changes.empty())
+				undid_changes.clear();
+			if (!hitbox) {
+				if (picked_tile.select_done) {
+					if (!drawn_selection) {
+						//store changed area info
+						changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
 
-				if (!drawn_map_selection) {
-					for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x && i1 < size_x; i1++, i2++)
-						for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_x; j1++, j2++) {
-							tiles[i2][j2] = tiles[i1][j1];
+						for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth && i2 < size_x; i1++, i2++)
+							for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght && j2 < size_y; j1++, j2++) {
+								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+								tiles[i2][j2].layers[layer] = { i1, j1 };
+								tiles[i2][j2].texture_id[layer] = picked_tile.tex_id;
+							}
+						drawn_selection = 1;
+					}
+				}
+				else if (picked_tile.global_select_done) {
+
+					if (!drawn_map_selection) {
+						//store changed area info
+						changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + wdth, selected_tile.y + hght } });
+
+						for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x && i1 < size_x; i1++, i2++)
+							for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_x; j1++, j2++) {
+
+								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+
+								tiles[i2][j2] = tiles[i1][j1];
+							}
+						drawn_map_selection = 1;
+					}
+				}
+				else {
+					//store changed area info
+					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
+
+					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
+						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+
+							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+
+							tiles[i][j].layers[layer] = { picked_tile.x, picked_tile.y };
+							tiles[i][j].texture_id[layer] = picked_tile.tex_id;
 						}
-					drawn_map_selection = 1;
+					tiles[selected_tile.x][selected_tile.y].layers[layer] = { picked_tile.x, picked_tile.y };
+					tiles[selected_tile.x][selected_tile.y].texture_id[layer] = picked_tile.tex_id;
 				}
 			}
 			else {
-				for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
-					for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
-						tiles[i][j].layers[layer] = { picked_tile.x, picked_tile.y };
-						tiles[i][j].texture_id[layer] = picked_tile.tex_id;
-					}
-				tiles[selected_tile.x][selected_tile.y].layers[layer] = { picked_tile.x, picked_tile.y };
-				tiles[selected_tile.x][selected_tile.y].texture_id[layer] = picked_tile.tex_id;
+				if (!picked_tile.select_done) {
+					//store changed area info
+					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
+
+					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
+						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+
+							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+
+							tiles[i][j].hitbox = 1;
+						}
+				}
+				else {
+					//store changed area info
+					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
+
+					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
+						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+
+							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+
+							tiles[i2][j2].hitbox = 1;
+						}
+				}
 			}
+			tiles[selected_tile.x][selected_tile.y].blocked = blocked;
 		}
-		else {
-			if (!picked_tile.select_done) {
-				for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
-					for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
-						tiles[i][j].hitbox = 1;
-					}
-			}
-			else {
-				for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
-					for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
-						tiles[i2][j2].hitbox = 1;
-					}
-			}
-		}
-		tiles[selected_tile.x][selected_tile.y].blocked = blocked;
 	}
 	else { drawn_selection = 0; drawn_map_selection = 0; }
 }
@@ -220,40 +256,68 @@ void MapBuilderState::draw_tools(RenderWindow* window)
 void MapBuilderState::erase_tools(RenderWindow* window)
 {
 	if (Mouse::isButtonPressed(Mouse::Right) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
-		if (!hitbox) {
-			for (int i = 0; i < 4; i++) {
-				if (!picked_tile.select_done) {
-					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
-						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
-							tiles[i][j].layers[layer] = { 5,6 };
-							tiles[i][j].texture_id[layer] = 1;
-						}
-				}
-				else {
+		if (selected_tile != picked_tile.previous_erased_tile) {
+			picked_tile.previous_erased_tile = selected_tile;
+			picked_tile.previous_drawn_tile = { -1, -1 };
+			if (!undid_changes.empty())
+				undid_changes.clear();
+			if (!hitbox) {
+				if (picked_tile.select_done) {
+					//store changed area info
+					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
+
 					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
 						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+
+							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+
 							tiles[i2][j2].layers[layer] = { 5,6 };
 							tiles[i2][j2].texture_id[layer] = 1;
 						}
 				}
-			}
-		}
-		else {
-			if (!picked_tile.select_done) {
-				for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
-					for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
-						tiles[i][j].hitbox = 0;
-					}
+				else {
+					//store changed area info
+					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
+
+					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
+						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+
+							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+
+							tiles[i][j].layers[layer] = { 5,6 };
+							tiles[i][j].texture_id[layer] = 1;
+						}
+				}
 			}
 			else {
-				for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
-					for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
-						tiles[i2][j2].hitbox = 0;
-					}
+				if (!picked_tile.select_done) {
+					//store changed area info
+					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
+
+					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
+						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+
+							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+
+							tiles[i][j].hitbox = 0;
+						}
+				}
+				else {
+					//store changed area info
+					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
+
+					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
+						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+
+							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+
+							tiles[i2][j2].hitbox = 0;
+						}
+				}
 			}
+			picked_tile.global_select_done = 0;
+			tiles[selected_tile.x][selected_tile.y].blocked = 0;
 		}
-		picked_tile.global_select_done = 0;
-		tiles[selected_tile.x][selected_tile.y].blocked = 0;
 	}
 }
 
@@ -266,6 +330,61 @@ void MapBuilderState::mouse_cords(RenderWindow* window)
 		hover_tile = { int(relative_mouse_pos.x / scale / 16) * 16 * scale + x % int(16 * scale), int(relative_mouse_pos.y / scale / 16) * 16 * scale + y % int(16 * scale) };
 	}
 	selected_tile = { int((mouse_pos.x - x) / scale / 16), int((mouse_pos.y - y) / scale / 16) };
+}
+
+void MapBuilderState::undo(RenderWindow* window)
+{
+	if (Keyboard::isKeyPressed(Keyboard::LControl) && window->hasFocus())
+		ctrl_pressed = 1;
+	else
+		ctrl_pressed = 0;
+	if (Keyboard::isKeyPressed(Keyboard::Z) && window->hasFocus())
+		z_pressed = 1;
+	else
+		z_pressed = 0;
+	if (Keyboard::isKeyPressed(Keyboard::Y) && window->hasFocus())
+		y_pressed = 1;
+	else
+		y_pressed = 0;
+
+	if (changes.size() > 25)
+		changes.pop_front();
+	if (ctrl_pressed && y_pressed) {
+		if (!redone) {
+			redone = 1;
+			if (!undid_changes.empty()) {
+				changes.push_back(change{ { undid_changes.back().start.x , undid_changes.back().start.y }, { undid_changes.back().end.x, undid_changes.back().end.y } });
+				for (int i = undid_changes.back().start.x, c = 0; i < undid_changes.back().end.x && i < size_x; i++)
+					for (int j = undid_changes.back().start.y; j < undid_changes.back().end.y && j < size_y; j++) {\
+						changes.back().tiles.push_back(tiles[i][j]);
+						tiles[i][j] = undid_changes.back().tiles[c];
+						c++;
+					}
+				undid_changes.pop_back();
+			}
+		}
+	}
+	else
+		redone = 0;
+
+	if (ctrl_pressed && z_pressed) {
+		if (!undid) {
+			undid = 1; 
+			picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
+			if (!changes.empty()) {
+				undid_changes.push_back(change{ { changes.back().start.x , changes.back().start.y }, { changes.back().end.x, changes.back().end.y } });
+				for (int i = changes.back().start.x, c = 0; i < changes.back().end.x && i < size_x; i++)
+					for (int j = changes.back().start.y; j < changes.back().end.y && j < size_y; j++) {
+						undid_changes.back().tiles.push_back(tiles[i][j]);
+						tiles[i][j] = changes.back().tiles[c];
+						c++;
+					}
+				changes.pop_back();
+			}
+		}
+	}
+	else
+		undid = 0;
 }
 
 void MapBuilderState::render(RenderWindow* window)
@@ -312,25 +431,33 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 			case Keyboard::G:
 				active_grid = !active_grid; break;
 			case Keyboard::B:
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				blocked = !blocked; break;
 			case Keyboard::H:
 				picked_tile.global_select_done = 0;
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				hitbox = !hitbox; break;
 			case Keyboard::Num1:
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				layer = 0; break;
 			case Keyboard::Num2:
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				layer = 1; break;
 			case Keyboard::Num3:
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				layer = 2; break;
 			case Keyboard::Num4:
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				layer = 3; break;
 			case Keyboard::Equal:
 				picked_tile.global_select_done = 0;
 				picked_tile.select_done = 0;
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				brush_size += (brush_size < 15); break;
 			case Keyboard::Hyphen:
 				picked_tile.global_select_done = 0;
 				picked_tile.select_done = 0;
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				brush_size -= (brush_size > 1); break;
 			}
 		case Event::MouseButtonPressed:
@@ -338,6 +465,7 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 				case Mouse::Middle:
 					picked_tile.select_done = 0;
 					picked_tile.global_select_done = 0;
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 					picked_tile.tex_id = tiles[selected_tile.x][selected_tile.y].texture_id[layer];
 					picked_tile.x = tiles[selected_tile.x][selected_tile.y].layers[layer].x;
 					picked_tile.y = tiles[selected_tile.x][selected_tile.y].layers[layer].y;
