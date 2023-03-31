@@ -2,6 +2,12 @@
 
 MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), size_y(b)
 {	
+	for (int i = 0; i < size_x; i++) {
+		for (int j = 0; j < size_x; j++) {
+			tiles[i][j].layer[0][0] = { 21,49, 1};
+		}
+	}
+
 	//loads "game" textures
 	initial_textures("game");
 	initial_fps();
@@ -26,7 +32,7 @@ void MapBuilderState::update_info_text()
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
 		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox) + " - brush size (+/-): " + to_string(brush_size)
-		+ " - Layer (1,2,3,4) " + to_string(layer+1));
+		+ " - Layer (1,2,3,4) " + to_string(layer+1) + " - Render Priority: " + Render_in[Render_Priority]);
 }
 
 void MapBuilderState::dash_cam()
@@ -78,19 +84,22 @@ void MapBuilderState::grid(RenderWindow* window, int x_win, int y_win)
 	}
 }
 
-void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, int layer)
+void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, int priority)
 {
+	
 	//renders the map in active screen area only
 	Sprite tile;
 	hitbox_rect.setScale(scale, scale);
 	tile.setScale(scale, scale);
 	for (int i = (x_offset > 0) ? x_offset : 0; i < (x_win + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
 		for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
-			tile.setTexture(*textures[tiles[i][j].texture_id[layer]]);
-			tile.setTextureRect(IntRect(tiles[i][j].layers[layer].x * 16, tiles[i][j].layers[layer].y * 16, 16, 16));
-			tile.setPosition(x + (16 * scale * i), y + (16 * scale * j));
-			window->draw(tile);
-			if ((fps_active || hitbox) && layer == 3 && tiles[i][j].hitbox) {
+			for (auto props : tiles[i][j].layer[priority]) {
+				tile.setTexture(*textures[props.second.z]);
+				tile.setTextureRect(IntRect(props.second.x * 16, props.second.y * 16, 16, 16));
+				tile.setPosition(x + (16 * scale * i), y + (16 * scale * j));
+				window->draw(tile);
+			}
+			if ((fps_active || hitbox) && priority && tiles[i][j].hitbox) {
 				hitbox_rect.setPosition(x + (16 * scale * i), y + (16 * scale * j));
 				window->draw(hitbox_rect);
 			}
@@ -130,9 +139,20 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 
 void MapBuilderState::selection(RenderWindow* window)
 {
+	if (selected_tile.x < 0)
+		selected_tile.x = 0;
+	else if (selected_tile.x >= size_x)
+		selected_tile.x = size_x - 1;
+	if (selected_tile.y < 0)
+		selected_tile.y = 0;
+	else if (selected_tile.y >= size_x)
+		selected_tile.y = size_x - 1;
+
 	if (Keyboard::isKeyPressed(Keyboard::LShift) && window->hasFocus()) {
-		if (!selecting)
-			selection_start = selected_tile;
+		if (!selecting) {
+			selection_start.x = selected_tile.x;
+			selection_start.y = selected_tile.y;
+		}
 		selecting = 1;
 		picked_tile.global_select_done = 0;
 	}
@@ -151,7 +171,7 @@ void MapBuilderState::selection(RenderWindow* window)
 		if (start_x < 0) start_x = 0; 
 		if (start_y < 0) start_y = 0;
 
-		select_rect.setPosition(x+start_x*16*scale, y+start_y*16*scale);
+		select_rect.setPosition(x+start_x * 16 * scale, y+start_y * 16 * scale);
 
 		wdth = abs(selection_start.x - selected_tile.x) + 1, hght = abs(selection_start.y - selected_tile.y) + 1;
 
@@ -183,8 +203,7 @@ void MapBuilderState::draw_tools(RenderWindow* window)
 						for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth && i2 < size_x; i1++, i2++)
 							for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght && j2 < size_y; j1++, j2++) {
 								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
-								tiles[i2][j2].layers[layer] = { i1, j1 };
-								tiles[i2][j2].texture_id[layer] = picked_tile.tex_id;
+								tiles[i2][j2].layer[Render_Priority][layer] = { i1, j1, picked_tile.tex_id};
 							}
 						drawn_selection = 1;
 					}
@@ -214,11 +233,9 @@ void MapBuilderState::draw_tools(RenderWindow* window)
 
 							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
-							tiles[i][j].layers[layer] = { picked_tile.x, picked_tile.y };
-							tiles[i][j].texture_id[layer] = picked_tile.tex_id;
+							tiles[i][j].layer[Render_Priority][layer] = {picked_tile.x, picked_tile.y, picked_tile.tex_id};
 						}
-					tiles[selected_tile.x][selected_tile.y].layers[layer] = { picked_tile.x, picked_tile.y };
-					tiles[selected_tile.x][selected_tile.y].texture_id[layer] = picked_tile.tex_id;
+					tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id};
 				}
 			}
 			else {
@@ -271,8 +288,7 @@ void MapBuilderState::erase_tools(RenderWindow* window)
 
 							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
 
-							tiles[i2][j2].layers[layer] = { 5,6 };
-							tiles[i2][j2].texture_id[layer] = 1;
+							tiles[i2][j2].layer[Render_Priority].erase(layer);
 						}
 				}
 				else {
@@ -284,8 +300,7 @@ void MapBuilderState::erase_tools(RenderWindow* window)
 
 							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
-							tiles[i][j].layers[layer] = { 5,6 };
-							tiles[i][j].texture_id[layer] = 1;
+							tiles[i][j].layer[Render_Priority].erase(layer);
 						}
 				}
 			}
@@ -394,10 +409,8 @@ void MapBuilderState::render(RenderWindow* window)
 
 
 	render_tiles(window, x_win, y_win, 0);
-	render_tiles(window, x_win, y_win, 1);
 	//----------render entities herre in game--------------
-	render_tiles(window, x_win, y_win, 2);
-	render_tiles(window, x_win, y_win, 3);
+	render_tiles(window, x_win, y_win, 1);
 	window->draw(hover_rect);
 	window->draw(info);
 	if (selecting || picked_tile.global_select_done) {
@@ -437,6 +450,10 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 				picked_tile.global_select_done = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				hitbox = !hitbox; break;
+			case Keyboard::F:
+				picked_tile.global_select_done = 0;
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
+				Render_Priority = !Render_Priority; break;
 			case Keyboard::Num1:
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				layer = 0; break;
@@ -466,9 +483,9 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 					picked_tile.select_done = 0;
 					picked_tile.global_select_done = 0;
 					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-					picked_tile.tex_id = tiles[selected_tile.x][selected_tile.y].texture_id[layer];
-					picked_tile.x = tiles[selected_tile.x][selected_tile.y].layers[layer].x;
-					picked_tile.y = tiles[selected_tile.x][selected_tile.y].layers[layer].y;
+					picked_tile.tex_id = tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer].z;
+					picked_tile.x = tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer].x;
+					picked_tile.y = tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer].y;
 					break;
 			}
 
