@@ -21,7 +21,7 @@ private:
 	Text text, devtext;
 	RectangleShape tint;
 	float x = 0, y = 0;
-	float win_x = 0, win_y = 0,scale = 1;
+	float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
 	bool button_pressed = 0, arrow_pressed = 0;
 
 	//private functions:

@@ -30,15 +30,19 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, deque<St
 
 void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<State*>* states)
 {
-	devbutton.setScale(scale * 0.2, scale * 0.2);
-	devbutton.setPosition(x + 35 * scale, y + 35 * scale);
-	devtext.setCharacterSize(4.45 * scale);
+	if (scale != previous_scale) {
+		previous_scale = scale;
+		devbutton.setScale(scale * 0.2, scale * 0.2);
+		devbutton.setPosition(x + 35 * scale, y + 35 * scale);
+		devtext.setCharacterSize(4.45 * scale);
+		devtext.setOrigin(devtext.getLocalBounds().width / 2.0, devtext.getLocalBounds().top + devtext.getLocalBounds().height / 2.0);
+	}
+	devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
 	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
-	devtext.setPosition(x + 35 * scale, y + 35 * scale - 0.4 * scale);
 	if (devbutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		if (Mouse::isButtonPressed(Mouse::Left)) { 
 			button_pressed = 1; 
-			devtext.setPosition(x + 35 * scale, y + 35 * scale +  0.4 * scale);
+			devtext.setPosition(x + 35 * scale, y + 35.4 * scale);
 			devbutton.setTextureRect(IntRect(45, 0, 45, 49));
 		}
 		else {
@@ -48,7 +52,7 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 				states->push_front(new MapBuilderState);
 			}
 			devbutton.setTextureRect(IntRect(0, 0, 45, 49));
-			devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
+			devtext.setPosition(x + 35 * scale, y + 34.6 * scale);
 		}
 		devtext.setFillColor(Color::White);
 	}
@@ -80,7 +84,7 @@ SettingsState::SettingsState()
 	devtext.setString("Dev");
 	devtext.setCharacterSize(40);
 	devtext.setFillColor(Color(200, 200, 200));
-	devtext.setOrigin(devtext.getLocalBounds().width / 2.0, devtext.getLocalBounds().top + devtext.getLocalBounds().height / 2.0);
+
 }
 
 SettingsState::~SettingsState()
