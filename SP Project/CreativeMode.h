@@ -15,10 +15,11 @@ private:
 	Sprite* Tex;
 	Event event;
 	State::tex_tile* picked_tile;
-	RectangleShape hover_rect, selected_rect;
+	RectangleShape hover_rect, selected_rect, select_rect;
 	unsigned int a = 0, b = 0;
 	int curr_tex_set = 0;
 	float scale = 1.15;
+	bool selecting = 0;
 
 	//private functions:
 	void change_tex();
@@ -26,7 +27,7 @@ private:
 	void initial_rectangles();
 	void hover_tile();
 	void selected();
-
+	void selection();
 
 public:
 	//constructors/destructors
