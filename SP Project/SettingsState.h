@@ -1,6 +1,7 @@
 #pragma once
 #include "State.h"
 #include"MainMenuState.h"
+#include"MapBuilderState.h"
 
 using namespace std;
 using namespace sf;
@@ -16,14 +17,16 @@ private:
 		buttons[4] = { {290,139,93,94} ,{240,0,93,94} ,{290,49,93,94},{201,296,92,92} },
 		checkMark = { 370,45,16,15 };
 	//Colors loaded in arrangment : Yellow -> Red -> Blue
-	Sprite tipleft, tipright, mid, tissue, back_arrow;
+	Sprite tipleft, tipright, mid, tissue, back_arrow, devbutton;
+	Text devtext;
 	RectangleShape tint;
 	float x = 0, y = 0;
 	float win_x = 0, win_y = 0,scale = 1;
-	bool arrow_pressed = 0;
+	bool button_pressed = 0, arrow_pressed = 0;
 
 	//private functions:
 	void update_arrow(RenderWindow*, int*, deque<State*>*);
+	void dev_button(RenderWindow*, int*, deque<State*>*);
 
 public:
 	//constructors / destructors

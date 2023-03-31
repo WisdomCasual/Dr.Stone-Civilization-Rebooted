@@ -28,6 +28,37 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, deque<St
 	}
 }
 
+void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<State*>* states)
+{
+	devbutton.setScale(scale * 0.2, scale * 0.2);
+	devbutton.setPosition(x + 35 * scale, y + 35 * scale);
+	devtext.setCharacterSize(40);
+	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
+	devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
+	if (devbutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		if (Mouse::isButtonPressed(Mouse::Left)) { 
+			button_pressed = 1; 
+			devtext.setPosition(x + 35 * scale, y + 35 * scale + 2 * 0.2 * scale);
+			devbutton.setTextureRect(IntRect(45, 0, 45, 49));
+		}
+		else {
+			if (button_pressed) {
+				button_pressed = 0;
+				*terminator += 2;
+				states->push_front(new MapBuilderState);
+			}
+			devbutton.setTextureRect(IntRect(0, 0, 45, 49));
+			devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
+		}
+		devtext.setFillColor(Color::White);
+	}
+	else {
+		button_pressed = 0;
+		devtext.setFillColor(Color(200, 200, 200));
+	}
+}
+
+
 SettingsState::SettingsState()
 {
 	initial_fps();
@@ -41,6 +72,16 @@ SettingsState::SettingsState()
 	back_arrow.setTexture(*textures[1]);
 	back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
 	back_arrow.setOrigin(22 / 2, 21 / 2);
+
+	devbutton.setTexture(*textures[2]);
+	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
+	devbutton.setOrigin(45 / 2, 49 / 2);
+
+	devtext.setFont(font);
+	devtext.setString("Dev");
+	devtext.setCharacterSize(40);
+	devtext.setFillColor(Color(200, 200, 200));
+	devtext.setOrigin(devtext.getLocalBounds().width / 2.0, devtext.getLocalBounds().top + devtext.getLocalBounds().height / 2.0);
 }
 
 SettingsState::~SettingsState()
@@ -61,7 +102,7 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, dequ
 	tissue.setPosition(x, y);
 	tissue.setScale(scale, scale);
 
-
+	dev_button(window, terminator, states);
 	update_arrow(window, terminator, states);
 	if (fps_active)
 		calc_fps(dt);
@@ -73,6 +114,8 @@ void SettingsState::render(RenderWindow* window)
 {
 	window->draw(tint);
 	window->draw(tissue);
+	window->draw(devbutton);
+	window->draw(devtext);
 	window->draw(back_arrow);
 	if (fps_active)
 		window->draw(fps_text);
