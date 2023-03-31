@@ -8,13 +8,12 @@ class SavesState :
 {
 private:
 	//variables:
-	struct save {
+	struct save { // stores save 
 		int x, y, no;
 		int progress = 0, character_id = 0;
 		string name;
 		bool empty = 1, hover = 0, del_hover = 0, pressed = 0, del_pressed = 0, del = 0;
 	};
-
 
 	Text text, del;
     float scale = 1;
@@ -25,7 +24,6 @@ private:
 	Text Delete[3];
 	bool del_presse[3] = { 0,0,0 };
 	
-
 	RectangleShape tint;
 	
 	float x_win = 0, y_win = 0;
