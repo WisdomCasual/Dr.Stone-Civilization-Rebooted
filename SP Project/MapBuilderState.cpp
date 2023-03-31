@@ -252,6 +252,7 @@ void MapBuilderState::erase_tools(RenderWindow* window)
 					}
 			}
 		}
+		picked_tile.global_select_done = 0;
 		tiles[selected_tile.x][selected_tile.y].blocked = 0;
 	}
 }
