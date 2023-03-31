@@ -9,13 +9,19 @@ class MapBuilderState : public State
 private:
 	//variables:
 	struct Tile {
-		Vector2i layers[3]{ {21,49}, {5,6}, {5,6} }; //<-- cords of texture in sprite sheet
-		bool blocked = 0, hitbox = 0; char texture_id = 0;
-	};
-	struct tex_props {
-		bool blocked = 0, hitbox = 0; int layer = 0;
+		Vector2i layers[4]{ {21,49}, {5,6}, {5,6}, {5,6} }; //<-- cords of texture in sprite sheet
+		bool blocked = 0, hitbox = 0; char texture_id[4] = {1, 1, 1, 1};
 	};
 
+	struct change {
+		Vector2i start = { 0,0 }, end = { 0,0 };
+		vector <Tile> tiles;
+	};
+
+	bool ctrl_pressed = 0, z_pressed = 0, y_pressed = 0, undid = 0, redone = 0;
+
+	deque<change> changes;
+	deque<change> undid_changes;
 
 	bool picker = 1;
 	CreativeMode* tex_picker;
@@ -28,19 +34,31 @@ private:
 	bool active_grid = 1; //<-- grid active/inactive
 	float scale = 10;
 	float dt = 0;
+	int layer = 0;
+	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0;
+	int brush_size = 1;
+	Vector2f mouse_pos = { 0, 0 }, relative_mouse_pos = {0, 0}, hover_tile = { 0 , 0 };
+	Vector2i selected_tile = { 0, 0 }, selection_start = { 0,0 }, selection_end = { 0,0 };
 	Text info;
 	Tile tiles[256][256];    //the level map
-	tex_props props[96][96]{};
+	RectangleShape hover_rect, hitbox_rect, select_rect;
+	int wdth = 0, hght = 0, start_x = 0, start_y = 0;
 
 	//private functions:
 	void grid(RenderWindow*, int, int);
 	void render_tiles(RenderWindow*, int, int, int);
 	void update_info_text();
 	void dash_cam();
+	void hover();
+	void selection(RenderWindow*);
+	void draw_tools(RenderWindow*);
+	void erase_tools(RenderWindow*);
+	void undo(RenderWindow*);
+	void mouse_cords(RenderWindow*);
 
 public:
 	//constructors/destructors:
-	MapBuilderState(int a = 64, int b = 64);
+	MapBuilderState(int a = 128, int b = 256, string map_name = "unnamed");
 	~MapBuilderState();
 
 	//public functions:
@@ -48,4 +66,3 @@ public:
 	void render(RenderWindow*);
 	void pollevent(Event, RenderWindow*);
 };
-
