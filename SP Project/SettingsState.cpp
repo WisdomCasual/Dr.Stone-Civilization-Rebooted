@@ -108,8 +108,6 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, dequ
 		calc_fps(dt);
 }
 
-
-
 void SettingsState::render(RenderWindow* window)
 {
 	window->draw(tint);
