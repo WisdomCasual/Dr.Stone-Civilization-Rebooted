@@ -98,6 +98,7 @@ CreativeMode::~CreativeMode()
 void CreativeMode::update()
 {
 	if ((Mouse::isButtonPressed(Mouse::Right) || Keyboard::isKeyPressed(Keyboard::LShift)) && sidewindow->hasFocus()) {
+		picked_tile->previous_drawn_tile = { -1,-1 }, picked_tile->previous_erased_tile = { -1,-1 };
 		if (!selecting) {
 			picked_tile->selection_start = current_tile;
 			picked_tile->tex_id = curr_tex_set;
@@ -178,6 +179,7 @@ void CreativeMode::pollevent(bool& picker)
 			switch (event.mouseButton.button) {
 			case Mouse::Left:
 				if (sidewindow->hasFocus())
+					picked_tile->previous_drawn_tile = { -1,-1 }, picked_tile->previous_erased_tile = { -1,-1 };
 					picked_tile->select_done = 0; picked_tile->global_select_done = 0; selected(); break;
 			}
 		}
