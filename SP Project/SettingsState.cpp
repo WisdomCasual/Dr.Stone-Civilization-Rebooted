@@ -40,8 +40,8 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 	devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
 	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
 	if (devbutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-		if (Mouse::isButtonPressed(Mouse::Left)) { 
-			button_pressed = 1; 
+		if (Mouse::isButtonPressed(Mouse::Left)) {
+			button_pressed = 1;
 			devtext.setPosition(x + 35 * scale, y + 35.4 * scale);
 			devbutton.setTextureRect(IntRect(45, 0, 45, 49));
 		}
@@ -62,6 +62,37 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 	}
 }
 
+
+void SettingsState::update_slider(RenderWindow* window, int color, int pos_x, int pos_y, string name)
+{
+	tip.setTextureRect(tipsleft[color]);
+	tip.setTextureRect(mids[color]);
+	tip.setTextureRect(tipsright[color]);
+	
+	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
+
+	if (Mouse::isButtonPressed(Mouse::Left)) {
+		if (tip.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			presssed = 1;
+		}
+	}
+	else
+		presssed = 0;
+	if(presssed)
+		tip.setPosition( round(max(min(mouse_pos.x, (int)(x + 20 * scale)), (int)(x - 20 * scale))/64.0)  * 64, y);
+	
+tip.setScale(3, 3);
+
+	tip.setTexture(*textures[0]);
+	window->draw(tip);
+}
+
+void SettingsState::render_slider(RenderWindow* window)
+{
+	tip.setPosition(x, y);
+
+}
+
 SettingsState::SettingsState()
 {
 	initial_fps();
@@ -69,8 +100,8 @@ SettingsState::SettingsState()
 	tissue.setTexture(*textures.at(0));
 	tissue.setTextureRect(buttons[3]);
 	tissue.setOrigin(92 / 2, 92 / 2);
-	tint.setSize({1920, 1080});
-	tint.setFillColor(Color(0,0,0,154));
+	tint.setSize({ 1920, 1080 });
+	tint.setFillColor(Color(0, 0, 0, 154));
 
 	back_arrow.setTexture(*textures[1]);
 	back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
@@ -85,6 +116,8 @@ SettingsState::SettingsState()
 	devtext.setCharacterSize(40);
 	devtext.setFillColor(Color(200, 200, 200));
 
+	tip.setTexture(*textures[0]);
+
 }
 
 SettingsState::~SettingsState()
@@ -98,6 +131,7 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, dequ
 	x = win_x / 2, y = win_y / 2;
 	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
 	else scale = win_y / 120.0;
+	mouse_pos = Mouse::getPosition(*window);
 	/////// Do Not touch;
 
 	tint.setSize({ win_x, win_y });
@@ -109,6 +143,9 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, dequ
 	update_arrow(window, terminator, states);
 	if (fps_active)
 		calc_fps(dt);
+
+
+	update_slider(window, 0, x, y, "Slider1");
 }
 
 void SettingsState::render(RenderWindow* window)
@@ -121,6 +158,11 @@ void SettingsState::render(RenderWindow* window)
 
 	text.setFillColor(Color::Black);
 	draw_text(window, "Settings", x, y - 35 * scale, 6.5 * scale);
+
+
+
+	window->draw(tip); ///////delete, just for testing
+
 
 	if (fps_active)
 		window->draw(fps_text);

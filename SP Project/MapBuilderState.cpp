@@ -38,8 +38,8 @@ void MapBuilderState::dash_cam()
 	Vector2f movement = delta_movement();
 	x -= dt * cam_speed * movement.x * scale;
 	y -= dt * cam_speed * movement.y * scale;
-	x_offset = -x / float(scale * 16);
-	y_offset = -y / float(scale * 16);
+	x_offset = -x / (scale * 16);
+	y_offset = -y / (scale * 16);
 }
 
 void MapBuilderState::hover()
