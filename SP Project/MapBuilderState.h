@@ -9,8 +9,8 @@ class MapBuilderState : public State
 private:
 	//variables:
 	struct Tile {
-		Vector2i layers[4]{ {21,49}, {5,6}, {5,6}, {5,6} }; //<-- cords of texture in sprite sheet
-		bool blocked = 0, hitbox = 0; char texture_id[4] = {1, 1, 1, 1};
+		map <char, Vector3i> layer[2]; //Render_Priority [ back/front ] [layer] { x cords, y cords, texture sheet id }
+		bool hitbox = 0, blocked = 0;
 	};
 
 	struct change {
@@ -24,6 +24,8 @@ private:
 	deque<change> undid_changes;
 
 	bool picker = 1;
+	bool Render_Priority = 0;
+	string Render_in[2] = { "Back", "Front" };
 	CreativeMode* tex_picker;
 	tex_tile picked_tile = { 0,0 };
 	int size_x, size_y;  //<-- map size
