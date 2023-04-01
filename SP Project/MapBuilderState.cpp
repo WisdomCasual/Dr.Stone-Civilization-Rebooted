@@ -28,6 +28,7 @@ MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), siz
 
 void MapBuilderState::update_info_text()
 {
+	fps_text.setCharacterSize(40 * text_scale);
 	info.setCharacterSize(40 * text_scale);
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
