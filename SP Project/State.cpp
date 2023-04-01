@@ -31,6 +31,16 @@ void State::calc_fps(float dt)
 	     fps_text.setString("  FPS " + to_string(fps));
 }
 
+void State::draw_text(RenderWindow* window, string tex, int a, int b, int c)
+{
+	//gets window pointer, string, X cord, Y cords, Character size to draw text
+	text.setString(tex);
+	text.setCharacterSize(c);
+	text.setOrigin(text.getLocalBounds().width / 2.0, text.getLocalBounds().top + text.getLocalBounds().height / 2.0);
+	text.setPosition(a, b);
+	window->draw(text);
+}
+
 Vector2f State::delta_movement()
 {
 	// returns direction of movement based on arrow/wasd keys --> {[-1,1],[-1,1]}
@@ -48,7 +58,7 @@ Vector2f State::delta_movement()
 
 State::State()
 {
-
+	text.setFont(font);
 }
 
 State::~State()
