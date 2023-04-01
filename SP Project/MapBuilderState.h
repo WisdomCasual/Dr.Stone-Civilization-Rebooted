@@ -9,17 +9,28 @@ class MapBuilderState : public State
 private:
 	//variables:
 	struct Tile {
-		Vector2i layers[4]{ {21,49}, {5,6}, {5,6}, {5,6} }; //<-- cords of texture in sprite sheet
-		bool blocked = 0, hitbox = 0; char texture_id[4] = {1, 1, 1, 1};
+		map <char, Vector3i> layer[2]; //Render_Priority [ back/front ] [layer] { x cords, y cords, texture sheet id }
+		bool hitbox = 0, blocked = 0;
 	};
 
+	struct change {
+		Vector2i start = { 0,0 }, end = { 0,0 };
+		vector <Tile> tiles;
+	};
+
+	bool ctrl_pressed = 0, z_pressed = 0, y_pressed = 0, undid = 0, redone = 0;
+
+	deque<change> changes;
+	deque<change> undid_changes;
 
 	bool picker = 1;
+	bool Render_Priority = 0;
+	string Render_in[2] = { "Back", "Front" };
 	CreativeMode* tex_picker;
 	tex_tile picked_tile = { 0,0 };
 	int size_x, size_y;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
-	int x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
+	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
 	int x_mid = 0, y_mid = 0;       //<-- index of the tile in the center of the screen
 	int cam_speed = 150;
 	bool active_grid = 1; //<-- grid active/inactive
@@ -45,6 +56,7 @@ private:
 	void selection(RenderWindow*);
 	void draw_tools(RenderWindow*);
 	void erase_tools(RenderWindow*);
+	void undo(RenderWindow*);
 	void mouse_cords(RenderWindow*);
 
 public:
