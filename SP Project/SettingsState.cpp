@@ -63,14 +63,17 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 }
 
 
-void SettingsState::update_slider(RenderWindow* window, int color, int pos_x, int pos_y, string name)
+void SettingsState::update_slider(RenderWindow* window, int color, int pos_x, int pos_y,int target, string name)
 {
-	tip.setTextureRect(tipsleft[color]);
-	tip.setTextureRect(mids[color]);
-	tip.setTextureRect(tipsright[color]);
-	
-	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
+	info[target].color = color;
+	info[target].tipleftx = pos_x;
+	info[target].midx = pos_x + 1 * scale;
+	info[target].tiprightx = pos_x + 18 * scale;
+	info[target].y = pos_y;
 
+	tip.setTextureRect(tipsright[color]);
+	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
+	tip.setPosition(info[target].tiprightx - 10 * scale, info[target].y);
 	if (Mouse::isButtonPressed(Mouse::Left)) {
 		if (tip.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			presssed = 1;
@@ -78,19 +81,32 @@ void SettingsState::update_slider(RenderWindow* window, int color, int pos_x, in
 	}
 	else
 		presssed = 0;
-	if(presssed)
-		tip.setPosition( round(max(min(mouse_pos.x, (int)(x + 20 * scale)), (int)(x - 20 * scale))/64.0)  * 64, y);
-	
+	if (presssed) {
+		cout << mouse_pos.x << ' ' << mouse_pos.y << '\n';
+		tip.setPosition(round(max(min(mouse_pos.x, (int)(pos_x + 20 * scale)), (int)(pos_x - 20 * scale)) / 64.0) * 64, pos_y);
+	}
 tip.setScale(3, 3);
 
 	tip.setTexture(*textures[0]);
-	window->draw(tip);
 }
 
-void SettingsState::render_slider(RenderWindow* window)
+void SettingsState::render_slider(RenderWindow* window,int target)
 {
-	tip.setPosition(x, y);
+	tip.setTextureRect(tipsleft[info[target].color]);
+	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
+	tip.setPosition(info[target].tipleftx, info[target].y);
+	window->draw(tip); ///////delete, just for testing
 
+	tip.setTextureRect(mids[info[target].color]);
+	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
+	tip.setPosition(info[target].midx + 3 * scale, info[target].y + 1.5*scale);
+	window->draw(tip);
+
+	tip.setTextureRect(tipsright[info[target].color]);
+	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
+	tip.setPosition(info[target].tiprightx - 10 * scale, info[target].y);
+	//update_slider(window, 0, x / 1.5, y / 1.3, 0, "Slider1");
+	window->draw(tip);
 }
 
 SettingsState::SettingsState()
@@ -144,8 +160,7 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, dequ
 	if (fps_active)
 		calc_fps(dt);
 
-
-	update_slider(window, 0, x, y, "Slider1");
+	update_slider(window, 0, x/1.5, y/1.3,0, "Slider1");
 }
 
 void SettingsState::render(RenderWindow* window)
@@ -155,13 +170,10 @@ void SettingsState::render(RenderWindow* window)
 	window->draw(devbutton);
 	window->draw(devtext);
 	window->draw(back_arrow);
-
 	text.setFillColor(Color::Black);
 	draw_text(window, "Settings", x, y - 35 * scale, 6.5 * scale);
+	render_slider(window,0);
 
-
-
-	window->draw(tip); ///////delete, just for testing
 
 
 	if (fps_active)

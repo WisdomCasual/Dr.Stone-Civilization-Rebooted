@@ -27,12 +27,14 @@ private:
     Vector2i mouse_pos = { 0,0 };
 
     Sprite tip;
-
+    struct slider_info {
+        int tipleftx,tiprightx,midx,y,color;
+    }info[3] = {0};
     //private functions:
     void update_arrow(RenderWindow*, int*, deque<State*>*);
     void dev_button(RenderWindow*, int*, deque<State*>*);
-    void update_slider(RenderWindow*, int, int, int, string);
-    void render_slider(RenderWindow*);
+    void update_slider(RenderWindow*, int, int, int,int, string);
+    void render_slider(RenderWindow*,int);
 public:
     //constructors / destructors
     SettingsState();
