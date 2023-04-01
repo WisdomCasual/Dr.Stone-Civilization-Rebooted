@@ -28,8 +28,10 @@ private:
 
     Sprite tip;
     struct slider_info {
-        int tipleftx,tiprightx,midx,y,color;
-    }info[3] = {0};
+        int x = 0, y = 0, length = 0, color = 0, tipleftx = 0, tiprightx = 0, midx = 0;
+
+    }info[3] = { {  0, 0, 20, 1 } };
+
     //private functions:
     void update_arrow(RenderWindow*, int*, deque<State*>*);
     void dev_button(RenderWindow*, int*, deque<State*>*);

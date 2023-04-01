@@ -65,15 +65,8 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 
 void SettingsState::update_slider(RenderWindow* window, int color, int pos_x, int pos_y,int target, string name)
 {
-	info[target].color = color;
-	info[target].tipleftx = pos_x;
-	info[target].midx = pos_x + 1 * scale;
-	info[target].tiprightx = pos_x + 18 * scale;
-	info[target].y = pos_y;
-
 	tip.setTextureRect(tipsright[color]);
 	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
-	tip.setPosition(info[target].tiprightx - 10 * scale, info[target].y);
 	if (Mouse::isButtonPressed(Mouse::Left)) {
 		if (tip.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			presssed = 1;
@@ -82,10 +75,9 @@ void SettingsState::update_slider(RenderWindow* window, int color, int pos_x, in
 	else
 		presssed = 0;
 	if (presssed) {
-		cout << mouse_pos.x << ' ' << mouse_pos.y << '\n';
-		tip.setPosition(round(max(min(mouse_pos.x, (int)(pos_x + 20 * scale)), (int)(pos_x - 20 * scale)) / 64.0) * 64, pos_y);
+		info[target].tiprightx = round(max(min(mouse_pos.x, (int)(x + (info[target].x + info[target].length) * scale)), (int)((x + (info[target].x - info[target].length) * scale))) / 64.0) * 64;
 	}
-tip.setScale(3, 3);
+	tip.setScale(3, 3);
 
 	tip.setTexture(*textures[0]);
 }
@@ -104,8 +96,8 @@ void SettingsState::render_slider(RenderWindow* window,int target)
 
 	tip.setTextureRect(tipsright[info[target].color]);
 	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
-	tip.setPosition(info[target].tiprightx - 10 * scale, info[target].y);
-	//update_slider(window, 0, x / 1.5, y / 1.3, 0, "Slider1");
+	tip.setPosition(info[target].tiprightx,y + info[target].y);
+
 	window->draw(tip);
 }
 
@@ -133,7 +125,7 @@ SettingsState::SettingsState()
 	devtext.setFillColor(Color(200, 200, 200));
 
 	tip.setTexture(*textures[0]);
-
+	info[0].tiprightx = 960 + (info[0].x + info[0].length) * scale;
 }
 
 SettingsState::~SettingsState()
