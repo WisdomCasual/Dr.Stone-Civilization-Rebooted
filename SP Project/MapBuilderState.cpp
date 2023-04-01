@@ -13,7 +13,7 @@ MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), siz
 	initial_fps();
 	info.setFont(font);
 	layer_info.setFont(font);
-	layer_info.setPosition(25 * x_scale,800 * y_scale);
+	layer_info.setPosition(25 * x_scale, 800 * y_scale);
 	//hover rectangle
 	hover_rect.setFillColor(Color::Transparent);
 	hover_rect.setOutlineThickness(1);
@@ -134,6 +134,7 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 			swap(global_scale, text_scale);
 		scale = round(10 * global_scale);
 		prev_win = window->getSize();
+		layer_info.setPosition(25 * x_scale, 800 * y_scale);
 	}
 
 	mouse_cords(window);
@@ -572,9 +573,14 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved)
 				if (scale + event.mouseWheel.delta > global_scale && scale + event.mouseWheel.delta < 20*global_scale) {
-					x -= event.mouseWheel.delta * 16 * x_mid;
-					y -= event.mouseWheel.delta * 16 * y_mid;
-					scale += event.mouseWheel.delta;
+					if (global_scale < 1)
+						scaling_speed = 1/speed_list[(int)round(log(int(round(1 / global_scale))))];
+					else
+						scaling_speed = round(global_scale);
+					cout << scaling_speed << endl;
+					x -= event.mouseWheel.delta * 16*scaling_speed * x_mid;
+					y -= event.mouseWheel.delta * 16*scaling_speed * y_mid;
+					scale += event.mouseWheel.delta*scaling_speed;
 				} break;
 		}
 	}
