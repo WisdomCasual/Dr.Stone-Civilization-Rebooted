@@ -3,7 +3,7 @@
 MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), size_y(b)
 {	
 	for (int i = 0; i < size_x; i++) {
-		for (int j = 0; j < size_x; j++) {
+		for (int j = 0; j < size_y; j++) {
 			tiles[i][j].layer[0][0] = { 21,49, 1};
 		}
 	}
@@ -12,7 +12,6 @@ MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), siz
 	initial_textures("game");
 	initial_fps();
 	info.setFont(font);
-	info.setCharacterSize(40);
 	//hover rectangle
 	hover_rect.setFillColor(Color::Transparent);
 	hover_rect.setOutlineThickness(1);
@@ -29,6 +28,7 @@ MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), siz
 
 void MapBuilderState::update_info_text()
 {
+	info.setCharacterSize(40 * text_scale);
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
 		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox) + " - brush size (+/-): " + to_string(brush_size)
@@ -113,6 +113,13 @@ void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, i
 void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	this->dt = dt;
+	if (prev_win != window->getSize()) {
+		global_scale = window->getSize().x / 1920.0, text_scale = window->getSize().y / 1080.0;
+		if (global_scale < text_scale)
+			swap(global_scale, text_scale);
+		scale = round(10 * global_scale);
+		prev_win = window->getSize();
+	}
 
 	mouse_cords(window);
 
@@ -145,8 +152,8 @@ void MapBuilderState::selection(RenderWindow* window)
 		selected_tile.x = size_x - 1;
 	if (selected_tile.y < 0)
 		selected_tile.y = 0;
-	else if (selected_tile.y >= size_x)
-		selected_tile.y = size_x - 1;
+	else if (selected_tile.y >= size_y)
+		selected_tile.y = size_y - 1;
 
 	if (Keyboard::isKeyPressed(Keyboard::LShift) && window->hasFocus()) {
 		if (!selecting) {
@@ -493,7 +500,7 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 			//camera zoom
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved)
-				if (scale + event.mouseWheel.delta > 0.5 && scale + event.mouseWheel.delta < 20) {
+				if (scale + event.mouseWheel.delta > global_scale && scale + event.mouseWheel.delta < 20*global_scale) {
 					x -= event.mouseWheel.delta * 16 * x_mid;
 					y -= event.mouseWheel.delta * 16 * y_mid;
 					scale += event.mouseWheel.delta;
