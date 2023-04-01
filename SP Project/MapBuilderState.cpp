@@ -180,7 +180,7 @@ void MapBuilderState::selection(RenderWindow* window)
 	}
 	else {
 		if (selecting) {
-			picked_tile.global_select_done = 1;
+			picked_tile.global_select_done = 1, picked_tile.global_priority = Render_Priority, picked_tile.global_layer = layer;
 			selection_end = selected_tile;
 		}
 		selecting = 0;
@@ -239,9 +239,11 @@ void MapBuilderState::draw_tools(RenderWindow* window)
 						for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x && i1 < size_x; i1++, i2++)
 							for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_x; j1++, j2++) {
 
-								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
-
-								tiles[i2][j2] = tiles[i1][j1];
+									changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+									if (Keyboard::isKeyPressed(Keyboard::LAlt))
+										tiles[i2][j2] = tiles[i1][j1];
+									else
+										tiles[i2][j2].layer[Render_Priority][layer] = { tiles[i1][j1].layer[picked_tile.global_priority][picked_tile.global_layer].x, tiles[i1][j1].layer[picked_tile.global_priority][picked_tile.global_layer].y, tiles[i1][j1].layer[picked_tile.global_priority][picked_tile.global_layer].z };
 							}
 						drawn_map_selection = 1;
 					}
@@ -250,13 +252,29 @@ void MapBuilderState::draw_tools(RenderWindow* window)
 					//store changed area info
 					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
 
-					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
-						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+					if (!(Keyboard::isKeyPressed(Keyboard::LAlt) || brush_size < 3)) {
+						for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
+							for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
 
-							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
-							tiles[i][j].layer[Render_Priority][layer] = {picked_tile.x, picked_tile.y, picked_tile.tex_id};
+								tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
+							}
+					}
+					else {
+						srand(x * y * dt);
+						for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++) {
+							for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+								rand_spray += rand() % 20;
+								rand_spray %= 20;
+								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+								if (!rand_spray) {
+									tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
+
+								}
+							}
 						}
+					}
 					tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id};
 				}
 			}
@@ -310,7 +328,10 @@ void MapBuilderState::erase_tools(RenderWindow* window)
 
 							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
 
-							tiles[i2][j2].layer[Render_Priority].erase(layer);
+							if (Keyboard::isKeyPressed(Keyboard::LAlt))
+								tiles[i2][j2].layer->clear();
+							else
+								tiles[i2][j2].layer[Render_Priority].erase(layer);
 						}
 				}
 				else {
@@ -322,7 +343,10 @@ void MapBuilderState::erase_tools(RenderWindow* window)
 
 							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
-							tiles[i][j].layer[Render_Priority].erase(layer);
+							if (Keyboard::isKeyPressed(Keyboard::LAlt))
+								tiles[i][j].layer->clear();
+							else
+								tiles[i][j].layer[Render_Priority].erase(layer);
 						}
 				}
 			}
