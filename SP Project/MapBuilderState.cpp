@@ -12,6 +12,8 @@ MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), siz
 	initial_textures("game");
 	initial_fps();
 	info.setFont(font);
+	layer_info.setFont(font);
+	layer_info.setPosition(25 * x_scale,800 * y_scale);
 	//hover rectangle
 	hover_rect.setFillColor(Color::Transparent);
 	hover_rect.setOutlineThickness(1);
@@ -34,6 +36,13 @@ void MapBuilderState::update_info_text()
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
 		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox) + " - brush size (+/-): " + to_string(brush_size)
 		+ " - Layer (1,2,3,4) " + to_string(layer+1) + " - Render Priority: " + Render_in[Render_Priority]);
+
+	//displays layer properties
+	layer_info.setCharacterSize(40 * text_scale);
+	layer_info.setString("\t\t Back \tFront\nlayer 1:\t" + to_string(layer_toggle[0]) + "\t\t" + to_string(layer_toggle[4]) +
+		"\nlayer 2:\t" + to_string(layer_toggle[1]) + "\t\t" + to_string(layer_toggle[5]) + 
+		"\nlayer 3:\t" + to_string(layer_toggle[2]) + "\t\t" + to_string(layer_toggle[6]) + 
+		"\nlayer 4:\t" + to_string(layer_toggle[3]) + "\t\t" + to_string(layer_toggle[7]) );
 }
 
 void MapBuilderState::dash_cam()
@@ -94,11 +103,15 @@ void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, i
 	tile.setScale(scale, scale);
 	for (int i = (x_offset > 0) ? x_offset : 0; i < (x_win + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
 		for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
+			int layer_number = -1;
 			for (auto props : tiles[i][j].layer[priority]) {
-				tile.setTexture(*textures[props.second.z]);
-				tile.setTextureRect(IntRect(props.second.x * 16, props.second.y * 16, 16, 16));
-				tile.setPosition(x + (16 * scale * i), y + (16 * scale * j));
-				window->draw(tile);
+				layer_number++;
+				if (layer_toggle[layer_number + 4 * priority]) {
+					tile.setTexture(*textures[props.second.z]);
+					tile.setTextureRect(IntRect(props.second.x * 16, props.second.y * 16, 16, 16));
+					tile.setPosition(x + (16 * scale * i), y + (16 * scale * j));
+					window->draw(tile);
+				}
 			}
 			if ((fps_active || hitbox) && priority && tiles[i][j].hitbox) {
 				hitbox_rect.setPosition(x + (16 * scale * i), y + (16 * scale * j));
@@ -115,7 +128,8 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, de
 {
 	this->dt = dt;
 	if (prev_win != window->getSize()) {
-		global_scale = window->getSize().x / 1920.0, text_scale = window->getSize().y / 1080.0;
+		x_scale = window->getSize().x / 1920.0, y_scale = window->getSize().y / 1080.0;
+		global_scale = x_scale, text_scale = y_scale;
 		if (global_scale < text_scale)
 			swap(global_scale, text_scale);
 		scale = round(10 * global_scale);
@@ -421,6 +435,7 @@ void MapBuilderState::render(RenderWindow* window)
 	render_tiles(window, x_win, y_win, 1);
 	window->draw(hover_rect);
 	window->draw(info);
+	window->draw(layer_info);
 	if (selecting || picked_tile.global_select_done) {
 		window->draw(select_rect);
 	}
@@ -463,17 +478,48 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				Render_Priority = !Render_Priority; break;
 			case Keyboard::Num1:
-				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-				layer = 0; break;
+				if ((Keyboard::isKeyPressed(Keyboard::LAlt)))
+					layer_toggle[0] = !layer_toggle[0];
+				else
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 }, layer = 0;
+				break;
 			case Keyboard::Num2:
-				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-				layer = 1; break;
+				if ((Keyboard::isKeyPressed(Keyboard::LAlt)))
+					layer_toggle[1] = !layer_toggle[1];
+				else
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 }, layer = 1;
+				break;
 			case Keyboard::Num3:
-				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-				layer = 2; break;
+				if ((Keyboard::isKeyPressed(Keyboard::LAlt)))
+					layer_toggle[2] = !layer_toggle[2];
+				else
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 }, layer = 2;
+				break;
 			case Keyboard::Num4:
-				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-				layer = 3; break;
+				if ((Keyboard::isKeyPressed(Keyboard::LAlt)))
+					layer_toggle[3] = !layer_toggle[3];
+				else
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 }, layer = 3; break;
+			case Keyboard::Num5:
+				if ((Keyboard::isKeyPressed(Keyboard::LAlt)))
+					layer_toggle[4] = !layer_toggle[4];
+				else
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 }, layer = 3; break;
+			case Keyboard::Num6:
+				if ((Keyboard::isKeyPressed(Keyboard::LAlt)))
+					layer_toggle[5] = !layer_toggle[5];
+				else
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 }, layer = 3; break;
+			case Keyboard::Num7:
+				if ((Keyboard::isKeyPressed(Keyboard::LAlt)))
+					layer_toggle[6] = !layer_toggle[6];
+				else
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 }, layer = 3; break;
+			case Keyboard::Num8:
+				if ((Keyboard::isKeyPressed(Keyboard::LAlt)))
+					layer_toggle[7] = !layer_toggle[7];
+				else
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 }, layer = 3; break;
 			case Keyboard::Equal:
 				picked_tile.global_select_done = 0;
 				picked_tile.select_done = 0;
