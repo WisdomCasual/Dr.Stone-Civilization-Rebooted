@@ -38,7 +38,7 @@ private:
 	float dt = 0;
 	int layer = 0;
 	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0;
-	int brush_size = 1;
+	int brush_size = 1, rand_spray = 1;
 	bool layer_toggle[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
 	Vector2f mouse_pos = { 0, 0 }, relative_mouse_pos = {0, 0}, hover_tile = { 0 , 0 };
 	Vector2i selected_tile = { 0, 0 }, selection_start = { 0,0 }, selection_end = { 0,0 };
