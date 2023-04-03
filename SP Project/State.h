@@ -43,7 +43,7 @@ public:
 	void draw_text(RenderWindow*, string, int, int, int);  //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
 
 
-	virtual void pollevent(Event, RenderWindow*) = 0;
+	virtual void pollevent(Event, RenderWindow*, int*, deque<State*>*) = 0;
 	virtual void update(float, RenderWindow*, int*, deque<State*>*) = 0;
 	virtual void render(RenderWindow*) = 0;
 

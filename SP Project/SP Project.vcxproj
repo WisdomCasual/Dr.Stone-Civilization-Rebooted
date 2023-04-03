@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="CreativeMode.cpp" />
+    <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="SettingsState.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="MapBuilderState.h" />
+    <ClInclude Include="PauseState.h" />
     <ClInclude Include="SavesState.h" />
     <ClInclude Include="State.h" />
   </ItemGroup>

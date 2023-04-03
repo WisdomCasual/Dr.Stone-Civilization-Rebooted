@@ -63,7 +63,7 @@ void Game::pollevent()
 {
 	//calls pollevent update function of the top state in the deque
 	if (!states.empty())
-		states.back()->pollevent(event, window);
+		states.back()->pollevent(event, window, &terminator, &states);
 }
 
 void Game::update()

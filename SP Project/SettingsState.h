@@ -53,7 +53,7 @@ public:
 
     void update(float, RenderWindow*, int*, deque<State*>*);
 
-    void pollevent(Event, RenderWindow*);
+    void pollevent(Event, RenderWindow*, int*, deque<State*>*);
 
     void render(RenderWindow*);
 };
