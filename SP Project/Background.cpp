@@ -11,7 +11,7 @@ Background::~Background()
 {
 }
 
-void Background::pollevent(Event, RenderWindow*)
+void Background::pollevent(Event, RenderWindow*, int* terminator, deque<State*>* states)
 {
 }
 

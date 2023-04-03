@@ -89,7 +89,6 @@ void PauseState::update(float dt, RenderWindow* window, int* terminator, deque<S
 		settings = 0;
 		*terminator += states->size();      //////////////need to add option to keep background state
 		states->push_front(new SettingsState);
-		states->push_front(new Background);
 	}
 	if (exit) {
 		exit = 0; 
@@ -104,7 +103,7 @@ void PauseState::update(float dt, RenderWindow* window, int* terminator, deque<S
 		calc_fps(dt);
 }
 
-void PauseState::pollevent(Event event, RenderWindow* window)
+void PauseState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

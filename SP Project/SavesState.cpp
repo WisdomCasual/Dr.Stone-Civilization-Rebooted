@@ -207,7 +207,7 @@ void SavesState::render(RenderWindow* window)
 		window->draw(fps_text);
 }
 
-void SavesState::pollevent(Event event, RenderWindow* window)
+void SavesState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {
