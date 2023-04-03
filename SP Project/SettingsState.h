@@ -29,6 +29,13 @@ private:
     bool button_pressed = 0, arrow_pressed = 0;
     Vector2f mouse_pos = { 0,0 };
     Sprite tip;
+    VideoMode save_resolution = { 1920, 1080 };
+    string title = "";
+    int save_framelimit = 120, save_volume = 100, save_music = 100;
+    bool save_vsync = 0;
+
+
+
     struct slider_info {
         short int x = 0, y = 0, mx = 1, color = 0;
         short int* linker = nullptr;
