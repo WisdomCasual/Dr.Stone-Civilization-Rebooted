@@ -6,7 +6,7 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, deque<St
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		back_arrow.setScale(scale * 0.3, scale * 0.3);
-		if (Mouse::isButtonPressed(Mouse::Left)) {
+		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
 			back_arrow.setScale(scale * 0.27, scale * 0.27);
@@ -40,7 +40,7 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 	devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
 	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
 	if (devbutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-		if (Mouse::isButtonPressed(Mouse::Left)) {
+		if (Mouse::isButtonPressed(Mouse::Left) && devbutton.getGlobalBounds().contains(clicked_on)) {
 			button_pressed = 1;
 			devtext.setPosition(x + 35 * scale, y + 35.4 * scale);
 			devbutton.setTextureRect(IntRect(45, 0, 45, 49));
@@ -65,9 +65,7 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 
 void SettingsState::update_slider(RenderWindow* window, int color, int pos_x, int pos_y,int target, string name)
 {
-	tip.setTextureRect(tipsright[color]);
-	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
-	if (Mouse::isButtonPressed(Mouse::Left)) {
+	if (Mouse::isButtonPressed(Mouse::Left) && devbutton.getGlobalBounds().contains(clicked_on)) {
 		if (tip.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			presssed = 1;
 		}
@@ -75,28 +73,26 @@ void SettingsState::update_slider(RenderWindow* window, int color, int pos_x, in
 	else
 		presssed = 0;
 	if (presssed) {
-		info[target].tiprightx = round(max(min(mouse_pos.x, (int)(x + (info[target].x + info[target].length) * scale)), (int)((x + (info[target].x - info[target].length) * scale))) / 64.0) * 64;
+		
 	}
-	tip.setScale(3, 3);
-
-	tip.setTexture(*textures[0]);
 }
 
 void SettingsState::render_slider(RenderWindow* window,int target)
 {
-	tip.setTextureRect(tipsleft[info[target].color]);
-	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
-	tip.setPosition(info[target].tipleftx, info[target].y);
+	tip.setScale(scale/3, scale/3);
+	tip.setTextureRect(tipsleft[sliders[target].color]);
+	tip.setOrigin(tip.getLocalBounds().left , tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+	tip.setPosition(x + sliders[target].x * (scale/3), y + sliders[target].y * scale);
 	window->draw(tip); ///////delete, just for testing
 
-	tip.setTextureRect(mids[info[target].color]);
-	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
-	tip.setPosition(info[target].midx + 3 * scale, info[target].y + 1.5*scale);
+	tip.setTextureRect(mids[sliders[target].color]);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+	tip.setPosition(x + (sliders[target].x + 9) * (scale/3), y + sliders[target].y * scale);
 	window->draw(tip);
 
-	tip.setTextureRect(tipsright[info[target].color]);
-	tip.setOrigin(tip.getLocalBounds().width / 2.0, tip.getLocalBounds().width / 2.0);
-	tip.setPosition(info[target].tiprightx,y + info[target].y);
+	tip.setTextureRect(tipsright[sliders[target].color]);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+	tip.setPosition(sliders[target].tipx, y + sliders[target].y * scale);
 
 	window->draw(tip);
 }
@@ -125,7 +121,20 @@ SettingsState::SettingsState()
 	devtext.setFillColor(Color(200, 200, 200));
 
 	tip.setTexture(*textures[0]);
-	info[0].tiprightx = 960 + (info[0].x + info[0].length) * scale;
+	string skip;
+	ifstream ifs("config/window.ini");
+	if (ifs.is_open()) {
+		getline(ifs, skip);
+		ifs >> x >>y;
+	}
+	ifs.close();
+
+	if (x / 120.0 < y / 120.0) scale = x / 120.0;
+	else scale = y / 120.0;
+
+	for (int i = 0; i < 1; i++) {
+		sliders[i].tipx = x / 2 + (sliders[i].x + 27 + *sliders[i].linker / (float)sliders[i].mx * 120) * (scale / 3);
+	}
 }
 
 SettingsState::~SettingsState()
@@ -184,6 +193,12 @@ void SettingsState::pollevent(Event event, RenderWindow* window)
 				window->close(); break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
+			}
+		case Event::MouseButtonPressed:
+			switch (event.mouseButton.button) {
+			case Mouse::Left:
+				clicked_on = window->mapPixelToCoords(Mouse::getPosition(*window));
+				break;
 			}
 		}
 	}
