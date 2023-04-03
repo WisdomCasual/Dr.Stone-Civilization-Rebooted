@@ -15,6 +15,14 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, deque<St
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
+				ofstream ofs("config/window.ini", ofstream::out, ofstream::trunc);
+				if (ofs.is_open()) {
+					ofs << title <<'\n';
+					ofs << resolutions[resolution].x << ' ' << resolutions[resolution].y <<'\n';
+					ofs << framelimits[framelimit] <<'\n';
+					ofs << save_vsync;
+					ofs.close();
+				}
 				*terminator += states->size();
 				states->push_front(new MainMenuState);
 				states->push_front(new Background);
@@ -67,15 +75,35 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 
 void SettingsState::update_slider(RenderWindow* window, slider_info* sliders, int target)
 {
-	tip.setPosition(sliders[target].tipx, y + sliders[target].y * scale);
-	float initpos = x + (sliders[target].x + 9) * (scale / 3), mxlen = sliderconst * (scale / 3), stepsize = mxlen / sliders[target].mx;
 	if (Mouse::isButtonPressed(Mouse::Left)) {
+
+		tip.setScale(scale / 3, scale / 3);
+		tip.setTextureRect(tipsleft[sliders[target].color]);
+		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+		tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
 		if(tip.getGlobalBounds().contains(clicked_on))
+			sliders[target].presssed = 1;
+
+
+		tip.setScale(sliderconst / 18 * (scale / 3), (scale / 3));
+		tip.setTextureRect(mids[3]);
+		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+		tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
+		if (tip.getGlobalBounds().contains(clicked_on))
+			sliders[target].presssed = 1;
+
+
+		tip.setScale(scale / 3, scale / 3);
+		tip.setTextureRect(tipsright[3]);
+		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+		tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3), y + sliders[target].y * scale);
+		if (tip.getGlobalBounds().contains(clicked_on))
 			sliders[target].presssed = 1;
 	}
 	else
 		sliders[target].presssed = 0;
 	if (sliders[target].presssed) {
+		float initpos = x + (sliders[target].x + 9) * (scale / 3), mxlen = sliderconst * (scale / 3), stepsize = mxlen / sliders[target].mx;
 		if(mouse_pos.x < initpos) sliders[target].tipx = initpos;
 		else if (mouse_pos.x > initpos + mxlen) sliders[target].tipx = initpos + mxlen;
 		else
@@ -106,9 +134,9 @@ void SettingsState::render_slider(RenderWindow* window,int target)
 	//foreground
 	tip.setScale(scale / 3, scale / 3);
 	tip.setTextureRect(tipsleft[sliders[target].color]);
-	tip.setOrigin(tip.getLocalBounds().left , tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+	tip.setOrigin(tip.getLocalBounds().left , tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);   
 	tip.setPosition(x + sliders[target].x * (scale/3), y + sliders[target].y * scale);
-	window->draw(tip); ///////delete, just for testing
+	window->draw(tip);
 
 	tip.setScale(sliders[target].midscale * (scale/3), (scale/3));
 	tip.setTextureRect(mids[sliders[target].color]);
@@ -167,20 +195,20 @@ SettingsState::SettingsState()
 	slider_text.setFillColor(Color::Black);
 
 	tip.setTexture(*textures[0]);
-	string skip;
 	ifstream ifs("config/window.ini");
 	if (ifs.is_open()) {
-		getline(ifs, skip);
-		ifs >> x >>y;
+		getline(ifs, title);
+		ifs >> save_resolution.width >> save_resolution.height;
+		ifs >> save_framelimit;
+		ifs >> save_vsync;
 	}
 	ifs.close();
-
-	if (x / 120.0 < y / 120.0) scale = x / 120.0;
-	else scale = y / 120.0;
+	if (save_resolution.width / 120.0 < save_resolution.height / 120.0) scale = save_resolution.width / 120.0;
+	else scale = save_resolution.height / 120.0;
 
 	for (int i = 0; i < 4; i++) {
-		sliders[i].tipx = x / 2 + (sliders[i].x + 9 + *sliders[i].linker / (float)sliders[i].mx * sliderconst) * (scale / 3);
-		sliders[i].midscale = (sliders[i].tipx - (x / 2 + (sliders[i].x + 9) * (scale / 3))) / (18 * (scale / 3));
+		sliders[i].tipx = save_resolution.width / 2 + (sliders[i].x + 9 + *sliders[i].linker / (float)sliders[i].mx * sliderconst) * (scale / 3);
+		sliders[i].midscale = (sliders[i].tipx - (save_resolution.width / 2 + (sliders[i].x + 9) * (scale / 3))) / (18 * (scale / 3));
 	}
 }
 
