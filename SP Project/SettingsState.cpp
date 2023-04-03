@@ -14,7 +14,7 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, deque<St
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-				*terminator += 2;
+				*terminator += states->size();
 				states->push_front(new MainMenuState);
 				states->push_front(new Background);
 			}
@@ -48,7 +48,7 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 		else {
 			if (button_pressed) {
 				button_pressed = 0;
-				*terminator += 2;
+				*terminator += states->size();
 				states->push_front(new MapBuilderState);
 			}
 			devbutton.setTextureRect(IntRect(0, 0, 45, 49));
@@ -202,5 +202,4 @@ void SettingsState::pollevent(Event event, RenderWindow* window)
 			}
 		}
 	}
-
 }
