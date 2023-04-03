@@ -103,10 +103,8 @@ void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, i
 	tile.setScale(scale, scale);
 	for (int i = (x_offset > 0) ? x_offset : 0; i < (x_win + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
 		for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
-			int layer_number = -1;
 			for (auto props : tiles[i][j].layer[priority]) {
-				layer_number++;
-				if (layer_toggle[layer_number + 4 * priority]) {
+				if (layer_toggle[props.first + 4 * priority]) {
 					tile.setTexture(*textures[props.second.z]);
 					tile.setTextureRect(IntRect(props.second.x * 16, props.second.y * 16, 16, 16));
 					tile.setPosition(x + (16 * scale * i), y + (16 * scale * j));
@@ -574,13 +572,12 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 			if (event.type == Event::MouseWheelMoved)
 				if (scale + event.mouseWheel.delta > global_scale && scale + event.mouseWheel.delta < 20*global_scale) {
 					if (global_scale < 1)
-						scaling_speed = 1/speed_list[(int)round(log(int(round(1 / global_scale))))];
+						scaling_speed = 1.0/speed_list[(int)round(log(int(round(1 / global_scale))))];
 					else
 						scaling_speed = round(global_scale);
-					cout << scaling_speed << endl;
 					x -= event.mouseWheel.delta * 16*scaling_speed * x_mid;
 					y -= event.mouseWheel.delta * 16*scaling_speed * y_mid;
-					scale += event.mouseWheel.delta*scaling_speed;
+					scale += event.mouseWheel.delta * scaling_speed;
 				} break;
 		}
 	}

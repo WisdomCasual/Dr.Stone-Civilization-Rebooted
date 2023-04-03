@@ -21,6 +21,7 @@ private:
 		bool hover = 0;
 	};
 	vector<button> buttons;
+	Vector2f clicked_on = { -1, -1 };
 	bool play = 0, settings = 0, exit = 0;
 
 	//private functions

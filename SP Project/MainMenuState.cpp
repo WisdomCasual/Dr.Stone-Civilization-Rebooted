@@ -7,7 +7,7 @@ void MainMenuState::update_buttons(RenderWindow* window)
 		buttontex.setTextureRect(IntRect(0,button.pressed * 49, 190, 49));
 		buttontex.setPosition(x+button.x * scale, y+button.y * scale);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left))button.pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))button.pressed = 1;
 			else {
 				if (button.pressed)
 					button.execute = 1;
@@ -108,6 +108,12 @@ void MainMenuState::pollevent(Event event, RenderWindow* window)
 				window->close(); break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
+			}
+		case Event::MouseButtonPressed:
+			switch (event.mouseButton.button) {
+			case Mouse::Left:
+				clicked_on = window->mapPixelToCoords(Mouse::getPosition(*window));
+				break;
 			}
 		}
 	}

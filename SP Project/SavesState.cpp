@@ -10,7 +10,7 @@ void SavesState::update_saves(RenderWindow* window)
 		save_bg.setTextureRect(IntRect(0, saves[i].pressed * 100, 100, 200));
 		save_bg.setPosition(x + saves[i].x * scale, y + saves[i].y * scale);
 		if (save_bg.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left))saves[i].pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && save_bg.getGlobalBounds().contains(clicked_on))saves[i].pressed = 1;
 			else {
 				if (saves[i].pressed)
 					if (saves[i].empty)
@@ -25,7 +25,7 @@ void SavesState::update_saves(RenderWindow* window)
 		}
 		del.setPosition(x + saves[i].x * scale, y + (saves[i].y + 115) * scale);
 		if (del.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left))saves[i].del_pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && del.getGlobalBounds().contains(clicked_on))saves[i].del_pressed = 1;
 			else {
 				if (saves[i].del_pressed) {
 					saves[i].empty = 1;
@@ -136,7 +136,7 @@ void SavesState::update_arrow(RenderWindow* window, int* terminator, deque<State
 	if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		arrow.setScale(scale * 0.8, scale * 0.8);
-		if (Mouse::isButtonPressed(Mouse::Left)) {
+		if (Mouse::isButtonPressed(Mouse::Left) && arrow.getGlobalBounds().contains(clicked_on)) {
 			arrow_pressed = 1;
 			arrow.setTextureRect(IntRect(44, 0, 22, 21));
 			arrow.setScale(scale * 0.75, scale * 0.75);
@@ -219,6 +219,12 @@ void SavesState::pollevent(Event event, RenderWindow* window)
 				window->close(); break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
+			}
+		case Event::MouseButtonPressed:
+			switch (event.mouseButton.button) {
+			case Mouse::Left:
+				clicked_on = window->mapPixelToCoords(Mouse::getPosition(*window));
+				break;
 			}
 		}
 	}

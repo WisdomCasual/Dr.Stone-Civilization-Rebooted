@@ -18,6 +18,7 @@ private:
 	Text del;
     float scale = 1;
 	save saves[3] = { {-130,0,1}, {0,0,2}, {130,0,3} };
+	Vector2f clicked_on = { -1, -1 };
 
 
 	Sprite save_bg, savesBG, charactertex, arrow;

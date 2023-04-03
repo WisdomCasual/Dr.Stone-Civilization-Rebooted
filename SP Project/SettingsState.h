@@ -18,25 +18,29 @@ private:
         checkMark = { 370,45,16,15 };
     //Colors loaded in arrangment : Yellow -> Red -> Blue
     bool presssed = 0;
+    Vector2f clicked_on = { -1, -1 };
     Sprite tissue, back_arrow, devbutton;
     Text devtext;
     RectangleShape tint;
     float x = 0, y = 0;
     float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
+    int resolution = 5;
     bool button_pressed = 0, arrow_pressed = 0;
     Vector2i mouse_pos = { 0,0 };
-
     Sprite tip;
     struct slider_info {
-        int x = 0, y = 0, length = 0, color = 0, tipleftx = 0, tiprightx = 0, midx = 0;
+        int x = 0, y = 0, mx = 1, color = 0;
+        int* linker = nullptr;
+        string name = "";
+        int tipx = 0;
 
-    }info[3] = { {  0, 0, 20, 1 } };
+    }sliders[3] = { {  -105, -15, 5, 0, &resolution, "Resolution"} };
 
     //private functions:
     void update_arrow(RenderWindow*, int*, deque<State*>*);
     void dev_button(RenderWindow*, int*, deque<State*>*);
-    void update_slider(RenderWindow*, int, int, int,int, string);
-    void render_slider(RenderWindow*,int);
+    void update_slider(RenderWindow*, int, int, int, int, string);
+    void render_slider(RenderWindow*, int);
 public:
     //constructors / destructors
     SettingsState();
