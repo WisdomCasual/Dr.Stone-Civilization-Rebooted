@@ -144,7 +144,7 @@ void SavesState::update_arrow(RenderWindow* window, int* terminator, deque<State
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-				*terminator += 2;
+				*terminator += states->size();
 				states->push_front(new MainMenuState);
 				states->push_front(new Background);
 			}

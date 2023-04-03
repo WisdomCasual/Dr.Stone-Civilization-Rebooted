@@ -71,15 +71,15 @@ void MainMenuState::update(float dt, RenderWindow* window, int* terminator, dequ
 
 	if (play) {
 		play = 0;
+		*terminator += states->size();
 		states->push_front(new SavesState);
 		states->push_front(new Background);
-		*terminator += 2;
 	}
 	if (settings) { 
-		settings = 0; 
+		settings = 0;
+		*terminator += states->size();
 		states->push_front(new SettingsState);
 		states->push_front(new Background); 
-		*terminator += 2;
 	}
 	if (exit) { exit = 0; window->close(); }
 
