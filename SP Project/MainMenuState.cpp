@@ -96,7 +96,7 @@ void MainMenuState::render(RenderWindow* window)
 		window->draw(fps_text);
 }
 
-void MainMenuState::pollevent(Event event, RenderWindow* window)
+void MainMenuState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

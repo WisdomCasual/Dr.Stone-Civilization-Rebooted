@@ -181,7 +181,7 @@ void SettingsState::render(RenderWindow* window)
 		window->draw(fps_text);
 }
 
-void SettingsState::pollevent(Event event, RenderWindow* window)
+void SettingsState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

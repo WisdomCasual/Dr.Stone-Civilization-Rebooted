@@ -22,7 +22,7 @@ void Game::initial_states()
 {
 	//sets intial states 
 	states.push_back(new Background);
-	states.push_back(new PauseState);
+	states.push_back(new MainMenuState);
 }
 
 void Game::initial_icon()
@@ -63,7 +63,7 @@ void Game::pollevent()
 {
 	//calls pollevent update function of the top state in the deque
 	if (!states.empty())
-		states.back()->pollevent(event, window);
+		states.back()->pollevent(event, window, &terminator, &states);
 }
 
 void Game::update()
