@@ -144,7 +144,7 @@ void SavesState::update_arrow(RenderWindow* window, int* terminator, deque<State
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-				*terminator += 2;
+				*terminator += states->size();
 				states->push_front(new MainMenuState);
 				states->push_front(new Background);
 			}
@@ -207,7 +207,7 @@ void SavesState::render(RenderWindow* window)
 		window->draw(fps_text);
 }
 
-void SavesState::pollevent(Event event, RenderWindow* window)
+void SavesState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

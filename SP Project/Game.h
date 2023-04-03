@@ -4,6 +4,7 @@
 #include"Background.h"
 #include"SavesState.h"
 #include"MainMenuState.h"
+#include "PauseState.h"
 
 using namespace std;
 using namespace sf;

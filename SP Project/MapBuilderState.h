@@ -1,6 +1,8 @@
 #pragma once
 #include"State.h"
 #include "CreativeMode.h"
+#include "PauseState.h"
+
 
 using namespace std;
 
@@ -69,5 +71,5 @@ public:
 	//public functions:
 	void update(float, RenderWindow*, int*, deque<State*>*);
 	void render(RenderWindow*);
-	void pollevent(Event, RenderWindow*);
+	void pollevent(Event, RenderWindow*, int*, deque<State*>*);
 };

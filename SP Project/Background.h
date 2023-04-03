@@ -12,7 +12,7 @@ private:
 public:
 	Background();
 	~Background();
-	void pollevent(Event, RenderWindow*);
+	void pollevent(Event, RenderWindow*, int*, deque<State*>*);
 	void update(float, RenderWindow*, int*, deque<State*>*);
 	void render(RenderWindow*);
 };

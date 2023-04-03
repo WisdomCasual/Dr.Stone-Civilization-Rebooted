@@ -466,7 +466,7 @@ void MapBuilderState::render(RenderWindow* window)
 		window->draw(fps_text);
 }
 
-void MapBuilderState::pollevent(Event event, RenderWindow* window)
+void MapBuilderState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {
@@ -475,7 +475,7 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window)
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				window->close(); break;
+				states->push_back(new PauseState); break;
 			case Keyboard::Space:
 				x = 0, y = 0; break;
 			case Keyboard::F3:

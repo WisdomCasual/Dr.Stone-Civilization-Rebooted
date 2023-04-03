@@ -21,7 +21,7 @@ void GameState::render()
 
 }
 
-void GameState::pollevent(Event event, RenderWindow* window)
+void GameState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

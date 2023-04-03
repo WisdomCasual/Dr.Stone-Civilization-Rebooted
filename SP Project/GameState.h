@@ -15,5 +15,5 @@ public:
 	//public functions:
 	void update(float, RenderWindow*, int*, deque<State*>*);
 	void render();
-	void pollevent(Event, RenderWindow*);
+	void pollevent(Event, RenderWindow*, int*, deque<State*>*);
 };
