@@ -48,9 +48,9 @@ void MapBuilderState::update_info_text()
 void MapBuilderState::dash_cam()
 {
 	//moves the Camera, increase cam screen with "Left Ctrl"
-	cam_speed = 150;
+	cam_speed = 350;
 	if (Keyboard::isKeyPressed(Keyboard::LControl))
-		cam_speed = 500;
+		cam_speed = 1000;
 	Vector2f movement = delta_movement();
 	x -= dt * cam_speed * movement.x * scale;
 	y -= dt * cam_speed * movement.y * scale;
@@ -547,7 +547,7 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window, int* terminat
 				picked_tile.global_select_done = 0;
 				picked_tile.select_done = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-				brush_size += (brush_size < 15); break;
+				brush_size += (brush_size < 25); break;
 			case Keyboard::Hyphen:
 				picked_tile.global_select_done = 0;
 				picked_tile.select_done = 0;
