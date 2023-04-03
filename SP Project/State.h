@@ -9,6 +9,9 @@
 using namespace std;
 using namespace sf;
 
+inline int fps = 0, frame_count = 0, frame_sum = 0;
+inline bool fps_active = 0;
+inline float delay = 0;
 
 class State
 {
@@ -32,9 +35,6 @@ public:
 	};
 	Font font;
 	Text fps_text, text;
-	float delay = 0;
-	int fps = 0, frame_count = 0, frame_sum = 0;
-	bool fps_active = 0;
 
 	//public functions:
 	void initial_textures(string);
