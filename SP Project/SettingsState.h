@@ -17,29 +17,33 @@ private:
         buttons[4] = { {290,139,93,94} ,{240,0,93,94} ,{290,49,93,94},{201,296,92,92} },
         checkMark = { 370,45,16,15 };
     //Colors loaded in arrangment : Yellow -> Red -> Blue
-    bool presssed = 0;
     Vector2f clicked_on = { -1, -1 };
     Sprite tissue, back_arrow, devbutton;
-    Text devtext;
+    Text devtext, slider_text;
     RectangleShape tint;
     float x = 0, y = 0;
     float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
-    int resolution = 5;
+    short int resolution = 4, framelimit = 3, game_volume = 100, music_volume = 100;
+    const Vector2u resolutions[10] = { {800, 600}, {1280, 720}, {1280, 800}, {1366, 768}, {1920, 1080}, {1920, 1200}, {2560, 1440}, {2560, 1600}, {3840, 2160}, {3840, 2400} };
+    const short int framelimits[6] = { 30, 60, 90, 120, 144, 165 };
     bool button_pressed = 0, arrow_pressed = 0;
-    Vector2i mouse_pos = { 0,0 };
+    Vector2f mouse_pos = { 0,0 };
     Sprite tip;
     struct slider_info {
-        int x = 0, y = 0, mx = 1, color = 0;
-        int* linker = nullptr;
+        short int x = 0, y = 0, mx = 1, color = 0;
+        short int* linker = nullptr;
         string name = "";
-        int tipx = 0;
+        char text_type = 0;     //0 = plain text, 1 = percentage (a%), 2 = pair (a x b)
+        short int tipx = 0;
+        float midscale = 1;
+        bool presssed = 0;
 
-    }sliders[3] = { {  -105, -15, 5, 0, &resolution, "Resolution"} };
+    }sliders[4] = { {-105, -15, 9, 0, &resolution, "Resolution", 2}, {-105, 0, 5, 1, &framelimit, "Frame Limit", 0}, {-105, 15, 100, 2, &game_volume, "Game Sounds", 1}, {-105, 30, 100, 2, &music_volume, "Music", 1} };
 
     //private functions:
     void update_arrow(RenderWindow*, int*, deque<State*>*);
     void dev_button(RenderWindow*, int*, deque<State*>*);
-    void update_slider(RenderWindow*, int, int, int, int, string);
+    void update_slider(RenderWindow*, slider_info*, int);
     void render_slider(RenderWindow*, int);
 public:
     //constructors / destructors
