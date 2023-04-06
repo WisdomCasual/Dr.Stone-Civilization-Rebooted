@@ -1,6 +1,7 @@
 #include "CreativeMode.h"
+
 void CreativeMode::change_tex()
-{
+{	
 	delete this->Tex;
 	Tex = new Sprite;
 	Tex->setTexture(*textures->at(curr_tex_set));
@@ -12,6 +13,7 @@ void CreativeMode::change_tex()
 	sidewindow->clear();
 	sidewindow->setPosition(window_pos);
 	sidewindow->setSize({ (unsigned int)(a * scale),(unsigned int)(b * scale) });
+
 }
 //display grid lines
 void CreativeMode::grid_lines()
@@ -85,6 +87,7 @@ CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_t
 	this->textures = textures;
 	this->picked_tile = &picked_tile;
 	curr_tex_set = picked_tile.tex_id;
+	Tex = new Sprite;
 	change_tex();
 	initial_rectangles();
 }
