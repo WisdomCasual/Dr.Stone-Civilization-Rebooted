@@ -18,11 +18,12 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, deque<St
 				ofstream ofs("config/window.ini", ofstream::out, ofstream::trunc);
 				if (ofs.is_open()) {
 					ofs << title <<'\n';
-					ofs << resolutions[resolution].x << ' ' << resolutions[resolution].y <<'\n';
+					ofs << resolutions[resolution].width << ' ' << resolutions[resolution].height <<'\n';
 					ofs << framelimits[framelimit] <<'\n';
 					ofs << save_vsync;
 					ofs.close();
 				}
+				game.update_window(resolutions[resolution], title, framelimits[framelimit], save_vsync);
 				*terminator += states->size();
 				states->push_front(new MainMenuState);
 				states->push_front(new Background);
@@ -158,13 +159,68 @@ void SettingsState::render_slider(RenderWindow* window,int target)
 
 	slider_text.setCharacterSize(5 * scale);
 	if(sliders[target].text_type == 0)
-		slider_text.setString(to_string(framelimits[*sliders[target].linker]));
+		slider_text.setString(to_string(*sliders[target].linker));
 	else if(sliders[target].text_type == 1)
 		slider_text.setString(to_string(*sliders[target].linker) + "%");
 	else
-		slider_text.setString(to_string(resolutions[*sliders[target].linker].x) + " x " + to_string(resolutions[*sliders[target].linker].y));
+		slider_text.setString(sliders[target].txt[*sliders[target].linker]);
 	slider_text.setPosition(x + (sliders[target].x + 9 + sliderconst + 15) * (scale / 3), y + (sliders[target].y - 4) * scale);
 	window->draw(slider_text);
+}
+
+void SettingsState::settings_intializer()
+{
+	//read current settings
+	ifstream ifs("config/window.ini");
+	if (ifs.is_open()) {
+		getline(ifs, title);
+		ifs >> save_resolution.width >> save_resolution.height;
+		ifs >> save_framelimit;
+		ifs >> save_vsync;
+	}
+	ifs.close();
+	if (save_resolution.width / 120.0 < save_resolution.height / 120.0) scale = save_resolution.width / 120.0;
+	else scale = save_resolution.height / 120.0;
+	x = save_resolution.width / 2;
+	y = save_resolution.height / 2;
+
+	//initialize resolution data
+	for (int i = 0; i < resnum; i++) {
+		if (save_resolution == resolutions[i]) {
+			resolution = i;
+			break;
+		}
+	}
+	if (resolution == resnum)
+		resolutions[resnum] = save_resolution, resolutions_text[resnum] = to_string(save_resolution.width) + " x " + to_string(save_resolution.height);
+
+	for (int i = 0; i < resnum; i++)
+		resolutions_text[i] = to_string(resolutions[i].width) + " x " + to_string(resolutions[i].height);
+
+
+
+	//initialize framelimit data
+	for (int i = 0; i < framelimnum; i++) {
+		if (save_framelimit == framelimits[i]) {
+			framelimit = i;
+			break;
+		}
+	}
+
+	if (framelimit == framelimnum)
+		framelimits[framelimnum] = save_framelimit, framelimits_text[framelimnum] = to_string(save_framelimit);
+	
+	for (int i = 0; i < framelimnum; i++)
+		framelimits_text[i] = to_string(framelimits[i]);
+
+
+	//intiliazie slider positions
+	float percentage = 1;
+	for (int i = 0; i < 4; i++) {
+		percentage = (*sliders[i].linker < sliders[i].mx) ? *sliders[i].linker / (float)sliders[i].mx : 1.0;
+		sliders[i].tipx = x + (sliders[i].x + 9 +percentage * sliderconst) * (scale / 3);
+		sliders[i].midscale = (sliders[i].tipx - (x + (sliders[i].x + 9) * (scale / 3))) / (18 * (scale / 3));
+	}
 }
 
 SettingsState::SettingsState()
@@ -195,21 +251,8 @@ SettingsState::SettingsState()
 	slider_text.setFillColor(Color::Black);
 
 	tip.setTexture(*textures[0]);
-	ifstream ifs("config/window.ini");
-	if (ifs.is_open()) {
-		getline(ifs, title);
-		ifs >> save_resolution.width >> save_resolution.height;
-		ifs >> save_framelimit;
-		ifs >> save_vsync;
-	}
-	ifs.close();
-	if (save_resolution.width / 120.0 < save_resolution.height / 120.0) scale = save_resolution.width / 120.0;
-	else scale = save_resolution.height / 120.0;
 
-	for (int i = 0; i < 4; i++) {
-		sliders[i].tipx = save_resolution.width / 2 + (sliders[i].x + 9 + *sliders[i].linker / (float)sliders[i].mx * sliderconst) * (scale / 3);
-		sliders[i].midscale = (sliders[i].tipx - (save_resolution.width / 2 + (sliders[i].x + 9) * (scale / 3))) / (18 * (scale / 3));
-	}
+	settings_intializer();
 }
 
 SettingsState::~SettingsState()
