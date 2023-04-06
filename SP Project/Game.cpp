@@ -53,6 +53,14 @@ Game::~Game()
 	}
 }
 
+void Game::update_window(VideoMode resolution, string title, int framelimit, bool vsync)
+{
+	delete this->window;
+	this->window = new RenderWindow(resolution, title, Style::Titlebar | Style::Close);
+	this->window->setFramerateLimit(framelimit);
+	this->window->setVerticalSyncEnabled(vsync);
+}
+
 void Game::updatedt()
 {
 	//updates the DeltaTime;
