@@ -9,7 +9,7 @@
 using namespace std;
 using namespace sf;
 
-class Game
+struct Game
 {
 private:
 	//variables:

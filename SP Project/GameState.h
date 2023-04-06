@@ -1,7 +1,7 @@
 #pragma once
 #include"State.h"
 
-class GameState : public State
+struct GameState : public State
 {
 private:
 	//variables:

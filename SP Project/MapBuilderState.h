@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class MapBuilderState : public State
+struct MapBuilderState : public State
 {
 private:
 	//variables:

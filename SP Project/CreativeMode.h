@@ -3,7 +3,7 @@
 using namespace std;
 using namespace sf;
 
-class CreativeMode
+struct CreativeMode
 {
 private:
 	//variables:

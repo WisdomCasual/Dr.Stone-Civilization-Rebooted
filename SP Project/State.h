@@ -13,7 +13,7 @@ inline int fps = 0, frame_count = 0, frame_sum = 0;
 inline bool fps_active = 0;
 inline float delay = 0;
 
-class State
+struct State
 {
 private:
 

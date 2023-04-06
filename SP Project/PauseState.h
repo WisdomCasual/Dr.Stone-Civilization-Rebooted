@@ -5,7 +5,7 @@
 using namespace std;
 using namespace sf;
 
-class PauseState : public State
+struct PauseState : public State
 {
     private:
         bool presssed = 0;

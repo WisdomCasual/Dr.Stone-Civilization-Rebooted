@@ -10,7 +10,7 @@
 using namespace std;
 using namespace sf;
 
-class SettingsState :
+struct SettingsState :
     public State
 {
 private:

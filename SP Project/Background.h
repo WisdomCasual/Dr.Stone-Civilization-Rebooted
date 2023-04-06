@@ -1,7 +1,7 @@
 #pragma once
 #include"State.h"
 
-class Background : public State
+struct Background : public State
 {
 private:
 	Sprite bg;
