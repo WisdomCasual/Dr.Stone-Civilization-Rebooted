@@ -33,11 +33,9 @@ public:
 	~Game();
 
 	//public functions:
-	void update_window(VideoMode resolution, string title, int framelimit, bool vsync);
 	void updatedt();
 	void pollevent();
 	void update();
 	void render();
 	void run();
 };
-inline Game game;
