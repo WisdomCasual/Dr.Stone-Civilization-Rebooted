@@ -3,7 +3,7 @@
 #include"Background.h"
 #include"MainMenuState.h"
 
-class SavesState :
+struct SavesState :
 	public State
 {
 private:

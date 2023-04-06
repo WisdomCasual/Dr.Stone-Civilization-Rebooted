@@ -5,7 +5,7 @@
 #include"SettingsState.h"
 using namespace sf;
 using namespace std;
-class MainMenuState :public State
+struct MainMenuState :public State
 {
 private:
 	//variables
