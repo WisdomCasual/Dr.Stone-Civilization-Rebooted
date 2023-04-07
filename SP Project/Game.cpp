@@ -55,8 +55,10 @@ Game::~Game()
 
 void Game::update_window(VideoMode resolution, string title, int framelimit, bool vsync)
 {
-	delete this->window;
-	this->window = new RenderWindow(resolution, title, Style::Titlebar | Style::Close);
+	if ( Vector2u { resolution.width, resolution.height } != this->window->getSize()) {
+		delete this->window;
+		this->window = new RenderWindow(resolution, title, Style::Titlebar | Style::Close);
+	}
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
 }

@@ -72,8 +72,6 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 	}
 }
 
-
-
 void SettingsState::update_slider(RenderWindow* window, slider_info* sliders, int target)
 {
 	if (Mouse::isButtonPressed(Mouse::Left)) {
