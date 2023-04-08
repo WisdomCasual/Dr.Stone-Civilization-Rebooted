@@ -225,9 +225,8 @@ SettingsState::SettingsState()
 {
 	initial_fps();
 	initial_textures("settings");
-	tissue.setTexture(*textures.at(0));
-	tissue.setTextureRect(buttons[3]);
-	tissue.setOrigin(92 / 2, 92 / 2);
+	tissue.setTexture(*textures[3]);
+	tissue.setOrigin(700 / 2, 700 / 2);
 	tint.setSize({ 1920, 1080 });
 	tint.setFillColor(Color(0, 0, 0, 154));
 
@@ -270,7 +269,7 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, dequ
 	tint.setSize({ win_x, win_y });
 
 	tissue.setPosition(x, y);
-	tissue.setScale(scale, scale);
+	tissue.setScale(scale * 0.125, scale * 0.125);
 
 	dev_button(window, terminator, states);
 	update_arrow(window, terminator, states);
