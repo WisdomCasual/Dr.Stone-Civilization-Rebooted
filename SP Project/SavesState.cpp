@@ -4,7 +4,7 @@ void SavesState::update_saves(RenderWindow* window)
 {
 	del.setOrigin(del.getLocalBounds().width / 2.0, del.getLocalBounds().top + del.getLocalBounds().height / 2.0);
 	savesBG.setPosition(x, y);
-	savesBG.setScale(scale * 3.1, scale * 3.1);
+	savesBG.setScale(scale * 0.33, scale * 0.33);
 	save_bg.setScale(scale, scale);
 	for (int i = 0; i < 3; i++) {
 		save_bg.setTextureRect(IntRect(0, saves[i].pressed * 100, 100, 200));
