@@ -46,9 +46,8 @@ PauseState::PauseState()
 
 	initial_fps();
 
-	tissue.setTexture(*textures[1]);
-	tissue.setTextureRect(IntRect(201, 296, 92, 92));
-	tissue.setOrigin(92 / 2, 92 / 2);
+	tissue.setTexture(*textures[2]);
+	tissue.setOrigin(700 / 2, 700 / 2);
 
 	tint.setSize({ 1920, 1080 });
 	tint.setFillColor(Color(0, 0, 0, 154));
@@ -79,7 +78,7 @@ void PauseState::update(float dt, RenderWindow* window, int* terminator, deque<S
 
 	tint.setSize({ win_x, win_y });
 	tissue.setPosition(x, y);
-	tissue.setScale(scale, scale);
+	tissue.setScale(scale * 0.125, scale * 0.125);
 
 	if (resume) {
 		resume = 0;
