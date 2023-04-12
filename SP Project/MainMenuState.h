@@ -3,6 +3,10 @@
 #include"SavesState.h"
 #include"Background.h"
 #include"SettingsState.h"
+
+#include"Global.h"
+using namespace globalvar;
+
 using namespace sf;
 using namespace std;
 struct MainMenuState :public State
@@ -25,16 +29,17 @@ private:
 	bool play = 0, settings = 0, exit = 0;
 
 	//private functions
-	void update_buttons(RenderWindow*);
-	void render_buttons(RenderWindow*);
+	void update_buttons();
+	void render_buttons();
 public:
 	//constructors/destructors:
 	MainMenuState();
 	~MainMenuState();
 	//public functions:
-	void update(float, RenderWindow*, int*, map<int, State*>*);
-	void render(RenderWindow*);
-	void pollevent(Event, RenderWindow*, int*, map<int, State*>*);
+	void scaling();
+	void update();
+	void render();
+	void pollevent();
 		
 };
 

@@ -1,7 +1,7 @@
 #include "MainMenuState.h"
 
 
-void MainMenuState::update_buttons(RenderWindow* window)
+void MainMenuState::update_buttons()
 {
 	for (auto& button : buttons) {
 		buttontex.setTextureRect(IntRect(0,button.pressed * 49, 190, 49));
@@ -22,7 +22,7 @@ void MainMenuState::update_buttons(RenderWindow* window)
 	}
 }
 
-void MainMenuState::render_buttons(RenderWindow* window)
+void MainMenuState::render_buttons()
 {
 	buttontex.setScale(scale, scale);
 	text.setCharacterSize(25.69*scale);
@@ -59,7 +59,11 @@ MainMenuState::~MainMenuState()
 {
 }
 
-void MainMenuState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
+void MainMenuState::scaling()
+{
+}
+
+void MainMenuState::update()
 {
 	float win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
@@ -72,7 +76,7 @@ void MainMenuState::update(float dt, RenderWindow* window, int* terminator, map<
 	if (play) {
 		play = 0;
 		states->insert(SavesST);
-		states->at(SavesID)->update(dt, window, terminator, states);
+		states->at(SavesID)->update();
 
 		if (states->find(BackgroundID) != states->end())
 			states->insert(BackgroundST);
@@ -88,7 +92,7 @@ void MainMenuState::update(float dt, RenderWindow* window, int* terminator, map<
 	if (settings) { 
 		settings = 0;
 		states->insert(SettingsST);
-		states->at(SettingsID)->update(dt, window, terminator, states);
+		states->at(SettingsID)->update();
 
 		if (states->find(BackgroundID) != states->end())
 			states->insert(BackgroundST);
@@ -103,20 +107,16 @@ void MainMenuState::update(float dt, RenderWindow* window, int* terminator, map<
 	}
 	if (exit) { exit = 0; window->close(); }
 
-	update_buttons(window);
-	if (fps_active)
-		calc_fps(dt);
+	update_buttons();
 }
 
-void MainMenuState::render(RenderWindow* window)
+void MainMenuState::render()
 {
-	render_buttons(window);
+	render_buttons();
 	window->draw(logo);
-	if (fps_active)
-		window->draw(fps_text);
 }
 
-void MainMenuState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
+void MainMenuState::pollevent()
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

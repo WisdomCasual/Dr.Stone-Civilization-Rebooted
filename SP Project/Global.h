@@ -1,0 +1,76 @@
+#pragma once
+#include"State.h"
+#include <iostream>
+using namespace std;
+
+// background: 1, MainMenuState: 2 , SavesState: 3 , NewSaveState: 4 , GameState: 5 , 
+//MapBuilderState: 6, PauseState: 10, SettingsState: 11, ConfirmState: 12: 
+
+#define BackgroundID 1
+#define BackgroundST { 1, new Background }
+
+#define MainMenuID 2
+#define MainMenuST { 2, new MainMenuState }
+
+#define SavesID 3
+#define SavesST { 3, new SavesState }
+
+#define NewSaveID 4                       ///////
+#define NewSaveST { 4, new NewSaveState } ///////
+
+#define GameID 5
+#define GameST { 5, new GameState }
+
+#define MapBuilderID 6
+#define MapBuilderST { 6, new MapBuilderState }
+
+#define PauseID 10
+#define PauseST { 10, new PauseState }
+
+#define SettingsID 11
+#define SettingsST { 11, new SettingsState }
+
+#define ConfirmID 12                        /////
+#define ConfirmST { 12, new ConfirmState }  /////
+
+namespace globalvar {
+
+	inline float dt;
+	inline RenderWindow* window;
+	inline map<int, State*>* states;
+	inline Event event;
+
+	inline int fps = 0, frame_count = 0, frame_sum = 0;
+	inline bool fps_active = 0;
+	inline float delay = 0;
+
+	inline Font font;
+	inline Text fps_text, text;
+
+	inline void initial_fps()
+	{
+		font.loadFromFile("Resources/font.ttf");
+		fps_text.setFont(font);
+		fps_text.setCharacterSize(40);
+	}
+
+
+	inline void calc_fps()
+	{
+		//calculates framerate per second
+		delay += dt; frame_sum += 1.0 / dt; frame_count++;
+		if (delay > 1.0) { fps = frame_sum / frame_count; delay = 0, frame_sum = 0, frame_count = 0; }
+		fps_text.setString("  FPS " + to_string(fps));
+	}
+
+
+	inline void draw_text(string tex, int a, int b, int c)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
+	{
+		//gets window pointer, string, X cord, Y cords, Character size to draw text
+		text.setString(tex);
+		text.setCharacterSize(c);
+		text.setOrigin(text.getLocalBounds().width / 2.0, text.getLocalBounds().top + text.getLocalBounds().height / 2.0);
+		text.setPosition(a, b);
+		window->draw(text);
+	}
+}

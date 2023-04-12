@@ -1,7 +1,7 @@
 #include "SettingsState.h"
 #define sliderconst 135.0
 
-void SettingsState::update_arrow(RenderWindow* window, int* terminator, map<int, State*>* states)
+void SettingsState::update_arrow()
 {
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
@@ -26,18 +26,18 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, map<int,
 				game.update_window(resolutions[resolution], title, framelimits[framelimit], save_vsync, &window);
 
 				if (states->find(MapBuilderID) != states->end())
-					states->at(MapBuilderID)->update(dt, window, terminator, states);
+					states->at(MapBuilderID)->update();
 				else if (states->find(GameID) != states->end())
-					states->at(GameID)->update(dt, window, terminator, states);
+					states->at(GameID)->update();
 
 
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end()) {
 					states->insert(MainMenuST);
-					states->at(MainMenuID)->update(dt, window, terminator, states);
+					states->at(MainMenuID)->update();
 				}
 				else {
 					states->insert(PauseST);
-					states->at(PauseID)->update(dt, window, terminator, states);
+					states->at(PauseID)->update();
 				}
 		
 				
@@ -59,7 +59,7 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, map<int,
 	}
 }
 
-void SettingsState::dev_button(RenderWindow* window, int* terminator, map<int, State*>* states)
+void SettingsState::dev_button()
 {
 	if (test) {
 		if (states->find(MapBuilderID) != states->end() || states->find(GameID) != states->end())
@@ -87,7 +87,7 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, map<int, S
 				button_pressed = 0;
 
 				states->insert(MapBuilderST);
-				states->at(MapBuilderID)->update(dt, window, terminator, states);
+				states->at(MapBuilderID)->update();
 
 				for (auto &state : *states) {
 					if (state.first != MapBuilderID) {
@@ -107,7 +107,7 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, map<int, S
 	}
 }
 
-void SettingsState::update_slider(RenderWindow* window, slider_info* sliders, int target)
+void SettingsState::update_slider(slider_info* sliders, int target)
 {
 	if (Mouse::isButtonPressed(Mouse::Left)) {
 
@@ -149,7 +149,7 @@ void SettingsState::update_slider(RenderWindow* window, slider_info* sliders, in
 	}
 }
 
-void SettingsState::render_slider(RenderWindow* window,int target)
+void SettingsState::render_slider(int target)
 {
 	//background
 
@@ -294,9 +294,13 @@ SettingsState::~SettingsState()
 
 }
 
-void SettingsState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
+void SettingsState::scaling()
 {
-	this->dt = dt;
+}
+
+void SettingsState::update()
+{
+
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
@@ -310,17 +314,15 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, map<
 	tissue.setScale(scale * 0.125, scale * 0.125);
 
 	if (dev_button_active)
-		dev_button(window, terminator, states);
+		dev_button();
 
-	update_arrow(window, terminator, states);
-	if (fps_active)
-		calc_fps(dt);
+	update_arrow();
 
 	for (int i = 0; i < 4; i++)
-		update_slider(window, sliders, i);
+		update_slider(sliders, i);
 }
 
-void SettingsState::render(RenderWindow* window)
+void SettingsState::render()
 {
 	window->draw(tint);
 	window->draw(tissue);
@@ -330,16 +332,13 @@ void SettingsState::render(RenderWindow* window)
 	}
 	window->draw(back_arrow);
 	text.setFillColor(Color::Black);
-	draw_text(window, "Settings", x, y - 35 * scale, 6.5 * scale);
+	draw_text("Settings", x, y - 35 * scale, 6.5 * scale);
 	for(int i = 0; i < 4; i++)
-		render_slider(window,i);
+		render_slider(i);
 
-
-	if (fps_active)
-		window->draw(fps_text);
 }
 
-void SettingsState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
+void SettingsState::pollevent()
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {
@@ -350,11 +349,11 @@ void SettingsState::pollevent(Event event, RenderWindow* window, int* terminator
 			case Keyboard::Escape:
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end()) {
 					states->insert(MainMenuST);
-					states->at(MainMenuID)->update(dt, window, terminator, states);
+					states->at(MainMenuID)->update();
 				}
 				else {
 					states->insert(PauseST);
-					states->at(PauseID)->update(dt, window, terminator, states);
+					states->at(PauseID)->update();
 				} 
 				for (auto& state : *states) {
 					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID) {

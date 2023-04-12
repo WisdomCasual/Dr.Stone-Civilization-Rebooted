@@ -2,6 +2,9 @@
 #include "State.h"
 #include "SettingsState.h"
 
+#include"Global.h"
+using namespace globalvar;
+
 using namespace std;
 using namespace sf;
 
@@ -31,8 +34,8 @@ struct PauseState : public State
 
 
         //private functions:
-        void update_buttons(RenderWindow* window);
-        void render_buttons(RenderWindow* window);
+        void update_buttons();
+        void render_buttons();
 
     public:
         //constructors / destructors
@@ -40,10 +43,9 @@ struct PauseState : public State
 
         ~PauseState();
 
-        void update(float, RenderWindow*, int*, map<int, State*>*);
-
-        void pollevent(Event, RenderWindow*, int*, map<int, State*>*);
-
-        void render(RenderWindow*);
+        void scaling();
+        void update();
+        void pollevent();
+        void render();
 };
 

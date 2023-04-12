@@ -17,6 +17,7 @@ void Game::initial_window()
 	this->window = new RenderWindow(windowbounds, title, Style::Titlebar | Style::Close);
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
+	globalvar::window = this->window;
 }
 void Game::initial_states()
 {
@@ -35,6 +36,14 @@ void Game::initial_icon()
 
 Game::Game()
 {
+	text.setFont(font);
+	initial_fps();
+	globalvar::dt = 0;
+	globalvar::states = &this->states;
+	globalvar::event = this->event;
+
+
+
 	//runs all intializers 
 	initial_window();
 	initial_states();
@@ -69,7 +78,7 @@ void Game::update_window(VideoMode resolution, string title, int framelimit, boo
 void Game::updatedt()
 {
 	//updates the DeltaTime;
-	dt = dtclock.restart().asSeconds();
+	globalvar::dt = dtclock.restart().asSeconds();
 }
 
 void Game::pollevent()
@@ -77,24 +86,19 @@ void Game::pollevent()
 	//calls pollevent update function of the top state in the map
 
 	if (!states.empty())
-		states.rbegin()->second->pollevent(event, window, &terminator, &states);
+		states.rbegin()->second->pollevent();
 
 }
 
 void Game::update()
 {
-	//while (terminator != 0) {///////////////////////////////////////////////////////////
-	//	delete states.back();
-	//	states.pop_back();
-	//	terminator--;
-	//}
 
 	updatedt();
 	pollevent();
-
+	calc_fps();
 	//calls update function of the top state in the map
 	if (!states.empty())
-		this->states.rbegin()->second->update(dt, window, &terminator, &states);
+		this->states.rbegin()->second->update();
 }
 
 void Game::render()
@@ -105,7 +109,11 @@ void Game::render()
 
 	//draw objects
 	for (auto &state : states)
-		state.second->render(window);
+		state.second->render();
+
+	if (fps_active)
+		window->draw(fps_text);
+
 	window->display();
 
 }
