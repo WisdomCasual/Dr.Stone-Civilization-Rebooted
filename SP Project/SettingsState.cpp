@@ -25,6 +25,12 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, map<int,
 				}
 				game.update_window(resolutions[resolution], title, framelimits[framelimit], save_vsync, &window);
 
+				if (states->find(MapBuilderID) != states->end())
+					states->at(MapBuilderID)->update(dt, window, terminator, states);
+				else if (states->find(GameID) != states->end())
+					states->at(GameID)->update(dt, window, terminator, states);
+
+
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end()) {
 					states->insert(MainMenuST);
 					states->at(MainMenuID)->update(dt, window, terminator, states);
