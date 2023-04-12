@@ -4,7 +4,10 @@
 #include"Background.h"
 #include"SavesState.h"
 #include"MainMenuState.h"
-#include "PauseState.h"
+#include"PauseState.h"
+
+#include"Global.h"
+using namespace globalvar;
 
 using namespace std;
 using namespace sf;
@@ -19,8 +22,6 @@ private:
 	VideoMode* videomode;
 	map<int, State*> states;
 	map<string, Texture*> textures;
-	float dt = 0;
-	int terminator;
 
 	//private functions:
 	void initial_window();

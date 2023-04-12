@@ -3,6 +3,8 @@
 #include "CreativeMode.h"
 #include "PauseState.h"
 
+#include"Global.h"
+using namespace globalvar;
 
 using namespace std;
 
@@ -37,7 +39,6 @@ private:
 	int cam_speed = 150;
 	bool active_grid = 1; //<-- grid active/inactive
 	float scale = 10, global_scale = 1, text_scale = 1, x_scale = 1, y_scale = 1, scaling_speed;
-	float dt = 0;
 	int layer = 0;
 	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0;
 	int brush_size = 1, rand_spray = 1;
@@ -52,16 +53,16 @@ private:
 	int wdth = 0, hght = 0, start_x = 0, start_y = 0;
 
 	//private functions:
-	void grid(RenderWindow*, int, int);
-	void render_tiles(RenderWindow*, int, int, int);
+	void grid(int, int);
+	void render_tiles(int, int, int);
 	void update_info_text();
 	void dash_cam();
 	void hover();
-	void selection(RenderWindow*);
-	void draw_tools(RenderWindow*);
-	void erase_tools(RenderWindow*);
-	void undo(RenderWindow*);
-	void mouse_cords(RenderWindow*);
+	void selection();
+	void draw_tools();
+	void erase_tools();
+	void undo();
+	void mouse_cords();
 
 public:
 	//constructors/destructors:
@@ -69,7 +70,8 @@ public:
 	~MapBuilderState();
 
 	//public functions:
-	void update(float, RenderWindow*, int*, map<int, State*>*);
-	void render(RenderWindow*);
-	void pollevent(Event, RenderWindow*, int*, map<int, State*>*);
+	void scaling();
+	void update();
+	void render();
+	void pollevent();
 };

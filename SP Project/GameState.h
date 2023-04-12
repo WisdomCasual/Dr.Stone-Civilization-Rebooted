@@ -1,6 +1,9 @@
 #pragma once
 #include"State.h"
 
+#include"Global.h"
+using namespace globalvar;
+
 struct GameState : public State
 {
 private:
@@ -13,7 +16,8 @@ public:
 	~GameState();
 
 	//public functions:
-	void update(float, RenderWindow*, int*, map<int, State*>*);
+	void scaling();
+	void update();
 	void render();
-	void pollevent(Event, RenderWindow*, int*, map<int, State*>*);
+	void pollevent();
 };
