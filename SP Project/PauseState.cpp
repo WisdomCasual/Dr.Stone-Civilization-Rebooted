@@ -67,7 +67,7 @@ PauseState::~PauseState()
 {
 }
 
-void PauseState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
+void PauseState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
@@ -76,24 +76,45 @@ void PauseState::update(float dt, RenderWindow* window, int* terminator, deque<S
 	mouse_pos = Mouse::getPosition(*window);
 	/////// Do Not touch;
 
+
 	tint.setSize({ win_x, win_y });
 	tissue.setPosition(x, y);
 	tissue.setScale(scale * 0.125, scale * 0.125);
 
 	if (resume) {
 		resume = 0;
-		*terminator += 1;
+		delete states->at(PauseID);
+		states->erase(PauseID);
 	}
 	if (settings) {
 		settings = 0;
-		*terminator += states->size();      //////////////need to add option to keep background state
-		states->push_front(new SettingsState);
+		states->insert(SettingsST);
+		states->at(SettingsID)->update(dt, window, terminator, states);
+
+		for (auto& state : *states) {
+			if (state.first != SettingsID && state.first != BackgroundID && state.first != MapBuilderID && state.first != GameID) {
+				delete state.second;
+				states->erase(state.first);
+			}
+		}
+
 	}
 	if (exit) {
 		exit = 0; 
-		*terminator += states->size();
-		states->push_front(new MainMenuState);
-		states->push_front(new Background);
+
+		states->insert(MainMenuST);
+		states->at(MainMenuID)->update(dt, window, terminator, states);
+
+		if (states->find(BackgroundID) == states->end())
+			states->insert(BackgroundST);
+
+		for (auto& state : *states) {
+			if (state.first != MainMenuID && state.first != BackgroundID) {
+				delete state.second;
+				states->erase(state.first);
+			}
+		}
+
 	}
 
 	update_buttons(window);
@@ -102,7 +123,7 @@ void PauseState::update(float dt, RenderWindow* window, int* terminator, deque<S
 		calc_fps(dt);
 }
 
-void PauseState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
+void PauseState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

@@ -11,11 +11,11 @@ Background::~Background()
 {
 }
 
-void Background::pollevent(Event, RenderWindow*, int* terminator, deque<State*>* states)
+void Background::pollevent(Event, RenderWindow*, int* terminator, map<int, State*>* states)
 {
 }
 
-void Background::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
+void Background::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 }
 

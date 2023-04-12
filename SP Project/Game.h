@@ -17,7 +17,7 @@ private:
 	Event event;
 	Clock dtclock;
 	VideoMode* videomode;
-	deque<State*> states;
+	map<int, State*> states;
 	map<string, Texture*> textures;
 	float dt = 0;
 	int terminator;
@@ -33,7 +33,7 @@ public:
 	~Game();
 
 	//public functions:
-	void update_window(VideoMode resolution, string title, int framelimit, bool vsync);
+	void update_window(VideoMode resolution, string title, int framelimit, bool vsync, RenderWindow**);
 	void updatedt();
 	void pollevent();
 	void update();

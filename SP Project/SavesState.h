@@ -25,6 +25,7 @@ private:
 	
 	RectangleShape tint;
 	
+	float dt = 0;
 	float x_win = 0, y_win = 0;
 	float x = 0, y = 0;
 	float pos_x = 0, pos_y = 0, dis = 0;
@@ -33,7 +34,7 @@ private:
 	//private functions:
 	void initial_saves();
 	void update_saves(RenderWindow*);
-	void update_arrow(RenderWindow*, int*, deque<State*>*);
+	void update_arrow(RenderWindow*, int*, map<int, State*>*);
 	void render_saves(RenderWindow*);
 
 public:
@@ -41,7 +42,7 @@ public:
 	SavesState();
 	~SavesState();
 	//public functions:
-	void update(float, RenderWindow*, int*, deque<State*>*);
+	void update(float, RenderWindow*, int*, map<int, State*>*);
 	void render(RenderWindow*);
-	void pollevent(Event, RenderWindow*, int*, deque<State*>*);
+	void pollevent(Event, RenderWindow*, int*, map<int, State*>*);
 };

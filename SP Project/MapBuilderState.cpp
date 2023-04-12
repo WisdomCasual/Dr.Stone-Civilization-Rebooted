@@ -122,7 +122,7 @@ void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, i
 	window->draw(tile);
 }
 
-void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
+void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	this->dt = dt;
 	if (prev_win != window->getSize()) {
@@ -466,7 +466,7 @@ void MapBuilderState::render(RenderWindow* window)
 		window->draw(fps_text);
 }
 
-void MapBuilderState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
+void MapBuilderState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {
@@ -475,7 +475,7 @@ void MapBuilderState::pollevent(Event event, RenderWindow* window, int* terminat
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->push_back(new PauseState); break;
+				states->insert(PauseST); break;
 			case Keyboard::Space:
 				x = 0, y = 0; break;
 			case Keyboard::F3:
