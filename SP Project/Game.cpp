@@ -82,6 +82,10 @@ void Game::update_window(VideoMode resolution, string title, int framelimit, boo
 		this->window = new RenderWindow(resolution, title, Style::Titlebar | Style::Close);	
 		globalvar::window = this->window;
 		fps_text.setCharacterSize(40 * ((float)window->getSize().y / 1080.0));
+		if (states.find(MapBuilderID) != states.end())
+			states.at(MapBuilderID)->update();
+		else if (states.find(GameID) != states.end())
+			states.at(GameID)->update();
 	}
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
