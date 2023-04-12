@@ -10,7 +10,6 @@ MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), siz
 
 	//loads "game" textures
 	initial_textures("game");
-	initial_fps();
 	info.setFont(font);
 	layer_info.setFont(font);
 	layer_info.setPosition(25 * x_scale, 800 * y_scale);
@@ -30,7 +29,6 @@ MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), siz
 
 void MapBuilderState::update_info_text()
 {
-	fps_text.setCharacterSize(40 * text_scale);
 	info.setCharacterSize(40 * text_scale);
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
@@ -75,7 +73,7 @@ MapBuilderState::~MapBuilderState()
 	delete this->tex_picker;
 }
 
-void MapBuilderState::grid(RenderWindow* window, int x_win, int y_win)
+void MapBuilderState::grid(int x_win, int y_win)
 {
 	//draws grid lines, "G" to activate/deactivate
 	if (active_grid) {
@@ -94,7 +92,7 @@ void MapBuilderState::grid(RenderWindow* window, int x_win, int y_win)
 	}
 }
 
-void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, int priority)
+void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 {
 	
 	//renders the map in active screen area only
@@ -116,15 +114,14 @@ void MapBuilderState::render_tiles(RenderWindow* window, int x_win, int y_win, i
 				window->draw(hitbox_rect);
 			}
 		}
-	grid(window, x_win, y_win);
+	grid(x_win, y_win);
 	tile.setTextureRect(IntRect(picked_tile.x * 16, picked_tile.y * 16, 16, 16));
 	tile.setPosition(15, 50); tile.setScale(4, 4);	tile.setTexture(*textures[picked_tile.tex_id]);
 	window->draw(tile);
 }
 
-void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
+void MapBuilderState::update()
 {
-	this->dt = dt;
 	if (prev_win != window->getSize()) {
 		x_scale = window->getSize().x / 1920.0, y_scale = window->getSize().y / 1080.0;
 		global_scale = x_scale, text_scale = y_scale;
@@ -135,7 +132,7 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, ma
 		layer_info.setPosition(25 * x_scale, 800 * y_scale);
 	}
 
-	mouse_cords(window);
+	mouse_cords();
 
 	dash_cam();
 
@@ -143,22 +140,20 @@ void MapBuilderState::update(float dt, RenderWindow* window, int* terminator, ma
 
 	hover();
 
-	selection(window);
+	selection();
 
-	draw_tools(window);
+	draw_tools();
 
-	erase_tools(window);
+	erase_tools();
 
-	undo(window);
+	undo();
 
 	if (!picker)
 		tex_picker->run(picker);
 
-	if (fps_active)
-		calc_fps(dt);
 }
 
-void MapBuilderState::selection(RenderWindow* window)
+void MapBuilderState::selection()
 {
 	if (selected_tile.x < 0)
 		selected_tile.x = 0;
@@ -207,7 +202,7 @@ void MapBuilderState::selection(RenderWindow* window)
 
 }
 
-void MapBuilderState::draw_tools(RenderWindow* window)
+void MapBuilderState::draw_tools()
 {
 	if (Mouse::isButtonPressed(Mouse::Left) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
 		if (selected_tile != picked_tile.previous_drawn_tile) {
@@ -309,7 +304,7 @@ void MapBuilderState::draw_tools(RenderWindow* window)
 	else { drawn_selection = 0; drawn_map_selection = 0; }
 }
 
-void MapBuilderState::erase_tools(RenderWindow* window)
+void MapBuilderState::erase_tools()
 {
 	if (Mouse::isButtonPressed(Mouse::Right) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
 		if (selected_tile != picked_tile.previous_erased_tile) {
@@ -381,7 +376,7 @@ void MapBuilderState::erase_tools(RenderWindow* window)
 	}
 }
 
-void MapBuilderState::mouse_cords(RenderWindow* window)
+void MapBuilderState::mouse_cords()
 {
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 	relative_mouse_pos = mouse_pos;
@@ -392,7 +387,7 @@ void MapBuilderState::mouse_cords(RenderWindow* window)
 	selected_tile = { int((mouse_pos.x - x) / scale / 16), int((mouse_pos.y - y) / scale / 16) };
 }
 
-void MapBuilderState::undo(RenderWindow* window)
+void MapBuilderState::undo()
 {
 	if (Keyboard::isKeyPressed(Keyboard::LControl) && window->hasFocus())
 		ctrl_pressed = 1;
@@ -447,26 +442,24 @@ void MapBuilderState::undo(RenderWindow* window)
 		undid = 0;
 }
 
-void MapBuilderState::render(RenderWindow* window)
+void MapBuilderState::render()
 {
 	int x_win = window->getSize().x, y_win = window->getSize().y; //<-- window boundaries
 	x_mid = x_offset + (x_win / (16 * scale) / 2), y_mid = y_offset + (y_win / (16 * scale) / 2); // updates offset
 
 
-	render_tiles(window, x_win, y_win, 0);
+	render_tiles(x_win, y_win, 0);
 	//----------render entities herre in game--------------
-	render_tiles(window, x_win, y_win, 1);
+	render_tiles(x_win, y_win, 1);
 	window->draw(hover_rect);
 	window->draw(info);
 	window->draw(layer_info);
 	if (selecting || picked_tile.global_select_done) {
 		window->draw(select_rect);
 	}
-	if (fps_active)
-		window->draw(fps_text);
 }
 
-void MapBuilderState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
+void MapBuilderState::pollevent()
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

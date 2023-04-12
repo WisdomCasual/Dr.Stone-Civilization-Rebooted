@@ -17,6 +17,7 @@ void Game::initial_window()
 	this->window = new RenderWindow(windowbounds, title, Style::Titlebar | Style::Close);
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
+	globalvar::window = this->window;
 }
 void Game::initial_states()
 {
@@ -33,12 +34,32 @@ void Game::initial_icon()
 	window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 }
 
+void Game::initial_fps()
+{
+	font.loadFromFile("Resources/font.ttf");
+	fps_text.setFont(font);
+	fps_text.setCharacterSize(40 * ((float)window->getSize().y / 1080.0));
+}
+
+void Game::calc_fps()
+{
+	//calculates framerate per second
+	delay += dt; frame_sum += 1.0 / dt; frame_count++;
+	if (delay > 1.0) { fps = frame_sum / frame_count; delay = 0, frame_sum = 0, frame_count = 0; }
+	fps_text.setString("  FPS " + to_string(fps));
+}
+
 Game::Game()
 {
+	globalvar::states = &this->states;
+
+	text.setFont(font);
+
 	//runs all intializers 
 	initial_window();
 	initial_states();
 	initial_icon();
+	initial_fps();
 }
 
 Game::~Game()
@@ -54,12 +75,13 @@ Game::~Game()
 	states.clear();
 }
 
-void Game::update_window(VideoMode resolution, string title, int framelimit, bool vsync, RenderWindow** window)
+void Game::update_window(VideoMode resolution, string title, int framelimit, bool vsync)
 {
 	if ( Vector2u { resolution.width, resolution.height } != this->window->getSize()) {
 		delete this->window;
 		this->window = new RenderWindow(resolution, title, Style::Titlebar | Style::Close);	
-		*window = this->window;
+		globalvar::window = this->window;
+		fps_text.setCharacterSize(40 * ((float)window->getSize().y / 1080.0));
 	}
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
@@ -69,7 +91,7 @@ void Game::update_window(VideoMode resolution, string title, int framelimit, boo
 void Game::updatedt()
 {
 	//updates the DeltaTime;
-	dt = dtclock.restart().asSeconds();
+	globalvar::dt = dtclock.restart().asSeconds();
 }
 
 void Game::pollevent()
@@ -77,24 +99,19 @@ void Game::pollevent()
 	//calls pollevent update function of the top state in the map
 
 	if (!states.empty())
-		states.rbegin()->second->pollevent(event, window, &terminator, &states);
+		states.rbegin()->second->pollevent();
 
 }
 
 void Game::update()
 {
-	//while (terminator != 0) {///////////////////////////////////////////////////////////
-	//	delete states.back();
-	//	states.pop_back();
-	//	terminator--;
-	//}
 
 	updatedt();
 	pollevent();
-
+	calc_fps();
 	//calls update function of the top state in the map
 	if (!states.empty())
-		this->states.rbegin()->second->update(dt, window, &terminator, &states);
+		this->states.rbegin()->second->update();
 }
 
 void Game::render()
@@ -105,7 +122,11 @@ void Game::render()
 
 	//draw objects
 	for (auto &state : states)
-		state.second->render(window);
+		state.second->render();
+
+	if (fps_active)
+		window->draw(fps_text);
+
 	window->display();
 
 }

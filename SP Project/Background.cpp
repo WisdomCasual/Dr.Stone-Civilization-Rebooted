@@ -11,15 +11,19 @@ Background::~Background()
 {
 }
 
-void Background::pollevent(Event, RenderWindow*, int* terminator, map<int, State*>* states)
+void Background::scaling()
 {
 }
 
-void Background::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
+void Background::pollevent()
 {
 }
 
-void Background::render(RenderWindow* window)
+void Background::update()
+{
+}
+
+void Background::render()
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / bg_x > win_y / bg_y) {
