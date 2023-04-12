@@ -16,9 +16,6 @@ void GameState::update()
 
 }
 
-void GameState::scaling()
-{
-}
 
 void GameState::render()
 {
