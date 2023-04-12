@@ -4,7 +4,10 @@
 #include"Background.h"
 #include"SavesState.h"
 #include"MainMenuState.h"
-#include "PauseState.h"
+#include"PauseState.h"
+
+#include"Global.h"
+using namespace globalvar;
 
 using namespace std;
 using namespace sf;
@@ -14,18 +17,17 @@ struct Game
 private:
 	//variables:
 	RenderWindow* window;
-	Event event;
 	Clock dtclock;
 	VideoMode* videomode;
 	map<int, State*> states;
 	map<string, Texture*> textures;
-	float dt = 0;
-	int terminator;
 
 	//private functions:
 	void initial_window();
 	void initial_states();
 	void initial_icon();
+	void initial_fps();
+	void calc_fps();
 
 public:
 	//constructors/destructors:
@@ -33,7 +35,7 @@ public:
 	~Game();
 
 	//public functions:
-	void update_window(VideoMode resolution, string title, int framelimit, bool vsync, RenderWindow**);
+	void update_window(VideoMode resolution, string title, int framelimit, bool vsync);
 	void updatedt();
 	void pollevent();
 	void update();

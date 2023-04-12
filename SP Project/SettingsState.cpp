@@ -1,7 +1,7 @@
 #include "SettingsState.h"
 #define sliderconst 135.0
 
-void SettingsState::update_arrow(RenderWindow* window, int* terminator, map<int, State*>* states)
+void SettingsState::update_arrow()
 {
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
@@ -17,30 +17,30 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, map<int,
 				arrow_pressed = 0;
 				ofstream ofs("config/window.ini", ofstream::out, ofstream::trunc);
 				if (ofs.is_open()) {
-					ofs << title <<'\n';
-					ofs << resolutions[resolution].width << ' ' << resolutions[resolution].height <<'\n';
-					ofs << framelimits[framelimit] <<'\n';
+					ofs << title << '\n';
+					ofs << resolutions[resolution].width << ' ' << resolutions[resolution].height << '\n';
+					ofs << framelimits[framelimit] << '\n';
 					ofs << save_vsync;
 					ofs.close();
 				}
-				game.update_window(resolutions[resolution], title, framelimits[framelimit], save_vsync, &window);
+				game.update_window(resolutions[resolution], title, framelimits[framelimit], save_vsync);
 
 				if (states->find(MapBuilderID) != states->end())
-					states->at(MapBuilderID)->update(dt, window, terminator, states);
+					states->at(MapBuilderID)->update();
 				else if (states->find(GameID) != states->end())
-					states->at(GameID)->update(dt, window, terminator, states);
+					states->at(GameID)->update();
 
 
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end()) {
 					states->insert(MainMenuST);
-					states->at(MainMenuID)->update(dt, window, terminator, states);
+					states->at(MainMenuID)->update();
 				}
 				else {
 					states->insert(PauseST);
-					states->at(PauseID)->update(dt, window, terminator, states);
+					states->at(PauseID)->update();
 				}
-		
-				
+
+
 				for (auto& state : *states) {
 					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID) {
 						delete state.second;
@@ -59,14 +59,8 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, map<int,
 	}
 }
 
-void SettingsState::dev_button(RenderWindow* window, int* terminator, map<int, State*>* states)
+void SettingsState::dev_button()
 {
-	if (test) {
-		if (states->find(MapBuilderID) != states->end() || states->find(GameID) != states->end())
-			dev_button_active = 0;
-		test = 0;
-	}
-
 	if (scale != previous_scale) {
 		previous_scale = scale;
 		devbutton.setScale(scale * 0.2, scale * 0.2);
@@ -87,9 +81,9 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, map<int, S
 				button_pressed = 0;
 
 				states->insert(MapBuilderST);
-				states->at(MapBuilderID)->update(dt, window, terminator, states);
+				states->at(MapBuilderID)->update();
 
-				for (auto &state : *states) {
+				for (auto& state : *states) {
 					if (state.first != MapBuilderID) {
 						delete state.second;
 						states->erase(state.first);
@@ -107,7 +101,7 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, map<int, S
 	}
 }
 
-void SettingsState::update_slider(RenderWindow* window, slider_info* sliders, int target)
+void SettingsState::update_slider(slider_info* sliders, int target)
 {
 	if (Mouse::isButtonPressed(Mouse::Left)) {
 
@@ -115,7 +109,7 @@ void SettingsState::update_slider(RenderWindow* window, slider_info* sliders, in
 		tip.setTextureRect(tipsleft[sliders[target].color]);
 		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
 		tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
-		if(tip.getGlobalBounds().contains(clicked_on))
+		if (tip.getGlobalBounds().contains(clicked_on))
 			sliders[target].presssed = 1;
 
 
@@ -138,22 +132,22 @@ void SettingsState::update_slider(RenderWindow* window, slider_info* sliders, in
 		sliders[target].presssed = 0;
 	if (sliders[target].presssed) {
 		float initpos = x + (sliders[target].x + 9) * (scale / 3), mxlen = sliderconst * (scale / 3), stepsize = mxlen / sliders[target].mx;
-		if(mouse_pos.x < initpos) sliders[target].tipx = initpos;
+		if (mouse_pos.x < initpos) sliders[target].tipx = initpos;
 		else if (mouse_pos.x > initpos + mxlen) sliders[target].tipx = initpos + mxlen;
 		else
 		{
 			sliders[target].tipx = initpos + (sliders[target].mx - round((initpos + mxlen - mouse_pos.x) / stepsize)) * stepsize;
 		}
 		*sliders[target].linker = ((sliders[target].tipx - x) / (scale / 3) - sliders[target].x - 9) / sliderconst * sliders[target].mx;
-		sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale/3));
+		sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 3));
 	}
 }
 
-void SettingsState::render_slider(RenderWindow* window,int target)
+void SettingsState::render_slider(int target)
 {
 	//background
 
-	tip.setScale(sliderconst/18 * (scale / 3), (scale / 3));
+	tip.setScale(sliderconst / 18 * (scale / 3), (scale / 3));
 	tip.setTextureRect(mids[3]);
 	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
 	tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
@@ -168,14 +162,14 @@ void SettingsState::render_slider(RenderWindow* window,int target)
 	//foreground
 	tip.setScale(scale / 3, scale / 3);
 	tip.setTextureRect(tipsleft[sliders[target].color]);
-	tip.setOrigin(tip.getLocalBounds().left , tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);   
-	tip.setPosition(x + sliders[target].x * (scale/3), y + sliders[target].y * scale);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+	tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
 	window->draw(tip);
 
-	tip.setScale(sliders[target].midscale * (scale/3), (scale/3));
+	tip.setScale(sliders[target].midscale * (scale / 3), (scale / 3));
 	tip.setTextureRect(mids[sliders[target].color]);
 	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-	tip.setPosition(x + (sliders[target].x + 9) * (scale/3), y + sliders[target].y * scale);
+	tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
 	window->draw(tip);
 
 	tip.setScale(scale / 3, scale / 3);
@@ -191,9 +185,9 @@ void SettingsState::render_slider(RenderWindow* window,int target)
 	window->draw(slider_text);
 
 	slider_text.setCharacterSize(5 * scale);
-	if(sliders[target].text_type == 0)
+	if (sliders[target].text_type == 0)
 		slider_text.setString(to_string(*sliders[target].linker));
-	else if(sliders[target].text_type == 1)
+	else if (sliders[target].text_type == 1)
 		slider_text.setString(to_string(*sliders[target].linker) + "%");
 	else
 		slider_text.setString(sliders[target].txt[*sliders[target].linker]);
@@ -242,7 +236,7 @@ void SettingsState::settings_intializer()
 
 	if (framelimit == framelimnum)
 		framelimits[framelimnum] = save_framelimit, framelimits_text[framelimnum] = to_string(save_framelimit);
-	
+
 	for (int i = 0; i < framelimnum; i++)
 		framelimits_text[i] = to_string(framelimits[i]);
 
@@ -251,14 +245,13 @@ void SettingsState::settings_intializer()
 	float percentage = 1;
 	for (int i = 0; i < 4; i++) {
 		percentage = (*sliders[i].linker < sliders[i].mx) ? *sliders[i].linker / (float)sliders[i].mx : 1.0;
-		sliders[i].tipx = x + (sliders[i].x + 9 +percentage * sliderconst) * (scale / 3);
+		sliders[i].tipx = x + (sliders[i].x + 9 + percentage * sliderconst) * (scale / 3);
 		sliders[i].midscale = (sliders[i].tipx - (x + (sliders[i].x + 9) * (scale / 3))) / (18 * (scale / 3));
 	}
 }
 
 SettingsState::SettingsState()
 {
-	initial_fps();
 	initial_textures("settings");
 	tissue.setTexture(*textures[3]);
 	tissue.setOrigin(700 / 2, 700 / 2);
@@ -269,17 +262,18 @@ SettingsState::SettingsState()
 	back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
 	back_arrow.setOrigin(22 / 2, 21 / 2);
 
+	if (states->find(MapBuilderID) != states->end() || states->find(GameID) != states->end())
+		dev_button_active = 0;
+	else {
+		devbutton.setTexture(*textures[2]);
+		devbutton.setTextureRect(IntRect(0, 0, 45, 49));
+		devbutton.setOrigin(45 / 2, 49 / 2);
+		devtext.setFont(font);
+		devtext.setString("Dev");
+		devtext.setCharacterSize(40);
+		devtext.setFillColor(Color(200, 200, 200));
+	}
 
-	devbutton.setTexture(*textures[2]);
-	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
-	devbutton.setOrigin(45 / 2, 49 / 2);
-
-
-	devtext.setFont(font);
-	devtext.setString("Dev");
-	devtext.setCharacterSize(40);
-	devtext.setFillColor(Color(200, 200, 200));
-	
 	slider_text.setFont(font);
 	slider_text.setCharacterSize(50);
 	slider_text.setFillColor(Color::Black);
@@ -294,9 +288,9 @@ SettingsState::~SettingsState()
 
 }
 
-void SettingsState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
+void SettingsState::update()
 {
-	this->dt = dt;
+
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
@@ -310,17 +304,15 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, map<
 	tissue.setScale(scale * 0.125, scale * 0.125);
 
 	if (dev_button_active)
-		dev_button(window, terminator, states);
+		dev_button();
 
-	update_arrow(window, terminator, states);
-	if (fps_active)
-		calc_fps(dt);
+	update_arrow();
 
 	for (int i = 0; i < 4; i++)
-		update_slider(window, sliders, i);
+		update_slider(sliders, i);
 }
 
-void SettingsState::render(RenderWindow* window)
+void SettingsState::render()
 {
 	window->draw(tint);
 	window->draw(tissue);
@@ -330,16 +322,13 @@ void SettingsState::render(RenderWindow* window)
 	}
 	window->draw(back_arrow);
 	text.setFillColor(Color::Black);
-	draw_text(window, "Settings", x, y - 35 * scale, 6.5 * scale);
-	for(int i = 0; i < 4; i++)
-		render_slider(window,i);
+	draw_text("Settings", x, y - 35 * scale, 6.5 * scale);
+	for (int i = 0; i < 4; i++)
+		render_slider(i);
 
-
-	if (fps_active)
-		window->draw(fps_text);
 }
 
-void SettingsState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
+void SettingsState::pollevent()
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {
@@ -350,12 +339,12 @@ void SettingsState::pollevent(Event event, RenderWindow* window, int* terminator
 			case Keyboard::Escape:
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end()) {
 					states->insert(MainMenuST);
-					states->at(MainMenuID)->update(dt, window, terminator, states);
+					states->at(MainMenuID)->update();
 				}
 				else {
 					states->insert(PauseST);
-					states->at(PauseID)->update(dt, window, terminator, states);
-				} 
+					states->at(PauseID)->update();
+				}
 				for (auto& state : *states) {
 					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID) {
 						delete state.second;

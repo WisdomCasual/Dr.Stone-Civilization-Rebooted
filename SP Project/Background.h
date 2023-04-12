@@ -1,6 +1,9 @@
 #pragma once
 #include"State.h"
 
+#include"Global.h"
+using namespace globalvar;
+
 struct Background : public State
 {
 private:
@@ -12,8 +15,9 @@ private:
 public:
 	Background();
 	~Background();
-	void pollevent(Event, RenderWindow*, int*, map<int, State*>*);
-	void update(float, RenderWindow*, int*, map<int, State*>*);
-	void render(RenderWindow*);
+	void scaling();
+	void pollevent();
+	void update();
+	void render();
 };
 

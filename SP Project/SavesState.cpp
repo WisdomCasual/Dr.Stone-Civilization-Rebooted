@@ -1,6 +1,6 @@
 #include "SavesState.h"
 
-void SavesState::update_saves(RenderWindow* window)
+void SavesState::update_saves()
 {
 	del.setOrigin(del.getLocalBounds().width / 2.0, del.getLocalBounds().top + del.getLocalBounds().height / 2.0);
 	savesBG.setPosition(x, y);
@@ -42,11 +42,11 @@ void SavesState::update_saves(RenderWindow* window)
 	}
 }
 
-void SavesState::render_saves(RenderWindow* window)
+void SavesState::render_saves()
 {
 	window->draw(savesBG);
 	text.setFillColor(Color::Black);
-	draw_text(window, "Choose Save File", x, y - 120 * scale, 20 * scale);
+	draw_text("Choose Save File", x, y - 120 * scale, 20 * scale);
 
 	del.setCharacterSize(16.69 * scale);
 	for (int i = 0; i < 3; i++) {
@@ -72,14 +72,14 @@ void SavesState::render_saves(RenderWindow* window)
 		
 		if (saves[i].empty) {
 			text.setFillColor(Color::Black);
-			draw_text(window, "Empty Save", x + saves[i].x * scale, y + saves[i].y * scale, 18 * scale);
+			draw_text("Empty Save", x + saves[i].x * scale, y + saves[i].y * scale, 18 * scale);
 		}
 		else {
 			text.setFillColor(Color::Black);
-			draw_text(window, saves[i].name, x + saves[i].x * scale, y - 70 * scale, 18 * scale);
-			draw_text(window, "Re-Civilization Level:", x + saves[i].x * scale, y + 12 * scale, 12 * scale);
-			draw_text(window, "Progress", x + saves[i].x * scale, y + 65 * scale, 14 * scale);
-			draw_text(window, to_string(saves[i].progress) + "%", x + saves[i].x * scale, y + 78 * scale, 14 * scale);
+			draw_text(saves[i].name, x + saves[i].x * scale, y - 70 * scale, 18 * scale);
+			draw_text("Re-Civilization Level:", x + saves[i].x * scale, y + 12 * scale, 12 * scale);
+			draw_text("Progress", x + saves[i].x * scale, y + 65 * scale, 14 * scale);
+			draw_text(to_string(saves[i].progress) + "%", x + saves[i].x * scale, y + 78 * scale, 14 * scale);
 			text.setFillColor(Color(170, 170, 170));
 			//draw_text(window, "Electirc", pos_x, pos_y + dis * 1.3, 50 * scale);
 			//draw_text(window, "Generator", pos_x, pos_y + dis * 2, 50 * scale);
@@ -99,7 +99,6 @@ void SavesState::render_saves(RenderWindow* window)
 
 SavesState::SavesState()
 {
-	initial_fps();
 	
 	//loads "saves" textures
 	initial_textures("saves");
@@ -130,7 +129,7 @@ SavesState::~SavesState()
 {
 }
 
-void SavesState::update_arrow(RenderWindow* window, int* terminator, map<int, State*>* states)
+void SavesState::update_arrow()
 {
 	arrow.setPosition(x - 180 * scale, y - 120 * scale);
 	if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
@@ -146,7 +145,7 @@ void SavesState::update_arrow(RenderWindow* window, int* terminator, map<int, St
 				arrow_pressed = 0;
 
 				states->insert(MainMenuST);
-				states->at(MainMenuID)->update(dt, window, terminator, states);
+				states->at(MainMenuID)->update();
 
 				if (states->find(BackgroundID) == states->end())
 					states->insert(BackgroundST);
@@ -193,33 +192,28 @@ void SavesState::initial_saves()
 	}
 }
 
-void SavesState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
+void SavesState::update()
 {
-	this->dt = dt;
 	float win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	scale = min(win_x / 570.0, win_y / 350.0);
 	
 	tint.setSize({ win_x, win_y });
-	update_saves(window);
-	update_arrow(window, terminator, states);
+	update_saves();
+	update_arrow();
 
-	if (fps_active)
-		calc_fps(dt);
 }
 
-void SavesState::render(RenderWindow* window)
+void SavesState::render()
 {
 
 	window->draw(tint);
-	render_saves(window);
+	render_saves();
 	window->draw(arrow);
 
-	if (fps_active)
-		window->draw(fps_text);
 }
 
-void SavesState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
+void SavesState::pollevent()
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {
@@ -229,7 +223,7 @@ void SavesState::pollevent(Event event, RenderWindow* window, int* terminator, m
 			switch (event.key.code) {
 			case Keyboard::Escape:
 				states->insert(MainMenuST);
-				states->at(MainMenuID)->update(dt, window, terminator, states);
+				states->at(MainMenuID)->update();
 
 				if (states->find(BackgroundID) == states->end())
 					states->insert(BackgroundST);

@@ -158,6 +158,7 @@
     <ClInclude Include="CreativeMode.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Global.h" />
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="MapBuilderState.h" />
     <ClInclude Include="PauseState.h" />

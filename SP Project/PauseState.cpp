@@ -1,7 +1,7 @@
 #include "PauseState.h"
 
 
-void PauseState::update_buttons(RenderWindow* window)
+void PauseState::update_buttons()
 {
 	for (auto& button : buttons) {
 		buttontex.setTextureRect(IntRect(0, button.pressed * 49, 190, 49));
@@ -22,7 +22,7 @@ void PauseState::update_buttons(RenderWindow* window)
 	}
 }
 
-void PauseState::render_buttons(RenderWindow* window)
+void PauseState::render_buttons()
 {
 	buttontex.setScale(scale * 0.33, scale * 0.33);
 	button_text.setCharacterSize(7.5 * scale);
@@ -43,8 +43,6 @@ void PauseState::render_buttons(RenderWindow* window)
 PauseState::PauseState()
 {
 	initial_textures("pause");
-
-	initial_fps();
 
 	tissue.setTexture(*textures[2]);
 	tissue.setOrigin(700 / 2, 700 / 2);
@@ -67,7 +65,7 @@ PauseState::~PauseState()
 {
 }
 
-void PauseState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
+void PauseState::update()
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
@@ -89,7 +87,7 @@ void PauseState::update(float dt, RenderWindow* window, int* terminator, map<int
 	if (settings) {
 		settings = 0;
 		states->insert(SettingsST);
-		states->at(SettingsID)->update(dt, window, terminator, states);
+		states->at(SettingsID)->update();
 
 		for (auto& state : *states) {
 			if (state.first != SettingsID && state.first != BackgroundID && state.first != MapBuilderID && state.first != GameID) {
@@ -103,7 +101,7 @@ void PauseState::update(float dt, RenderWindow* window, int* terminator, map<int
 		exit = 0; 
 
 		states->insert(MainMenuST);
-		states->at(MainMenuID)->update(dt, window, terminator, states);
+		states->at(MainMenuID)->update();
 
 		if (states->find(BackgroundID) == states->end())
 			states->insert(BackgroundST);
@@ -117,13 +115,10 @@ void PauseState::update(float dt, RenderWindow* window, int* terminator, map<int
 
 	}
 
-	update_buttons(window);
-
-	if (fps_active)
-		calc_fps(dt);
+	update_buttons();
 }
 
-void PauseState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
+void PauseState::pollevent()
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {
@@ -146,14 +141,12 @@ void PauseState::pollevent(Event event, RenderWindow* window, int* terminator, m
 	}
 }
 
-void PauseState::render(RenderWindow* window)
+void PauseState::render()
 {
 	window->draw(tint);
 	window->draw(tissue);
-	render_buttons(window);
+	render_buttons();
 
 	text.setFillColor(Color::Black);
-	draw_text(window, "Paused", x, y - 35 * scale, 6.5 * scale);
-	if (fps_active)
-		window->draw(fps_text);
+	draw_text("Paused", x, y - 35 * scale, 6.5 * scale);
 }
