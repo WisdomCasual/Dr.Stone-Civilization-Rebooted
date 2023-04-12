@@ -138,7 +138,8 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 		{
 			sliders[target].tipx = initpos + (sliders[target].mx - round((initpos + mxlen - mouse_pos.x) / stepsize)) * stepsize;
 		}
-		*sliders[target].linker = ((sliders[target].tipx - x) / (scale / 3) - sliders[target].x - 9) / sliderconst * sliders[target].mx;
+
+		*sliders[target].linker = round(((sliders[target].tipx - x) / (scale / 3) - sliders[target].x - 9) / sliderconst * sliders[target].mx);
 		sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 3));
 	}
 }
