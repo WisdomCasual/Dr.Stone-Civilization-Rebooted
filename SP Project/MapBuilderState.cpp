@@ -1,12 +1,9 @@
 #include "MapBuilderState.h"
 
-MapBuilderState::MapBuilderState(int a, int b, string map_name) : size_x(a), size_y(b)
+MapBuilderState::MapBuilderState(string map_name, int a, int b) : size_x(a), size_y(b)
 {	
-	for (int i = 0; i < size_x; i++) {
-		for (int j = 0; j < size_y; j++) {
-			tiles[i][j].layer[0][0] = { 21,49, 1};
-		}
-	}
+	this->map_name = map_name;
+	load_map();
 
 	//loads "game" textures
 	initial_textures("game");
@@ -387,6 +384,60 @@ void MapBuilderState::mouse_cords()
 	selected_tile = { int((mouse_pos.x - x) / scale / 16), int((mouse_pos.y - y) / scale / 16) };
 }
 
+void MapBuilderState::save_map()
+{
+	ofstream ofs("Maps/" + map_name + ".mp", ofstream::out, ofstream::trunc);
+	if (ofs.is_open()) {
+		ofs << size_x << ' ' << size_y << '\n';
+		for (int i = 0; i < size_x; i++) {
+			for (int j = 0; j < size_y; j++) {
+				for (int k = 0; k < 2; k++) {
+					ofs << tiles[i][j].layer[k].size() <<' ';
+					for (auto curr_tile : tiles[i][j].layer[k])
+						ofs << (int)(curr_tile.first) <<' ' << curr_tile.second.x << ' ' << curr_tile.second.y << ' ' << curr_tile.second.z <<' ';
+					ofs << tiles[i][j].hitbox << ' ' << tiles[i][j].blocked <<' ';
+				}
+			}
+			ofs << '\n';
+		}
+		ofs.close();
+	}
+}
+
+void MapBuilderState::load_map()
+{
+	ifstream ifs("Maps/" + map_name + ".mp");
+	string line;
+	int mpsize = 0;
+	pair<char, Vector3i> tle;
+	if (!(ifs >> line)) {
+		for (int i = 0; i < size_x; i++) {
+			for (int j = 0; j < size_y; j++) {
+				tiles[i][j].layer[0][0] = { 21,49, 1 };
+			}
+		}
+	}
+	ifs.seekg(ios::beg);
+	if (ifs.is_open()) {
+		ifs >> size_x >> size_y;
+		for (int i = 0; i < size_x; i++) {
+			for (int j = 0; j < size_y; j++) {
+				for (int k = 0; k < 2; k++) {
+					tiles[i][j].layer[k].clear();
+					ifs >> mpsize;
+					while (mpsize--) {
+						ifs >> tle.first >> tle.second.x >> tle.second.y >> tle.second.z;
+						tle.first -= '0';
+						tiles[i][j].layer[k].insert(tle);
+					}
+					ifs >> tiles[i][j].hitbox >> tiles[i][j].blocked;
+				}
+			}
+		}
+	}
+	ifs.close();
+}
+
 void MapBuilderState::undo()
 {
 	if (Keyboard::isKeyPressed(Keyboard::LControl) && window->hasFocus())
@@ -473,6 +524,12 @@ void MapBuilderState::pollevent()
 				x = 0, y = 0; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
+			case Keyboard::F5:
+				//ARE YOU REALLY REALLY REALLY REALLY SURE YOU WANT TO LOAD!!????
+				load_map(); break;
+			case Keyboard::F6:
+				//are you sure?
+				save_map(); break;
 			case Keyboard::E:
 				if (picker)
 					tex_picker = new CreativeMode(&textures, picked_tile);
