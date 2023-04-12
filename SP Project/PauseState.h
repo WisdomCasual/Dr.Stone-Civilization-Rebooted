@@ -40,9 +40,9 @@ struct PauseState : public State
 
         ~PauseState();
 
-        void update(float, RenderWindow*, int*, deque<State*>*);
+        void update(float, RenderWindow*, int*, map<int, State*>*);
 
-        void pollevent(Event, RenderWindow*, int*, deque<State*>*);
+        void pollevent(Event, RenderWindow*, int*, map<int, State*>*);
 
         void render(RenderWindow*);
 };

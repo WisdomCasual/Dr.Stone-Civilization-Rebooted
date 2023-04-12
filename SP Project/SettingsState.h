@@ -25,9 +25,10 @@ private:
     Sprite tissue, back_arrow, devbutton;
     Text devtext, slider_text;
     RectangleShape tint;
+    float dt = 0;
     float x = 0, y = 0;
     float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
-    bool button_pressed = 0, arrow_pressed = 0;
+    bool button_pressed = 0, arrow_pressed = 0, dev_button_active = 1, test = 1;
     Vector2f mouse_pos = { 0,0 };
     Sprite tip;
     VideoMode save_resolution = { 1920, 1080 };
@@ -56,8 +57,8 @@ private:
     }sliders[4] = { {-105, -15, resnum-1, 0, &resolution, "Resolution", 2, resolutions_text}, {-105, 0, framelimnum-1, 1, &framelimit, "Frame Limit", 2, framelimits_text}, {-105, 15, 100, 2, &game_volume, "Game Sounds", 1}, {-105, 30, 100, 2, &music_volume, "Music", 1}};
 
     //private functions:
-    void update_arrow(RenderWindow*, int*, deque<State*>*);
-    void dev_button(RenderWindow*, int*, deque<State*>*);
+    void update_arrow(RenderWindow*, int*, map<int, State*>*);
+    void dev_button(RenderWindow*, int*, map<int, State*>*);
     void update_slider(RenderWindow*, slider_info*, int);
     void render_slider(RenderWindow*, int);
     void settings_intializer();
@@ -67,9 +68,9 @@ public:
 
     ~SettingsState();
 
-    void update(float, RenderWindow*, int*, deque<State*>*);
+    void update(float, RenderWindow*, int*, map<int, State*>*);
 
-    void pollevent(Event, RenderWindow*, int*, deque<State*>*);
+    void pollevent(Event, RenderWindow*, int*, map<int, State*>*);
 
     void render(RenderWindow*);
 };

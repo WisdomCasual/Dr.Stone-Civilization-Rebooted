@@ -6,6 +6,37 @@
 #include<SFML\Graphics.hpp>
 #include<SFML\Audio.hpp>
 
+// background: 1, MainMenuState: 2 , SavesState: 3 , NewSaveState: 4 , GameState: 5 , 
+//MapBuilderState: 6, PauseState: 10, SettingsState: 11, ConfirmState: 12: 
+
+#define BackgroundID 1
+#define BackgroundST { 1, new Background }
+
+#define MainMenuID 2
+#define MainMenuST { 2, new MainMenuState }
+
+#define SavesID 3
+#define SavesST { 3, new SavesState }
+
+#define NewSaveID 4                       ///////
+#define NewSaveST { 4, new NewSaveState } ///////
+
+#define GameID 5
+#define GameST { 5, new GameState }
+
+#define MapBuilderID 6
+#define MapBuilderST { 6, new MapBuilderState }
+
+#define PauseID 10
+#define PauseST { 10, new PauseState }
+
+#define SettingsID 11
+#define SettingsST { 11, new SettingsState }
+
+#define ConfirmID 12                        /////
+#define ConfirmST { 12, new ConfirmState }  /////
+
+
 using namespace std;
 using namespace sf;
 
@@ -43,8 +74,8 @@ public:
 	void draw_text(RenderWindow*, string, int, int, int);  //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
 
 
-	virtual void pollevent(Event, RenderWindow*, int*, deque<State*>*) = 0;
-	virtual void update(float, RenderWindow*, int*, deque<State*>*) = 0;
+	virtual void pollevent(Event, RenderWindow*, int*, map<int, State*>*) = 0;
+	virtual void update(float, RenderWindow*, int*, map<int, State*>*) = 0;
 	virtual void render(RenderWindow*) = 0;
 
 };

@@ -59,7 +59,7 @@ MainMenuState::~MainMenuState()
 {
 }
 
-void MainMenuState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
+void MainMenuState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	float win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
@@ -71,15 +71,35 @@ void MainMenuState::update(float dt, RenderWindow* window, int* terminator, dequ
 
 	if (play) {
 		play = 0;
-		*terminator += states->size();
-		states->push_front(new SavesState);
-		states->push_front(new Background);
+		states->insert(SavesST);
+		states->at(SavesID)->update(dt, window, terminator, states);
+
+		if (states->find(BackgroundID) != states->end())
+			states->insert(BackgroundST);
+
+		for (auto& state : *states) {
+			if (state.first != SavesID && state.first != BackgroundID) {
+				delete state.second;
+				states->erase(state.first);
+			}
+		}
+
 	}
 	if (settings) { 
 		settings = 0;
-		*terminator += states->size();
-		states->push_front(new SettingsState);
-		states->push_front(new Background); 
+		states->insert(SettingsST);
+		states->at(SettingsID)->update(dt, window, terminator, states);
+
+		if (states->find(BackgroundID) != states->end())
+			states->insert(BackgroundST);
+
+		for (auto& state : *states) {
+			if (state.first != SettingsID && state.first != BackgroundID) {
+				delete state.second;
+				states->erase(state.first);
+			}
+		}
+
 	}
 	if (exit) { exit = 0; window->close(); }
 
@@ -96,7 +116,7 @@ void MainMenuState::render(RenderWindow* window)
 		window->draw(fps_text);
 }
 
-void MainMenuState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
+void MainMenuState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

@@ -11,7 +11,7 @@ GameState::~GameState()
 }
 
 
-void GameState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
+void GameState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 
 }
@@ -21,7 +21,7 @@ void GameState::render()
 
 }
 
-void GameState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
+void GameState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {

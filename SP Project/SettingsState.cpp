@@ -1,7 +1,7 @@
 #include "SettingsState.h"
 #define sliderconst 135.0
 
-void SettingsState::update_arrow(RenderWindow* window, int* terminator, deque<State*>* states)
+void SettingsState::update_arrow(RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
@@ -23,10 +23,25 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, deque<St
 					ofs << save_vsync;
 					ofs.close();
 				}
-				game.update_window(resolutions[resolution], title, framelimits[framelimit], save_vsync);
-				*terminator += states->size();
-				states->push_front(new MainMenuState);
-				states->push_front(new Background);
+				game.update_window(resolutions[resolution], title, framelimits[framelimit], save_vsync, &window);
+
+				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end()) {
+					states->insert(MainMenuST);
+					states->at(MainMenuID)->update(dt, window, terminator, states);
+				}
+				else {
+					states->insert(PauseST);
+					states->at(PauseID)->update(dt, window, terminator, states);
+				}
+		
+				
+				for (auto& state : *states) {
+					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID) {
+						delete state.second;
+						states->erase(state.first);
+					}
+				}
+
 			}
 		}
 
@@ -38,8 +53,14 @@ void SettingsState::update_arrow(RenderWindow* window, int* terminator, deque<St
 	}
 }
 
-void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<State*>* states)
+void SettingsState::dev_button(RenderWindow* window, int* terminator, map<int, State*>* states)
 {
+	if (test) {
+		if (states->find(MapBuilderID) != states->end() || states->find(GameID) != states->end())
+			dev_button_active = 0;
+		test = 0;
+	}
+
 	if (scale != previous_scale) {
 		previous_scale = scale;
 		devbutton.setScale(scale * 0.2, scale * 0.2);
@@ -58,8 +79,16 @@ void SettingsState::dev_button(RenderWindow* window, int* terminator, deque<Stat
 		else {
 			if (button_pressed) {
 				button_pressed = 0;
-				*terminator += states->size();
-				states->push_front(new MapBuilderState);
+
+				states->insert(MapBuilderST);
+				states->at(MapBuilderID)->update(dt, window, terminator, states);
+
+				for (auto &state : *states) {
+					if (state.first != MapBuilderID) {
+						delete state.second;
+						states->erase(state.first);
+					}
+				}
 			}
 			devbutton.setTextureRect(IntRect(0, 0, 45, 49));
 			devtext.setPosition(x + 35 * scale, y + 34.6 * scale);
@@ -234,9 +263,11 @@ SettingsState::SettingsState()
 	back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
 	back_arrow.setOrigin(22 / 2, 21 / 2);
 
+
 	devbutton.setTexture(*textures[2]);
 	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
 	devbutton.setOrigin(45 / 2, 49 / 2);
+
 
 	devtext.setFont(font);
 	devtext.setString("Dev");
@@ -257,8 +288,9 @@ SettingsState::~SettingsState()
 
 }
 
-void SettingsState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
+void SettingsState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
+	this->dt = dt;
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
@@ -271,7 +303,9 @@ void SettingsState::update(float dt, RenderWindow* window, int* terminator, dequ
 	tissue.setPosition(x, y);
 	tissue.setScale(scale * 0.125, scale * 0.125);
 
-	dev_button(window, terminator, states);
+	if (dev_button_active)
+		dev_button(window, terminator, states);
+
 	update_arrow(window, terminator, states);
 	if (fps_active)
 		calc_fps(dt);
@@ -284,8 +318,10 @@ void SettingsState::render(RenderWindow* window)
 {
 	window->draw(tint);
 	window->draw(tissue);
-	window->draw(devbutton);
-	window->draw(devtext);
+	if (dev_button_active) {
+		window->draw(devbutton);
+		window->draw(devtext);
+	}
 	window->draw(back_arrow);
 	text.setFillColor(Color::Black);
 	draw_text(window, "Settings", x, y - 35 * scale, 6.5 * scale);
@@ -297,7 +333,7 @@ void SettingsState::render(RenderWindow* window)
 		window->draw(fps_text);
 }
 
-void SettingsState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
+void SettingsState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {
@@ -306,7 +342,21 @@ void SettingsState::pollevent(Event event, RenderWindow* window, int* terminator
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				window->close(); break;
+				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end()) {
+					states->insert(MainMenuST);
+					states->at(MainMenuID)->update(dt, window, terminator, states);
+				}
+				else {
+					states->insert(PauseST);
+					states->at(PauseID)->update(dt, window, terminator, states);
+				} 
+				for (auto& state : *states) {
+					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID) {
+						delete state.second;
+						states->erase(state.first);
+					}
+				}
+				break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			}

@@ -130,7 +130,7 @@ SavesState::~SavesState()
 {
 }
 
-void SavesState::update_arrow(RenderWindow* window, int* terminator, deque<State*>* states)
+void SavesState::update_arrow(RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	arrow.setPosition(x - 180 * scale, y - 120 * scale);
 	if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
@@ -144,9 +144,20 @@ void SavesState::update_arrow(RenderWindow* window, int* terminator, deque<State
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-				*terminator += states->size();
-				states->push_front(new MainMenuState);
-				states->push_front(new Background);
+
+				states->insert(MainMenuST);
+				states->at(MainMenuID)->update(dt, window, terminator, states);
+
+				if (states->find(BackgroundID) == states->end())
+					states->insert(BackgroundST);
+
+				for (auto& state : *states) {
+					if (state.first != MainMenuID && state.first != BackgroundID) {
+						delete state.second;
+						states->erase(state.first);
+					}
+				}
+
 			}
 		}
 		
@@ -182,8 +193,9 @@ void SavesState::initial_saves()
 	}
 }
 
-void SavesState::update(float dt, RenderWindow* window, int* terminator, deque<State*>* states)
+void SavesState::update(float dt, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
+	this->dt = dt;
 	float win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	scale = min(win_x / 570.0, win_y / 350.0);
@@ -207,7 +219,7 @@ void SavesState::render(RenderWindow* window)
 		window->draw(fps_text);
 }
 
-void SavesState::pollevent(Event event, RenderWindow* window, int* terminator, deque<State*>* states)
+void SavesState::pollevent(Event event, RenderWindow* window, int* terminator, map<int, State*>* states)
 {
 	while (window->pollEvent(event)) {
 		switch (event.type) {
@@ -216,7 +228,18 @@ void SavesState::pollevent(Event event, RenderWindow* window, int* terminator, d
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				window->close(); break;
+				states->insert(MainMenuST);
+				states->at(MainMenuID)->update(dt, window, terminator, states);
+
+				if (states->find(BackgroundID) == states->end())
+					states->insert(BackgroundST);
+
+				for (auto& state : *states) {
+					if (state.first != MainMenuID && state.first !=  BackgroundID) {
+						delete state.second;
+						states->erase(state.first);
+					}
+				} break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			}

@@ -21,8 +21,9 @@ void Game::initial_window()
 void Game::initial_states()
 {
 	//sets intial states 
-	states.push_back(new Background);
-	states.push_back(new MainMenuState);
+	states.insert(BackgroundST);
+	states.insert(MainMenuST);
+
 }
 
 void Game::initial_icon()
@@ -46,21 +47,23 @@ Game::~Game()
 	//window
 	delete this->window;
 
-	//states deque
-	while (!states.empty()) {
-		delete this->states.back();
-		this->states.pop_back();
+	//states map
+	for (auto &state: states) {
+		delete state.second;
 	}
+	states.clear();
 }
 
-void Game::update_window(VideoMode resolution, string title, int framelimit, bool vsync)
+void Game::update_window(VideoMode resolution, string title, int framelimit, bool vsync, RenderWindow** window)
 {
 	if ( Vector2u { resolution.width, resolution.height } != this->window->getSize()) {
 		delete this->window;
-		this->window = new RenderWindow(resolution, title, Style::Titlebar | Style::Close);
+		this->window = new RenderWindow(resolution, title, Style::Titlebar | Style::Close);	
+		*window = this->window;
 	}
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
+
 }
 
 void Game::updatedt()
@@ -71,24 +74,27 @@ void Game::updatedt()
 
 void Game::pollevent()
 {
-	//calls pollevent update function of the top state in the deque
+	//calls pollevent update function of the top state in the map
+
 	if (!states.empty())
-		states.back()->pollevent(event, window, &terminator, &states);
+		states.rbegin()->second->pollevent(event, window, &terminator, &states);
+
 }
 
 void Game::update()
 {
-	while (terminator != 0) {
-		delete states.back();
-		states.pop_back();
-		terminator--;
-	}
+	//while (terminator != 0) {///////////////////////////////////////////////////////////
+	//	delete states.back();
+	//	states.pop_back();
+	//	terminator--;
+	//}
+
 	updatedt();
 	pollevent();
 
-	//calls update function of the top state in the deque
+	//calls update function of the top state in the map
 	if (!states.empty())
-		this->states.back()->update(dt, window, &terminator, &states);
+		this->states.rbegin()->second->update(dt, window, &terminator, &states);
 }
 
 void Game::render()
@@ -98,9 +104,10 @@ void Game::render()
 	this->window->clear();
 
 	//draw objects
-	for (auto state : states)
-		state->render(window);
+	for (auto &state : states)
+		state.second->render(window);
 	window->display();
+
 }
 
 void Game::run()
