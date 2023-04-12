@@ -27,6 +27,7 @@ private:
 	deque<change> changes;
 	deque<change> undid_changes;
 
+	string map_name = "default";
 	bool picker = 1;
 	bool Render_Priority = 0;
 	string Render_in[2] = { "Back", "Front" };
@@ -40,7 +41,7 @@ private:
 	bool active_grid = 1; //<-- grid active/inactive
 	float scale = 10, global_scale = 1, text_scale = 1, x_scale = 1, y_scale = 1, scaling_speed;
 	int layer = 0;
-	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0;
+	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0, save_click = 1;
 	int brush_size = 1, rand_spray = 1;
 	const int speed_list[5] = { 1, 2, 4, 8, 16 };
 	bool layer_toggle[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
@@ -63,10 +64,12 @@ private:
 	void erase_tools();
 	void undo();
 	void mouse_cords();
+	void save_map();
+	void load_map();
 
 public:
 	//constructors/destructors:
-	MapBuilderState(int a = 128, int b = 256, string map_name = "unnamed");
+	MapBuilderState(string map_name = "default", int a = 128, int b = 256);
 	~MapBuilderState();
 
 	//public functions:
