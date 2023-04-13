@@ -333,7 +333,7 @@ void SettingsState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end()) {
+				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
 					states->insert(MainMenuST);
 					states->at(MainMenuID)->update();
 				}
@@ -342,7 +342,7 @@ void SettingsState::pollevent()
 					states->at(PauseID)->update();
 				}
 				for (auto& state : *states) {
-					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID) {
+					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID && state.first != WorldMapID) {
 						delete state.second;
 						states->erase(state.first);
 					}
