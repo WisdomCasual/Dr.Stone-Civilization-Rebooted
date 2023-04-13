@@ -258,7 +258,7 @@ SettingsState::SettingsState()
 	back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
 	back_arrow.setOrigin(22 / 2, 21 / 2);
 
-	if (states->find(MapBuilderID) != states->end() || states->find(GameID) != states->end())
+	if (states->find(MapBuilderID) != states->end() || states->find(GameID) != states->end() || states->find(WorldMapID) != states->end())
 		dev_button_active = 0;
 	else {
 		devbutton.setTexture(*textures[2]);
