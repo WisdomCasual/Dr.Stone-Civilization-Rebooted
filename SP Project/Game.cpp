@@ -86,6 +86,8 @@ void Game::update_window(VideoMode resolution, string title, int framelimit, boo
 			states.at(MapBuilderID)->update();
 		else if (states.find(GameID) != states.end())
 			states.at(GameID)->update();
+		else if (states.find(WorldMapID) != states.end())
+			states.at(WorldMapID)->update();
 	}
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
