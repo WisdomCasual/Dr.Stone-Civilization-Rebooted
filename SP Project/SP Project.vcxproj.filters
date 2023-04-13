@@ -51,6 +51,9 @@
     <ClCompile Include="PauseState.cpp">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="WorldMapState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -81,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMapState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

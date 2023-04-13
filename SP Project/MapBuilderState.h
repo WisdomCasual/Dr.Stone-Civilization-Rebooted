@@ -47,7 +47,7 @@ private:
 	bool layer_toggle[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
 	Vector2f mouse_pos = { 0, 0 }, relative_mouse_pos = {0, 0}, hover_tile = { 0 , 0 };
 	Vector2i selected_tile = { 0, 0 }, selection_start = { 0,0 }, selection_end = { 0,0 };
-	Vector2u prev_win = { 1920, 1080 };
+	Vector2u prev_win = { 0, 0 };
 	Text info, layer_info;
 	Tile tiles[256][256];    //the level map
 	RectangleShape hover_rect, hitbox_rect, select_rect;

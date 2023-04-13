@@ -90,7 +90,7 @@ void PauseState::update()
 		states->at(SettingsID)->update();
 
 		for (auto& state : *states) {
-			if (state.first != SettingsID && state.first != BackgroundID && state.first != MapBuilderID && state.first != GameID) {
+			if (state.first != SettingsID && state.first != BackgroundID && state.first != MapBuilderID && state.first != GameID && state.first != WorldMapID) {
 				delete state.second;
 				states->erase(state.first);
 			}

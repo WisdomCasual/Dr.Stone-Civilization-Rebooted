@@ -22,6 +22,11 @@
 #define MapBuilderID 6
 #define MapBuilderST { 6, new MapBuilderState }
 
+#define WorldMapID 7
+#define WorldMapST { 7, new WorldMapState }
+#define WorldMapST_admin { 7, new WorldMapState(1) }
+
+
 #define PauseID 10
 #define PauseST { 10, new PauseState }
 
@@ -45,7 +50,7 @@ namespace globalvar {
 	inline Font font;
 	inline Text fps_text, text;
 
-	inline void draw_text(string tex, int a, int b, int c)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
+	inline void draw_text(string tex, int a, int b, float c)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
 	{
 		//gets window pointer, string, X cord, Y cords, Character size to draw text
 		text.setString(tex);
