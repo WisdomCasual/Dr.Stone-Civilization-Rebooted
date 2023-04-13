@@ -45,4 +45,3 @@ struct WorldMapState : public State
 		void render();
 		void pollevent();
 };
-
