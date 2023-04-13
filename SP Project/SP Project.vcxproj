@@ -152,6 +152,7 @@
     <ClCompile Include="MapBuilderState.cpp" />
     <ClCompile Include="SavesState.cpp" />
     <ClCompile Include="State.cpp" />
+    <ClCompile Include="WorldMapState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="PauseState.h" />
     <ClInclude Include="SavesState.h" />
     <ClInclude Include="State.h" />
+    <ClInclude Include="WorldMapState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

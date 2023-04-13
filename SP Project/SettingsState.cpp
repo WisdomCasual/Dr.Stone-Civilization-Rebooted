@@ -25,7 +25,7 @@ void SettingsState::update_arrow()
 				}
 				game.update_window(resolutions[resolution], title, framelimits[framelimit], save_vsync);
 
-				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end()) {
+				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
 					states->insert(MainMenuST);
 					states->at(MainMenuID)->update();
 				}
@@ -36,7 +36,7 @@ void SettingsState::update_arrow()
 
 
 				for (auto& state : *states) {
-					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID) {
+					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID && state.first != WorldMapID) {
 						delete state.second;
 						states->erase(state.first);
 					}
@@ -74,11 +74,12 @@ void SettingsState::dev_button()
 			if (button_pressed) {
 				button_pressed = 0;
 
-				states->insert(MapBuilderST);
-				states->at(MapBuilderID)->update();
+				states->insert(WorldMapST_admin);
+				states->at(WorldMapID)->update();
+				states->at(WorldMapID)->render();
 
 				for (auto& state : *states) {
-					if (state.first != MapBuilderID) {
+					if (state.first != WorldMapID && state.first != BackgroundID) {
 						delete state.second;
 						states->erase(state.first);
 					}

@@ -2,6 +2,7 @@
 #include "State.h"
 #include"MainMenuState.h"
 #include"MapBuilderState.h"
+#include "WorldMapState.h"
 #include "Game.h"
 
 #define resnum 10
