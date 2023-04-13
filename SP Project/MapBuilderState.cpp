@@ -320,7 +320,8 @@ void MapBuilderState::erase_tools()
 							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
 
 							if (Keyboard::isKeyPressed(Keyboard::LAlt))
-								tiles[i2][j2].layer->clear();
+								for (int f = 0; f < 2; f++)
+									tiles[i2][j2].layer[f].clear();
 							else
 								tiles[i2][j2].layer[Render_Priority].erase(layer);
 						}
@@ -335,7 +336,8 @@ void MapBuilderState::erase_tools()
 							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
 							if (Keyboard::isKeyPressed(Keyboard::LAlt))
-								tiles[i][j].layer->clear();
+								for (int f = 0; f < 2; f++)
+									tiles[i][j].layer[f].clear();
 							else
 								tiles[i][j].layer[Render_Priority].erase(layer);
 						}
