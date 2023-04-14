@@ -24,7 +24,7 @@ struct WorldMapState : public State
 		bool admin = 0, new_map = 0, map_added = 0, del = 0, move = 0, selected = 0;
 		string moving;
 		Sprite worldmap, namebox, pin;
-		Vector2f mouse_pos = { 0,0 }, clicked_on = { -1, -1 };;
+		Vector2f mouse_pos = { 0,0 }, clicked_on = { -1, -1 };
 		Vector2u prev_win = { 0, 0 };
 
 		//private functions
