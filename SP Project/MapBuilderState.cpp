@@ -22,6 +22,8 @@ MapBuilderState::MapBuilderState(string map_name, int a, int b) : size_x(a), siz
 	select_rect.setFillColor(Color::Transparent);
 	select_rect.setOutlineThickness(3);
 	select_rect.setOutlineColor(Color::Green);
+
+	srand(time(0));
 }
 
 void MapBuilderState::update_info_text()
@@ -29,8 +31,8 @@ void MapBuilderState::update_info_text()
 	info.setCharacterSize(40 * text_scale);
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
-		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox) + " - brush size (+/-): " + to_string(brush_size)
-		+ " - Layer (1,2,3,4) " + to_string(layer+1) + " - Render Priority: " + Render_in[Render_Priority]);
+		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox) + " - brush size (+/-): " + to_string(brush_size) + " - spread chance (alt +/-): " + to_string(spread_chances[spread_chance]) + "^-1"
+		+ "\n        Layer (1,2,3,4) " + to_string(layer+1) + " - Render Priority: " + Render_in[Render_Priority]);
 
 	//displays layer properties
 	layer_info.setCharacterSize(40 * text_scale);
@@ -243,21 +245,18 @@ void MapBuilderState::draw_tools()
 					//store changed area info
 					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
 
-					if (!(Keyboard::isKeyPressed(Keyboard::LAlt) || brush_size < 3)) {
+					if (!(Keyboard::isKeyPressed(Keyboard::LAlt) && brush_size > 1)) {
 						for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
 							for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
-
 								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
 								tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
 							}
 					}
 					else {
-						srand(x * y * dt);
 						for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++) {
 							for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
-								rand_spray += rand() % 20;
-								rand_spray %= 20;
+								rand_spray = rand() % spread_chances[spread_chance];
 								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 								if (!rand_spray) {
 									tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
@@ -266,7 +265,6 @@ void MapBuilderState::draw_tools()
 							}
 						}
 					}
-					tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id};
 				}
 			}
 			else {
@@ -600,15 +598,29 @@ void MapBuilderState::pollevent()
 				else
 					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 }, layer = 3; break;
 			case Keyboard::Equal:
-				picked_tile.global_select_done = 0;
-				picked_tile.select_done = 0;
-				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-				brush_size += (brush_size < 25); break;
+				if (!event.key.alt) {
+					picked_tile.global_select_done = 0;
+					picked_tile.select_done = 0;
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
+					brush_size += (brush_size < 25);
+				}
+				else {
+					if (spread_chance < spread_chances_num-1)
+						spread_chance++;
+				}
+				break;
 			case Keyboard::Hyphen:
-				picked_tile.global_select_done = 0;
-				picked_tile.select_done = 0;
-				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-				brush_size -= (brush_size > 1); break;
+				if (!event.key.alt) {
+					picked_tile.global_select_done = 0;
+					picked_tile.select_done = 0;
+					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
+					brush_size -= (brush_size > 1);
+				}
+				else {
+					if (spread_chance > 0)
+						spread_chance--;
+				}
+				break;
 			}
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
