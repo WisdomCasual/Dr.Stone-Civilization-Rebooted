@@ -12,7 +12,7 @@ private:
 	string* target_string = nullptr;
 	int character_limit = 16;
 	Vector2f position = { 0, 0 };
-	float scale = 1, bound_y = 0, delay = 0;
+	float scale = 1, bound_y = 0, delay = 0, box_x_bound = 0, text_x_bound = 0;
 	string input_string = "", placeholder = "", clipboard = "";
 	bool isActive = 0, selected = 0, cursor = 0;
 	Text inputted_text, placeholder_text;
