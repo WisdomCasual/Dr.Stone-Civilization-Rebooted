@@ -66,7 +66,7 @@ void TextBox::text_poll(Event event)
 		if (isActive) {
 			if (event.text.unicode == 13) {
 				*target_string = input_string;
-				input_string.clear();
+				isActive = 0;
 			}
 
 			if (event.text.unicode == 8 && !input_string.empty()) {
