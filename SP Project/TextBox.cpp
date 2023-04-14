@@ -77,7 +77,7 @@ void TextBox::text_poll(Event event)
 				else
 					input_string.pop_back();
 			}
-			if (event.text.unicode > 31 && event.text.unicode < 127 && event.text.unicode != 96 && input_string.size() <= character_limit && text_x_bound < box_x_bound) {
+			if (event.text.unicode > 31 && event.text.unicode < 127 && event.text.unicode != 96 && input_string.size() < character_limit && text_x_bound < box_x_bound) {
 				if (selected) {
 					input_string.clear();
 					selected = 0;
@@ -92,7 +92,7 @@ void TextBox::text_poll(Event event)
 				clipboard = Clipboard::getString();
 				if (selected)
 					input_string.clear();
-				for (int i = 0; i < clipboard.size() && input_string.size() <= character_limit && text_x_bound < box_x_bound; i++) {
+				for (int i = 0; i < clipboard.size() && input_string.size() < character_limit && text_x_bound < box_x_bound; i++) {
 					if (clipboard[i] > 31 && clipboard[i] < 127 && clipboard[i] != 96) {
 						input_string += clipboard[i];
 					}
