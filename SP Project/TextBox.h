@@ -24,7 +24,6 @@ public:
 
 	TextBox();
 
-
 	void setTargetString(string& target_string);
 
 	void setTexture(Texture& box_texture);
@@ -36,7 +35,6 @@ public:
 	void setScale(const float new_scale);
 
 	void setPlaceholderText(const string placeholder);
-
 
 	void text_poll(Event event);
 
