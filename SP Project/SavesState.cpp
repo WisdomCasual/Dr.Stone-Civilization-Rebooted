@@ -10,15 +10,18 @@ void SavesState::update_saves()
 		save_bg.setTextureRect(IntRect(0, saves[i].pressed * 100, 100, 200));
 		save_bg.setPosition(x + saves[i].x * scale, y + saves[i].y * scale);
 		if (save_bg.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			saves[i].hover = 1;
 			if (Mouse::isButtonPressed(Mouse::Left) && save_bg.getGlobalBounds().contains(clicked_on))saves[i].pressed = 1;
 			else {
 				if (saves[i].pressed)
 					if (saves[i].empty) {
-						globalvar::states->insert(NewSaveST);
+						states->insert(NewSaveST);
+						states->at(NewSaveID)->update();
+						saves[i].hover = 0;
 					}
 				saves[i].pressed = 0;
 			}
-			saves[i].hover = 1;
+			
 		}
 		else {
 			saves[i].pressed = 0;
