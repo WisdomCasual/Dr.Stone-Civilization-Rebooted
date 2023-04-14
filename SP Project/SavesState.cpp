@@ -13,8 +13,9 @@ void SavesState::update_saves()
 			if (Mouse::isButtonPressed(Mouse::Left) && save_bg.getGlobalBounds().contains(clicked_on))saves[i].pressed = 1;
 			else {
 				if (saves[i].pressed)
-					if (saves[i].empty)
-						saves[i].empty = 0;
+					if (saves[i].empty) {
+						globalvar::states->insert(NewSaveST);
+					}
 				saves[i].pressed = 0;
 			}
 			saves[i].hover = 1;
