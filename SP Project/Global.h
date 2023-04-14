@@ -44,7 +44,7 @@ namespace globalvar {
 	inline Event event;
 
 	inline int fps = 0, frame_count = 0, frame_sum = 0;
-	inline bool fps_active = 0;
+	inline bool fps_active = 0, fullscreen = 0;
 	inline float delay = 0;
 
 	inline Font font;

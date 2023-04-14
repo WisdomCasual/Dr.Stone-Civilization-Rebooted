@@ -204,6 +204,10 @@ void WorldMapState::pollevent()
 				load_maps(); break;
 			case Keyboard::F6:
 				save_maps(); break;
+			case Keyboard::F11:
+				fullscreen = !fullscreen;
+				game.update_window();
+				break;
 			case Keyboard::N:
 				if (admin)
 					new_map = !new_map; break;

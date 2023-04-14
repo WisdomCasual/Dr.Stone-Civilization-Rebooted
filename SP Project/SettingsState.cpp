@@ -15,15 +15,9 @@ void SettingsState::update_arrow()
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-				ofstream ofs("config/window.ini", ofstream::out, ofstream::trunc);
-				if (ofs.is_open()) {
-					ofs << title << '\n';
-					ofs << resolutions[resolution].width << ' ' << resolutions[resolution].height << '\n';
-					ofs << framelimits[framelimit] << '\n';
-					ofs << save_vsync;
-					ofs.close();
-				}
-				game.update_window(resolutions[resolution], title, framelimits[framelimit], save_vsync);
+				game.windowbounds = resolutions[resolution];
+				game.framelimit = framelimits[framelimit];
+				game.update_window();
 
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
 					states->insert(MainMenuST);
@@ -44,7 +38,6 @@ void SettingsState::update_arrow()
 
 			}
 		}
-
 	}
 	else {
 		arrow_pressed = 0;
@@ -98,44 +91,46 @@ void SettingsState::dev_button()
 
 void SettingsState::update_slider(slider_info* sliders, int target)
 {
-	if (Mouse::isButtonPressed(Mouse::Left)) {
+	if (!sliders[target].disabled) {
+		if (Mouse::isButtonPressed(Mouse::Left)) {
 
-		tip.setScale(scale / 3, scale / 3);
-		tip.setTextureRect(tipsleft[sliders[target].color]);
-		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-		tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
-		if (tip.getGlobalBounds().contains(clicked_on))
-			sliders[target].presssed = 1;
-
-
-		tip.setScale(sliderconst / 18 * (scale / 3), (scale / 3));
-		tip.setTextureRect(mids[3]);
-		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-		tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
-		if (tip.getGlobalBounds().contains(clicked_on))
-			sliders[target].presssed = 1;
+			tip.setScale(scale / 3, scale / 3);
+			tip.setTextureRect(tipsleft[sliders[target].color]);
+			tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+			tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
+			if (tip.getGlobalBounds().contains(clicked_on))
+				sliders[target].presssed = 1;
 
 
-		tip.setScale(scale / 3, scale / 3);
-		tip.setTextureRect(tipsright[3]);
-		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-		tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3), y + sliders[target].y * scale);
-		if (tip.getGlobalBounds().contains(clicked_on))
-			sliders[target].presssed = 1;
-	}
-	else
-		sliders[target].presssed = 0;
-	if (sliders[target].presssed) {
-		float initpos = x + (sliders[target].x + 9) * (scale / 3), mxlen = sliderconst * (scale / 3), stepsize = mxlen / sliders[target].mx;
-		if (mouse_pos.x < initpos) sliders[target].tipx = initpos;
-		else if (mouse_pos.x > initpos + mxlen) sliders[target].tipx = initpos + mxlen;
-		else
-		{
-			sliders[target].tipx = initpos + (sliders[target].mx - round((initpos + mxlen - mouse_pos.x) / stepsize)) * stepsize;
+			tip.setScale(sliderconst / 18 * (scale / 3), (scale / 3));
+			tip.setTextureRect(mids[3]);
+			tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+			tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
+			if (tip.getGlobalBounds().contains(clicked_on))
+				sliders[target].presssed = 1;
+
+
+			tip.setScale(scale / 3, scale / 3);
+			tip.setTextureRect(tipsright[3]);
+			tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+			tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3), y + sliders[target].y * scale);
+			if (tip.getGlobalBounds().contains(clicked_on))
+				sliders[target].presssed = 1;
 		}
+		else
+			sliders[target].presssed = 0;
+		if (sliders[target].presssed) {
+			float initpos = x + (sliders[target].x + 9) * (scale / 3), mxlen = sliderconst * (scale / 3), stepsize = mxlen / sliders[target].mx;
+			if (mouse_pos.x < initpos) sliders[target].tipx = initpos;
+			else if (mouse_pos.x > initpos + mxlen) sliders[target].tipx = initpos + mxlen;
+			else
+			{
+				sliders[target].tipx = initpos + (sliders[target].mx - round((initpos + mxlen - mouse_pos.x) / stepsize)) * stepsize;
+			}
 
-		*sliders[target].linker = round(((sliders[target].tipx - x) / (scale / 3) - sliders[target].x - 9) / sliderconst * sliders[target].mx);
-		sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 3));
+			*sliders[target].linker = round(((sliders[target].tipx - x) / (scale / 3) - sliders[target].x - 9) / sliderconst * sliders[target].mx);
+			sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 3));
+		}
 	}
 }
 
@@ -156,6 +151,10 @@ void SettingsState::render_slider(int target)
 	window->draw(tip);
 
 	//foreground
+	color = tip.getColor();
+	if (sliders[target].disabled)
+		tip.setColor(Color(color.r-100, color.g-100, color.b-100));
+
 	tip.setScale(scale / 3, scale / 3);
 	tip.setTextureRect(tipsleft[sliders[target].color]);
 	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
@@ -175,9 +174,9 @@ void SettingsState::render_slider(int target)
 
 	window->draw(tip);
 
-	slider_text.setCharacterSize(6.5 * scale);
+	slider_text.setCharacterSize(5.5 * scale);
 	slider_text.setString(sliders[target].name);
-	slider_text.setPosition(x + sliders[target].x * (scale / 3), y + (sliders[target].y - 12) * scale);
+	slider_text.setPosition(x + sliders[target].x * (scale / 3), y + (sliders[target].y - 11) * scale);
 	window->draw(slider_text);
 
 	slider_text.setCharacterSize(5 * scale);
@@ -189,33 +188,27 @@ void SettingsState::render_slider(int target)
 		slider_text.setString(sliders[target].txt[*sliders[target].linker]);
 	slider_text.setPosition(x + (sliders[target].x + 9 + sliderconst + 15) * (scale / 3), y + (sliders[target].y - 4) * scale);
 	window->draw(slider_text);
+
+	tip.setColor(color);
 }
 
 void SettingsState::settings_intializer()
 {
 	//read current settings
-	ifstream ifs("config/window.ini");
-	if (ifs.is_open()) {
-		getline(ifs, title);
-		ifs >> save_resolution.width >> save_resolution.height;
-		ifs >> save_framelimit;
-		ifs >> save_vsync;
-	}
-	ifs.close();
-	if (save_resolution.width / 120.0 < save_resolution.height / 120.0) scale = save_resolution.width / 120.0;
-	else scale = save_resolution.height / 120.0;
-	x = save_resolution.width / 2;
-	y = save_resolution.height / 2;
+	if (window->getSize().x / 120.0 < window->getSize().y / 120.0) scale = window->getSize().x / 120.0;
+	else scale = window->getSize().y / 120.0;
+	x = window->getSize().x / 2;
+	y = window->getSize().y / 2;
 	
 	//initialize resolution data
 	for (int i = 0; i < resnum; i++) {
-		if (save_resolution == resolutions[i]) {
+		if (game.windowbounds == resolutions[i]) {
 			resolution = i;
 			break;
 		}
 	}
 	if (resolution == resnum)
-		resolutions[resnum] = save_resolution, resolutions_text[resnum] = to_string(save_resolution.width) + " x " + to_string(save_resolution.height);
+		resolutions[resnum] = game.windowbounds, resolutions_text[resnum] = to_string(game.windowbounds.width) + " x " + to_string(game.windowbounds.height);
 
 	for (int i = 0; i < resnum; i++)
 		resolutions_text[i] = to_string(resolutions[i].width) + " x " + to_string(resolutions[i].height);
@@ -224,14 +217,14 @@ void SettingsState::settings_intializer()
 
 	//initialize framelimit data
 	for (int i = 0; i < framelimnum; i++) {
-		if (save_framelimit == framelimits[i]) {
+		if (game.framelimit == framelimits[i]) {
 			framelimit = i;
 			break;
 		}
 	}
 
 	if (framelimit == framelimnum)
-		framelimits[framelimnum] = save_framelimit, framelimits_text[framelimnum] = to_string(save_framelimit);
+		framelimits[framelimnum] = game.framelimit, framelimits_text[framelimnum] = to_string(game.framelimit);
 
 	for (int i = 0; i < framelimnum; i++)
 		framelimits_text[i] = to_string(framelimits[i]);
@@ -244,6 +237,57 @@ void SettingsState::settings_intializer()
 		sliders[i].tipx = x + (sliders[i].x + 9 + percentage * sliderconst) * (scale / 3);
 		sliders[i].midscale = (sliders[i].tipx - (x + (sliders[i].x + 9) * (scale / 3))) / (18 * (scale / 3));
 	}
+}
+
+void SettingsState::update_checkbox(int i)
+{
+	checkbox.setScale(scale / 8.0, scale / 8.0);
+	checkmark.setScale(scale/ 3.5, scale / 3.5);
+
+	checkbox.setPosition(x + checkboxes[i].x * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale);
+	if (checkbox.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		if (Mouse::isButtonPressed(Mouse::Left) && checkbox.getGlobalBounds().contains(clicked_on)) checkboxes[i].pressed = 1;
+		else {
+			if (checkboxes[i].pressed) {
+				if (checkboxes[i].checked)
+					checkboxes[i].execute = 0;
+				else
+					checkboxes[i].execute = 1;
+				game.update_window();
+				settings_intializer();
+				checkboxes[i].checked = !checkboxes[i].checked;
+			}
+			checkboxes[i].pressed = 0;
+		}
+		checkboxes[i].hover = 1;
+	}
+	else {
+		checkboxes[i].pressed = 0;
+		checkboxes[i].hover = 0;
+	}
+}
+
+void SettingsState::render_checkbox(int i)
+{
+	checkbox.setPosition(x + checkboxes[i].x * (scale / 3) + (45/2) * (scale/8.0), y + checkboxes[i].y * scale);
+	checkmark.setPosition(x + checkboxes[i].x * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale - 2 * (scale / 8.0));
+
+	if (checkboxes[i].pressed){
+		checkbox.setTextureRect(IntRect(45, 0, 45, 49));
+		checkmark.setPosition(x + checkboxes[i].x * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale + 2 * (scale / 8.0));
+	}
+	else if (checkboxes[i].hover){
+		checkbox.setTextureRect(IntRect(0, 0, 45, 49));
+	}
+	else {
+		checkbox.setTextureRect(IntRect(0, 0, 45, 49));
+	}
+	window->draw(checkbox);
+
+	if(checkboxes[i].checked)
+		window->draw(checkmark);
+
+	draw_text(checkboxes[i].name, x + (checkboxes[i].x + 40) * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale, 5.5 * scale);
 }
 
 SettingsState::SettingsState()
@@ -276,6 +320,16 @@ SettingsState::SettingsState()
 
 	tip.setTexture(*textures[0]);
 
+	checkboxes[0].checked = fullscreen;
+	checkbox.setTexture(*textures[2]);
+	checkbox.setTextureRect(IntRect(0, 0, 45, 49));
+	checkbox.setOrigin(45 / 2, 49 / 2);
+
+	checkmark.setTexture(*textures[0]);
+	checkmark.setTextureRect(checkMark);
+	checkmark.setOrigin(16 / 2, 15 / 2);
+
+
 	settings_intializer();
 }
 
@@ -304,8 +358,15 @@ void SettingsState::update()
 
 	update_arrow();
 
+	if (fullscreen)
+		sliders[0].disabled = 1;
+	else
+		sliders[0].disabled = 0;
+
 	for (int i = 0; i < 4; i++)
 		update_slider(sliders, i);
+
+	update_checkbox(0);
 }
 
 void SettingsState::render()
@@ -322,6 +383,7 @@ void SettingsState::render()
 	for (int i = 0; i < 4; i++)
 		render_slider(i);
 
+	render_checkbox(0);
 }
 
 void SettingsState::pollevent()
@@ -350,6 +412,12 @@ void SettingsState::pollevent()
 				break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
+			case Keyboard::F11:
+				fullscreen = !fullscreen; 
+				checkboxes[0].checked = fullscreen;
+				game.update_window();
+				settings_intializer();
+				break;
 			}
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
