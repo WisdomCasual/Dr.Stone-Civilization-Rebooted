@@ -141,12 +141,12 @@ void TextBox::update()
 		inputted_text.setFillColor(Color::White);
 
 	string output_string;
-	if (curser && isActive) {
-		output_string = input_string + ((curser) ? "|" : "");
+	if (cursor && isActive) {
+		output_string = input_string + ((cursor) ? "|" : "");
 		inputted_text.setString(output_string);
 	}
 	if (delay > 1.0 && isActive) {
-		delay = 0; curser = !curser;
+		delay = 0; cursor = !cursor;
 	}
 	else if (isActive)
 		delay += dt;
