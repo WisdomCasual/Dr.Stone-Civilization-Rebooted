@@ -32,28 +32,7 @@ public:
 		int global_layer = 0, global_priority = 0;
 	};
 
-	struct text_box {
-		string input_string = "";
-		bool isActive = 0;
-		Text inputted_text;
-		RectangleShape box;
-
-		void text_poll(Event event) {
-			if (event.type == Event::MouseButtonPressed) {
-				
-			}
-			if (event.type == Event::TextEntered) {
-				if (event.text.unicode == 8 && !input_string.empty()) {
-					input_string.pop_back();
-					inputted_text.setString(input_string);
-				}
-				if (event.text.unicode > 31 && event.text.unicode < 127 && event.text.unicode != 96) {
-					input_string += event.text.unicode;
-					inputted_text.setString(input_string);
-				}
-			}
-		}
-	};
+	
 
 	//public functions:
 	void initial_textures(string);
