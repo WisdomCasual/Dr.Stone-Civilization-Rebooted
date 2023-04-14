@@ -22,9 +22,8 @@ void Game::initial_window()
 void Game::initial_states()
 {
 	//sets intial states 
-	/*states.insert(BackgroundST);
-	states.insert(MainMenuST);*/
-	states.insert(NewSaveST);
+	states.insert(BackgroundST);
+	states.insert(MainMenuST);
 }
 
 void Game::initial_icon()
