@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="CreativeMode.cpp" />
+    <ClCompile Include="NewSaveState.cpp" />
     <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="SettingsState.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="MapBuilderState.cpp" />
     <ClCompile Include="SavesState.cpp" />
     <ClCompile Include="State.cpp" />
+    <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="WorldMapState.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,9 +164,11 @@
     <ClInclude Include="Global.h" />
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="MapBuilderState.h" />
+    <ClInclude Include="NewSaveState.h" />
     <ClInclude Include="PauseState.h" />
     <ClInclude Include="SavesState.h" />
     <ClInclude Include="State.h" />
+    <ClInclude Include="TextBox.h" />
     <ClInclude Include="WorldMapState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

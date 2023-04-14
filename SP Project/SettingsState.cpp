@@ -206,7 +206,7 @@ void SettingsState::settings_intializer()
 	else scale = save_resolution.height / 120.0;
 	x = save_resolution.width / 2;
 	y = save_resolution.height / 2;
-
+	
 	//initialize resolution data
 	for (int i = 0; i < resnum; i++) {
 		if (save_resolution == resolutions[i]) {
