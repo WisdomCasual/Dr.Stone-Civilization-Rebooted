@@ -90,9 +90,11 @@ void WorldMapState::save_maps()
 	auto mp_end = --pins.end();
 	if (ofs.is_open()) {
 		for (auto pn = pins.begin(); pn != pins.end(); pn++) {
-			ofs << pn->first << "| " << pn->second.x << " " << pn->second.y;
-			if (pn != mp_end)
-				ofs << "\n";;
+			if (pn->first != "") {
+				ofs << pn->first << "| " << pn->second.x << " " << pn->second.y;
+				if (pn != mp_end)
+					ofs << "\n";
+			}
 		}
 	}
 	ofs.close();
