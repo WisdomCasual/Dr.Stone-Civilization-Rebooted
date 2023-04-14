@@ -70,14 +70,18 @@ void TextBox::text_poll(Event event)
 			}
 
 			if (event.text.unicode == 8 && !input_string.empty()) {
-				if(selected)
+				if(selected) { 
 					input_string.clear();
+					selected = 0;
+				}
 				else
 					input_string.pop_back();
 			}
-			if (event.text.unicode > 31 && event.text.unicode < 127 && event.text.unicode != 96 && input_string.size() <= character_limit) {
-				if (selected)
+			if (event.text.unicode > 31 && event.text.unicode < 127 && event.text.unicode != 96 && input_string.size() <= character_limit && text_x_bound < box_x_bound) {
+				if (selected) {
 					input_string.clear();
+					selected = 0;
+				}
 				input_string += event.text.unicode;
 			}
 				inputted_text.setString(input_string);
@@ -88,7 +92,7 @@ void TextBox::text_poll(Event event)
 				clipboard = Clipboard::getString();
 				if (selected)
 					input_string.clear();
-				for (int i = 0; i < clipboard.size() && input_string.size() <= character_limit; i++) {
+				for (int i = 0; i < clipboard.size() && input_string.size() <= character_limit && text_x_bound < box_x_bound; i++) {
 					if (clipboard[i] > 31 && clipboard[i] < 127 && clipboard[i] != 96) {
 						input_string += clipboard[i];
 					}
@@ -137,8 +141,9 @@ void TextBox::update()
 	bound_y = inputted_text.getLocalBounds().top + inputted_text.getLocalBounds().height / 2.0;
 	inputted_text.setString(input_string);
 	placeholder_text.setOrigin(placeholder_text.getLocalBounds().left + placeholder_text.getLocalBounds().width / 2.0, placeholder_text.getLocalBounds().top + placeholder_text.getLocalBounds().height / 2.0);
-	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
-	inputted_text.setOrigin(inputted_text.getGlobalBounds().width / 2.0, bound_y);
+	box_x_bound = box.getLocalBounds().width, text_x_bound = inputted_text.getLocalBounds().width;
+	box.setOrigin(box.getLocalBounds().left + box_x_bound / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
+	inputted_text.setOrigin(inputted_text.getLocalBounds().left + text_x_bound / 2.0, bound_y);
 	setPosition(position);
 	if (selected)
 		inputted_text.setFillColor(Color::Blue);
