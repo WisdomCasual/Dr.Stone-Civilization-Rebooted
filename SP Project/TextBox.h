@@ -14,7 +14,7 @@ private:
 	Vector2f position = { 0, 0 };
 	float scale = 1, bound_y = 0, delay = 0;
 	string input_string = "", placeholder = "", clipboard = "";
-	bool isActive = 0, selected = 0, curser = 0;
+	bool isActive = 0, selected = 0, cursor = 0;
 	Text inputted_text, placeholder_text;
 	Sprite box;
 	Vector2f clicked_on = { 0, 0 };
