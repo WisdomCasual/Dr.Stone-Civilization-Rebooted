@@ -3,7 +3,7 @@
 NewSaveState::NewSaveState()
 {
 	State::initial_textures("newsave");
-	txt_box.initializeTextBox(test_str, *textures[2], "Write Here", {500.0, 500.0});
+	txt_box.initializeTextBox(test_str, *textures[2], "Write Here", {500.0, 500.0}, 3);
 }
 
 NewSaveState::~NewSaveState()
