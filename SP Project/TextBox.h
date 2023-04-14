@@ -17,14 +17,12 @@ private:
 	bool isActive = 0, selected = 0, cursor = 0;
 	Text inputted_text, placeholder_text;
 	Sprite box;
-	Vector2f clicked_on = { 0, 0 };
 
 
 
 public:
 
 	TextBox();
-
 
 	void setTargetString(string& target_string);
 
@@ -37,7 +35,6 @@ public:
 	void setScale(const float new_scale);
 
 	void setPlaceholderText(const string placeholder);
-
 
 	void text_poll(Event event);
 
