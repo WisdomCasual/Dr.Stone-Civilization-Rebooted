@@ -76,8 +76,6 @@ void TextBox::text_poll(Event event)
 				input_string += event.text.unicode;
 			}
 				inputted_text.setString(input_string);
-				inputted_text.setOrigin(inputted_text.getGlobalBounds().width / 2.0, bound_y);
-				inputted_text.setPosition(position);
 		} break;
 	case Event::KeyPressed:
 		if (isActive && event.key.control) {
@@ -135,6 +133,7 @@ void TextBox::update()
 	inputted_text.setString(input_string);
 	placeholder_text.setOrigin(placeholder_text.getLocalBounds().left + placeholder_text.getLocalBounds().width / 2.0, placeholder_text.getLocalBounds().top + placeholder_text.getLocalBounds().height / 2.0);
 	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
+	inputted_text.setOrigin(inputted_text.getGlobalBounds().width / 2.0, bound_y);
 	setPosition(position);
 	if (selected)
 		inputted_text.setFillColor(Color::Blue);
