@@ -2,22 +2,29 @@
 void Game::initial_window()
 {
 	//gets window properties from "config/window.ini";
-	string title = "none";
-	VideoMode windowbounds(800, 600);
-	int framelimit = 120;
-	bool vsync = 0;
-	ifstream ifs("config/window.ini");
-	if (ifs.is_open()) {
-		getline(ifs, title);
-		ifs >> windowbounds.width >> windowbounds.height;
-		ifs >> framelimit;
-		ifs >> vsync;
+	if (prev_res != windowbounds || prev_fullscreen != fullscreen) {
+		ifstream ifs("config/window.ini");
+		if (ifs.is_open()) {
+			getline(ifs, title);
+			ifs >> windowbounds.width >> windowbounds.height;
+			ifs >> framelimit;
+			ifs >> fullscreen;
+			ifs >> vsync;
+		}
+		ifs.close();
+
+		if (fullscreen)
+			this->window = new RenderWindow(VideoMode::getDesktopMode(), title, Style::Fullscreen);
+		else
+			this->window = new RenderWindow(windowbounds, title, Style::Titlebar | Style::Close);
+
+		prev_res = windowbounds;
+		prev_fullscreen = fullscreen;
 	}
-	ifs.close();
-	this->window = new RenderWindow(windowbounds, title, Style::Titlebar | Style::Close);
 	this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
 	globalvar::window = this->window;
+	initial_icon();
 }
 void Game::initial_states()
 {
@@ -58,7 +65,6 @@ Game::Game()
 	//runs all intializers 
 	initial_window();
 	initial_states();
-	initial_icon();
 	initial_fps();
 }
 
@@ -75,23 +81,23 @@ Game::~Game()
 	states.clear();
 }
 
-void Game::update_window(VideoMode resolution, string title, int framelimit, bool vsync)
+void Game::update_window()
 {
-	if ( Vector2u { resolution.width, resolution.height } != this->window->getSize()) {
-		delete this->window;
-		this->window = new RenderWindow(resolution, title, Style::Titlebar | Style::Close);	
-		globalvar::window = this->window;
-		fps_text.setCharacterSize(40 * ((float)window->getSize().y / 1080.0));
-		if (states.find(MapBuilderID) != states.end())
-			states.at(MapBuilderID)->update();
-		else if (states.find(GameID) != states.end())
-			states.at(GameID)->update();
-		else if (states.find(WorldMapID) != states.end())
-			states.at(WorldMapID)->update();
+	ofstream ofs("config/window.ini");
+	if (ofs.is_open()) {
+		ofs << title << '\n';
+		ofs << windowbounds.width << ' ' << windowbounds.height << '\n';
+		ofs << framelimit << '\n';
+		ofs << fullscreen << '\n';
+		ofs << vsync;
+		ofs.close();
 	}
-	this->window->setFramerateLimit(framelimit);
-	this->window->setVerticalSyncEnabled(vsync);
+	if (prev_res != windowbounds || prev_fullscreen != fullscreen)
+		delete window;
+	initial_window();
 
+	for (auto& state : states)
+		state.second->update();
 }
 
 void Game::updatedt()

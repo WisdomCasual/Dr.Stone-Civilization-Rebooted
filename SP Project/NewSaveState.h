@@ -1,6 +1,8 @@
 #pragma once
 #include"State.h"
 #include"TextBox.h"
+#include"Game.h"
+
 #include "Global.h"
 using namespace globalvar;
 using namespace sf;
