@@ -141,9 +141,9 @@ void TextBox::update()
 	bound_y = inputted_text.getLocalBounds().top + inputted_text.getLocalBounds().height / 2.0;
 	inputted_text.setString(input_string);
 	placeholder_text.setOrigin(placeholder_text.getLocalBounds().left + placeholder_text.getLocalBounds().width / 2.0, placeholder_text.getLocalBounds().top + placeholder_text.getLocalBounds().height / 2.0);
-	box_x_bound = box.getLocalBounds().width, text_x_bound = inputted_text.getLocalBounds().width;
-	box.setOrigin(box.getLocalBounds().left + box_x_bound / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
-	inputted_text.setOrigin(inputted_text.getLocalBounds().left + text_x_bound / 2.0, bound_y);
+	box_x_bound = box.getGlobalBounds().width * 0.8, text_x_bound = inputted_text.getGlobalBounds().width;
+	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
+	inputted_text.setOrigin(inputted_text.getLocalBounds().left + inputted_text.getLocalBounds().width / 2.0, bound_y);
 	setPosition(position);
 	if (selected)
 		inputted_text.setFillColor(Color::Blue);
