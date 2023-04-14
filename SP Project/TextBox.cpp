@@ -10,6 +10,7 @@ TextBox::TextBox()
 	bound_y = inputted_text.getGlobalBounds().top;
 	inputted_text.setString("");
 	inputted_text.setPosition(position);
+	inputted_text.setOrigin(inputted_text.getGlobalBounds().width / 2.0, bound_y / 1.25);
 }
 
 void TextBox::setTargetString(string& target_string)
@@ -49,12 +50,9 @@ void TextBox::setScale(const float new_scale)
 void TextBox::setPlaceholderText(const string placeholder)
 {
 	placeholder_text.setString(placeholder);
-	placeholder_text.setOrigin( placeholder_text.getLocalBounds().width / 2.0, bound_y/1.25);
+	placeholder_text.setOrigin(placeholder_text.getGlobalBounds().width / 2.0 / 2.0, bound_y/1.25);
 	placeholder_text.setPosition(position);
 }
-
-
-
 
 void TextBox::text_poll(Event event)
 {
@@ -104,6 +102,16 @@ void TextBox::initializeTextBox(string& targ_string, Texture& texture, const str
 
 void TextBox::drawTextBox(RenderWindow* window)
 {
+	string output_string = input_string + ((curser && isActive)? "|" : "");
+	inputted_text.setString(output_string);
+	if (delay > 1.0) {
+		delay = 0; curser = !curser;
+	}
+	else if (isActive)
+		delay += dt;
+	else
+		delay = 0;
+
 	window->draw(box);
 	if (input_string.empty() && !isActive)
 		window->draw(placeholder_text);
