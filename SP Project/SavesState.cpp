@@ -240,6 +240,10 @@ void SavesState::pollevent()
 				} break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
+			case Keyboard::F11:
+				fullscreen = !fullscreen;
+				game.update_window();
+				break;
 			}
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {

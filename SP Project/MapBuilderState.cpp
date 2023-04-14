@@ -532,6 +532,10 @@ void MapBuilderState::pollevent()
 			case Keyboard::F6:
 				//are you sure?
 				save_map(); break;
+			case Keyboard::F11:
+				fullscreen = !fullscreen;
+				game.update_window();
+				break;
 			case Keyboard::E:
 				if (picker)
 					tex_picker = new CreativeMode(&textures, picked_tile);

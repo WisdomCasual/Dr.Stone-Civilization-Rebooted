@@ -41,7 +41,10 @@ void NewSaveState::pollevent()
 					break;
 				case Keyboard::F3:
 					fps_active = !fps_active; break;
-				break;
+				case Keyboard::F11:
+					fullscreen = !fullscreen;
+					game.update_window();
+					break;
 				}
 		}
 	}

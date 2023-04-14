@@ -23,10 +23,10 @@ private:
         mids[4] = { {338,449,18,18} ,{356,368,18,18} ,{356,431,18,18},{338,386,18,18} },
         arrow = { 303,486,22,21 },
         buttons[4] = { {290,139,93,94} ,{240,0,93,94} ,{290,49,93,94},{201,296,92,92} },
-        checkMark = { 370,45,16,15 };
+        checkMark = {369,184,16,15};
     //Colors loaded in arrangment : Yellow -> Red -> Blue
     Vector2f clicked_on = { -1, -1 };
-    Sprite tissue, back_arrow, devbutton;
+    Sprite tissue, back_arrow, devbutton, checkbox, checkmark;
     Text devtext, slider_text;
     RectangleShape tint;
     float x = 0, y = 0;
@@ -35,17 +35,14 @@ private:
     Vector2f mouse_pos = { 0,0 };
     Sprite tip;
     VideoMode save_resolution = { 1920, 1080 };
-    string title = "";
+    Color color;
     int save_framelimit = 120, save_volume = 100, save_music = 100;
-    bool save_vsync = 0;
 
     short int resolution = resnum, framelimit = framelimnum, game_volume = 100, music_volume = 100;
     VideoMode resolutions[resnum + 1] = { {800, 600}, {1280, 720}, {1280, 800}, {1366, 768}, {1920, 1080}, {1920, 1200}, {2560, 1440}, {2560, 1600}, {3840, 2160}, {3840, 2400} };
     short int framelimits[framelimnum + 1] = { 30, 60, 90, 120, 144, 165 }; //<-- last slot reserved for custom paramaters ^
     string resolutions_text[resnum + 1];
     string framelimits_text[framelimnum + 1];
-    
-
 
     struct slider_info {
         short int x = 0, y = 0, mx = 1, color = 0;
@@ -55,9 +52,18 @@ private:
         string* txt = nullptr;
         short int tipx = 0;
         float midscale = 1;
-        bool presssed = 0;
+        bool presssed = 0, disabled = 0;
 
-    }sliders[4] = { {-105, -15, resnum-1, 0, &resolution, "Resolution", 2, resolutions_text}, {-105, 0, framelimnum-1, 1, &framelimit, "Frame Limit", 2, framelimits_text}, {-105, 15, 100, 2, &game_volume, "Game Sounds", 1}, {-105, 30, 100, 2, &music_volume, "Music", 1}};
+    }sliders[4] = { {-105, -17, resnum-1, 0, &resolution, "Resolution", 2, resolutions_text}, {-105, 3, framelimnum-1, 1, &framelimit, "Frame Limit", 2, framelimits_text}, {-105, 18, 100, 2, &game_volume, "Game Sounds", 1}, {-105, 33, 100, 2, &music_volume, "Music", 1}};
+
+    struct CheckBox {
+        short int x = 0, y = 0;
+        string name = "";
+        bool& execute;
+        bool checked = 0, hover = 0, pressed = 0;
+    }checkboxes[1] = { {-25, -10, "Fullscreen", fullscreen}};
+
+
 
     //private functions:
     void update_arrow();
@@ -65,6 +71,9 @@ private:
     void update_slider(slider_info*, int);
     void render_slider(int);
     void settings_intializer();
+    void update_checkbox(int);
+    void render_checkbox(int);
+
 public:
     //constructors / destructors
     SettingsState();

@@ -23,6 +23,8 @@ private:
 	VideoMode* videomode;
 	map<int, State*> states;
 	map<string, Texture*> textures;
+	VideoMode prev_res = { 0, 0 };
+	bool prev_fullscreen = 0;
 
 	//private functions:
 	void initial_window();
@@ -32,12 +34,18 @@ private:
 	void calc_fps();
 
 public:
+	//public variables:
+	string title = "none";
+	VideoMode windowbounds = { 800, 600 };
+	int framelimit = 120;
+	bool vsync = 0;
+
 	//constructors/destructors:
 	Game();
 	~Game();
 
 	//public functions:
-	void update_window(VideoMode resolution, string title, int framelimit, bool vsync);
+	void update_window();
 	void updatedt();
 	void pollevent();
 	void update();
