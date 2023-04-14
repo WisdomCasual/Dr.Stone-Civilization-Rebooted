@@ -49,10 +49,6 @@ void TextBox::setPlaceholderText(const string placeholder)
 	this->placeholder = placeholder;
 }
 
-
-
-
-
 void TextBox::text_poll(Event event)
 {
 	switch (event.type) {
@@ -144,6 +140,20 @@ void TextBox::update()
 		inputted_text.setFillColor(Color::Blue);
 	else
 		inputted_text.setFillColor(Color::White);
+
+	string output_string;
+	if (curser && isActive) {
+		output_string = input_string + ((curser) ? "|" : "");
+		inputted_text.setString(output_string);
+	}
+	if (delay > 1.0 && isActive) {
+		delay = 0; curser = !curser;
+	}
+	else if (isActive)
+		delay += dt;
+	else
+		delay = 0;
+
 }
 
 
