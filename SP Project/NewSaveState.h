@@ -12,6 +12,9 @@ private:
 	//variables
 	string test_str = "";
 	TextBox txt_box;
+	RectangleShape black_box;
+	float scale = 1;
+	int win_x, win_y;
 
 public:
 	//constructors/destructors:
