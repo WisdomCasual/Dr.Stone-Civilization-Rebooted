@@ -10,14 +10,15 @@ struct TextBox {
 
 private:
 	string* target_string = nullptr;
-	int character_limit = 32;
+	int character_limit = 16, historyptr = 0;
 	Vector2f position = { 0, 0 };
 	float scale = 1, bound_y = 0;
-	string input_string = "";
-	bool isActive = 0;
+	string input_string = "", placeholder = "", clipboard = "";
+	bool isActive = 0, selected = 0;
 	Text inputted_text, placeholder_text;
 	Sprite box;
 	Vector2f clicked_on = { 0, 0 };
+
 
 
 public:
@@ -37,10 +38,13 @@ public:
 
 	void setPlaceholderText(const string placeholder);
 
+
 	void text_poll(Event event);
 
 	void initializeTextBox(std::string& targ_string, Texture& texture, const string placeholder = "Write Here", Vector2f pos = {0.0, 0.0}, float scale = 1);
 
 	void drawTextBox(RenderWindow* window);
+
+	void update();
 
 };

@@ -12,6 +12,7 @@ NewSaveState::~NewSaveState()
 
 void NewSaveState::update()
 {
+	txt_box.update();
 }
 
 void NewSaveState::render()
