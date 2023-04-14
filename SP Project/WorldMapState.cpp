@@ -40,7 +40,7 @@ void WorldMapState::update_pins()
 
 				}
 				else {
-					//choosed map in game
+					//choosed map in game///////////////////////////////////////////////////
 
 
 				}
