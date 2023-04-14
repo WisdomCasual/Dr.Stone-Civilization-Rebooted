@@ -49,7 +49,7 @@ void TextBox::setScale(const float new_scale)
 void TextBox::setPlaceholderText(const string placeholder)
 {
 	placeholder_text.setString(placeholder);
-	placeholder_text.setOrigin( placeholder_text.getLocalBounds().width / 2.0, bound_y/1.25);
+	placeholder_text.setOrigin(placeholder_text.getLocalBounds().left + placeholder_text.getLocalBounds().width / 2.0, bound_y/1.25);
 	placeholder_text.setPosition(position);
 }
 
