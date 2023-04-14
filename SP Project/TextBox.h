@@ -10,7 +10,7 @@ struct TextBox {
 
 private:
 	string* target_string = nullptr;
-	int character_limit = 16;
+	int character_limit = 25;
 	Vector2f position = { 0, 0 };
 	float scale = 1, bound_y = 0, delay = 0, box_x_bound = 0, text_x_bound = 0;
 	string input_string = "", placeholder = "", clipboard = "";
