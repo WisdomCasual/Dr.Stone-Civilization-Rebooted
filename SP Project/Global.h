@@ -26,6 +26,8 @@
 #define WorldMapST { 7, new WorldMapState }
 #define WorldMapST_admin { 7, new WorldMapState(1) }
 
+#define NewMapID 8
+#define NewMapST { 8, new NewMapState}
 
 #define PauseID 10
 #define PauseST { 10, new PauseState }

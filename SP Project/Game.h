@@ -5,8 +5,9 @@
 #include"SavesState.h"
 #include"MainMenuState.h"
 #include"PauseState.h"
-#include "WorldMapState.h"
-#include "NewSaveState.h"
+#include"WorldMapState.h"
+#include"NewSaveState.h"
+#include"NewMapState.h"
 
 #include"Global.h"
 using namespace globalvar;

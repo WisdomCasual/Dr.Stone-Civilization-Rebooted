@@ -5,18 +5,17 @@
 #include"Global.h"
 using namespace globalvar;
 
-struct WorldMapState : public State
-{
-	private:
-		//variables:
-
-		struct Pin {
+struct Pin {
 			int x = 0, y = 0;
 			float pin_scale = 2, namebox_scale = 1, text_size = 40;
 			bool pressed = 0, hover = 0;
 		};
+inline map<string, Pin> pins;
 
-		map<string, Pin> pins;
+struct WorldMapState : public State
+{
+	private:
+		//variables:
 
 		RectangleShape tint;
 		float x = 0, y = 0;
@@ -35,6 +34,7 @@ struct WorldMapState : public State
 
 
 	public:
+
 		//constructors/destructors
 		WorldMapState(bool admin = 0);
 		~WorldMapState();

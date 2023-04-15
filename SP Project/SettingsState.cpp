@@ -334,7 +334,6 @@ SettingsState::~SettingsState()
 
 void SettingsState::update()
 {
-
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
