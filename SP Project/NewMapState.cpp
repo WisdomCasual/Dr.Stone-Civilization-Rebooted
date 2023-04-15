@@ -128,6 +128,10 @@ void NewMapState::render_slider(int target)
 
 NewMapState::NewMapState()
 {
+	win_x = window->getSize().x, win_y = window->getSize().y;
+	x = win_x / 2, y = win_y / 2;
+	if (win_x / 150.0 < win_y / 150.0) scale = win_x / 150.0;
+	else scale = win_y / 150.0;
 	initial_textures("newmap");
 	bg.setTexture(*textures[0]);
 	bg.setOrigin(100 / 2, 100 / 2);
@@ -146,6 +150,13 @@ NewMapState::NewMapState()
 	tip.setTexture(*textures[4]);
 
 	txt_box.initializeTextBox(map_name, *textures[2], "Enter Map name");
+
+	float percentage = 1;
+	for (int i = 0; i < 2; i++) {
+		percentage = (*sliders[i].linker < sliders[i].mx) ? *sliders[i].linker / (float)sliders[i].mx : 1.0;
+		sliders[i].tipx = x + (sliders[i].x + 9 + percentage * sliderconst) * (scale / 2.3);
+		sliders[i].midscale = (sliders[i].tipx - (x + (sliders[i].x + 9) * (scale / 2.3))) / (18 * (scale / 2.3));
+	}
 
 }
 
@@ -203,6 +214,7 @@ void NewMapState::render()
 void NewMapState::pollevent()
 {
 	while (window->pollEvent(event)) {
+		txt_box.text_poll(event);
 		switch (event.type) {
 		case Event::Closed:
 			window->close(); break;
