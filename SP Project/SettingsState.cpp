@@ -189,9 +189,10 @@ void SettingsState::settings_intializer()
 	//read current settings
 	if (window->getSize().x / 120.0 < window->getSize().y / 120.0) scale = window->getSize().x / 120.0;
 	else scale = window->getSize().y / 120.0;
-	x = window->getSize().x / 2;
+	x = window->getSize().x;
 	y = window->getSize().y / 2;
-	if (win_x > 1280) scale *= 0.75;
+	if (x > 1280) scale *= 0.75;
+	x /= 2;
 
 	//initialize resolution data
 	for (int i = 0; i < resnum; i++) {
