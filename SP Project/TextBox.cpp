@@ -56,8 +56,10 @@ void TextBox::text_poll(Event event)
 		if (event.mouseButton.button == Mouse::Left) {
 			if (box.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window))))
 				isActive = 1;
-			else
+			else {
 				isActive = 0;
+				*target_string = input_string;
+			}
 			selected = 0;
 		}
 
@@ -135,6 +137,11 @@ void TextBox::drawTextBox(RenderWindow* window)
 	window->draw(inputted_text);
 }
 
+bool TextBox::empty()
+{
+	return input_string.empty();
+}
+
 void TextBox::update()
 {
 	inputted_text.setString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
@@ -147,8 +154,10 @@ void TextBox::update()
 	setPosition(position);
 	if (selected)
 		inputted_text.setFillColor(Color::Blue);
-	else
+	else if(isActive)
 		inputted_text.setFillColor(Color::White);
+	else
+		inputted_text.setFillColor(Color(200, 200, 200, 255));
 
 	string output_string;
 	if (cursor && isActive) {
