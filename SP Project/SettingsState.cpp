@@ -67,6 +67,7 @@ void SettingsState::dev_button()
 
 				int exceptions[] = { WorldMapID , BackgroundID };
 				game.erase_states(exceptions, 2);
+				destruct = 1;
 				return;
 			}
 			devbutton.setTextureRect(IntRect(0, 0, 45, 49));
@@ -365,6 +366,9 @@ void SettingsState::update()
 
 	if (dev_button_active)
 		dev_button();
+
+	if (destruct)
+		return;
 
 	update_arrow();
 }

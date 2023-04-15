@@ -31,7 +31,7 @@ private:
     RectangleShape tint;
     float x = 0, y = 0;
     float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
-    bool button_pressed = 0, arrow_pressed = 0, dev_button_active = 1;
+    bool button_pressed = 0, arrow_pressed = 0, dev_button_active = 1, destruct = 0;
     Vector2f mouse_pos = { 0,0 };
     Sprite tip;
     VideoMode save_resolution = { 1920, 1080 };
