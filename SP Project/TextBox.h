@@ -42,6 +42,8 @@ public:
 
 	void drawTextBox(RenderWindow* window);
 
+	bool empty();
+
 	void update();
 
 };
