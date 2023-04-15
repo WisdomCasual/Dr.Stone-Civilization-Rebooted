@@ -197,7 +197,9 @@ void SavesState::update()
 	float win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	scale = min(win_x / 570.0, win_y / 350.0);
-	
+	if (win_x > 1280) scale *= 0.75;
+
+
 	tint.setSize({ win_x, win_y });
 	update_saves();
 	update_arrow();

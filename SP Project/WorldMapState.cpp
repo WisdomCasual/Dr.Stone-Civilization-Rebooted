@@ -151,6 +151,9 @@ void WorldMapState::update()
 		x = win_x / 2, y = win_y / 2;
 		if (win_x / 2350.0 < win_y / 1350.0) scale = win_x / 2350.0;
 		else scale = win_y / 1350.0;
+
+		if (win_x > 1280) scale *= 0.8;
+
 		////////////////////
 
 		tint.setSize({ win_x, win_y });
