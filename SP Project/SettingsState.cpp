@@ -191,7 +191,8 @@ void SettingsState::settings_intializer()
 	else scale = window->getSize().y / 120.0;
 	x = window->getSize().x / 2;
 	y = window->getSize().y / 2;
-	
+	if (win_x > 1280) scale *= 0.75;
+
 	//initialize resolution data
 	for (int i = 0; i < resnum; i++) {
 		if (game.windowbounds == resolutions[i]) {
@@ -340,19 +341,26 @@ void SettingsState::update()
 {
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
-	win_x = window->getSize().x, win_y = window->getSize().y;
-	x = win_x / 2, y = win_y / 2;
-	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
-	else scale = win_y / 120.0;
-	/////// Do Not touch;
+	if (prev_win != window->getSize()) {
+		prev_win = window->getSize();
+		win_x = window->getSize().x, win_y = window->getSize().y;
+		x = win_x / 2, y = win_y / 2;
+		if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
+		else scale = win_y / 120.0;
+		if (win_x > 1280) scale *= 0.75;
 
-	tint.setSize({ win_x, win_y });
+		/////// Do Not touch;
 
-	panel.setPosition(x, y);
-	panel.setScale(scale * 0.17, scale * 0.17);
+		tint.setSize({ win_x, win_y });
 
-	tissue.setPosition(x, y);
-	tissue.setScale(scale * 0.13, scale * 0.13);
+		panel.setPosition(x, y);
+		panel.setScale(scale * 0.17, scale * 0.17);
+
+		tissue.setPosition(x, y);
+		tissue.setScale(scale * 0.13, scale * 0.13);
+
+	}
+
 
 	if (fullscreen)
 		sliders[0].disabled = 1;
