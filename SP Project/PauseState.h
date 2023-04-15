@@ -13,7 +13,7 @@ struct PauseState : public State
     private:
         bool presssed = 0;
         Vector2f clicked_on = { -1, -1 };
-        Sprite tissue;
+        Sprite tissue, panel;
         RectangleShape tint;
         float x = 0, y = 0;
         float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;

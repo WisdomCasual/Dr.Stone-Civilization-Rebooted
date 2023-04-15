@@ -44,6 +44,9 @@ PauseState::PauseState()
 {
 	initial_textures("pause");
 
+	panel.setTexture(*textures[3]);
+	panel.setOrigin(600 / 2, 600 / 2);
+
 	tissue.setTexture(*textures[2]);
 	tissue.setOrigin(700 / 2, 700 / 2);
 
@@ -76,8 +79,12 @@ void PauseState::update()
 
 
 	tint.setSize({ win_x, win_y });
+
+	panel.setPosition(x, y);
+	panel.setScale(scale * 0.17, scale * 0.17);
+
 	tissue.setPosition(x, y);
-	tissue.setScale(scale * 0.125, scale * 0.125);
+	tissue.setScale(scale * 0.13, scale * 0.13);
 
 	update_buttons();
 
@@ -141,6 +148,7 @@ void PauseState::pollevent()
 void PauseState::render()
 {
 	window->draw(tint);
+	window->draw(panel);
 	window->draw(tissue);
 	render_buttons();
 

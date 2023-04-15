@@ -285,6 +285,10 @@ void SettingsState::render_checkbox(int i)
 SettingsState::SettingsState()
 {
 	initial_textures("settings");
+
+	panel.setTexture(*textures[4]);
+	panel.setOrigin(600 / 2, 600 / 2);
+
 	tissue.setTexture(*textures[3]);
 	tissue.setOrigin(700 / 2, 700 / 2);
 	tint.setSize({ 1920, 1080 });
@@ -334,17 +338,21 @@ SettingsState::~SettingsState()
 
 void SettingsState::update()
 {
+	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
+
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
 	else scale = win_y / 120.0;
-	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 	/////// Do Not touch;
 
 	tint.setSize({ win_x, win_y });
 
+	panel.setPosition(x, y);
+	panel.setScale(scale * 0.17, scale * 0.17);
+
 	tissue.setPosition(x, y);
-	tissue.setScale(scale * 0.125, scale * 0.125);
+	tissue.setScale(scale * 0.13, scale * 0.13);
 
 	if (fullscreen)
 		sliders[0].disabled = 1;
@@ -376,6 +384,7 @@ void SettingsState::render()
 {
 
 	window->draw(tint);
+	window->draw(panel);
 	window->draw(tissue);
 	if (dev_button_active) {
 		window->draw(devbutton);
