@@ -43,12 +43,16 @@ void MainMenuState::render_buttons()
 MainMenuState::MainMenuState()
 {
 	initial_textures("mainmenu");
+
 	buttontex.setTexture(*textures[0]);
 	buttontex.setTextureRect(IntRect(0, 0, 190, 49));
 	buttontex.setOrigin(190/2,49/2);
+
 	logo.setTexture(*textures[1]);
 	logo.setOrigin(2280/2,772/2);
+
 	text.setFont(font);
+
 	buttons.push_back({ "Play",0,0, play});
 	buttons.push_back({ "Settings",0,64, settings});
 	buttons.push_back({ "Exit" ,0,128, exit});
@@ -56,6 +60,7 @@ MainMenuState::MainMenuState()
 
 MainMenuState::~MainMenuState()
 {
+
 }
 
 void MainMenuState::update()
