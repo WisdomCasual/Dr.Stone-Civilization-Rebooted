@@ -19,6 +19,7 @@ struct PauseState : public State
         float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
         bool button_pressed = 0;
         Vector2i mouse_pos = { 0,0 };
+        Vector2u prev_win = { 0, 0 };
 
         Sprite buttontex, logo;
         Text button_text;

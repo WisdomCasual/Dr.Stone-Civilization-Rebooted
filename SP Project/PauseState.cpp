@@ -70,21 +70,26 @@ PauseState::~PauseState()
 
 void PauseState::update()
 {
-	win_x = window->getSize().x, win_y = window->getSize().y;
-	x = win_x / 2, y = win_y / 2;
-	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
-	else scale = win_y / 120.0;
 	mouse_pos = Mouse::getPosition(*window);
-	/////// Do Not touch;
 
+	if (prev_win != window->getSize()) {
+		prev_win = window->getSize();
+		win_x = window->getSize().x, win_y = window->getSize().y;
+		x = win_x / 2, y = win_y / 2;
+		if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
+		else scale = win_y / 120.0;
 
-	tint.setSize({ win_x, win_y });
+		if (win_x > 1280) scale *= 0.75;
+		/////////////////////
 
-	panel.setPosition(x, y);
-	panel.setScale(scale * 0.17, scale * 0.17);
+		tint.setSize({ win_x, win_y });
 
-	tissue.setPosition(x, y);
-	tissue.setScale(scale * 0.13, scale * 0.13);
+		panel.setPosition(x, y);
+		panel.setScale(scale * 0.17, scale * 0.17);
+
+		tissue.setPosition(x, y);
+		tissue.setScale(scale * 0.13, scale * 0.13);
+	}
 
 	update_buttons();
 
