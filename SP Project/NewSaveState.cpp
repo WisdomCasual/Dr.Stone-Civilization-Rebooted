@@ -71,8 +71,8 @@ void NewSaveState::update()
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
 		x = win_x / 2, y = win_y / 2;
-		if (win_x / 400.0 < win_y / 400.0) scale = win_x / 400.0;
-		else scale = win_y / 400.0;
+		if (win_x / 450.0 < win_y / 450.0) scale = win_x / 450.0;
+		else scale = win_y / 450.0;
 
 		if (win_x > 1280) scale *= 0.75;
 		////////////////////
