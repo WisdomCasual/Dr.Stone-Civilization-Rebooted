@@ -72,6 +72,8 @@ void NewSaveState::update()
 		x = win_x / 2, y = win_y / 2;
 		if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
 		else scale = win_y / 120.0;
+
+		if (win_x > 1280) scale *= 0.75;
 		////////////////////
 
 		tissue.setScale(scale * 0.1, scale * 0.1); 

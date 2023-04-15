@@ -132,6 +132,8 @@ NewMapState::NewMapState()
 	x = win_x / 2, y = win_y / 2;
 	if (win_x / 150.0 < win_y / 150.0) scale = win_x / 150.0;
 	else scale = win_y / 150.0;
+	if (win_x > 1280) scale *= 0.75;
+
 	initial_textures("newmap");
 
 	tissue.setTexture(*textures[5]);
@@ -180,6 +182,9 @@ void NewMapState::update()
 		x = win_x / 2, y = win_y / 2;
 		if (win_x / 150.0 < win_y / 150.0) scale = win_x / 150.0;
 		else scale = win_y / 150.0;
+
+		if (win_x > 1280) scale *= 0.75;
+
 		///////////////////////////////////
 
 		tint.setSize({ win_x, win_y });
@@ -190,8 +195,9 @@ void NewMapState::update()
 		bg.setPosition(x, y);
 		bg.setScale(scale * 0.17, scale * 0.17);
 
-		txt_box.setPosition({ x - 10, y - 20 * scale});
-		txt_box.setScale(scale*0.2);
+		txt_box.setPosition({ x - 10 * scale, y - 20 * scale});
+
+		txt_box.setScale(scale * 0.2);
 	}
 
 	update_arrow();
