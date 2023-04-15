@@ -116,14 +116,19 @@ SavesState::SavesState()
 
 	tint.setSize({ 1920, 1080 });
 	tint.setFillColor(Color(0, 0, 0, 154));
+
 	savesBG.setTexture(*textures[1]);
 	savesBG.setOrigin(savesBG.getGlobalBounds().width / 2, savesBG.getGlobalBounds().height / 2);
+
 	save_bg.setTexture(*textures[0]);
 	save_bg.setTextureRect(IntRect(0,0,100,200));
 	save_bg.setOrigin(50, 100);
+
 	text.setFont(font);
+
 	del.setFont(font);
 	del.setString("Delete");
+
 	arrow.setTexture(*textures[3]);
 	arrow.setTextureRect(IntRect(0, 0, 22, 21));
 	arrow.setOrigin(22/2, 21/2);
