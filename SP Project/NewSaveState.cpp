@@ -4,14 +4,14 @@
 
 void NewSaveState::update_arrow()
 {
-	back_arrow.setPosition(x - 28  * scale, y - 26 * scale);
+	back_arrow.setPosition(x - 112  * scale, y - 104 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
-		back_arrow.setScale(scale * 0.3, scale * 0.3);
+		back_arrow.setScale(scale * 1.2, scale * 1.2);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
-			back_arrow.setScale(scale * 0.27, scale * 0.27);
+			back_arrow.setScale(scale * 1.08, scale * 1.08);
 		}
 		else {
 			if (arrow_pressed) {
@@ -33,7 +33,7 @@ void NewSaveState::update_arrow()
 	else {
 		arrow_pressed = 0;
 		back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
-		back_arrow.setScale(scale * 0.3, scale * 0.3);
+		back_arrow.setScale(scale * 1.2, scale * 1.2);
 	}
 }
 
@@ -57,7 +57,8 @@ NewSaveState::NewSaveState()
 
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	scale = min(win_x / 1920.0, win_y / 1080.0);
-	txt_box.initializeTextBox(test_str, *textures[2], "Enter name", Vector2f(win_x / 2.0, (win_y / 2.5)), scale * 1.2);
+	if (win_x > 1280) scale *= 0.75;
+	txt_box.initializeTextBox(test_str, *textures[2], "Enter name", Vector2f(win_x / 2.0, (win_y / 2) + 5 * scale), scale * 1.2);
 }
 
 NewSaveState::~NewSaveState()
@@ -70,17 +71,19 @@ void NewSaveState::update()
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
 		x = win_x / 2, y = win_y / 2;
-		if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
-		else scale = win_y / 120.0;
+		if (win_x / 400.0 < win_y / 400.0) scale = win_x / 400.0;
+		else scale = win_y / 400.0;
 
 		if (win_x > 1280) scale *= 0.75;
 		////////////////////
 
-		tissue.setScale(scale * 0.1, scale * 0.1); 
+		tissue.setScale(scale * 0.4, scale * 0.4); 
 		tissue.setPosition(x, y);
-		panel.setScale(scale * 0.13, scale * 0.13);
+		panel.setScale(scale * 0.52, scale * 0.52);
 		panel.setPosition(x, y);
 		tint.setSize({ win_x, win_y });
+		txt_box.setScale(scale * 0.6);
+		txt_box.setPosition({ x, y - 52 * scale });
 	}
 	tissue.setPosition(x, y);
 
@@ -99,8 +102,8 @@ void NewSaveState::render()
 	window->draw(tissue);
 	txt_box.drawTextBox(window);
 	window->draw(back_arrow);
-	draw_text("Choose name and", x, y - 28 * scale, 6.5 * scale);
-	draw_text("character", x, y - 28 * scale+(5*scale), 6.5 * scale);
+	draw_text("Choose name and", x, y - 112 * scale, 26 * scale);
+	draw_text("character", x, y - 112 * scale+ (20 * scale), 26 * scale);
 }
 
 void NewSaveState::pollevent()
