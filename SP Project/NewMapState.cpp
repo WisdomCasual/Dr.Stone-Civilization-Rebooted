@@ -130,7 +130,7 @@ NewMapState::NewMapState()
 {
 	initial_textures("newmap");
 	bg.setTexture(*textures[0]);
-	bg.setOrigin(100 / 2, 100 / 2);
+	bg.setOrigin(400 / 2, 400 / 2);
 
 	tint.setSize({ 1920, 1080 });
 	tint.setFillColor(Color(0, 0, 0, 154));
@@ -169,7 +169,7 @@ void NewMapState::update()
 		tint.setSize({ win_x, win_y });
 
 		bg.setPosition(x, y);
-		bg.setScale(scale, scale);
+		bg.setScale(scale * 0.25, scale * 0.25);
 
 		txt_box.setPosition({ x - 10, y - 20 * scale});
 		txt_box.setScale(scale*0.2);

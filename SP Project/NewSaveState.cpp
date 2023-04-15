@@ -42,7 +42,7 @@ NewSaveState::NewSaveState()
 	State::initial_textures("newsave");
 
 	tissue.setTexture(*textures[0]);
-	tissue.setOrigin(700 / 2, 700 / 2);
+	tissue.setOrigin(400 / 2, 400 / 2);
 
 	back_arrow.setTexture(*textures[1]);
 	back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
@@ -70,10 +70,12 @@ void NewSaveState::update()
 		else scale = win_y / 120.0;
 		////////////////////
 
-		tissue.setScale(scale * 0.1, scale * 0.1);
-		//tint.setSize({ win_x, win_y });
+		tissue.setScale(scale * 0.2, scale * 0.2); 
+		tissue.setPosition(x, y);
+		tint.setSize({ win_x, win_y });
 	}
 	tissue.setPosition(x, y);
+
 	update_arrow();
 
 	if (destruct)
