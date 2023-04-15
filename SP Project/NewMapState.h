@@ -36,7 +36,7 @@ private:
 	}sliders[2] = { {-64, 0, 255, 0, &x_size, "X", 0}, {-64, 15, 255, 1, &y_size, "Y", 0} };
 
 
-	Sprite bg, back_arrow, tip;
+	Sprite bg, back_arrow, tip, tissue;
 	RectangleShape tint;
 	Vector2f mouse_pos = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
