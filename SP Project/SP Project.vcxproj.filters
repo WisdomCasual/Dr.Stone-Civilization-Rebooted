@@ -61,7 +61,7 @@
       <Filter>States</Filter>
     </ClCompile>
     <ClCompile Include="NewMapState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>States</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
