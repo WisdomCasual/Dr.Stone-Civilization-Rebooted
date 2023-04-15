@@ -24,6 +24,7 @@ void NewSaveState::update_arrow()
 
 				int exceptions[] = { SavesID , BackgroundID };
 				game.erase_states(exceptions, 2);
+				destruct = 1;
 				return;
 			}
 		}
@@ -74,6 +75,10 @@ void NewSaveState::update()
 	}
 	tissue.setPosition(x, y);
 	update_arrow();
+
+	if (destruct)
+		return;
+
 	txt_box.update();
 }
 
