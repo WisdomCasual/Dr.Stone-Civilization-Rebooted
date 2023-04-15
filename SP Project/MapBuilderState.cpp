@@ -409,7 +409,6 @@ void MapBuilderState::save_map()
 
 void MapBuilderState::load_map()
 {
-
 	ifstream ifs("Maps/" + map_name + ".mp");
 	string line;
 	int mpsize = 0;
@@ -656,4 +655,5 @@ void MapBuilderState::pollevent()
 				} break;
 		}
 	}
+
 }

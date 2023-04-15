@@ -21,7 +21,7 @@ struct WorldMapState : public State
 		RectangleShape tint;
 		float x = 0, y = 0;
 		float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
-		bool admin = 0, new_map = 0, map_added = 0, del = 0, move = 0, selected = 0;
+		bool admin = 0, new_map = 0, map_added = 0, del = 0, move = 0, selected = 0, destruct = 0;;
 		string moving;
 		Sprite worldmap, namebox, pin;
 		Vector2f mouse_pos = { 0,0 }, clicked_on = { -1, -1 };
