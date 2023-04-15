@@ -21,8 +21,13 @@ void Game::initial_window()
 		prev_res = windowbounds;
 		prev_fullscreen = fullscreen;
 	}
-	this->window->setFramerateLimit(framelimit);
+	if (vsync) {
+		this->window->setFramerateLimit(0);	
+	}
+	else
+		this->window->setFramerateLimit(framelimit);
 	this->window->setVerticalSyncEnabled(vsync);
+
 	globalvar::window = this->window;
 	initial_icon();
 }

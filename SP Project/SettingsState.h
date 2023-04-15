@@ -54,14 +54,14 @@ private:
         float midscale = 1;
         bool presssed = 0, disabled = 0;
 
-    }sliders[4] = { {-105, -17, resnum-1, 0, &resolution, "Resolution", 2, resolutions_text}, {-105, 3, framelimnum-1, 1, &framelimit, "Frame Limit", 2, framelimits_text}, {-105, 18, 100, 2, &game_volume, "Game Sounds", 1}, {-105, 33, 100, 2, &music_volume, "Music", 1}};
+    }sliders[4] = { {-105, -10, resnum-1, 0, &resolution, "Resolution", 2, resolutions_text}, {-105, 5, framelimnum-1, 1, &framelimit, "Frame Limit", 2, framelimits_text}, {-105, 20, 100, 2, &game_volume, "Game Sounds", 1}, {-105, 35, 100, 2, &music_volume, "Music", 1}};
 
     struct CheckBox {
         short int x = 0, y = 0;
         string name = "";
         bool& execute;
         bool checked = 0, hover = 0, pressed = 0;
-    }checkboxes[1] = { {-25, -10, "Fullscreen", fullscreen}};
+    }checkboxes[2] = { {-100, -25, "Fullscreen", fullscreen}, {0, -25, "VSync    ", vsync} };
 
 
 
