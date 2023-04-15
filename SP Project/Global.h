@@ -59,4 +59,5 @@ namespace globalvar {
 		text.setPosition(a, b);
 		window->draw(text);
 	}
+
 }

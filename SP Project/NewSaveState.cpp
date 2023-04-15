@@ -38,6 +38,7 @@ void NewSaveState::pollevent()
 				case Keyboard::Escape:
 					delete states->rbegin()->second;
 					states->erase(states->rbegin()->first);
+					return;
 					break;
 				case Keyboard::F3:
 					fps_active = !fps_active; break;

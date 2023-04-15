@@ -39,6 +39,7 @@ public:
 	VideoMode windowbounds = { 800, 600 };
 	int framelimit = 120;
 	bool vsync = 0;
+	void erase_states(int[], int);
 
 	//constructors/destructors:
 	Game();

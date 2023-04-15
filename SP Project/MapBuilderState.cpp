@@ -69,7 +69,9 @@ void MapBuilderState::hover()
 
 MapBuilderState::~MapBuilderState()
 {
-	delete this->tex_picker;
+	if (!picker)
+		delete this->tex_picker;
+	
 }
 
 void MapBuilderState::grid(int x_win, int y_win)
@@ -149,7 +151,6 @@ void MapBuilderState::update()
 
 	if (!picker)
 		tex_picker->run(picker);
-
 }
 
 void MapBuilderState::selection()
@@ -406,6 +407,7 @@ void MapBuilderState::save_map()
 
 void MapBuilderState::load_map()
 {
+
 	ifstream ifs("Maps/" + map_name + ".mp");
 	string line;
 	int mpsize = 0;
@@ -498,7 +500,6 @@ void MapBuilderState::render()
 	int x_win = window->getSize().x, y_win = window->getSize().y; //<-- window boundaries
 	x_mid = x_offset + (x_win / (16 * scale) / 2), y_mid = y_offset + (y_win / (16 * scale) / 2); // updates offset
 
-
 	render_tiles(x_win, y_win, 0);
 	//----------render entities herre in game--------------
 	render_tiles(x_win, y_win, 1);
@@ -519,7 +520,7 @@ void MapBuilderState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(PauseST); break;
+				states->insert(PauseST); return; break;
 			case Keyboard::Space:
 				x = 0, y = 0; break;
 			case Keyboard::F3:

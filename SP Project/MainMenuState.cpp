@@ -68,41 +68,32 @@ void MainMenuState::update()
 	logo.setScale(scale * 0.13, scale * 0.13);
 	logo.setPosition(x, y - 110 * scale);
 
-	if (play) {
+	update_buttons();
+	if (exit) { exit = 0; window->close(); }
+	else if (play) {
 		play = 0;
 		states->insert(SavesST);
-		states->at(SavesID)->update();
 
 		if (states->find(BackgroundID) != states->end())
 			states->insert(BackgroundST);
 
-		for (auto& state : *states) {
-			if (state.first != SavesID && state.first != BackgroundID) {
-				delete state.second;
-				states->erase(state.first);
-			}
-		}
 
+		int exceptions[] = { SavesID , BackgroundID };
+		game.erase_states(exceptions, 2);
+		return;
 	}
-	if (settings) { 
+	else if (settings) { 
 		settings = 0;
 		states->insert(SettingsST);
-		states->at(SettingsID)->update();
 
 		if (states->find(BackgroundID) != states->end())
 			states->insert(BackgroundST);
 
-		for (auto& state : *states) {
-			if (state.first != SettingsID && state.first != BackgroundID) {
-				delete state.second;
-				states->erase(state.first);
-			}
-		}
 
+		int exceptions[] = { SettingsID , BackgroundID };
+		game.erase_states(exceptions, 2);
+		return;
 	}
-	if (exit) { exit = 0; window->close(); }
-
-	update_buttons();
 }
 
 void MainMenuState::render()

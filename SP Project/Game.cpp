@@ -56,6 +56,24 @@ void Game::calc_fps()
 	fps_text.setString("  FPS " + to_string(fps));
 }
 
+void Game::erase_states(int exceptions[], int size = 0)
+{
+	map<int, State*> temp; bool skip;
+	for (auto st = states.begin(); st != states.end(); st++) {
+		skip = 0;
+		for (int i = 0; i < size; i++)
+			if (st->first == exceptions[i]) {
+				temp.insert(*st);
+				skip = 1;
+			}
+		if (!skip)
+			delete st->second;
+	}
+	states = temp;
+	for (auto& state : states)
+		state.second->update();
+}
+
 Game::Game()
 {
 	globalvar::states = &this->states;
@@ -117,7 +135,6 @@ void Game::pollevent()
 
 void Game::update()
 {
-
 	updatedt();
 	pollevent();
 	calc_fps();
@@ -129,7 +146,6 @@ void Game::update()
 void Game::render()
 {
 	//renders all states in the deque (from buttom to top)
-
 	this->window->clear();
 
 	//draw objects
@@ -140,7 +156,6 @@ void Game::render()
 		window->draw(fps_text);
 
 	window->display();
-
 }
 
 void Game::run()

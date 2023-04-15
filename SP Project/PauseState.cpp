@@ -79,43 +79,36 @@ void PauseState::update()
 	tissue.setPosition(x, y);
 	tissue.setScale(scale * 0.125, scale * 0.125);
 
+	update_buttons();
+
 	if (resume) {
 		resume = 0;
+
 		delete states->at(PauseID);
 		states->erase(PauseID);
+		return;
 	}
-	if (settings) {
+	else if (settings) {
 		settings = 0;
+
 		states->insert(SettingsST);
-		states->at(SettingsID)->update();
 
-		for (auto& state : *states) {
-			if (state.first != SettingsID && state.first != BackgroundID && state.first != MapBuilderID && state.first != GameID && state.first != WorldMapID) {
-				delete state.second;
-				states->erase(state.first);
-			}
-		}
-
+		int exceptions[] = { SettingsID, BackgroundID, MapBuilderID, GameID, WorldMapID };
+		game.erase_states(exceptions, 5);
+		return;
 	}
-	if (exit) {
+	else if (exit) {
 		exit = 0; 
 
 		states->insert(MainMenuST);
-		states->at(MainMenuID)->update();
 
 		if (states->find(BackgroundID) == states->end())
 			states->insert(BackgroundST);
 
-		for (auto& state : *states) {
-			if (state.first != MainMenuID && state.first != BackgroundID) {
-				delete state.second;
-				states->erase(state.first);
-			}
-		}
-
+		int exceptions[] = { MainMenuID , BackgroundID};
+		game.erase_states(exceptions, 2);
+		return;
 	}
-
-	update_buttons();
 }
 
 void PauseState::pollevent()
