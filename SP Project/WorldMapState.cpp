@@ -6,29 +6,29 @@ void WorldMapState::update_pins()
 	pin.setScale(scale * 3.1, scale * 3.1);
 	namebox.setScale(scale * 1.5, scale * 1.5);
 
-	for (auto &pn : pins) {
-		namebox.setPosition(x + pn.second.x * scale, y + (pn.second.y - 90) * scale);
-		pin.setPosition(x + pn.second.x * scale, y + pn.second.y * scale);
+	for (auto pn = pins.begin(); pn != pins.end(); pn++) {
+		namebox.setPosition(x + pn->second.x * scale, y + (pn->second.y - 90) * scale);
+		pin.setPosition(x + pn->second.x * scale, y + pn->second.y * scale);
 
-		pn.second.pin_scale = scale * 3.1;
-		pn.second.namebox_scale = scale * 1.5;
-		pn.second.text_size = 54 * scale;
-		pn.second.hover = 0;
+		pn->second.pin_scale = scale * 3.1;
+		pn->second.namebox_scale = scale * 1.5;
+		pn->second.text_size = 54 * scale;
+		pn->second.hover = 0;
 
 		if ((pin.getGlobalBounds().contains(mouse_pos) || namebox.getGlobalBounds().contains(mouse_pos)) && !selected && !new_map) {
 			if (Mouse::isButtonPressed(Mouse::Left) && (namebox.getGlobalBounds().contains(clicked_on) || pin.getGlobalBounds().contains(clicked_on))) {
 
-				pn.second.pin_scale = scale * 2.9;
-				pn.second.namebox_scale = scale * 1.44;
-				pn.second.text_size = 50 * scale;
-				pn.second.pressed = 1;
+				pn->second.pin_scale = scale * 2.9;
+				pn->second.namebox_scale = scale * 1.44;
+				pn->second.text_size = 50 * scale;
+				pn->second.pressed = 1;
 			}
-			else if (pn.second.pressed) {
-				pn.second.pressed = 0;
+			else if (pn->second.pressed) {
+				pn->second.pressed = 0;
 				if (admin) {
 					//choose map in MapBuilder
 
-					states->insert({ 6, new MapBuilderState(pn.first) });
+					states->insert({ 6, new MapBuilderState(pn->first) });
 
 					int exceptions[] = { MapBuilderID };
 					game.erase_states(exceptions, 1);
@@ -41,23 +41,23 @@ void WorldMapState::update_pins()
 				}
 			}
 			else {
-				pn.second.text_size = 54 * scale;
+				pn->second.text_size = 54 * scale;
 			}
-			pn.second.hover = 1;
+			pn->second.hover = 1;
 			if (move && !selected) {
-				moving = pn.first;
+				moving = pn->first;
 				selected = 1;
 			}
 			if (del) {
-				string file_name = "Maps/" + pn.first + ".mp";
+				string file_name = "Maps/" + pn->first + ".mp";
 				remove(file_name.c_str());
-				pins.erase(pn.first);
+				pn = pins.erase(pn);
 				del = 0; 
 				continue;
 			}
 		}
 		else
-			pn.second.pressed = 0;
+			pn->second.pressed = 0;
 	}
 }
 
@@ -144,6 +144,8 @@ void WorldMapState::update()
 {
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
+	update_pins();
+
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
@@ -173,7 +175,6 @@ void WorldMapState::update()
 
 	}
 	 del = 0;
-	 update_pins();
 }
 
 void WorldMapState::render()
