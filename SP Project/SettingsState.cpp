@@ -346,11 +346,6 @@ void SettingsState::update()
 	tissue.setPosition(x, y);
 	tissue.setScale(scale * 0.125, scale * 0.125);
 
-	if (dev_button_active)
-		dev_button();
-
-	update_arrow();
-
 	if (fullscreen)
 		sliders[0].disabled = 1;
 	else
@@ -367,6 +362,11 @@ void SettingsState::update()
 
 	for (int i = 0; i < 2; i++)
 		update_checkbox(i);
+
+	if (dev_button_active)
+		dev_button();
+
+	update_arrow();
 }
 
 void SettingsState::render()
