@@ -176,7 +176,9 @@ void WorldMapState::update()
 		map_added = 1;
 	}
 	else if (map_added) {
-
+		map_added = 0;
+		states->insert(NewMapST);
+		states->at(NewMapID)->update();
 	}
 	 del = 0;
 }
