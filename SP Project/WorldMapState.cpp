@@ -32,6 +32,7 @@ void WorldMapState::update_pins()
 
 					int exceptions[] = { MapBuilderID };
 					game.erase_states(exceptions, 1);
+					destruct = 1;
 					return;
 				}
 				else {
@@ -144,8 +145,6 @@ void WorldMapState::update()
 {
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
-	update_pins();
-
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
@@ -160,6 +159,11 @@ void WorldMapState::update()
 		pin.setScale(scale * 3.1, scale * 3.1);
 		namebox.setScale(scale*1.5, scale*1.5);
 	}
+
+	update_pins();
+
+	if (destruct)
+		return;
 
 	if (move && selected) {
 		pins[moving] = { (int)((mouse_pos.x - x) / scale) ,(int)((mouse_pos.y - y) / scale) , (float)2.5 * scale , (float)1.2 * scale, 40 * scale };
