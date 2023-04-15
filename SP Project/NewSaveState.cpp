@@ -16,7 +16,6 @@ void NewSaveState::update_arrow()
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-
 				states->insert(SavesST);
 				states->at(SavesID)->update();
 				
@@ -98,7 +97,15 @@ void NewSaveState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				window->close(); break;
+				states->insert(SavesST);
+				states->at(SavesID)->update();
+
+				if (states->find(BackgroundID) == states->end())
+					states->insert(BackgroundST);
+
+				int exceptions[] = { SavesID , BackgroundID };
+				game.erase_states(exceptions, 2);
+				break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:
