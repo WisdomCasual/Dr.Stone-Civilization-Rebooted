@@ -24,7 +24,7 @@ private:
 		vector <Tile> tiles;
 	};
 
-	bool ctrl_pressed = 0, z_pressed = 0, y_pressed = 0, undid = 0, redone = 0;
+	bool ctrl_pressed = 0, z_pressed = 0, y_pressed = 0, undid = 0, redone = 0, display_text = 1;
 
 	deque<change> changes;
 	deque<change> undid_changes;
