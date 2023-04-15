@@ -26,7 +26,7 @@ private:
         checkMark = {369,184,16,15};
     //Colors loaded in arrangment : Yellow -> Red -> Blue
     Vector2f clicked_on = { -1, -1 };
-    Sprite tissue, back_arrow, devbutton, checkbox, checkmark;
+    Sprite tissue, back_arrow, devbutton, checkbox, checkmark, panel;
     Text devtext, slider_text;
     RectangleShape tint;
     float x = 0, y = 0;
