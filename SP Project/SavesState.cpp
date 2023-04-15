@@ -103,7 +103,7 @@ void SavesState::render_saves()
 
 SavesState::SavesState()
 {
-	
+
 	//loads "saves" textures
 	initial_textures("saves");
 
@@ -154,13 +154,9 @@ void SavesState::update_arrow()
 				if (states->find(BackgroundID) == states->end())
 					states->insert(BackgroundST);
 
-				for (auto& state : *states) {
-					if (state.first != MainMenuID && state.first != BackgroundID) {
-						delete state.second;
-						states->erase(state.first);
-					}
-				}
-
+				int exceptions[] = { MainMenuID , BackgroundID };
+				game.erase_states(exceptions, 2);
+				return;
 			}
 		}
 		
@@ -210,7 +206,7 @@ void SavesState::update()
 
 void SavesState::render()
 {
-
+	
 	window->draw(tint);
 	render_saves();
 	window->draw(arrow);
@@ -231,13 +227,12 @@ void SavesState::pollevent()
 
 				if (states->find(BackgroundID) == states->end())
 					states->insert(BackgroundST);
-
-				for (auto& state : *states) {
-					if (state.first != MainMenuID && state.first !=  BackgroundID) {
-						delete state.second;
-						states->erase(state.first);
-					}
-				} break;
+				{
+				int exceptions[] = { MainMenuID , BackgroundID };
+				game.erase_states(exceptions, 2);
+				return;
+				}
+				break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:

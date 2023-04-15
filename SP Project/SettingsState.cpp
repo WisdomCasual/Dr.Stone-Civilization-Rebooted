@@ -21,21 +21,15 @@ void SettingsState::update_arrow()
 
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
 					states->insert(MainMenuST);
-					states->at(MainMenuID)->update();
 				}
 				else {
 					states->insert(PauseST);
-					states->at(PauseID)->update();
 				}
 
 
-				for (auto& state : *states) {
-					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID && state.first != WorldMapID) {
-						delete state.second;
-						states->erase(state.first);
-					}
-				}
-
+				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID };
+				game.erase_states(exceptions, 6);
+				return;
 			}
 		}
 	}
@@ -71,12 +65,9 @@ void SettingsState::dev_button()
 				states->at(WorldMapID)->update();
 				states->at(WorldMapID)->render();
 
-				for (auto& state : *states) {
-					if (state.first != WorldMapID && state.first != BackgroundID) {
-						delete state.second;
-						states->erase(state.first);
-					}
-				}
+				int exceptions[] = { WorldMapID , BackgroundID };
+				game.erase_states(exceptions, 2);
+				return;
 			}
 			devbutton.setTextureRect(IntRect(0, 0, 45, 49));
 			devtext.setPosition(x + 35 * scale, y + 34.6 * scale);
@@ -371,6 +362,7 @@ void SettingsState::update()
 
 void SettingsState::render()
 {
+
 	window->draw(tint);
 	window->draw(tissue);
 	if (dev_button_active) {
@@ -397,17 +389,14 @@ void SettingsState::pollevent()
 			case Keyboard::Escape:
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
 					states->insert(MainMenuST);
-					states->at(MainMenuID)->update();
 				}
 				else {
 					states->insert(PauseST);
-					states->at(PauseID)->update();
 				}
-				for (auto& state : *states) {
-					if (state.first != MainMenuID && state.first != BackgroundID && state.first != PauseID && state.first != MapBuilderID && state.first != GameID && state.first != WorldMapID) {
-						delete state.second;
-						states->erase(state.first);
-					}
+				{
+				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID };
+				game.erase_states(exceptions, 6);
+				return;
 				}
 				break;
 			case Keyboard::F3:

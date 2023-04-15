@@ -29,15 +29,10 @@ void WorldMapState::update_pins()
 					//choose map in MapBuilder
 
 					states->insert({ 6, new MapBuilderState(pn.first) });
-					states->at(MapBuilderID)->update();
 
-					for (auto& state : *states) {
-						if (state.first != MapBuilderID) {
-							delete state.second;
-							states->erase(state.first);
-						}
-					}
-
+					int exceptions[] = { MapBuilderID };
+					game.erase_states(exceptions, 1);
+					return;
 				}
 				else {
 					//choosed map in game///////////////////////////////////////////////////
@@ -163,7 +158,6 @@ void WorldMapState::update()
 		pin.setScale(scale * 3.1, scale * 3.1);
 		namebox.setScale(scale*1.5, scale*1.5);
 	}
-	update_pins();
 
 	if (move && selected) {
 		pins[moving] = { (int)((mouse_pos.x - x) / scale) ,(int)((mouse_pos.y - y) / scale) , (float)2.5 * scale , (float)1.2 * scale, 40 * scale };
@@ -179,6 +173,7 @@ void WorldMapState::update()
 
 	}
 	 del = 0;
+	 update_pins();
 }
 
 void WorldMapState::render()
@@ -197,7 +192,7 @@ void WorldMapState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(PauseST); break;
+				states->insert(PauseST); return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F5:
