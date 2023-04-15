@@ -244,11 +244,11 @@ void SettingsState::update_checkbox(int i)
 					checkboxes[i].execute = 0;
 				else
 					checkboxes[i].execute = 1;
+				checkboxes[i].checked = !checkboxes[i].checked;
+				checkboxes[i].pressed = 0;
 				game.update_window();
 				settings_intializer();
-				checkboxes[i].checked = !checkboxes[i].checked;
 			}
-			checkboxes[i].pressed = 0;
 		}
 		checkboxes[i].hover = 1;
 	}
@@ -312,6 +312,8 @@ SettingsState::SettingsState()
 	tip.setTexture(*textures[0]);
 
 	checkboxes[0].checked = fullscreen;
+	checkboxes[1].checked = vsync;
+
 	checkbox.setTexture(*textures[2]);
 	checkbox.setTextureRect(IntRect(0, 0, 45, 49));
 	checkbox.setOrigin(45 / 2, 49 / 2);
@@ -354,10 +356,17 @@ void SettingsState::update()
 	else
 		sliders[0].disabled = 0;
 
+	if (vsync)
+		sliders[1].disabled = 1;
+	else
+		sliders[1].disabled = 0;
+
+
 	for (int i = 0; i < 4; i++)
 		update_slider(sliders, i);
 
-	update_checkbox(0);
+	for (int i = 0; i < 2; i++)
+		update_checkbox(i);
 }
 
 void SettingsState::render()
@@ -374,8 +383,8 @@ void SettingsState::render()
 	draw_text("Settings", x, y - 35 * scale, 6.5 * scale);
 	for (int i = 0; i < 4; i++)
 		render_slider(i);
-
-	render_checkbox(0);
+	for (int i = 0; i < 2; i++)
+		render_checkbox(i);
 }
 
 void SettingsState::pollevent()
