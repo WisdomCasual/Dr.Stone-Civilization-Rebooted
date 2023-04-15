@@ -116,9 +116,11 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 			}
 		}
 	grid(x_win, y_win);
-	tile.setTextureRect(IntRect(picked_tile.x * 16, picked_tile.y * 16, 16, 16));
-	tile.setPosition(15, 50); tile.setScale(4, 4);	tile.setTexture(*textures[picked_tile.tex_id]);
-	window->draw(tile);
+	if (display_text) {
+		tile.setTextureRect(IntRect(picked_tile.x * 16, picked_tile.y * 16, 16, 16));
+		tile.setPosition(15, 50); tile.setScale(4, 4);	tile.setTexture(*textures[picked_tile.tex_id]);
+		window->draw(tile);
+	}
 }
 
 void MapBuilderState::update()
@@ -504,8 +506,10 @@ void MapBuilderState::render()
 	//----------render entities herre in game--------------
 	render_tiles(x_win, y_win, 1);
 	window->draw(hover_rect);
-	window->draw(info);
-	window->draw(layer_info);
+	if (display_text) {
+		window->draw(info);
+		window->draw(layer_info);
+	}
 	if (selecting || picked_tile.global_select_done) {
 		window->draw(select_rect);
 	}
@@ -523,6 +527,8 @@ void MapBuilderState::pollevent()
 				states->insert(PauseST); return; break;
 			case Keyboard::Space:
 				x = 0, y = 0; break;
+			case Keyboard::F1:
+				display_text = !display_text; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F5:
