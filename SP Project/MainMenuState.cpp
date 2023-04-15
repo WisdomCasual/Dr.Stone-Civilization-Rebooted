@@ -60,13 +60,21 @@ MainMenuState::~MainMenuState()
 
 void MainMenuState::update()
 {
-	float win_x = window->getSize().x, win_y = window->getSize().y;
-	x = win_x / 2, y = win_y / 2;
-	if (win_x / 390.0 < win_y / 390.0) scale = win_x / 390.0;
-	else scale = win_y / 390.0;
+	if (prev_win != window->getSize()) {
+		prev_win = window->getSize();
+		float win_x = window->getSize().x, win_y = window->getSize().y;
+		x = win_x / 2, y = win_y / 2;
+		if (win_x / 390.0 < win_y / 390.0) scale = win_x / 390.0;
+		else scale = win_y / 390.0;
+		
+		logo.setPosition(x, y - 110 * scale);
 
-	logo.setScale(scale * 0.13, scale * 0.13);
-	logo.setPosition(x, y - 110 * scale);
+		if (win_x > 1280) scale *= 0.8;
+
+		logo.setScale(scale * 0.13, scale * 0.13);
+		
+	}
+
 
 	update_buttons();
 	if (exit) { exit = 0; window->close(); }
