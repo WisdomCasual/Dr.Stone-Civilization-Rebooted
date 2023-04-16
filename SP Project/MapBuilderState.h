@@ -43,7 +43,7 @@ private:
 	bool active_grid = 1; //<-- grid active/inactive
 	float scale = 10, global_scale = 1, text_scale = 1, x_scale = 1, y_scale = 1, scaling_speed;
 	int layer = 0;
-	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0, save_click = 1;
+	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0, save_click = 1, loadmap = 0;
 	int brush_size = 1, rand_spray = 1, spread_chance = 3;
 	const int speed_list[5] = { 1, 2, 4, 8, 16 };
 	bool layer_toggle[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
