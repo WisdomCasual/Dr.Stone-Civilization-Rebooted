@@ -39,7 +39,7 @@ void NewSaveState::update_arrow()
 
 void NewSaveState::update_buttons()
 {
-	if (!txt_box.empty()) {
+	if (!txt_box.empty() && selected) {
 		buttontex.setColor(button_color);
 		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
@@ -72,7 +72,7 @@ void NewSaveState::render_buttons()
 	button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
 	button_text.setPosition(x + confirm.x * scale / 3.0, (confirm.pressed) ? y + confirm.y * scale / 3.0 + 2 * scale / 1.0 : y + confirm.y * scale / 3.0 - 2 * scale / 1.0);
 	if (confirm.hover)button_text.setFillColor(Color::White);
-	else if (txt_box.empty())
+	else if (txt_box.empty() || !selected)
 		button_text.setFillColor(Color(120, 120, 120));
 	else
 		button_text.setFillColor(Color(200, 200, 200));
@@ -84,33 +84,22 @@ void NewSaveState::render_buttons()
 void NewSaveState::update_characters()
 {
 	//characters update
+	characters.setScale(scale * 0.4, scale * 0.4);
 	for (int i = 0; i < 3; i++) {
 		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
-		/*char_color = characters.getColor();
-		char_color.r -= 100;
-		char_color.g -= 100;
-		char_color.b -= 100;*/
+		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
 		if (characters.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && characters.getGlobalBounds().contains(clicked_on))selected[2-i] = 1;
-
+			if (Mouse::isButtonPressed(Mouse::Left) && characters.getGlobalBounds().contains(clicked_on))pressed = 1;
 		}
-		if (selected[2-i])
+		if (pressed)
 		{
-			for (int j = 0; j < 3; j++) {
-				if (2-i != j)selected[j] = 0;
-			}
-			characters.setColor({ og_color.r,og_color.g,og_color.b });
+			pressed = 0;  selected = i + 1;
 		}
 		else
 		{
-			characters.setColor({ char_color.r,char_color.g,char_color.b });
+			pressed = 0;
 		}
-		characters.setOrigin(43, 85);
-		characters.setScale(scale * 0.4, scale * 0.4);
-		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
 	}
-	for (auto i : selected)cout << i << " ";
-	cout << endl;
 }
 
 void NewSaveState::render_characters()
@@ -118,23 +107,15 @@ void NewSaveState::render_characters()
 	//charaters render
 	for (int i = 0; i < 3; i++) {
 		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
-		characters.setOrigin(43, 85);
-		/*char_color = characters.getColor();
-		char_color.r -= 100;
-		char_color.g -= 100;
-		char_color.b -= 100;*/
-		if (selected[i])
+		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
+		if (i + 1 == selected)
 		{
-			for (int j = 0; j < 3; j++) {
-				if (i != j)selected[j] = 0;
-			}
 			characters.setColor({ og_color.r,og_color.g,og_color.b });
 		}
 		else
 		{
 			characters.setColor({ char_color.r,char_color.g,char_color.b });
 		}
-		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
 		window->draw(characters);
 	}
 }
@@ -179,6 +160,7 @@ NewSaveState::NewSaveState()
 	char_color.b -= 120;
 	for (int i = 0; i < 3; i++) {
 		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
+		characters.setOrigin(43, 85);
 		characters.setColor({ char_color.r,char_color.g,char_color.b });
 	}
 }
@@ -212,6 +194,7 @@ void NewSaveState::update()
 	if (confirmed) {
 		//button functionality
 
+		confirmed = 0;
 		return;
 	}
 	update_arrow();

@@ -38,7 +38,8 @@ private:
 	//character selection
 	Sprite characters;
 	Color char_color,og_color;
-	bool selected[3] = {0,0,0};
+	char selected = 0;
+	bool pressed = 0;
 
 	//private functions
 	void update_arrow();
