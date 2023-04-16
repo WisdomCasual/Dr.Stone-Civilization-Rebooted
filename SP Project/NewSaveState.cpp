@@ -81,6 +81,64 @@ void NewSaveState::render_buttons()
 	window->draw(button_text);
 }
 
+void NewSaveState::update_characters()
+{
+	//characters update
+	for (int i = 0; i < 3; i++) {
+		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
+		/*char_color = characters.getColor();
+		char_color.r -= 100;
+		char_color.g -= 100;
+		char_color.b -= 100;*/
+		if (characters.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			if (Mouse::isButtonPressed(Mouse::Left) && characters.getGlobalBounds().contains(clicked_on))selected[2-i] = 1;
+
+		}
+		if (selected[2-i])
+		{
+			for (int j = 0; j < 3; j++) {
+				if (2-i != j)selected[j] = 0;
+			}
+			characters.setColor({ og_color.r,og_color.g,og_color.b });
+		}
+		else
+		{
+			characters.setColor({ char_color.r,char_color.g,char_color.b });
+		}
+		characters.setOrigin(43, 85);
+		characters.setScale(scale * 0.4, scale * 0.4);
+		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
+	}
+	for (auto i : selected)cout << i << " ";
+	cout << endl;
+}
+
+void NewSaveState::render_characters()
+{
+	//charaters render
+	for (int i = 0; i < 3; i++) {
+		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
+		characters.setOrigin(43, 85);
+		/*char_color = characters.getColor();
+		char_color.r -= 100;
+		char_color.g -= 100;
+		char_color.b -= 100;*/
+		if (selected[i])
+		{
+			for (int j = 0; j < 3; j++) {
+				if (i != j)selected[j] = 0;
+			}
+			characters.setColor({ og_color.r,og_color.g,og_color.b });
+		}
+		else
+		{
+			characters.setColor({ char_color.r,char_color.g,char_color.b });
+		}
+		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
+		window->draw(characters);
+	}
+}
+
 NewSaveState::NewSaveState()
 {
 	State::initial_textures("newsave");
@@ -111,6 +169,18 @@ NewSaveState::NewSaveState()
 	button_text.setFont(font);
 	button_text.setCharacterSize(50);
 	button_text.setFillColor(Color(200, 200, 200));
+
+	//characters
+	characters.setTexture(*textures[3]);
+	og_color = characters.getColor();
+	char_color = characters.getColor();
+	char_color.r -= 120;
+	char_color.g -= 120;
+	char_color.b -= 120;
+	for (int i = 0; i < 3; i++) {
+		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
+		characters.setColor({ char_color.r,char_color.g,char_color.b });
+	}
 }
 
 NewSaveState::~NewSaveState()
@@ -139,14 +209,17 @@ void NewSaveState::update()
 	}
 	tissue.setPosition(x, y);
 	update_buttons();
-	if (destruct)
-		return;
+	if (confirmed) {
+		//button functionality
 
+		return;
+	}
 	update_arrow();
 	if (destruct)
 		return;
-
 	txt_box.update();
+	
+	update_characters();
 }
 
 void NewSaveState::render()
@@ -159,6 +232,7 @@ void NewSaveState::render()
 	render_buttons();
 	draw_text("Choose name and", x, y - 112 * scale, 26 * scale);
 	draw_text("character", x, y - 112 * scale+ (20 * scale), 26 * scale);
+	render_characters();
 }
 
 void NewSaveState::pollevent()
