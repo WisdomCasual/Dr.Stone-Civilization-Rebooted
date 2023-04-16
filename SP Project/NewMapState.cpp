@@ -66,7 +66,6 @@ void NewMapState::update_slider(slider_info* sliders, int target)
 		{
 			sliders[target].tipx = initpos + (sliders[target].mx - round((initpos + mxlen - mouse_pos.x) / stepsize)) * stepsize;
 		}
-
 		*sliders[target].linker = round(((sliders[target].tipx - x) / (scale / 2.3) - sliders[target].x - 9) / sliderconst * sliders[target].mx) + 1;
 		sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 2.3));
 	}
@@ -170,6 +169,16 @@ void NewMapState::render_buttons()
 		window->draw(button_text);
 }
 
+void NewMapState::initialize_sliders()
+{
+	float percentage = 1;
+	for (int i = 0; i < 2; i++) {
+		percentage = (*sliders[i].linker < sliders[i].mx) ? *sliders[i].linker / (float)sliders[i].mx : 1.0;
+		sliders[i].tipx = x + (sliders[i].x + 9 + percentage * sliderconst) * (scale / 2.3);
+		sliders[i].midscale = (sliders[i].tipx - (x + (sliders[i].x + 9) * (scale / 2.3))) / (18 * (scale / 2.3));
+	}
+}
+
 NewMapState::NewMapState()
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
@@ -214,12 +223,7 @@ NewMapState::NewMapState()
 
 	txt_box.initializeTextBox(map_name, *textures[2], "Enter Map name");
 
-	float percentage = 1;
-	for (int i = 0; i < 2; i++) {
-		percentage = (*sliders[i].linker < sliders[i].mx) ? *sliders[i].linker / (float)sliders[i].mx : 1.0;
-		sliders[i].tipx = x + (sliders[i].x + 9 + percentage * sliderconst) * (scale / 2.3);
-		sliders[i].midscale = (sliders[i].tipx - (x + (sliders[i].x + 9) * (scale / 2.3))) / (18 * (scale / 2.3));
-	}
+	initialize_sliders();
 
 }
 
@@ -312,6 +316,7 @@ void NewMapState::pollevent()
 			case Keyboard::F11:
 				fullscreen = !fullscreen;
 				game.update_window();
+				initialize_sliders();
 				break;
 			}
 		case Event::MouseButtonPressed:
