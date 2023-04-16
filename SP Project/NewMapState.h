@@ -24,12 +24,13 @@ private:
 	short x_size = 128, y_size = 128;
 
 	struct slider_info {
-		short int x = 0, y = 0, mx = 1, color = 0;
+		float x = 0, y = 0;
+		short int mx = 1, color = 0;
 		short int* linker = nullptr;
 		string name = "";
 		char text_type = 0;     //0 = plain text, 1 = percentage (a%), 2 = custom (link string array)
 		string* txt = nullptr;
-		short int tipx = 0;
+		float tipx = 0;
 		float midscale = 1;
 		bool presssed = 0;
 
@@ -64,6 +65,7 @@ private:
 	void render_slider(int);
 	void update_buttons();
 	void render_buttons();
+	void initialize_sliders();
 
 public:
 
