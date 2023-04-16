@@ -72,7 +72,7 @@ private:
 
 public:
 	//constructors/destructors:
-	MapBuilderState(string map_name = "default", int a = 128, int b = 256);
+	MapBuilderState(string map_name = "default", int a = 128, int b = 128);
 	~MapBuilderState();
 
 	//public functions:
