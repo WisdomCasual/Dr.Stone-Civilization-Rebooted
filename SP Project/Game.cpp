@@ -59,6 +59,7 @@ void Game::calc_fps()
 	delay += dt; frame_sum += 1.0 / dt; frame_count++;
 	if (delay > 1.0) { fps = frame_sum / frame_count; delay = 0, frame_sum = 0, frame_count = 0; }
 	fps_text.setString("  FPS " + to_string(fps));
+	fps_text.setCharacterSize(40 * ((float)window->getSize().y / 1080.0));
 }
 
 void Game::erase_states(int exceptions[], int size = 0)
