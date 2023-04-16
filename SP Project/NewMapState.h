@@ -35,14 +35,24 @@ private:
 
 	}sliders[2] = { {-64, 0, 255, 2, &x_size, "X", 0}, {-64, 15, 255, 4, &y_size, "Y", 0} };
 
+	bool confirmed = 0;
 
-	Sprite bg, back_arrow, tip, tissue;
+	struct button {
+		string txt;
+		int x = 0, y = 0;
+		bool& execute;
+		int pressed = 0;
+		bool hover = 0;
+	} confirm = {"Confirm", 0 ,112 , confirmed};
+
+	Sprite bg, back_arrow, tip, tissue, buttontex;
 	RectangleShape tint;
 	Vector2f mouse_pos = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
-	Text slider_text;
+	Text slider_text, button_text;
 	TextBox txt_box;
 	string map_name = "";
+	Color button_color;
 	float x = 0, y = 0;
 	float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
 	bool button_pressed = 0, arrow_pressed = 0, destruct = 0;
@@ -52,7 +62,8 @@ private:
 	void update_arrow();
 	void update_slider(slider_info*, int);
 	void render_slider(int);
-
+	void update_buttons();
+	void render_buttons();
 
 public:
 

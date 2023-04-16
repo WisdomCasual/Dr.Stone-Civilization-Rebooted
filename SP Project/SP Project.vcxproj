@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
+    <ClCompile Include="ConfirmationState.cpp" />
     <ClCompile Include="CreativeMode.cpp" />
     <ClCompile Include="NewMapState.cpp" />
     <ClCompile Include="NewSaveState.cpp" />
@@ -160,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
+    <ClInclude Include="ConfirmationState.h" />
     <ClInclude Include="CreativeMode.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />

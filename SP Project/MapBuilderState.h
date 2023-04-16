@@ -43,7 +43,7 @@ private:
 	bool active_grid = 1; //<-- grid active/inactive
 	float scale = 10, global_scale = 1, text_scale = 1, x_scale = 1, y_scale = 1, scaling_speed;
 	int layer = 0;
-	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0, save_click = 1;
+	bool blocked = 0, hitbox = 0, drawn_selection = 0, drawn_map_selection = 0, selecting = 0, save_click = 1, loadmap = 0;
 	int brush_size = 1, rand_spray = 1, spread_chance = 3;
 	const int speed_list[5] = { 1, 2, 4, 8, 16 };
 	bool layer_toggle[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
@@ -54,7 +54,7 @@ private:
 	int line_length = 1, c = 0, base = 0, *dep = nullptr, *indep = nullptr, dx, dy;
 	Vector2u prev_win = { 0, 0 };
 	Text info, layer_info;
-	Tile tiles[256][256];    //the level map
+	Tile tiles[260][260];    //the level map
 	RectangleShape hover_rect, hitbox_rect, select_rect;
 	int wdth = 0, hght = 0, start_x = 0, start_y = 0;
 	const int spread_chances[spread_chances_num] = {2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000 };
@@ -75,7 +75,7 @@ private:
 
 public:
 	//constructors/destructors:
-	MapBuilderState(string map_name = "default", int a = 128, int b = 256);
+	MapBuilderState(string map_name = "default", int a = 128, int b = 128);
 	~MapBuilderState();
 
 	//public functions:

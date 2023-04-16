@@ -35,8 +35,8 @@
 #define SettingsID 11
 #define SettingsST { 11, new SettingsState }
 
-#define ConfirmID 12                        /////
-#define ConfirmST { 12, new ConfirmState }  /////
+#define ConfirmationID 12                        /////
+#define ConfirmationST { 12, new ConfirmationState }  /////
 
 namespace globalvar {
 
@@ -46,7 +46,7 @@ namespace globalvar {
 	inline Event event;
 
 	inline int fps = 0, frame_count = 0, frame_sum = 0;
-	inline bool fps_active = 0, fullscreen = 0, vsync = 0;
+	inline bool fps_active = 0, fullscreen = 0, vsync = 0, exit_game = 0;
 	inline float delay = 0;
 
 	inline Font font;
@@ -61,5 +61,4 @@ namespace globalvar {
 		text.setPosition(a, b);
 		window->draw(text);
 	}
-
 }

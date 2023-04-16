@@ -15,8 +15,10 @@ void SettingsState::update_arrow()
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
+
 				game.windowbounds = resolutions[resolution];
 				game.framelimit = framelimits[framelimit];
+
 				game.update_window();
 
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
@@ -29,7 +31,8 @@ void SettingsState::update_arrow()
 
 				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID };
 				game.erase_states(exceptions, 6);
-				return;
+				destruct = 1;
+
 			}
 		}
 	}
@@ -329,7 +332,6 @@ SettingsState::SettingsState()
 	checkmark.setTextureRect(checkMark);
 	checkmark.setOrigin(16 / 2, 15 / 2);
 
-
 	settings_intializer();
 }
 
@@ -387,6 +389,10 @@ void SettingsState::update()
 		return;
 
 	update_arrow();
+
+	if (destruct)
+		return;
+
 }
 
 void SettingsState::render()
@@ -413,7 +419,8 @@ void SettingsState::pollevent()
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case Event::Closed:
-			window->close(); break;
+			game.exit_prompt();
+			return; break;
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
