@@ -15,7 +15,6 @@ private:
 	string test_str = "";
 	RectangleShape tint;
 	TextBox txt_box;
-	RectangleShape black_box;
 	Sprite tissue, back_arrow, panel;
 	bool arrow_pressed = 0, destruct = 0;
 	float scale = 1, win_x=0, win_y=0, x=1, y=1;
@@ -23,8 +22,24 @@ private:
 	Vector2u prev_win = { 0, 0 };
 
 
+	bool confirmed=0;
+	Color button_color;
+	Text button_text;
+	Sprite buttontex;
+	bool button_pressed = 0;
+	struct button {
+		string txt;
+		int x = 0, y = 0;
+		bool& execute;
+		int pressed = 0;
+		bool hover = 0;
+	} confirm = { "Confirm", 0 ,340 , confirmed };
+
+
 	//private functions
 	void update_arrow();
+	void update_buttons();
+	void render_buttons();
 public:
 	//constructors/destructors:
 	NewSaveState();
