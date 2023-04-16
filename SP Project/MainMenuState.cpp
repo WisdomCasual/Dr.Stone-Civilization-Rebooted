@@ -84,9 +84,7 @@ void MainMenuState::update()
 	update_buttons();
 	if (exit) {
 		exit = 0; 
-		string strings_array[] = { "Are you sure that you", "want to exit the", "game?" };
-		states->insert({ 12, new ConfirmationState(strings_array,3, exit_game)});
-		states->at(ConfirmationID)->update();
+		game.exit_prompt();
 		return;
 	}
 	else if (play) {
@@ -113,10 +111,6 @@ void MainMenuState::update()
 		game.erase_states(exceptions, 2);
 		return;
 	}
-	else if(exit_game){
-		exit_game = 0;
-		window->close();
-	}
 }
 
 void MainMenuState::render()
@@ -130,11 +124,13 @@ void MainMenuState::pollevent()
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case Event::Closed:
-			window->close(); break;
+			game.exit_prompt();
+			return; break;
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				window->close(); break;
+				game.exit_prompt();
+				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:
