@@ -103,6 +103,8 @@ Game::Game()
 	initial_window();
 	initial_states();
 	initial_fps();
+
+	save_resolution = game.windowbounds;
 }
 
 Game::~Game()
