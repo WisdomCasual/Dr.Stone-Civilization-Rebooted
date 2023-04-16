@@ -8,6 +8,7 @@
 #include"WorldMapState.h"
 #include"NewSaveState.h"
 #include"NewMapState.h"
+#include "ConfirmationState.h"
 
 #include"Global.h"
 using namespace globalvar;
