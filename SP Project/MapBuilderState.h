@@ -51,7 +51,7 @@ private:
 	Vector2i selected_tile = { 0, 0 }, selection_start = { 0,0 }, selection_end = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
 	Text info, layer_info;
-	Tile tiles[256][256];    //the level map
+	Tile tiles[260][260];    //the level map
 	RectangleShape hover_rect, hitbox_rect, select_rect;
 	int wdth = 0, hght = 0, start_x = 0, start_y = 0;
 	const int spread_chances[spread_chances_num] = {2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000 };
