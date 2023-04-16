@@ -63,6 +63,9 @@
     <ClCompile Include="NewMapState.cpp">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="ConfirmationState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -105,6 +108,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NewMapState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfirmationState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

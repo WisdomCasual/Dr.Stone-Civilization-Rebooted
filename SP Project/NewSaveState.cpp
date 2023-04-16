@@ -37,6 +37,89 @@ void NewSaveState::update_arrow()
 	}
 }
 
+void NewSaveState::update_buttons()
+{
+	if (!txt_box.empty() && selected) {
+		buttontex.setColor(button_color);
+		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
+		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))confirm.pressed = 1;
+			else {
+				if (confirm.pressed)
+					confirm.execute = 1;
+				confirm.pressed = 0;
+			}
+			confirm.hover = 1;
+		}
+		else {
+			confirm.pressed = 0;
+			confirm.hover = 0;
+		}
+	}
+	else {
+		buttontex.setColor(Color(button_color.r - 100, button_color.g - 100, button_color.b - 100));
+	}
+}
+
+void NewSaveState::render_buttons()
+{
+	buttontex.setScale(scale / 1.0, scale / 1.0);
+	button_text.setCharacterSize(23.69 * scale);
+	buttontex.setTextureRect(IntRect(0, confirm.pressed * 49, 108, 49));
+	buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
+	button_text.setString(confirm.txt);
+	FloatRect bounds = button_text.getLocalBounds();
+	button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
+	button_text.setPosition(x + confirm.x * scale / 3.0, (confirm.pressed) ? y + confirm.y * scale / 3.0 + 2 * scale / 1.0 : y + confirm.y * scale / 3.0 - 2 * scale / 1.0);
+	if (confirm.hover)button_text.setFillColor(Color::White);
+	else if (txt_box.empty() || !selected)
+		button_text.setFillColor(Color(120, 120, 120));
+	else
+		button_text.setFillColor(Color(200, 200, 200));
+
+	window->draw(buttontex);
+	window->draw(button_text);
+}
+
+void NewSaveState::update_characters()
+{
+	//characters update
+	characters.setScale(scale * 0.4, scale * 0.4);
+	for (int i = 0; i < 3; i++) {
+		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
+		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
+		if (characters.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			if (Mouse::isButtonPressed(Mouse::Left) && characters.getGlobalBounds().contains(clicked_on))pressed = 1;
+		}
+		if (pressed)
+		{
+			pressed = 0;  selected = i + 1;
+		}
+		else
+		{
+			pressed = 0;
+		}
+	}
+}
+
+void NewSaveState::render_characters()
+{
+	//charaters render
+	for (int i = 0; i < 3; i++) {
+		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
+		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
+		if (i + 1 == selected)
+		{
+			characters.setColor({ og_color.r,og_color.g,og_color.b });
+		}
+		else
+		{
+			characters.setColor({ char_color.r,char_color.g,char_color.b });
+		}
+		window->draw(characters);
+	}
+}
+
 NewSaveState::NewSaveState()
 {
 	State::initial_textures("newsave");
@@ -51,14 +134,35 @@ NewSaveState::NewSaveState()
 	back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
 	back_arrow.setOrigin(22 / 2, 21 / 2);
 
-	black_box.setSize(Vector2f(window->getSize().x, window->getSize().y));
-	black_box.setPosition(0.0, 0.0);
-	black_box.setFillColor(Color(0, 0, 0, 100));
+	tint.setSize({ 1920, 1080 });
+	tint.setFillColor(Color(0, 0, 0, 154));
 
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	scale = min(win_x / 1920.0, win_y / 1080.0);
 	if (win_x > 1280) scale *= 0.75;
 	txt_box.initializeTextBox(test_str, *textures[2], "Enter name", Vector2f(win_x / 2.0, (win_y / 2) + 5 * scale), scale * 1.2);
+
+	buttontex.setTexture(*textures[5]);
+	buttontex.setTextureRect(IntRect(0, 0, 108, 49));
+	buttontex.setOrigin(108 / 2, 49 / 2);
+	button_color = buttontex.getColor();
+
+	button_text.setFont(font);
+	button_text.setCharacterSize(50);
+	button_text.setFillColor(Color(200, 200, 200));
+
+	//characters
+	characters.setTexture(*textures[3]);
+	og_color = characters.getColor();
+	char_color = characters.getColor();
+	char_color.r -= 120;
+	char_color.g -= 120;
+	char_color.b -= 120;
+	for (int i = 0; i < 3; i++) {
+		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
+		characters.setOrigin(43, 85);
+		characters.setColor({ char_color.r,char_color.g,char_color.b });
+	}
 }
 
 NewSaveState::~NewSaveState()
@@ -86,24 +190,32 @@ void NewSaveState::update()
 		txt_box.setPosition({ x, y - 52 * scale });
 	}
 	tissue.setPosition(x, y);
+	update_buttons();
+	if (confirmed) {
+		//button functionality
 
+		confirmed = 0;
+		return;
+	}
 	update_arrow();
-
 	if (destruct)
 		return;
-
 	txt_box.update();
+	
+	update_characters();
 }
 
 void NewSaveState::render()
 {
-	window->draw(black_box);
+	window->draw(tint);
 	window->draw(panel);
 	window->draw(tissue);
 	txt_box.drawTextBox(window);
 	window->draw(back_arrow);
+	render_buttons();
 	draw_text("Choose name and", x, y - 112 * scale, 26 * scale);
 	draw_text("character", x, y - 112 * scale+ (20 * scale), 26 * scale);
+	render_characters();
 }
 
 void NewSaveState::pollevent()
@@ -112,7 +224,8 @@ void NewSaveState::pollevent()
 		txt_box.text_poll(event);
 		switch (event.type) {
 		case Event::Closed:
-			window->close(); break;
+			game.exit_prompt();
+			return; break;
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:

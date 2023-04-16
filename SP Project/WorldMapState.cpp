@@ -27,8 +27,8 @@ void WorldMapState::update_pins()
 				pn->second.pressed = 0;
 				if (admin) {
 					//choose map in MapBuilder
-
-					states->insert({ 6, new MapBuilderState(pn->first) });
+					save_maps();
+					states->insert({ 6, new MapBuilderState(pn->first, pn->second.x_size, pn->second.y_size) });
 
 					int exceptions[] = { MapBuilderID };
 					game.erase_states(exceptions, 1);
@@ -52,8 +52,13 @@ void WorldMapState::update_pins()
 			if (del) {
 				string file_name = "Maps/" + pn->first + ".mp";
 				remove(file_name.c_str());
-				pn = pins.erase(pn);
-				del = 0; 
+				if (pn == prev(pins.end())) {
+					pins.erase(pn);
+					break;
+				}
+				else
+					pn = pins.erase(pn);
+				del = 0;
 				continue;
 			}
 		}
@@ -87,7 +92,7 @@ void WorldMapState::save_maps()
 	if (ofs.is_open()) {
 		for (auto pn = pins.begin(); pn != pins.end(); pn++) {
 			if (pn->first != "") {
-				ofs << pn->first << "| " << pn->second.x << " " << pn->second.y;
+				ofs << pn->first << "| " << pn->second.x << " " << pn->second.y << " " << pn->second.x_size << " " << pn->second.y_size;
 				if (pn != mp_end)
 					ofs << "\n";
 			}
@@ -102,12 +107,12 @@ void WorldMapState::load_maps()
 
 	ifstream ifs("Maps/maps.ini");
 	if (ifs.is_open()) {
-		string mp_name; int a, b;
+		string mp_name; int a, b, c, d;
 		while (!ifs.eof()) {
 			getline(ifs, mp_name, '|');
-			ifs >> a >> b;
+			ifs >> a >> b >> c >> d;
 			ifs.ignore();
-			pins.insert({ mp_name , {a,b} });
+			pins.insert({ mp_name , {a,b,c,d} });
 		}
 	}
 	ifs.close();
@@ -152,7 +157,7 @@ void WorldMapState::update()
 		if (win_x / 2350.0 < win_y / 1350.0) scale = win_x / 2350.0;
 		else scale = win_y / 1350.0;
 
-		if (win_x > 1280) scale *= 0.8;
+		if (win_x > 1280) scale *= 0.9;
 
 		////////////////////
 
@@ -169,13 +174,13 @@ void WorldMapState::update()
 		return;
 
 	if (move && selected) {
-		pins[moving] = { (int)((mouse_pos.x - x) / scale) ,(int)((mouse_pos.y - y) / scale) , (float)2.5 * scale , (float)1.2 * scale, 40 * scale };
+		pins[moving] = { (int)((mouse_pos.x - x) / scale) ,(int)((mouse_pos.y - y) / scale) , pins[moving].x_size, pins[moving].y_size, (float)2.5 * scale , (float)1.2 * scale, 40 * scale };
 	}
 	else
 		move = 0;
 
 	if (new_map) {
-		pins[""] = { (int)((mouse_pos.x - x) / scale) ,(int)((mouse_pos.y - y) / scale) , (float) 2.5 * scale , (float) 1.2 * scale, 40 * scale };
+		pins[""] = { (int)((mouse_pos.x - x) / scale) ,(int)((mouse_pos.y - y) / scale) , 0, 0, (float) 2.5 * scale , (float) 1.2 * scale, 40 * scale };
 		map_added = 1;
 	}
 	else if (map_added) {
@@ -184,6 +189,8 @@ void WorldMapState::update()
 		states->at(NewMapID)->update();
 	}
 	 del = 0;
+
+	 if (loadmap) { loadmap = 0;  load_maps(); }
 }
 
 void WorldMapState::render()
@@ -198,7 +205,8 @@ void WorldMapState::pollevent()
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case Event::Closed:
-			window->close(); break;
+			game.exit_prompt();
+			return; break;
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
@@ -206,7 +214,11 @@ void WorldMapState::pollevent()
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F5:
-				load_maps(); break;
+			{
+				string strings_array[] = { "Are you sure that you", "want to revert to ", "the last saved world map?", "" , "Any changes will be lost" };
+				states->insert({ 12, new ConfirmationState(strings_array,5, loadmap) });
+				states->at(ConfirmationID)->update();
+			} break;
 			case Keyboard::F6:
 				save_maps(); break;
 			case Keyboard::F11:
@@ -226,7 +238,12 @@ void WorldMapState::pollevent()
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:
-				clicked_on = window->mapPixelToCoords(Mouse::getPosition(*window));
+				if (!move && !new_map)
+					clicked_on = window->mapPixelToCoords(Mouse::getPosition(*window));
+				else
+					clicked_on = { -100,-100 };
+				move = 0; selected = 0, new_map = 0;
+
 				break;
 			}
 		}

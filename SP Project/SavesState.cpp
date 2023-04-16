@@ -202,7 +202,7 @@ void SavesState::update()
 	float win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	scale = min(win_x / 570.0, win_y / 350.0);
-	if (win_x > 1280) scale *= 0.75;
+	if (win_x > 1280) scale *= 0.9;
 
 
 	tint.setSize({ win_x, win_y });
@@ -225,7 +225,8 @@ void SavesState::pollevent()
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case Event::Closed:
-			window->close(); break;
+			game.exit_prompt();
+			return; break;
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:

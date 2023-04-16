@@ -153,6 +153,9 @@ void MapBuilderState::update()
 
 	if (!picker)
 		tex_picker->run(picker);
+
+	if (loadmap) { loadmap = 0;  load_map(); }
+
 }
 
 void MapBuilderState::selection()
@@ -599,7 +602,8 @@ void MapBuilderState::pollevent()
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case Event::Closed:
-			window->close(); break;
+			game.exit_prompt();
+			return; break;
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
@@ -612,7 +616,12 @@ void MapBuilderState::pollevent()
 				fps_active = !fps_active; break;
 			case Keyboard::F5:
 				//ARE YOU REALLY REALLY REALLY REALLY SURE YOU WANT TO LOAD!!????
-				load_map(); break;
+			{
+				string strings_array[] = { "Are you sure that you", "want to revert to ", "the last saved map?", "" , "Any changes will be lost" };
+				states->insert({ 12, new ConfirmationState(strings_array,5, loadmap) });
+				states->at(ConfirmationID)->update();
+			}
+				break;
 			case Keyboard::F6:
 				//are you sure?
 				save_map(); break;

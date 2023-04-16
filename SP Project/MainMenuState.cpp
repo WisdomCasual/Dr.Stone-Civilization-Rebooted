@@ -82,7 +82,11 @@ void MainMenuState::update()
 
 
 	update_buttons();
-	if (exit) { exit = 0; window->close(); }
+	if (exit) {
+		exit = 0; 
+		game.exit_prompt();
+		return;
+	}
 	else if (play) {
 		play = 0;
 		states->insert(SavesST);
@@ -120,11 +124,13 @@ void MainMenuState::pollevent()
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case Event::Closed:
-			window->close(); break;
+			game.exit_prompt();
+			return; break;
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				window->close(); break;
+				game.exit_prompt();
+				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:
