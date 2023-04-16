@@ -35,8 +35,8 @@
 #define SettingsID 11
 #define SettingsST { 11, new SettingsState }
 
-#define ConfirmID 12                        /////
-#define ConfirmST { 12, new ConfirmState }  /////
+#define ConfirmationID 12                        /////
+#define ConfirmationST { 12, new ConfirmationState }  /////
 
 namespace globalvar {
 

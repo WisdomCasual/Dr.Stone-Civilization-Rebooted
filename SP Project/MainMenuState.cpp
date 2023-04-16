@@ -82,7 +82,13 @@ void MainMenuState::update()
 
 
 	update_buttons();
-	if (exit) { exit = 0; window->close(); }
+	if (exit) {
+		exit = 0; 
+		string strings_array[] = { "Are you sure that you", "want to exit the", "game?" };
+		states->insert({ 12, new ConfirmationState(strings_array,3, exit_game)});
+		states->at(ConfirmationID)->update();
+		return;
+	}
 	else if (play) {
 		play = 0;
 		states->insert(SavesST);
@@ -106,6 +112,10 @@ void MainMenuState::update()
 		int exceptions[] = { SettingsID , BackgroundID };
 		game.erase_states(exceptions, 2);
 		return;
+	}
+	else if(exit_game){
+		exit_game = 0;
+		window->close();
 	}
 }
 
