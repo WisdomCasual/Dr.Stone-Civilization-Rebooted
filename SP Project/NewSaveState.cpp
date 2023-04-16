@@ -224,7 +224,8 @@ void NewSaveState::pollevent()
 		txt_box.text_poll(event);
 		switch (event.type) {
 		case Event::Closed:
-			window->close(); break;
+			game.exit_prompt();
+			return; break;
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:

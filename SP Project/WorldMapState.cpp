@@ -189,6 +189,8 @@ void WorldMapState::update()
 		states->at(NewMapID)->update();
 	}
 	 del = 0;
+
+	 if (loadmap) { loadmap = 0;  load_maps(); }
 }
 
 void WorldMapState::render()
@@ -203,7 +205,8 @@ void WorldMapState::pollevent()
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case Event::Closed:
-			window->close(); break;
+			game.exit_prompt();
+			return; break;
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
@@ -211,7 +214,11 @@ void WorldMapState::pollevent()
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F5:
-				load_maps(); break;
+			{
+				string strings_array[] = { "Are you sure that you", "want to revert to ", "the last saved world map?", "" , "Any changes will be lost" };
+				states->insert({ 12, new ConfirmationState(strings_array,5, loadmap) });
+				states->at(ConfirmationID)->update();
+			} break;
 			case Keyboard::F6:
 				save_maps(); break;
 			case Keyboard::F11:

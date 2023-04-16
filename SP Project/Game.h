@@ -25,7 +25,6 @@ private:
 	VideoMode* videomode;
 	map<int, State*> states;
 	map<string, Texture*> textures;
-	VideoMode prev_res = { 0, 0 };
 	bool prev_fullscreen = 0;
 
 	//private functions:
@@ -38,9 +37,10 @@ private:
 public:
 	//public variables:
 	string title = "none";
-	VideoMode windowbounds = { 800, 600 };
+	VideoMode windowbounds = { 800, 600 }, prev_res = { 0, 0 };
 	int framelimit = 120;
 	void erase_states(int[], int);
+	void exit_prompt();
 
 	//constructors/destructors:
 	Game();
