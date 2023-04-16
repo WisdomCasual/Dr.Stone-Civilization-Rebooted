@@ -6,7 +6,7 @@
 using namespace globalvar;
 
 struct Pin {
-			int x = 0, y = 0;
+			int x = 0, y = 0, x_size = 128, y_size = 128;
 			float pin_scale = 2, namebox_scale = 1, text_size = 40;
 			bool pressed = 0, hover = 0;
 		};

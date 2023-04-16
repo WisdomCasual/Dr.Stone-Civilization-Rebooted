@@ -6,11 +6,11 @@ void NewMapState::update_arrow()
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
-		back_arrow.setScale(scale * 0.4, scale * 0.4);
+		back_arrow.setScale(scale * 0.36, scale * 0.36);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
-			back_arrow.setScale(scale * 0.36, scale * 0.36);
+			back_arrow.setScale(scale * 0.33, scale * 0.33);
 		}
 		else {
 			if (arrow_pressed) {
@@ -25,7 +25,7 @@ void NewMapState::update_arrow()
 	else {
 		arrow_pressed = 0;
 		back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
-		back_arrow.setScale(scale * 0.4, scale * 0.4);
+		back_arrow.setScale(scale * 0.36, scale * 0.36);
 	}
 }
 
@@ -126,6 +126,50 @@ void NewMapState::render_slider(int target)
 
 }
 
+void NewMapState::update_buttons()
+{
+	if(!txt_box.empty()) {
+		buttontex.setColor(button_color);
+		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
+		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))confirm.pressed = 1;
+			else {
+				if (confirm.pressed)
+					confirm.execute = 1;
+				confirm.pressed = 0;
+			}
+			confirm.hover = 1;
+		}
+		else {
+			confirm.pressed = 0;
+			confirm.hover = 0;
+		}
+	}
+	else {
+		buttontex.setColor(Color(button_color.r - 100, button_color.g - 100, button_color.b - 100));
+	}
+}
+
+void NewMapState::render_buttons()
+{
+	buttontex.setScale(scale / 3.0, scale / 3.0);
+	button_text.setCharacterSize(8.69 * scale);
+		buttontex.setTextureRect(IntRect(0, confirm.pressed * 49, 108, 49));
+		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
+		button_text.setString(confirm.txt);
+		FloatRect bounds = button_text.getLocalBounds();
+		button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
+		button_text.setPosition(x + confirm.x * scale / 3.0, (confirm.pressed) ? y + confirm.y * scale / 3.0 + 2 * scale / 3.0 : y + confirm.y * scale / 3.0 - 2 * scale / 3.0);
+		if (confirm.hover)button_text.setFillColor(Color::White);
+		else if (txt_box.empty())
+			button_text.setFillColor(Color(120, 120, 120));
+		else
+			button_text.setFillColor(Color(200, 200, 200));
+		
+		window->draw(buttontex);
+		window->draw(button_text);
+}
+
 NewMapState::NewMapState()
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
@@ -152,6 +196,19 @@ NewMapState::NewMapState()
 	slider_text.setFont(font);
 	slider_text.setCharacterSize(50);
 	slider_text.setFillColor(Color::Black);
+
+	slider_text.setFont(font);
+	slider_text.setCharacterSize(50);
+	slider_text.setFillColor(Color::Black);
+
+	buttontex.setTexture(*textures[3]);
+	buttontex.setTextureRect(IntRect(0, 0, 108, 49));
+	buttontex.setOrigin(108 / 2, 49 / 2);
+	button_color = buttontex.getColor();
+
+	button_text.setFont(font);
+	button_text.setCharacterSize(50);
+	button_text.setFillColor(Color(200, 200, 200));
 
 	tip.setTexture(*textures[4]);
 
@@ -195,12 +252,15 @@ void NewMapState::update()
 		bg.setPosition(x, y);
 		bg.setScale(scale * 0.17, scale * 0.17);
 
-		txt_box.setPosition({ x, y - 20 * scale});
+		txt_box.setPosition({ x, y - 18 * scale});
 
 		txt_box.setScale(scale * 0.2);
 	}
 
 	update_arrow();
+
+	update_buttons();
+
 	if (destruct)
 		return;
 
@@ -208,6 +268,13 @@ void NewMapState::update()
 
 	for (int i = 0; i < 2; i++)
 		update_slider(sliders, i);
+
+	if (confirmed) {
+		pins.insert({ map_name, {pins.at("").x,pins.at("").y ,x_size, y_size}});
+		pins.erase("");
+		states->erase(NewMapID);
+		return;
+	}
 }
 
 
@@ -219,10 +286,13 @@ void NewMapState::render()
 
 	window->draw(back_arrow);
 
+	render_buttons();
+
 	for (int i = 0; i < 2; i++)
 		render_slider(i);
 
 	txt_box.drawTextBox(window);
+	draw_text("Create a new map", x, y - 35 * scale, 7.5 * scale);
 }
 
 void NewMapState::pollevent()
@@ -235,7 +305,7 @@ void NewMapState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->erase(NewMapID); pins.erase(""); return; break;
+				pins.erase("");states->erase(NewMapID); return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:
