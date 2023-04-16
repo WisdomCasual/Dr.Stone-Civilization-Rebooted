@@ -245,55 +245,109 @@ void MapBuilderState::draw_tools()
 					}
 				}
 				else {
-					//store changed area info
-					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
-
-					if (!(Keyboard::isKeyPressed(Keyboard::LAlt) && brush_size > 1)) {
-						for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
-							for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
-								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
-
-								tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
-							}
+					if (!click) {
+						click = 1;
+						line_start = selected_tile;
 					}
-					else {
-						for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++) {
-							for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
-								rand_spray = rand() % spread_chances[spread_chance];
-								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
-								if (!rand_spray) {
-									tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
 
+					dx = selected_tile.x - line_start.x, dy = selected_tile.y - line_start.y;
+					if (abs(dx) > abs(dy)) {
+						line_length = abs(dx) + 1;
+						slope = dy / (float)dx;
+						if (dx < 0)
+							line_start = selected_tile;
+						dep = &point_on_line.y, indep = &point_on_line.x, c = line_start.y, base = line_start.x;
+					}
+
+					else {
+						line_length = abs(dy) + 1;
+						slope = (dy != 0) ?  dx / (float)dy : 0;
+						if (dy < 0)
+							line_start = selected_tile;
+						dep = &point_on_line.x, indep = &point_on_line.y, c = line_start.x, base = line_start.y;
+					}
+					for(int i = 0; i < line_length; i++) {
+						*indep = base + i;
+						*dep = slope * (*indep - base) + c;
+
+						//store changed area info
+						changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
+
+						if (!(Keyboard::isKeyPressed(Keyboard::LAlt) && brush_size > 1)) {
+							for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++)
+								for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
+									changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+
+									tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
+								}
+						}
+						else {
+							for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++) {
+								for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
+									rand_spray = rand() % spread_chances[spread_chance];
+									changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+									if (!rand_spray) {
+										tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
+
+									}
 								}
 							}
-						}
+					}
+						line_start = selected_tile;
 					}
 				}
 			}
 			else {
-				if (!picked_tile.select_done) {
-					//store changed area info
-					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
+					if (!click) {
+						click = 1;
+						line_start = selected_tile;
+					}
 
-					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
-						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+					dx = selected_tile.x - line_start.x, dy = selected_tile.y - line_start.y;
+					if (abs(dx) > abs(dy)) {
+						line_length = abs(dx) + 1;
+						slope = dy / (float)dx;
+						if (dx < 0)
+							line_start = selected_tile;
+						dep = &point_on_line.y, indep = &point_on_line.x, c = line_start.y, base = line_start.x;
+					}
 
-							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+					else {
+						line_length = abs(dy) + 1;
+						slope = (dy != 0) ? dx / (float)dy : 0;
+						if (dy < 0)
+							line_start = selected_tile;
+						dep = &point_on_line.x, indep = &point_on_line.y, c = line_start.x, base = line_start.y;
+					}
+					for (int i = 0; i < line_length; i++) {
+						*indep = base + i;
+						*dep = slope * (*indep - base) + c;
 
-							tiles[i][j].hitbox = 1;
+						if (!picked_tile.select_done) {
+							//store changed area info
+							changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
+
+							for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++)
+								for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
+
+									changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+
+									tiles[i][j].hitbox = 1;
+								}
 						}
-				}
-				else {
-					//store changed area info
-					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
+						else {
+							//store changed area info
+							changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + picked_tile.wdth, point_on_line.y + picked_tile.hght } });
 
-					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
-						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+							for (int i1 = picked_tile.start_x, i2 = point_on_line.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
+								for (int j1 = picked_tile.start_y, j2 = point_on_line.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
 
-							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+									changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
 
-							tiles[i2][j2].hitbox = 1;
+									tiles[i2][j2].hitbox = 1;
+								}
 						}
+				line_start = selected_tile;
 				}
 			}
 			tiles[selected_tile.x][selected_tile.y].blocked = blocked;
@@ -310,66 +364,92 @@ void MapBuilderState::erase_tools()
 			picked_tile.previous_drawn_tile = { -1, -1 };
 			if (!undid_changes.empty())
 				undid_changes.clear();
-			if (!hitbox) {
-				if (picked_tile.select_done) {
-					//store changed area info
-					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
-
-					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
-						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
-
-							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
-
-							if (Keyboard::isKeyPressed(Keyboard::LAlt))
-								for (int f = 0; f < 2; f++)
-									tiles[i2][j2].layer[f].clear();
-							else
-								tiles[i2][j2].layer[Render_Priority].erase(layer);
-						}
-				}
-				else {
-					//store changed area info
-					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
-
-					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
-						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
-
-							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
-
-							if (Keyboard::isKeyPressed(Keyboard::LAlt))
-								for (int f = 0; f < 2; f++)
-									tiles[i][j].layer[f].clear();
-							else
-								tiles[i][j].layer[Render_Priority].erase(layer);
-						}
-				}
+			if (!click) {
+				click = 1;
+				line_start = selected_tile;
 			}
+
+			dx = selected_tile.x - line_start.x, dy = selected_tile.y - line_start.y;
+			if (abs(dx) > abs(dy)) {
+				line_length = abs(dx) + 1;
+				slope = dy / (float)dx;
+				if (dx < 0)
+					line_start = selected_tile;
+				dep = &point_on_line.y, indep = &point_on_line.x, c = line_start.y, base = line_start.x;
+			}
+
 			else {
-				if (!picked_tile.select_done) {
-					//store changed area info
-					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + brush_size, selected_tile.y + brush_size } });
+				line_length = abs(dy) + 1;
+				slope = (dy != 0) ? dx / (float)dy : 0;
+				if (dy < 0)
+					line_start = selected_tile;
+				dep = &point_on_line.x, indep = &point_on_line.y, c = line_start.x, base = line_start.y;
+			}
+			for (int i = 0; i < line_length; i++) {
+				*indep = base + i;
+				*dep = slope * (*indep - base) + c;
+				if (!hitbox) {
+					if (picked_tile.select_done) {
+						//store changed area info
+						changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
 
-					for (int i = selected_tile.x; i < selected_tile.x + brush_size && i < size_x; i++)
-						for (int j = selected_tile.y; j < selected_tile.y + brush_size && i < size_y; j++) {
+						for (int i1 = picked_tile.start_x, i2 = point_on_line.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
+							for (int j1 = picked_tile.start_y, j2 = point_on_line.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
 
-							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
 
-							tiles[i][j].hitbox = 0;
-						}
+								if (Keyboard::isKeyPressed(Keyboard::LAlt))
+									for (int f = 0; f < 2; f++)
+										tiles[i2][j2].layer[f].clear();
+								else
+									tiles[i2][j2].layer[Render_Priority].erase(layer);
+							}
+					}
+					else {
+						//store changed area info
+						changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
+
+						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++)
+							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
+
+								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+
+								if (Keyboard::isKeyPressed(Keyboard::LAlt))
+									for (int f = 0; f < 2; f++)
+										tiles[i][j].layer[f].clear();
+								else
+									tiles[i][j].layer[Render_Priority].erase(layer);
+							}
+					}
 				}
 				else {
-					//store changed area info
-					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
+					if (!picked_tile.select_done) {
+						//store changed area info
+						changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
 
-					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
-						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++)
+							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
 
-							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
-							tiles[i2][j2].hitbox = 0;
-						}
+								tiles[i][j].hitbox = 0;
+							}
+					}
+					else {
+						//store changed area info
+						changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
+
+						for (int i1 = picked_tile.start_x, i2 = point_on_line.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
+							for (int j1 = picked_tile.start_y, j2 = point_on_line.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+
+								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+
+								tiles[i2][j2].hitbox = 0;
+							}
+					}
 				}
 			}
+			line_start = selected_tile;
 			picked_tile.global_select_done = 0;
 			tiles[selected_tile.x][selected_tile.y].blocked = 0;
 		}
@@ -638,6 +718,13 @@ void MapBuilderState::pollevent()
 					picked_tile.x = tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer].x;
 					picked_tile.y = tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer].y;
 					break;
+			}
+
+		case Event::MouseButtonReleased:
+			switch (event.mouseButton.button) {
+			case Mouse::Left:
+				click = 0;
+				break;
 			}
 
 
