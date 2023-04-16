@@ -80,6 +80,19 @@ void Game::erase_states(int exceptions[], int size = 0)
 		state.second->update();
 }
 
+void Game::exit_prompt()
+{
+	if (states.find(MapBuilderID) == states.end() && states.find(GameID) == states.end() && states.find(WorldMapID) == states.end()) {
+		string strings_array[] = { "Are you sure that you", "want to exit the", "game?" };
+		states.insert({ 12, new ConfirmationState(strings_array,3, exit_game) });
+	}
+	else {
+		string strings_array[] = { "Are you sure that you", "want to exit the", "game?", "" , "Progress won't be saved" };
+		states.insert({ 12, new ConfirmationState(strings_array,5, exit_game) });
+	}
+	states.at(ConfirmationID)->update();
+}
+
 Game::Game()
 {
 	globalvar::states = &this->states;
@@ -145,8 +158,12 @@ void Game::update()
 	pollevent();
 	calc_fps();
 	//calls update function of the top state in the map
+
 	if (!states.empty())
 		this->states.rbegin()->second->update();
+
+	if (exit_game)
+		window->close();
 }
 
 void Game::render()

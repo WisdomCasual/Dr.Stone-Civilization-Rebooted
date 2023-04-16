@@ -35,7 +35,6 @@ private:
     Vector2f mouse_pos = { 0,0 };	
     Vector2u prev_win = { 0, 0 };
     Sprite tip;
-    VideoMode save_resolution = { 1920, 1080 };
     Color color;
     int save_framelimit = 120, save_volume = 100, save_music = 100;
 
