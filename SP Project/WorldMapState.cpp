@@ -52,8 +52,13 @@ void WorldMapState::update_pins()
 			if (del) {
 				string file_name = "Maps/" + pn->first + ".mp";
 				remove(file_name.c_str());
-				pn = pins.erase(pn);
-				del = 0; 
+				if (pn == prev(pins.end())) {
+					pins.erase(pn);
+					break;
+				}
+				else
+					pn = pins.erase(pn);
+				del = 0;
 				continue;
 			}
 		}
