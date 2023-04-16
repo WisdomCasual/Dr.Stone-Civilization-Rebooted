@@ -67,7 +67,7 @@ void NewMapState::update_slider(slider_info* sliders, int target)
 			sliders[target].tipx = initpos + (sliders[target].mx - round((initpos + mxlen - mouse_pos.x) / stepsize)) * stepsize;
 		}
 
-		*sliders[target].linker = round(((sliders[target].tipx - x) / (scale / 2.3) - sliders[target].x - 9) / sliderconst * sliders[target].mx) + 2;
+		*sliders[target].linker = round(((sliders[target].tipx - x) / (scale / 2.3) - sliders[target].x - 9) / sliderconst * sliders[target].mx) + 1;
 		sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 2.3));
 	}
 }
