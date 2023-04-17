@@ -66,6 +66,9 @@
     <ClCompile Include="ConfirmationState.cpp">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="PasswordState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -111,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ConfirmationState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PasswordState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
