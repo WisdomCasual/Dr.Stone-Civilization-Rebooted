@@ -30,7 +30,10 @@ void PasswordState::update_arrow()
 void PasswordState::update_buttons()
 {
 	if (!txt_box.empty()) {
-		buttontex.setColor(button_color);
+		if (wrong_password)
+			buttontex.setColor(Color(button_color.r, button_color.g - 100, button_color.b - 100));
+		else
+			buttontex.setColor(button_color);
 		buttontex.setPosition(x + confirm.x * scale / 3.5, y + confirm.y * scale / 3.5);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))confirm.pressed = 1;
@@ -48,6 +51,7 @@ void PasswordState::update_buttons()
 	}
 	else {
 		buttontex.setColor(Color(button_color.r - 100, button_color.g - 100, button_color.b - 100));
+		wrong_password = 0;
 	}
 }
 
@@ -61,9 +65,12 @@ void PasswordState::render_buttons()
 	FloatRect bounds = button_text.getLocalBounds();
 	button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
 	button_text.setPosition(x + confirm.x * scale / 3.5, (confirm.pressed) ? y + confirm.y * scale / 3.5 + 2 * scale / 3.5 : y + confirm.y * scale / 3.5 - 2 * scale / 3.5);
-	if (confirm.hover)button_text.setFillColor(Color::White);
+	if (confirm.hover && wrong_password) button_text.setFillColor(Color(235, 205, 205));
+	else if (confirm.hover) button_text.setFillColor(Color::White);
 	else if (txt_box.empty())
 		button_text.setFillColor(Color(120, 120, 120));
+	else if (wrong_password)
+		button_text.setFillColor(Color(200, 170, 170));
 	else
 		button_text.setFillColor(Color(200, 200, 200));
 
@@ -160,6 +167,8 @@ void PasswordState::update()
 			states->erase(PasswordID);
 			return;
 		}
+		else
+			wrong_password = 1;
 	}
 }
 
