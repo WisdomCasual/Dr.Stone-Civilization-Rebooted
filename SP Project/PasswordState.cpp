@@ -188,7 +188,7 @@ void PasswordState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				pins.erase(""); states->erase(NewMapID); return; break;
+				states->erase(PasswordID); return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:
