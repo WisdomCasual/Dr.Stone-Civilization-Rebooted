@@ -58,7 +58,7 @@ void TextBox::text_poll(Event event)
 				isActive = 1;
 			else {
 				isActive = 0;
-				*target_string = input_string;
+				submit();
 			}
 			selected = 0;
 		}
@@ -67,36 +67,43 @@ void TextBox::text_poll(Event event)
 	case Event::TextEntered:
 		if (isActive) {
 			if (event.text.unicode == 13) {
-				*target_string = input_string;
+				submit();
 				isActive = 0;
 			}
 
 			if (event.text.unicode == 8 && !input_string.empty()) {
 				if(selected) { 
 					input_string.clear();
+					pw_string.clear();
 					selected = 0;
 				}
-				else
+				else {
 					input_string.pop_back();
+					pw_string.pop_back();
+				}
 			}
 			if (event.text.unicode > 31 && event.text.unicode < 127 && event.text.unicode != 96 && input_string.size() < character_limit && text_x_bound < box_x_bound) {
 				if (selected) {
 					input_string.clear();
+					pw_string.clear();
 					selected = 0;
 				}
 				input_string += event.text.unicode;
+				pw_string += '*';
 			}
-				inputted_text.setString(input_string);
 		} break;
 	case Event::KeyPressed:
 		if (isActive && event.key.control) {
 			if (event.key.code == Keyboard::V) {
 				clipboard = Clipboard::getString();
-				if (selected)
+				if (selected) {
 					input_string.clear();
+					pw_string.clear();
+				}
 				for (int i = 0; i < clipboard.size() && input_string.size() < character_limit && text_x_bound < box_x_bound; i++) {
 					if (clipboard[i] > 31 && clipboard[i] < 127 && clipboard[i] != 96) {
 						input_string += clipboard[i];
+						pw_string += '*';
 					}
 				}
 				selected = 0;
@@ -110,20 +117,21 @@ void TextBox::text_poll(Event event)
 				selected = 1;
 			}
 			if (event.key.code == Keyboard::C && selected) {
-				Clipboard::setString(input_string);
+				Clipboard::setString(*display_string);
 			}
 		}
 		break;
 	}
 }
 
-void TextBox::initializeTextBox(string& targ_string, Texture& texture, const string placeholder, Vector2f pos, float scale)
+void TextBox::initializeTextBox(string& targ_string, Texture& texture, const string placeholder, Vector2f pos, float scale, bool mode)
 {
 	position = pos;
 	this->scale = scale;
 	target_string = &targ_string;
 	placeholder_text.setFont(font);
 	placeholder_text.setFillColor(Color(177, 146, 114, 255));
+	setMode(mode);
 	setScale(scale);
 	setPlaceholderText(placeholder);
 	setTexture(texture);
@@ -142,11 +150,31 @@ bool TextBox::empty()
 	return input_string.empty();
 }
 
+void TextBox::setMode(bool mode)
+{
+	this->mode = mode;
+	display_string = (mode) ? &pw_string : &input_string;
+}
+
+void TextBox::submit()
+{
+	if (mode) {
+		for (int i = 0; i < input_string.size(); i++) {
+			*target_string = input_string;
+			encrypt(*target_string, 69);
+		}
+	}
+	else
+		*target_string = input_string;
+}
+
+
+
 void TextBox::update()
 {
 	inputted_text.setString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 	bound_y = inputted_text.getLocalBounds().top + inputted_text.getLocalBounds().height / 2.0;
-	inputted_text.setString(input_string);
+	inputted_text.setString(*display_string);
 	placeholder_text.setOrigin(placeholder_text.getLocalBounds().left + placeholder_text.getLocalBounds().width / 2.0, placeholder_text.getLocalBounds().top + placeholder_text.getLocalBounds().height / 2.0);
 	box_x_bound = box.getGlobalBounds().width * 0.8, text_x_bound = inputted_text.getGlobalBounds().width;
 	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
@@ -161,7 +189,7 @@ void TextBox::update()
 
 	string output_string;
 	if (cursor && isActive) {
-		output_string = input_string + ((cursor) ? "|" : "");
+		output_string = *display_string + ((cursor) ? "|" : "");
 		inputted_text.setString(output_string);
 	}
 	if (delay > 1.0 && isActive) {

@@ -61,4 +61,12 @@ namespace globalvar {
 		text.setPosition(a, b);
 		window->draw(text);
 	}
+	
+	inline void encrypt(string& string, int key) {
+		srand(key);
+		for (auto& i : string) {
+			srand((((key % 256 + rand() % 256) + i) * (string.size() % 256))%256);
+			i = ((i % 256 + rand() % 256) % 94) + 33;
+		}
+	}
 }
