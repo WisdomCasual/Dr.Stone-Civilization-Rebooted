@@ -160,7 +160,8 @@ void PasswordState::update()
 
 	if (confirmed) {
 		confirmed = 0;
-		if (input_password == "xdCy1N" || input_password == "O-FxJ<" || input_password == "rHU6F") {    //password: team7 - raheeq
+		if (input_password == "xdCy1N" || input_password == "O-FxJ<" || input_password == "rHU6F" || input_password == ")YPN6" 
+			|| input_password == "ay=yr") {    //password: team7 - raheeq - amany - sobia
 			states->insert(WorldMapST_admin);
 			states->at(WorldMapID)->update();
 			states->erase(SettingsID);
