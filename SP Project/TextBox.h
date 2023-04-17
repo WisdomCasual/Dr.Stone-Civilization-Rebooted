@@ -13,8 +13,8 @@ private:
 	int character_limit = 25;
 	Vector2f position = { 0, 0 };
 	float scale = 1, bound_y = 0, delay = 0, box_x_bound = 0, text_x_bound = 0;
-	string input_string = "", placeholder = "", clipboard = "";
-	bool isActive = 0, selected = 0, cursor = 0;
+	string input_string = "", placeholder = "", clipboard = "", pw_string = "", *display_string = &input_string;
+	bool isActive = 0, selected = 0, cursor = 0, mode = 0;
 	Text inputted_text, placeholder_text;
 	Sprite box;
 
@@ -38,11 +38,15 @@ public:
 
 	void text_poll(Event event);
 
-	void initializeTextBox(std::string& targ_string, Texture& texture, const string placeholder = "Write Here", Vector2f pos = {0.0, 0.0}, float scale = 1);
+	void initializeTextBox(std::string& targ_string, Texture& texture, const string placeholder = "Write Here", Vector2f pos = { 0.0, 0.0 }, float scale = 1, bool mode = 0);
 
 	void drawTextBox(RenderWindow* window);
 
 	bool empty();
+
+	void setMode(bool mode);              //0 = text, 1 = password
+	
+	void submit();
 
 	void update();
 
