@@ -9,6 +9,7 @@
 #include"NewSaveState.h"
 #include"NewMapState.h"
 #include "ConfirmationState.h"
+#include"PasswordState.h"
 
 #include"Global.h"
 using namespace globalvar;

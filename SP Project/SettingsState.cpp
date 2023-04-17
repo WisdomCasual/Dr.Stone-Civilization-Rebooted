@@ -64,12 +64,12 @@ void SettingsState::dev_button()
 			if (button_pressed) {
 				button_pressed = 0;
 
-				states->insert(WorldMapST_admin);
-				states->at(WorldMapID)->update();
-				states->at(WorldMapID)->render();
+				states->insert(PasswordST);
+				states->at(PasswordID)->update();
+				int exceptions[] = { SettingsID , BackgroundID, PasswordID };
+				game.erase_states(exceptions, 3);
 
-				int exceptions[] = { WorldMapID , BackgroundID };
-				game.erase_states(exceptions, 2);
+
 				destruct = 1;
 				return;
 			}
@@ -385,8 +385,6 @@ void SettingsState::update()
 	if (dev_button_active)
 		dev_button();
 
-	if (destruct)
-		return;
 
 	update_arrow();
 
