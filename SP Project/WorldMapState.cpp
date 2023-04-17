@@ -52,7 +52,7 @@ void WorldMapState::update_pins()
 			if (del) {
 				del = 0;
 				map_to_delete = pn->first;
-				string strings_array[] = { "Are you sure that you", "want to delete", map_to_delete};
+				string strings_array[] = { "Are you sure that you", "want to delete", "\"" + map_to_delete + "\""};
 				states->insert({ 13, new ConfirmationState(strings_array, 3, delete_map) });
 				states->at(ConfirmationID)->update();
 			}
