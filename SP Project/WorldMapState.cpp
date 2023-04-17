@@ -50,16 +50,11 @@ void WorldMapState::update_pins()
 				selected = 1;
 			}
 			if (del) {
-				string file_name = "Maps/" + pn->first + ".mp";
-				remove(file_name.c_str());
-				if (pn == prev(pins.end())) {
-					pins.erase(pn);
-					break;
-				}
-				else
-					pn = pins.erase(pn);
 				del = 0;
-				continue;
+				map_to_delete = pn->first;
+				string strings_array[] = { "Are you sure that you", "want to delete", map_to_delete};
+				states->insert({ 12, new ConfirmationState(strings_array, 3, delete_map) });
+				states->at(ConfirmationID)->update();
 			}
 		}
 		else
@@ -191,6 +186,13 @@ void WorldMapState::update()
 	 del = 0;
 
 	 if (loadmap) { loadmap = 0;  load_maps(); }
+
+	 if (delete_map) {
+		 delete_map = 0;
+		 string file_name = "Maps/" + map_to_delete + ".mp";
+		 remove(file_name.c_str());
+		 pins.erase(map_to_delete);
+	 }
 }
 
 void WorldMapState::render()
