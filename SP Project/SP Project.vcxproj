@@ -147,6 +147,7 @@
     <ClCompile Include="CreativeMode.cpp" />
     <ClCompile Include="NewMapState.cpp" />
     <ClCompile Include="NewSaveState.cpp" />
+    <ClCompile Include="PasswordState.cpp" />
     <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="SettingsState.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="MapBuilderState.h" />
     <ClInclude Include="NewMapState.h" />
     <ClInclude Include="NewSaveState.h" />
+    <ClInclude Include="PasswordState.h" />
     <ClInclude Include="PauseState.h" />
     <ClInclude Include="SavesState.h" />
     <ClInclude Include="State.h" />
