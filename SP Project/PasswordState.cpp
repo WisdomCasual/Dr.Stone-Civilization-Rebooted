@@ -131,7 +131,7 @@ void PasswordState::update()
 
 		tint.setSize({ win_x, win_y });
 
-		tissue.setScale(scale * 0.75, scale * 0.75);
+		tissue.setScale(scale * 0.73, scale * 0.73);
 		tissue.setPosition(x, y);
 
 		bg.setPosition(x, y);
