@@ -84,13 +84,25 @@ void Game::exit_prompt()
 {
 	if (states.find(MapBuilderID) == states.end() && states.find(GameID) == states.end() && states.find(WorldMapID) == states.end()) {
 		string strings_array[] = { "Are you sure that you", "want to exit the", "game?" };
-		states.insert({ 13, new ConfirmationState(strings_array,3, exit_game) });
+		states.insert({ 14, new ConfirmationState(strings_array,3, exit_game) });
 	}
 	else {
 		string strings_array[] = { "Are you sure that you", "want to exit the", "game?", "" , "Progress won't be saved" };
-		states.insert({ 13, new ConfirmationState(strings_array,5, exit_game) });
+		states.insert({ 14, new ConfirmationState(strings_array,5, exit_game) });
 	}
 	states.at(ConfirmationID)->update();
+}
+
+void Game::notification(string strings_arr[], int lines)
+{
+	if (states.find(NotificationID) == states.end())
+	states.insert(NotificationST);
+	for (int i = 0; i < lines; i++) {
+		notification_strings[i] = strings_arr[i];
+	}
+	 notification_lines = lines+3;
+	 notification_delay = 0;
+	 states.at(NotificationID)->update();
 }
 
 Game::Game()

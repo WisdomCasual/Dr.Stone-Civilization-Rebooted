@@ -222,7 +222,12 @@ void WorldMapState::pollevent()
 				states->at(ConfirmationID)->update();
 			} break;
 			case Keyboard::F6:
-				save_maps(); break;
+				save_maps(); 
+				{
+					string notification_s[] = { "Saved Successfully" };
+					game.notification(notification_s, 1);
+				}
+				break;
 			case Keyboard::F11:
 				fullscreen = !fullscreen;
 				game.update_window();
