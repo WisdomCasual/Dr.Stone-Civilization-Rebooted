@@ -20,7 +20,6 @@ void NotificationState::update_velocity()
 	else {
 		notification_delay += dt;
 		velocity.y = 0;
-		
 	}
 	notification_BG.move(velocity * dt * pos_scale);
 	

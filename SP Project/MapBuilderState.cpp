@@ -394,18 +394,18 @@ void MapBuilderState::erase_tools()
 				if (!hitbox) {
 					if (picked_tile.select_done) {
 						//store changed area info
-						changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
+						changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + picked_tile.wdth, point_on_line.y + picked_tile.hght } });
 
-						for (int i1 = picked_tile.start_x, i2 = point_on_line.x; i1 < picked_tile.start_x + picked_tile.wdth; i1++, i2++)
-							for (int j1 = picked_tile.start_y, j2 = point_on_line.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
+						for (int i = point_on_line.x; i < point_on_line.x + picked_tile.wdth; i++)
+							for (int j = point_on_line.y; j < point_on_line.y + picked_tile.hght; j++) {
 
-								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
+								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
 								if (Keyboard::isKeyPressed(Keyboard::LAlt))
 									for (int f = 0; f < 2; f++)
-										tiles[i2][j2].layer[f].clear();
+										tiles[i][j].layer[f].clear();
 								else
-									tiles[i2][j2].layer[Render_Priority].erase(layer);
+									tiles[i][j].layer[Render_Priority].erase(layer);
 							}
 					}
 					else {
@@ -446,7 +446,7 @@ void MapBuilderState::erase_tools()
 							for (int j1 = picked_tile.start_y, j2 = point_on_line.y; j1 < picked_tile.start_y + picked_tile.hght; j1++, j2++) {
 
 								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
-
+								
 								tiles[i2][j2].hitbox = 0;
 							}
 					}
@@ -736,6 +736,7 @@ void MapBuilderState::pollevent()
 
 		case Event::MouseButtonReleased:
 			switch (event.mouseButton.button) {
+			case Mouse::Right:
 			case Mouse::Left:
 				click = 0;
 				break;
