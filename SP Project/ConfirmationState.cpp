@@ -70,7 +70,6 @@ ConfirmationState::ConfirmationState(string text_strings[], int lines, bool& fn)
 	button_text.setFont(font);
 	button_text.setCharacterSize(50);
 	button_text.setFillColor(Color(200, 200, 200));
-
 }
 
 ConfirmationState::~ConfirmationState()
@@ -80,7 +79,7 @@ ConfirmationState::~ConfirmationState()
 
 
 void ConfirmationState::update()
-{
+{	
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
 	if (prev_win != window->getSize()) {
@@ -113,7 +112,6 @@ void ConfirmationState::update()
 		states->erase(ConfirmationID);
 		return;
 	}
-
 	update_buttons();
 }
 
