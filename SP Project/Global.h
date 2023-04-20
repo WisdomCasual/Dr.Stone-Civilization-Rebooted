@@ -29,6 +29,9 @@
 #define NewMapID 8
 #define NewMapST { 8, new NewMapState}
 
+#define NotificationID 9
+#define NotificationST { 9, new NotificationState }
+
 #define PauseID 10
 #define PauseST { 10, new PauseState }
 
@@ -37,9 +40,6 @@
 
 #define PasswordID 12
 #define PasswordST { 12, new PasswordState }
-
-#define NotificationID 13
-#define NotificationST { 13, new NotificationState }
 
 #define ConfirmationID 14
 #define ConfirmationST { 14, new ConfirmationState }
@@ -58,8 +58,8 @@ namespace globalvar {
 
 	inline Font font;
 	inline Text fps_text, text;
-	inline string notification_strings[3];
-	inline int notification_lines = 0;
+	inline string notification_strings[3] = {""};
+	inline int notification_lines = 1;
 	inline float notification_delay = 0;
 
 	inline void draw_text(string tex, int a, int b, float c)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text

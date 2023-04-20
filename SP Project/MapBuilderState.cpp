@@ -618,13 +618,18 @@ void MapBuilderState::pollevent()
 				//ARE YOU REALLY REALLY REALLY REALLY SURE YOU WANT TO LOAD!!????
 			{
 				string strings_array[] = { "Are you sure that you", "want to revert to ", "the last saved map?", "" , "Any changes will be lost" };
-				states->insert({ 13, new ConfirmationState(strings_array,5, loadmap) });
+				states->insert({ 14, new ConfirmationState(strings_array,5, loadmap) });
 				states->at(ConfirmationID)->update();
 			}
 				break;
 			case Keyboard::F6:
 				//are you sure?
-				save_map(); break;
+				save_map(); 
+				{
+					string notification_s[] = { "Saved Successfully","tesssst"};
+					game.notification(notification_s, 2);
+				}
+				break;
 			case Keyboard::F11:
 				fullscreen = !fullscreen;
 				game.update_window();
