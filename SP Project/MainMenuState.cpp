@@ -77,7 +77,6 @@ void MainMenuState::update()
 		if (win_x > 1280) scale *= 0.8;
 
 		logo.setScale(scale * 0.13, scale * 0.13);
-		
 	}
 
 

@@ -10,7 +10,7 @@
 #include"NewMapState.h"
 #include "ConfirmationState.h"
 #include"PasswordState.h"
-
+#include "NotificationState.h"
 #include"Global.h"
 using namespace globalvar;
 
@@ -42,6 +42,7 @@ public:
 	int framelimit = 120;
 	void erase_states(int[], int);
 	void exit_prompt();
+	void notification(string[], int);
 
 	//constructors/destructors:
 	Game();
