@@ -105,8 +105,8 @@ void PauseState::update()
 
 		states->insert(SettingsST);
 
-		int exceptions[] = { SettingsID, BackgroundID, MapBuilderID, GameID, WorldMapID };
-		game.erase_states(exceptions, 5);
+		int exceptions[] = { SettingsID, BackgroundID, MapBuilderID, GameID, WorldMapID, NotificationID };
+		game.erase_states(exceptions, 6);
 		return;
 	}
 	else if (exit) {
