@@ -29,8 +29,8 @@ void SettingsState::update_arrow()
 				}
 
 
-				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID };
-				game.erase_states(exceptions, 6);
+				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID, NotificationID };
+				game.erase_states(exceptions, 7);
 				destruct = 1;
 
 			}
@@ -390,7 +390,6 @@ void SettingsState::update()
 
 	if (destruct)
 		return;
-
 }
 
 void SettingsState::render()
@@ -429,8 +428,8 @@ void SettingsState::pollevent()
 					states->insert(PauseST);
 				}
 				{
-				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID };
-				game.erase_states(exceptions, 6);
+				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID, NotificationID };
+				game.erase_states(exceptions, 7);
 				return;
 				}
 				break;
