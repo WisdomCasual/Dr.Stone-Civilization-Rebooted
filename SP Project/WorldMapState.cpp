@@ -218,7 +218,7 @@ void WorldMapState::pollevent()
 			case Keyboard::F5:
 			{
 				string strings_array[] = { "Are you sure that you", "want to revert to ", "the last saved world map?", "" , "Any changes will be lost" };
-				states->insert({ 13, new ConfirmationState(strings_array,5, loadmap) });
+				states->insert({ 14, new ConfirmationState(strings_array,5, loadmap) });
 				states->at(ConfirmationID)->update();
 			} break;
 			case Keyboard::F6:

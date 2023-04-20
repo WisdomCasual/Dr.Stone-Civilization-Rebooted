@@ -95,14 +95,14 @@ void Game::exit_prompt()
 
 void Game::notification(string strings_arr[], int lines)
 {
-	if (states.find(NotificationID) == states.end())
-	states.insert(NotificationST);
 	for (int i = 0; i < lines; i++) {
 		notification_strings[i] = strings_arr[i];
 	}
-	 notification_lines = lines+3;
-	 notification_delay = 0;
-	 states.at(NotificationID)->update();
+	notification_lines = lines+3;
+	notification_delay = 0;
+	if (states.find(NotificationID) == states.end())
+		states.insert(NotificationST);
+	states.at(NotificationID)->update();
 }
 
 Game::Game()
