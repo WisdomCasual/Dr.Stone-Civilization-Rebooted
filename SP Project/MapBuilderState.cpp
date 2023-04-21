@@ -6,7 +6,7 @@ MapBuilderState::MapBuilderState(string map_name, int a, int b) : size_x(a), siz
 	load_map();
 
 	//loads "game" textures
-	initial_textures("game");
+	initial_tile_sheets("game/tiles");
 	info.setFont(font);
 	layer_info.setFont(font);
 	layer_info.setPosition(25 * x_scale, 800 * y_scale);
@@ -104,7 +104,7 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 		for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
 			for (auto props : tiles[i][j].layer[priority]) {
 				if (layer_toggle[props.first + 4 * priority]) {
-					tile.setTexture(*textures[props.second.z]);
+					tile.setTexture(*tile_sheets[props.second.z]);
 					tile.setTextureRect(IntRect(props.second.x * 16, props.second.y * 16, 16, 16));
 					tile.setPosition(x + (16 * scale * i), y + (16 * scale * j));
 					window->draw(tile);
@@ -118,7 +118,7 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 	grid(x_win, y_win);
 	if (display_text) {
 		tile.setTextureRect(IntRect(picked_tile.x * 16, picked_tile.y * 16, 16, 16));
-		tile.setPosition(15, 50); tile.setScale(4, 4);	tile.setTexture(*textures[picked_tile.tex_id]);
+		tile.setPosition(15, 50); tile.setScale(4, 4);	tile.setTexture(*tile_sheets[picked_tile.tex_id]);
 		window->draw(tile);
 	}
 }
@@ -636,7 +636,7 @@ void MapBuilderState::pollevent()
 				break;
 			case Keyboard::E:
 				if (picker)
-					tex_picker = new CreativeMode(&textures, picked_tile);
+					tex_picker = new CreativeMode(&tile_sheets, picked_tile, tile_props, sheets_no);
 				else
 					delete this->tex_picker;
 				picker = !picker; break;

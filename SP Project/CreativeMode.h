@@ -1,5 +1,9 @@
 #pragma once
 #include"State.h"
+
+#include"Global.h"
+using namespace globalvar;
+
 using namespace std;
 using namespace sf;
 
@@ -16,13 +20,19 @@ private:
 	Event event;
 	State::tex_tile* picked_tile;
 	RectangleShape hover_rect, selected_rect, select_rect;
+	Text saved_text;
+	Texture notification_tex;
+	Sprite notification_BG;
 	unsigned int a = 0, b = 0;
-	int curr_tex_set = 0;
+	int curr_tex_set = 0, saved_delay = 0;
 	float scale = 1.15;
 	bool selecting = 0;
+	State::sheet_properties* tile_props;
+	short sheets_no = 0;
 
 	//private functions:
 	void change_tex();
+	void save_props();
 	void grid_lines();
 	void initial_rectangles();
 	void hover_tile();
@@ -31,7 +41,7 @@ private:
 
 public:
 	//constructors/destructors
-	CreativeMode(vector<Texture*>*, State::tex_tile&);
+	CreativeMode(vector<Texture*>*, State::tex_tile&, State::sheet_properties[], short);
 	~CreativeMode();
 
 	//public functions:
