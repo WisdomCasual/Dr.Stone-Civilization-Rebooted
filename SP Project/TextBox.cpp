@@ -18,6 +18,7 @@ void TextBox::setTexture(Texture& box_texture)
 {
 	box.setTexture(box_texture);
 	box.setScale(scale * 1.5, scale * 1.5);
+	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
 	box.setPosition(position);
 }
 
