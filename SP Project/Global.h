@@ -32,17 +32,23 @@
 #define NotificationID 9
 #define NotificationST { 9, new NotificationState }
 
-#define PauseID 10
-#define PauseST { 10, new PauseState }
+#define DialogueID 10
+#define DialogueST { 10, new DialogueState}
 
-#define SettingsID 11
-#define SettingsST { 11, new SettingsState }
+#define PauseID 11
+#define PauseST { 11, new PauseState }
 
-#define PasswordID 12
-#define PasswordST { 12, new PasswordState }
+#define SettingsID 12
+#define SettingsST { 12, new SettingsState }
+
+#define PasswordID 13
+#define PasswordST { 13, new PasswordState }
 
 #define ConfirmationID 14
 #define ConfirmationST { 14, new ConfirmationState }
+
+#define TestGroundID 50
+#define TestGroundST { 50, new TestGroundState }
 
 
 namespace globalvar {
@@ -62,13 +68,17 @@ namespace globalvar {
 	inline int notification_lines = 1;
 	inline float notification_delay = 0;
 
-	inline void draw_text(string tex, int a, int b, float c)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
+	struct dialogue {
+		string speaker, text;
+	};
+
+	inline void draw_text(string text_string, int x_pos, int y_pos, float characterSize)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
 	{
 		//gets window pointer, string, X cord, Y cords, Character size to draw text
-		text.setString(tex);
-		text.setCharacterSize(c);
+		text.setString(text_string);
+		text.setCharacterSize(characterSize);
 		text.setOrigin(text.getLocalBounds().width / 2.0, text.getLocalBounds().top + text.getLocalBounds().height / 2.0);
-		text.setPosition(a, b);
+		text.setPosition(x_pos, y_pos);
 		window->draw(text);
 	}
 	
