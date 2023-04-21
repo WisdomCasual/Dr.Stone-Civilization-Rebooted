@@ -618,7 +618,7 @@ void MapBuilderState::pollevent()
 				//ARE YOU REALLY REALLY REALLY REALLY SURE YOU WANT TO LOAD!!????
 			{
 				string strings_array[] = { "Are you sure that you", "want to revert to ", "the last saved map?", "" , "Any changes will be lost" };
-				states->insert({ 14, new ConfirmationState(strings_array,5, loadmap) });
+				states->insert({ ConfirmationID, new ConfirmationState(strings_array,5, loadmap) });
 				states->at(ConfirmationID)->update();
 			}
 				break;

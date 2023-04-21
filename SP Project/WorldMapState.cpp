@@ -28,7 +28,7 @@ void WorldMapState::update_pins()
 				if (admin) {
 					//choose map in MapBuilder
 					save_maps();
-					states->insert({ 6, new MapBuilderState(pn->first, pn->second.x_size, pn->second.y_size) });
+					states->insert({ MapBuilderID, new MapBuilderState(pn->first, pn->second.x_size, pn->second.y_size) });
 
 					int exceptions[] = { MapBuilderID };
 					game.erase_states(exceptions, 1);
@@ -53,7 +53,7 @@ void WorldMapState::update_pins()
 				del = 0;
 				map_to_delete = pn->first;
 				string strings_array[] = { "Are you sure that you", "want to delete", "\"" + map_to_delete + "\""};
-				states->insert({ 13, new ConfirmationState(strings_array, 3, delete_map) });
+				states->insert({ ConfirmationID, new ConfirmationState(strings_array, 3, delete_map) });
 				states->at(ConfirmationID)->update();
 			}
 		}
