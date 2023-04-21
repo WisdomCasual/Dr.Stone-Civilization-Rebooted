@@ -15,7 +15,7 @@ struct MapBuilderState : public State
 private:
 	//variables:
 	struct Tile {
-		map <char, Vector3i> layer[2]; //Render_Priority [ back/front ] [layer] { x cords, y cords, texture sheet id }
+		map <char, Vector3i> layer; // [layer] { x cords, y cords, texture sheet id }
 		Vector3i last_vis{ -1,-1,-1 };
 	};
 
@@ -31,7 +31,6 @@ private:
 
 	string map_name = "default";
 	bool picker = 1;
-	bool Render_Priority = 0;
 	CreativeMode* tex_picker;
 	tex_tile picked_tile = { 0,0 };
 	int size_x, size_y;  //<-- map size

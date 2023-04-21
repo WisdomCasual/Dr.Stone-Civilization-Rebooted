@@ -95,15 +95,15 @@ void MapBuilderState::grid(int x_win, int y_win)
 
 void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 {
-	
 	//renders the map in active screen area only
 	Sprite tile;
 	highlight_rect.setScale(scale, scale);
 	tile.setScale(scale, scale);
 	for (int i = (x_offset > 0) ? x_offset : 0; i < (x_win + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
 		for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
-			for (auto props : tiles[i][j].layer[priority]) {
-				if (layer_toggle[props.first + 4 * priority]) {
+			for (auto props : tiles[i][j].layer) {
+				short prop = tile_props[props.second.z].properties[props.second.x][props.second.y].props;
+				if ((prop & 16 || ((prop & 8 && priority) || (!(prop & 8) && !priority))) && layer_toggle[props.first + 4 * priority]) {
 					tiles[i][j].last_vis = { props.second.x , props.second.y, props.second.z };
 					tile.setTexture(*tile_sheets[props.second.z]);
 					tile.setTextureRect(IntRect(props.second.x * 16, props.second.y * 16, 16, 16));
@@ -123,15 +123,15 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 			for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
 				if (tiles[i][j].last_vis.x > -1) {
 					highlight_rect.setPosition(x + (16 * scale * i), y + (16 * scale * j));
-					if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & active_highlight) {
+					if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 16) {
+						highlight_rect.setFillColor(Color(0, 175, 0, 80));
+						window->draw(highlight_rect);
+					}
+					else if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 8) {
 						highlight_rect.setFillColor(Color(175, 0, 0, 80));
 						window->draw(highlight_rect);
 					}
 					else {
-						highlight_rect.setFillColor(Color(0, 0, 175, 80));
-						window->draw(highlight_rect);
-					}
-					if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 16) {
 						highlight_rect.setFillColor(Color(0, 0, 175, 80));
 						window->draw(highlight_rect);
 					}
@@ -203,7 +203,7 @@ void MapBuilderState::selection()
 	}
 	else {
 		if (selecting) {
-			picked_tile.global_select_done = 1, picked_tile.global_priority = Render_Priority, picked_tile.global_layer = layer;
+			picked_tile.global_select_done = 1, picked_tile.global_layer = layer;
 			selection_end = selected_tile;
 		}
 		selecting = 0;
@@ -248,12 +248,7 @@ void MapBuilderState::draw_tools()
 					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth && i2 < size_x; i1++, i2++)
 						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght && j2 < size_y; j1++, j2++) {
 							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes	
-
-							Render_Priority = tile_props[picked_tile.tex_id].properties[i1][j1].props & 8;
-							tiles[i2][j2].layer[Render_Priority][layer] = { i1, j1, picked_tile.tex_id};
-
-							if(tile_props[picked_tile.tex_id].properties[i1][j1].props & 16)
-								tiles[i2][j2].layer[!Render_Priority][layer] = { i1, j1, picked_tile.tex_id };
+							tiles[i2][j2].layer[layer] = { i1, j1, picked_tile.tex_id};
 						}
 					drawn_selection = 1;
 				}
@@ -271,7 +266,7 @@ void MapBuilderState::draw_tools()
 								if (Keyboard::isKeyPressed(Keyboard::LAlt))
 									tiles[i2][j2] = tiles[i1][j1];
 									else
-										tiles[i2][j2].layer[Render_Priority][layer] = { tiles[i1][j1].layer[picked_tile.global_priority][picked_tile.global_layer].x, tiles[i1][j1].layer[picked_tile.global_priority][picked_tile.global_layer].y, tiles[i1][j1].layer[picked_tile.global_priority][picked_tile.global_layer].z };
+										tiles[i2][j2].layer[layer] = { tiles[i1][j1].layer[picked_tile.global_layer].x, tiles[i1][j1].layer[picked_tile.global_layer].y, tiles[i1][j1].layer[picked_tile.global_layer].z };
 						}
 					drawn_map_selection = 1;
 				}
@@ -310,7 +305,7 @@ void MapBuilderState::draw_tools()
 							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
 								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
-								tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
+								tiles[i][j].layer[layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
 							}
 					}
 					else {
@@ -319,8 +314,7 @@ void MapBuilderState::draw_tools()
 								rand_spray = rand() % spread_chances[spread_chance];
 									changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 								if (!rand_spray) {
-									tiles[i][j].layer[Render_Priority][layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
-
+									tiles[i][j].layer[layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
 								}
 							}
 						}
@@ -376,10 +370,9 @@ void MapBuilderState::erase_tools()
 							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
 							if (Keyboard::isKeyPressed(Keyboard::LAlt))
-								for (int f = 0; f < 2; f++)
-									tiles[i][j].layer[f].clear();
+									tiles[i][j].layer.clear();
 							else
-								tiles[i][j].layer[Render_Priority].erase(layer);
+								tiles[i][j].layer.erase(layer);
 						}
 				}
 				else {
@@ -392,10 +385,9 @@ void MapBuilderState::erase_tools()
 							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
 
 							if (Keyboard::isKeyPressed(Keyboard::LAlt))
-								for (int f = 0; f < 2; f++)
-									tiles[i][j].layer[f].clear();
+									tiles[i][j].layer.clear();
 							else
-								tiles[i][j].layer[Render_Priority].erase(layer);
+								tiles[i][j].layer.erase(layer);
 						}
 				}
 
@@ -424,11 +416,9 @@ void MapBuilderState::save_map()
 		ofs << size_x << ' ' << size_y << '\n';
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < size_y; j++) {
-				for (int k = 0; k < 2; k++) {
-					ofs << tiles[i][j].layer[k].size() <<' ';
-					for (auto curr_tile : tiles[i][j].layer[k])
-						ofs << (int)(curr_tile.first) <<' ' << curr_tile.second.x << ' ' << curr_tile.second.y << ' ' << curr_tile.second.z <<' ';
-				}
+				ofs << tiles[i][j].layer.size() << ' ';
+				for (auto curr_tile : tiles[i][j].layer)
+					ofs << (int)(curr_tile.first) << ' ' << curr_tile.second.x << ' ' << curr_tile.second.y << ' ' << curr_tile.second.z << ' ';
 			}
 			ofs << '\n';
 		}
@@ -445,7 +435,7 @@ void MapBuilderState::load_map()
 	if (!(ifs >> line)) {
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < size_y; j++) {
-				tiles[i][j].layer[0][0] = { 21,49, 1 };
+				tiles[i][j].layer[0] = { 21,49, 1 };
 			}
 		}
 	}
@@ -454,14 +444,12 @@ void MapBuilderState::load_map()
 		ifs >> size_x >> size_y;
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < size_y; j++) {
-				for (int k = 0; k < 2; k++) {
-					tiles[i][j].layer[k].clear();
-					ifs >> mpsize;
-					while (mpsize--) {
-						ifs >> tle.first >> tle.second.x >> tle.second.y >> tle.second.z;
-						tle.first -= '0';
-						tiles[i][j].layer[k].insert(tle);
-					}
+				tiles[i][j].layer.clear();
+				ifs >> mpsize;
+				while (mpsize--) {
+					ifs >> tle.first >> tle.second.x >> tle.second.y >> tle.second.z;
+					tle.first -= '0';
+					tiles[i][j].layer.insert(tle);
 				}
 			}
 		}
@@ -688,9 +676,9 @@ void MapBuilderState::pollevent()
 					picked_tile.select_done = 0;
 					picked_tile.global_select_done = 0;
 					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-					picked_tile.tex_id = tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer].z;
-					picked_tile.x = tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer].x;
-					picked_tile.y = tiles[selected_tile.x][selected_tile.y].layer[Render_Priority][layer].y;
+					picked_tile.tex_id = tiles[selected_tile.x][selected_tile.y].layer[layer].z;
+					picked_tile.x = tiles[selected_tile.x][selected_tile.y].layer[layer].x;
+					picked_tile.y = tiles[selected_tile.x][selected_tile.y].layer[layer].y;
 					break;
 			}
 

@@ -40,7 +40,7 @@ public:
 		Vector2i selection_start = { 0,0 }, selection_end = { 0,0 },
 			     previous_drawn_tile = { -1,-1 }, previous_erased_tile = { -1,-1 };;
 		int start_x, start_y, wdth = 0, hght = 0;
-		int global_layer = 0, global_priority = 0;
+		int global_layer = 0;
 	};
 
 	

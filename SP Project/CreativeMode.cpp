@@ -80,13 +80,24 @@ void CreativeMode::hover_tile()
 
 void CreativeMode::selected()
 {
-	if (active_highlight)
+	if (active_highlight & 8) {
+		short prev_priority = tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props;
+		if (prev_priority & 8 && prev_priority & 16) {
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 24;
+		}
+		else if (prev_priority & 8)
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 16;
+		else
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 8;
+	}
+	else if (active_highlight)
 		tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= active_highlight;
 	else {
 		selected_rect.setPosition(Vector2f(current_tile.x * 16, current_tile.y * 16));
 		picked_tile->x = current_tile.x, picked_tile->y = current_tile.y;
 		picked_tile->tex_id = curr_tex_set;
 	}
+
 }
 
 void CreativeMode::selection()
@@ -108,12 +119,27 @@ void CreativeMode::selection()
 void CreativeMode::highlight()
 {
 	highlight_rect.setFillColor(highlight_color);
-		for (int i = 0; i < tile_props[curr_tex_set].x_size; i++)
-			for (int j = 0; j < tile_props[curr_tex_set].y_size; j++)
-				if (tile_props[curr_tex_set].properties[i][j].props & active_highlight) {
-					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
-					sidewindow->draw(highlight_rect);
-				}
+	for (int i = 0; i < tile_props[curr_tex_set].x_size; i++)
+		for (int j = 0; j < tile_props[curr_tex_set].y_size; j++) {
+			short prop = tile_props[curr_tex_set].properties[i][j].props;
+			if (active_highlight & 8) {
+				
+				if (prop & 16)
+					highlight_color = Color(0, 175, 0, 80);
+				else if (prop & 8)
+					highlight_color = Color(175, 0, 0, 80);
+				else
+					highlight_color = Color(0, 0, 175, 80);
+
+				highlight_rect.setFillColor(highlight_color);
+				highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+				sidewindow->draw(highlight_rect);
+			}
+			else if (prop & active_highlight) {
+				highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+				sidewindow->draw(highlight_rect);
+			}
+		}
 }
 
 CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile, State::sheet_properties tile_props[], short sheets_no, short& active_highlight, bool& hitbox, bool& destroyable, bool& view_layers, bool& blocked, Color& highlight_color)
@@ -265,7 +291,9 @@ void CreativeMode::pollevent(bool& picker)
 			case Mouse::Left:
 				if (sidewindow->hasFocus())
 					picked_tile->previous_drawn_tile = { -1,-1 }, picked_tile->previous_erased_tile = { -1,-1 };
-					picked_tile->select_done = 0; picked_tile->global_select_done = 0; selected(); break;
+					picked_tile->select_done = 0; picked_tile->global_select_done = 0;
+					selected(); 
+					break;
 			}
 		}
 	}
