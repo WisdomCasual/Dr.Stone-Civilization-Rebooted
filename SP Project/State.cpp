@@ -54,8 +54,8 @@ void State::initial_tile_sheets(string file)
 		if (ifs.is_open()) {
 			for (int i = 0; i < x_size; i++)
 				for (int j = 0; j < y_size; j++) {
-					ifs >> priority >> props;
-					tile_props[sheet].properties[i][j] = { priority, props };
+					ifs >> priority;
+					tile_props[sheet].properties[i][j] = { priority };
 				}
 		}
 		ifs.close();

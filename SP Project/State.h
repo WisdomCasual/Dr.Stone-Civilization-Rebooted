@@ -23,8 +23,7 @@ public:
 
 	//public variables:
 	struct tile_properties {
-		short priority = 0; // 0: back, 1: front, inbetween: 2
-		short props = 0; // (xor ^) destructable: 0001, hitbox: 0010, blocked: 0100
+		short props = 0; // (AND &) destructable: 00001, hitbox: 00010, blocked: 00100, back/front: 01000, inbetween: 10000
 	};
 	struct sheet_properties {
 		short x_size = 0, y_size = 0; // size of sprite sheet (in tile count)

@@ -23,7 +23,7 @@ void CreativeMode::save_props()
 		if (ofs.is_open()) {
 			for (int i = 0; i < tile_props[sheet].x_size; i++) {
 				for (int j = 0; j < tile_props[sheet].y_size; j++)
-					ofs << tile_props[sheet].properties[i][j].priority << ' ' << tile_props[sheet].properties[i][j].props << ' ';
+					ofs << tile_props[sheet].properties[i][j].props << ' ';
 				ofs << '\n';
 			}
 		}
@@ -80,9 +80,13 @@ void CreativeMode::hover_tile()
 
 void CreativeMode::selected()
 {
-	selected_rect.setPosition(Vector2f(current_tile.x * 16, current_tile.y * 16));
-	picked_tile->x = current_tile.x, picked_tile->y = current_tile.y;
-	picked_tile->tex_id = curr_tex_set;
+	if (active_highlight)
+		tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= active_highlight;
+	else {
+		selected_rect.setPosition(Vector2f(current_tile.x * 16, current_tile.y * 16));
+		picked_tile->x = current_tile.x, picked_tile->y = current_tile.y;
+		picked_tile->tex_id = curr_tex_set;
+	}
 }
 
 void CreativeMode::selection()
@@ -101,7 +105,19 @@ void CreativeMode::selection()
 	}
 }
 
-CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile, State::sheet_properties tile_props[], short sheets_no)
+void CreativeMode::highlight()
+{
+	highlight_rect.setFillColor(highlight_color);
+		for (int i = 0; i < tile_props[curr_tex_set].x_size; i++)
+			for (int j = 0; j < tile_props[curr_tex_set].y_size; j++)
+				if (tile_props[curr_tex_set].properties[i][j].props & active_highlight) {
+					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+					sidewindow->draw(highlight_rect);
+				}
+}
+
+CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile, State::sheet_properties tile_props[], short sheets_no, short& active_highlight, bool& hitbox, bool& destroyable, bool& view_layers, bool& blocked, Color& highlight_color)
+	: hitbox(hitbox), destroyable(destroyable), view_layers(view_layers), blocked(blocked), active_highlight(active_highlight), highlight_color(highlight_color)
 {
 	sidewindow = new RenderWindow(videomode, "Texture Picker", Style::Titlebar | Style::Close);
 	sidewindow->setFramerateLimit(60);
@@ -124,6 +140,8 @@ CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_t
 	notification_BG.setTexture(notification_tex);
 	notification_BG.setScale(1.35, 1.35);
 	notification_BG.setPosition(10,10);
+
+	highlight_rect.setSize({ 16, 16 });
 }
 
 CreativeMode::~CreativeMode()
@@ -173,6 +191,8 @@ void CreativeMode::render()
 		sidewindow->draw(saved_text);
 		saved_delay--;
 	}
+	if (active_highlight)
+		highlight();
 	sidewindow->display();
 }
 
@@ -216,6 +236,25 @@ void CreativeMode::pollevent(bool& picker)
 					curr_tex_set = 0;
 				change_tex();
 				break;
+			case Keyboard::B:
+				hitbox = 0, destroyable = 0, view_layers = 0;
+				highlight_color = Color(0, 0, 175, 80);
+				blocked = !blocked;
+				active_highlight = (blocked) ? 4 : 0; break;
+			case Keyboard::H:
+				blocked = 0, destroyable = 0, view_layers = 0;
+				highlight_color = Color(175, 0, 0, 80);
+				hitbox = !hitbox;
+				active_highlight = (hitbox) ? 2 : 0; break;
+			case Keyboard::F:
+				blocked = 0, destroyable = 0, hitbox = 0;
+				view_layers = !view_layers;
+				active_highlight = (view_layers) ? 8 : 0; break;
+			case Keyboard::Q:
+				blocked = 0, view_layers = 0, hitbox = 0;
+				highlight_color = Color(0, 175, 0, 80);
+				destroyable = !destroyable;
+				active_highlight = (destroyable) ? 1 : 0; break;
 			case Keyboard::F6:
 				save_props();
 				saved_delay = 300;
