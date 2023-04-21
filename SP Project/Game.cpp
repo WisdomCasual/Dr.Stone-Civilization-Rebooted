@@ -31,6 +31,7 @@ void Game::initial_window()
 	globalvar::window = this->window;
 	initial_icon();
 }
+
 void Game::initial_states()
 {
 	//sets intial states 

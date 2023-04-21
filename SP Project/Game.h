@@ -11,6 +11,7 @@
 #include "ConfirmationState.h"
 #include"PasswordState.h"
 #include "NotificationState.h"
+
 #include"Global.h"
 using namespace globalvar;
 

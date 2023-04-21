@@ -15,9 +15,25 @@ void CreativeMode::change_tex()
 	sidewindow->setSize({ (unsigned int)(a * scale),(unsigned int)(b * scale) });
 
 }
-//display grid lines
+
+void CreativeMode::save_props()
+{
+	for (int sheet = 0; sheet < sheets_no; sheet++) {
+		ofstream ofs("textures/game/tiles/properties/sheet "+ to_string(sheet) + ".prop", ofstream::out, ofstream::trunc);
+		if (ofs.is_open()) {
+			for (int i = 0; i < tile_props[sheet].x_size; i++) {
+				for (int j = 0; j < tile_props[sheet].y_size; j++)
+					ofs << tile_props[sheet].properties[i][j].priority << ' ' << tile_props[sheet].properties[i][j].props << ' ';
+				ofs << '\n';
+			}
+		}
+		ofs.close();
+	}
+}
+
 void CreativeMode::grid_lines()
 {
+	//display grid lines
 	RectangleShape rect;
 	rect.setSize(Vector2f(1, b));
 	rect.setFillColor(Color::Black);
@@ -32,6 +48,7 @@ void CreativeMode::grid_lines()
 		sidewindow->draw(rect);
 	}
 }
+
 void CreativeMode::initial_rectangles()
 {
 	//hover rectangle
@@ -54,17 +71,20 @@ void CreativeMode::initial_rectangles()
 	select_rect.setOutlineColor(Color::Green);
 
 }
+
 void CreativeMode::hover_tile()
 {
 	hover_rect.setPosition(Vector2f( current_tile.x * 16 , current_tile.y * 16));
 	sidewindow->draw(hover_rect);
 }
+
 void CreativeMode::selected()
 {
 	selected_rect.setPosition(Vector2f(current_tile.x * 16, current_tile.y * 16));
 	picked_tile->x = current_tile.x, picked_tile->y = current_tile.y;
 	picked_tile->tex_id = curr_tex_set;
 }
+
 void CreativeMode::selection()
 {
 	if (selecting) {
@@ -80,16 +100,30 @@ void CreativeMode::selection()
 		sidewindow->draw(select_rect);
 	}
 }
-CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile)
+
+CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile, State::sheet_properties tile_props[], short sheets_no)
 {
 	sidewindow = new RenderWindow(videomode, "Texture Picker", Style::Titlebar | Style::Close);
+	sidewindow->setFramerateLimit(60);
 	sidewindow->setPosition({ 0,0 });
 	this->textures = textures;
 	this->picked_tile = &picked_tile;
+	this->tile_props = tile_props;
+	this->sheets_no = sheets_no;
 	curr_tex_set = picked_tile.tex_id;
 	Tex = new Sprite;
 	change_tex();
 	initial_rectangles();
+
+	saved_text.setFont(font);
+	saved_text.setFillColor(Color::Black);
+	saved_text.setString("Properties Saved\n  Successfully");
+	saved_text.setPosition(27, 15);
+
+	notification_tex.loadFromFile("textures/notification/notification_bg.png");
+	notification_BG.setTexture(notification_tex);
+	notification_BG.setScale(1.35, 1.35);
+	notification_BG.setPosition(10,10);
 }
 
 CreativeMode::~CreativeMode()
@@ -134,6 +168,11 @@ void CreativeMode::render()
 		sidewindow->draw(selected_rect);
 	hover_tile();
 	selection();
+	if (saved_delay) {
+		sidewindow->draw(notification_BG);
+		sidewindow->draw(saved_text);
+		saved_delay--;
+	}
 	sidewindow->display();
 }
 
@@ -176,6 +215,10 @@ void CreativeMode::pollevent(bool& picker)
 				if (curr_tex_set == textures->size())
 					curr_tex_set = 0;
 				change_tex();
+				break;
+			case Keyboard::F6:
+				save_props();
+				saved_delay = 300;
 				break;
 			}
 		case Event::MouseButtonPressed:

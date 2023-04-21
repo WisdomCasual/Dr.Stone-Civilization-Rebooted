@@ -20,8 +20,20 @@ public:
 	State();
 	virtual ~State();
 
+
 	//public variables:
-	vector <Texture*> textures; //<-- current loaded Textures
+	struct tile_properties {
+		short priority = 0; // 0: back, 1: front, inbetween: 2
+		short props = 0; // (xor ^) destructable: 0001, hitbox: 0010, blocked: 0100
+	};
+	struct sheet_properties {
+		short x_size = 0, y_size = 0; // size of sprite sheet (in tile count)
+		tile_properties** properties; // 2d array
+	};
+	short sheets_no = 0;
+	vector <Texture*> textures, tile_sheets; //<-- current loaded Textures
+	sheet_properties tile_props[15];
+
 	Vector2f delta_movement();
 	struct tex_tile {   //<-- stores texture tile info 
 		int x, y, tex_id;
@@ -36,7 +48,7 @@ public:
 
 	//public functions:
 	void initial_textures(string);
-
+	void initial_tile_sheets(string);
 
 	virtual void pollevent() = 0;
 	virtual void update() = 0;
