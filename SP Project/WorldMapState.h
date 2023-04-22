@@ -12,6 +12,23 @@ struct Pin {
 		};
 inline map<string, Pin> pins;
 
+inline void load_maps()
+{
+	pins.clear();
+
+	ifstream ifs("Maps/maps.ini");
+	if (ifs.is_open()) {
+		string mp_name; int a, b, c, d;
+		while (!ifs.eof()) {
+			getline(ifs, mp_name, '|');
+			ifs >> a >> b >> c >> d;
+			ifs.ignore();
+			pins.insert({ mp_name , {a,b,c,d} });
+		}
+	}
+	ifs.close();
+}
+
 struct WorldMapState : public State
 {
 	private:
@@ -30,10 +47,11 @@ struct WorldMapState : public State
 		void update_pins();
 		void render_pins();
 		void save_maps();
-		void load_maps();
+		
 
 
 	public:
+		//public functions;
 
 		//constructors/destructors
 		WorldMapState(bool admin = 0);

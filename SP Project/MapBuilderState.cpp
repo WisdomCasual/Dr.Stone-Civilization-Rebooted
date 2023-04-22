@@ -96,7 +96,6 @@ void MapBuilderState::grid(int x_win, int y_win)
 void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 {
 	//renders the map in active screen area only
-	Sprite tile;
 	highlight_rect.setScale(scale, scale);
 	tile.setScale(scale, scale);
 	for (int i = (x_offset > 0) ? x_offset : 0; i < (x_win + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
