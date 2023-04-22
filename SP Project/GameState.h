@@ -26,11 +26,16 @@ private:
 	Sprite tile;
 
 
+	/////////
+	RectangleShape player;
+
+
 	//private functions:
 	void load_map(string);
 	void deload_map();
 	void initial_game();
 	void render_map(int);
+	void move_cam(float, float);
 
 public:
 	//constructors/destructors

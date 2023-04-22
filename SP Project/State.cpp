@@ -40,23 +40,25 @@ void State::initial_tile_sheets(string file)
 
 			num++;
 		}
-	}
+	}	
 	ifs.close();
 	sheets_no = num;
 	//loads tile properties
 	for (int sheet = 0; sheet < sheets_no; sheet++) {
-		ifs.open("Maps/" + file + "properties/sheet "+ to_string(sheet) + ".prop");
-		string test;
-		short priority, props;
-		if (!(ifs >> test))
-			continue;
-		ifs.seekg(ios::beg);
+		ifs.open("textures/" + file + "/properties/sheet " + to_string(sheet) + ".prop");
 		if (ifs.is_open()) {
-			for (int i = 0; i < x_size; i++)
-				for (int j = 0; j < y_size; j++) {
-					ifs >> priority;
-					tile_props[sheet].properties[i][j] = { priority };
-				}
+			string test;
+			short priority, props;
+			if (!(ifs >> test))
+				continue;
+			ifs.seekg(ios::beg);
+			if (ifs.is_open()) {
+				for (int i = 0; i < x_size; i++)
+					for (int j = 0; j < y_size; j++) {
+						ifs >> priority;
+						tile_props[sheet].properties[i][j] = { priority };
+					}
+			}
 		}
 		ifs.close();
 	}

@@ -212,13 +212,13 @@ void CreativeMode::render()
 		sidewindow->draw(selected_rect);
 	hover_tile();
 	selection();
+	if (active_highlight)
+		highlight();
 	if (saved_delay) {
 		sidewindow->draw(notification_BG);
 		sidewindow->draw(saved_text);
 		saved_delay--;
 	}
-	if (active_highlight)
-		highlight();
 	sidewindow->display();
 }
 
