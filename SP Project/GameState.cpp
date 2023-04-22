@@ -103,18 +103,32 @@ void GameState::render_map(int priority)
 			for (auto map_tile = static_map[i][j].layer[priority]; map_tile != static_map[i][j].layer[priority] + static_map[i][j].size[priority]; map_tile++) {
 				tile.setTexture(*tile_sheets[map_tile->z]);
 				tile.setTextureRect(IntRect(map_tile->x * 16, map_tile->y * 16, 16, 16));
-				tile.setPosition(map_x + (16 * scale * i), map_y + (16 * scale * j));
+				tile.setPosition(map_x * scale + (16 * scale * i), map_y * scale + (16 * scale * j));
 				window->draw(tile);
 			}
 		}
 }
 
+void GameState::move_cam(float x_movement,float y_movement){
+	map_x -= x_movement, map_y -= y_movement;
+	x_offset = -map_x / 16, y_offset = -map_y / 16;
+}
+
 GameState::GameState()
 {
+	win_x = window->getSize().x, win_y = window->getSize().y;
+	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
+	else scale = win_y / 304.5;
+
 	initial_tile_sheets("game/tiles");
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
 	initial_game();
 	
+
+	/////////////////
+	player.setSize({ 16, 32 });
+	player.setPosition(window->getSize().x/2, window->getSize().y/2);
+
 }
 
 GameState::~GameState()
@@ -126,22 +140,29 @@ void GameState::update()
 {
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
+		player.setPosition(player.getPosition() / scale);
 		win_x = window->getSize().x, win_y = window->getSize().y;
 		x = win_x / 2, y = win_y / 2;
-		if (win_x / 480.0 < win_y / 270.0) scale = win_x / 480.0;
-		else scale = win_y / 270.0;
+		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
+		else scale = win_y / 304.5;
+		player.setPosition(player.getPosition() * scale);
 		/////////////////////
 
-
+		player.setScale(scale, scale);
 	}
 
-	////////////
-	map_x -= dt * scale * delta_movement().x * 500;
-	map_y -= dt * scale * delta_movement().y * 500;
+	float x_movement = delta_movement().x * 200 * dt, y_movement = delta_movement().y * 200 * dt;
 
-	x_offset = -map_x / (scale * 16);
-	y_offset = -map_y / (scale * 16);
-	//////////
+
+	if( player.getPosition().x + x_movement * scale >= 150 * scale && player.getPosition().x + x_movement * scale <= win_x - 150 * scale)
+		player.move({ x_movement * scale ,  0 });
+	else
+		move_cam(x_movement, 0);
+
+	if (player.getPosition().y + y_movement * scale >= 100 * scale && player.getPosition().y + y_movement * scale <= win_y - 100 * scale)
+		player.move({ 0, y_movement * scale });
+	else
+		move_cam(0, y_movement);
 
 
 }
@@ -150,6 +171,8 @@ void GameState::update()
 void GameState::render()
 {
 	render_map(0);
+
+	window->draw(player);
 
 	render_map(1);
 }
