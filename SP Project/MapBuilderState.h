@@ -32,6 +32,7 @@ private:
 	string map_name = "default";
 	bool picker = 1;
 	CreativeMode* tex_picker;
+	Sprite tile;
 	tex_tile picked_tile = { 0,0 };
 	int size_x, size_y;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map

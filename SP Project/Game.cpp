@@ -36,8 +36,7 @@ void Game::initial_states()
 {
 	//sets intial states 
 	states.insert(BackgroundST);
-	states.insert(MainMenuST);
-
+	states.insert(GameST);
 }
 
 void Game::initial_icon()

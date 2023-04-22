@@ -96,23 +96,6 @@ void WorldMapState::save_maps()
 	ofs.close();
 }
 
-void WorldMapState::load_maps()
-{
-	pins.clear();
-
-	ifstream ifs("Maps/maps.ini");
-	if (ifs.is_open()) {
-		string mp_name; int a, b, c, d;
-		while (!ifs.eof()) {
-			getline(ifs, mp_name, '|');
-			ifs >> a >> b >> c >> d;
-			ifs.ignore();
-			pins.insert({ mp_name , {a,b,c,d} });
-		}
-	}
-	ifs.close();
-}
-
 WorldMapState::WorldMapState(bool admin)
 {
 	this->admin = admin;
