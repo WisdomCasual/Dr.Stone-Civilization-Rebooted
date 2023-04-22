@@ -72,6 +72,9 @@
     <ClCompile Include="NotificationState.cpp">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="DialogueState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">

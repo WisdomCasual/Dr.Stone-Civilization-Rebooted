@@ -145,6 +145,7 @@
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="ConfirmationState.cpp" />
     <ClCompile Include="CreativeMode.cpp" />
+    <ClCompile Include="DialogueState.cpp" />
     <ClCompile Include="NewMapState.cpp" />
     <ClCompile Include="NewSaveState.cpp" />
     <ClCompile Include="NotificationState.cpp" />
