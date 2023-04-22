@@ -8,11 +8,11 @@
 #include"WorldMapState.h"
 #include"NewSaveState.h"
 #include"NewMapState.h"
-#include "ConfirmationState.h"
+#include"ConfirmationState.h"
 #include"PasswordState.h"
-#include "NotificationState.h"
-#include "TestGroundState.h"
-#include "DialogueState.h"
+#include"NotificationState.h"
+#include"TestGroundState.h"
+#include"DialogueState.h"
 #include"Global.h"
 using namespace globalvar;
 
