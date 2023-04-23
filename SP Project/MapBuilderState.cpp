@@ -117,7 +117,7 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 				}
 			}
 		}
-	if (active_highlight == 8 && priority == 1) {
+	if (active_highlight == 8 && priority) {
 		for (int i = (x_offset > 0) ? x_offset : 0; i < (x_win + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
 			for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
 				if (tiles[i][j].last_vis.x > -1) {

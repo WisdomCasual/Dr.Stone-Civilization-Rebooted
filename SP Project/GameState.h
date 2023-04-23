@@ -1,6 +1,7 @@
 #pragma once
 #include"State.h"
 #include"Game.h"
+#include "Entity.h"
 
 #include"Global.h"
 using namespace globalvar;
@@ -9,6 +10,10 @@ struct GameState : public State
 {
 private:
 	//variables:
+
+	entity player_stats;
+	Entity player_entity;
+
 	Vector2f clicked_on = { -1, -1 };
 
 	struct render_tile {
@@ -17,6 +22,14 @@ private:
 	};
 	render_tile** static_map;
 
+	struct entity {
+		Vector2f pixel_cords = { 0,0 };
+		Vector2i tile_cords = { 0,0 };
+		IntRect hitbox_rect{ 0, 0, 0, 0 };
+		short health = 100, tool = 0;
+	};
+
+
 	int size_x = 0, size_y = 0;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
@@ -24,10 +37,6 @@ private:
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0;
 	Vector2u prev_win = { 0, 0 };
 	Sprite tile;
-
-
-	/////////
-	RectangleShape player;
 
 
 	//private functions:

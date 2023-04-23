@@ -19,6 +19,14 @@ void SavesState::update_saves()
 						states->at(NewSaveID)->update();
 						saves[i].hover = 0;
 					}
+					else {
+						states->insert(GameST);
+						states->at(GameID)->update();
+
+						int exceptions[] = { GameID };
+						game.erase_states(exceptions, 1);
+
+					}
 				saves[i].pressed = 0;
 			}
 			

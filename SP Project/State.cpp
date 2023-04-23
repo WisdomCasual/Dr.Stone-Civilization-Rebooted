@@ -12,6 +12,7 @@ void State::initial_textures(string file)
 			textures.push_back(new Texture);
 			textures.back()->loadFromFile("textures/" + file + "/" + tex + ".png");
 		}
+
 	}
 	ifs.close();
 }
