@@ -36,7 +36,7 @@ void Game::initial_states()
 {
 	//sets intial states 
 	states.insert(BackgroundST);
-	states.insert(GameST);
+	states.insert(MainMenuST);
 }
 
 void Game::initial_icon()
@@ -111,7 +111,7 @@ Game::Game()
 
 	text.setFont(font);
 
-	//runs all intializers 
+	//runs all intializers
 	initial_window();
 	initial_states();
 	initial_fps();

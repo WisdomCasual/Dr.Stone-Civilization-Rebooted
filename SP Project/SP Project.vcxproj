@@ -146,6 +146,7 @@
     <ClCompile Include="ConfirmationState.cpp" />
     <ClCompile Include="CreativeMode.cpp" />
     <ClCompile Include="DialogueState.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="NewMapState.cpp" />
     <ClCompile Include="NewSaveState.cpp" />
     <ClCompile Include="NotificationState.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Background.h" />
     <ClInclude Include="ConfirmationState.h" />
     <ClInclude Include="CreativeMode.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Global.h" />
