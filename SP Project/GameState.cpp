@@ -110,13 +110,49 @@ void GameState::render_map(int priority)
 		}
 }
 
-void GameState::move_cam(float x_movement,float y_movement){
+void GameState::move_cam(float x_movement,float y_movement)
+{
 	map_x -= x_movement, map_y -= y_movement;
 	x_offset = -map_x / 16, y_offset = -map_y / 16;
 }
 
+void GameState::player_movement() 
+{
+	float x_movement = delta_movement().x * 130 * dt, y_movement = delta_movement().y * 130 * dt;
+	Vector2i direction = { 0,0 };
+
+	int cords_before_x = -map_x / 16.0 + player_entity.getPosition().x / (16.0 * scale), cords_before_y = -map_y / 16.0 + player_entity.getPosition().y / (16.0 * scale);
+
+	int cords_after_x = -map_x / 16 + (player_entity.getPosition().x + x_movement * scale) / (16 * scale), cords_after_y = -map_y / 16 + (player_entity.getPosition().y + y_movement * scale) / (16 * scale);
+
+
+	if (player_entity.legal_tile({ x_movement, 0 })) {
+		direction.x = delta_movement().x;
+		if ((player_entity.getPosition().x + x_movement * scale >= 150 * scale || delta_movement().x == 1) && (player_entity.getPosition().x + x_movement * scale < win_x - 150 * scale || delta_movement().x == -1))
+			player_entity.move({ x_movement * scale,  0 });
+		else if ((-map_x + x_movement >= 0 || delta_movement().x == 1) && (-map_x * scale + win_x <= size_x * 16 * scale || delta_movement().x == -1))
+			move_cam(x_movement, 0);
+		else if (player_entity.getPosition().x + x_movement * scale >= 0 && player_entity.getPosition().x + x_movement * scale < win_x - 5)
+			player_entity.move({ x_movement * scale,  0 });
+	}
+
+	if (player_entity.legal_tile({ 0, y_movement })) {
+		direction.y = delta_movement().y;
+		if ((player_entity.getPosition().y + y_movement * scale >= 100 * scale || delta_movement().y == 1) && (player_entity.getPosition().y + y_movement * scale < win_y - 100 * scale || delta_movement().y == -1))
+			player_entity.move({ 0, y_movement * scale });
+
+		else if ((-map_y + y_movement >= 0 || delta_movement().y == 1) && (-map_y * scale + win_y <= size_y * 16 * scale || delta_movement().y == -1))
+			move_cam(0, y_movement);
+
+		else if (player_entity.getPosition().y + y_movement * scale >= 0 && player_entity.getPosition().y + y_movement * scale < win_y - 5)
+			player_entity.move({ 0, y_movement * scale });
+	}
+
+	player_entity.direction(direction);
+}
+
 GameState::GameState()
-	: player_entity(player_stats,"character 0")
+	: player_entity(player_stats, "character 0", static_map, map_x, map_y)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
@@ -131,6 +167,7 @@ GameState::GameState()
 
 	
 	player_stats.animations = new animation*[4];
+	player_stats.states_no = 4;
 	for (int i = 0; i < 4; i++) {
 		player_stats.animations[i] = new animation[7];
 		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {0,48,64,65} }; //back
@@ -138,7 +175,6 @@ GameState::GameState()
 		player_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {0,48,64,65} }; //left
 		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {0,48,64,65} }; //front
 	}
-
 
 }
 
@@ -162,49 +198,9 @@ void GameState::update()
 		player_entity.setScale(scale * 0.65);
 	}
 
-
 	player_entity.update();
 
-
-	
-	//////////////// move into function ( player + camera movement ) ///////////////////////////
-
-	float x_movement = delta_movement().x * 130 * dt, y_movement = delta_movement().y * 130 * dt;
-	Vector2i direction = { 0,0 };
-
-	int cords_before_x = -map_x / 16.0 + player_entity.getPosition().x / (16.0 * scale) , cords_before_y = -map_y / 16.0 + player_entity.getPosition().y / (16.0 * scale);
-
-	int cords_after_x = -map_x / 16 + (player_entity.getPosition().x + x_movement * scale) / (16 * scale) , cords_after_y = -map_y / 16 + (player_entity.getPosition().y + y_movement * scale) / (16 * scale);
-
-
-	if (!(static_map[cords_after_x][cords_before_y].tile_props & 2)) {
-		direction.x = delta_movement().x;
-		if ((player_entity.getPosition().x + x_movement * scale >= 150 * scale || delta_movement().x == 1) && (player_entity.getPosition().x + x_movement * scale < win_x - 150 * scale|| delta_movement().x == -1))
-			player_entity.move({ x_movement * scale,  0 });
-		else if((- map_x + x_movement >= 0 || delta_movement().x == 1) && (-map_x * scale + win_x <= size_x * 16 * scale || delta_movement().x == -1))
-			move_cam(x_movement, 0);
-		else if (player_entity.getPosition().x + x_movement * scale >= 0 && player_entity.getPosition().x + x_movement * scale < win_x - 5)
-			player_entity.move({ x_movement * scale,  0 });
-	}
-
-	if (!(static_map[cords_before_x][cords_after_y].tile_props & 2)) {
-		direction.y = delta_movement().y;
-		if ((player_entity.getPosition().y + y_movement * scale >= 100 * scale || delta_movement().y == 1) && (player_entity.getPosition().y + y_movement * scale < win_y - 100 * scale || delta_movement().y == -1))
-			player_entity.move({ 0, y_movement * scale });
-
-		else if (( - map_y + y_movement >= 0 || delta_movement().y == 1) && ( - map_y * scale + win_y <= size_y * 16 * scale || delta_movement().y == -1))
-			move_cam(0, y_movement);
-
-		else if(player_entity.getPosition().y + y_movement * scale >= 0 && player_entity.getPosition().y + y_movement * scale < win_y - 5)
-			player_entity.move({ 0, y_movement * scale });
-	}
-
-		player_entity.direction(direction);
-	//////////////////
-
-
-
-
+	player_movement();
 
 
 
