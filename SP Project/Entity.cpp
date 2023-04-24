@@ -41,26 +41,30 @@ bool Entity::legal_tile(Vector2f movement)
 
 
 
-	//current_hitbox = entity_stats.animations[entity_stats.state][current_move].hitbox_rect;
+	current_hitbox = entity_stats.animations[entity_stats.state][current_move].hitbox_rect;
 
-	//int x_cords[2] = { -map_x / 16 + (entity_sprite.getPosition().x - (float)current_hitbox.width / 2 + movement.x * scale) / (16 * scale)
-	//				 , -map_x / 16 + (entity_sprite.getPosition().x + (float)current_hitbox.width / 2 + movement.x * scale) / (16 * scale) },
-	//	y_cords[2] = { -map_y / 16 + (entity_sprite.getPosition().y - (float)current_hitbox.height / 2 + movement.y * scale) / (16 * scale)
-	//				 , -map_y / 16 + (entity_sprite.getPosition().y  + (float)current_hitbox.height / 2 + movement.y * scale) / (16 * scale) };
+	int x_cords[2] = { -map_x / 16 + (entity_sprite.getPosition().x - (float)current_hitbox.width / 2 + movement.x * scale) / (16 * scale)
+					 , -map_x / 16 + (entity_sprite.getPosition().x + (float)current_hitbox.width / 2 + movement.x * scale) / (16 * scale) },
+	 
+		y_cords[2] = { -map_y / 16 + (entity_sprite.getPosition().y - (float)current_hitbox.height / 2 + movement.y * scale) / (16 * scale)
+					 , -map_y / 16 + (entity_sprite.getPosition().y  + (float)current_hitbox.height / 2 + movement.y * scale) / (16 * scale) };
 
-	//IntRect(   , current_hitbox.width, current_hitbox.height)
-
-
-
-	//for (int i = 0; i < 2; i++)
-	//	for (int j = 0; j < 2; j++)
-	//		if (static_map[x_cords[i]][y_cords[j]].tile_props & 2)
-	//			return false;
+	Vector2i hitbox_checker;
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 2; j++) {
+			hitbox_checker = { x_cords[i], y_cords[j] };
+			while (hitbox_checker.x >= x_cords[0] && hitbox_checker.x <= x_cords[1] && hitbox_checker.y >= y_cords[0] && hitbox_checker.y <= y_cords[1]) {
+				if (static_map[hitbox_checker.x][hitbox_checker.y].tile_props & 2)
+					return false;
+				hitbox_checker.x += hitbox_check[i][j].x, hitbox_checker.y += hitbox_check[i][j].y;
+			}
+		}
+	}
 
 	return true;
 }
 
-void Entity::direction(Vector2i direction)
+void Entity::direction(Vector2f direction)
 {
 
 	if (direction.y < 0) {

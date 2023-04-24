@@ -23,10 +23,12 @@ private:
 	entity& entity_stats;
 	Sprite entity_sprite;
 	render_tile**& static_map;
-	float  delay = 0, animation_delay = 0.08, &map_x, &map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
+	float  delay = 0, animation_delay = 0.06, &map_x, &map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	short current_move = 3, current_frame = 0, prev_state = -1;
 	IntRect current_rect = { 0,0,0,0 }, current_hitbox = { 0,0,0,0 };
 	Vector2u prev_win = { 0, 0 };
+	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
+	bool inbetween_state = 0;
 
 public:
 	Entity(entity&, string, render_tile**&, float&, float&);
@@ -38,7 +40,7 @@ public:
 	void setScale(float);
 	bool legal_tile(Vector2f);
 	void move(Vector2f);
-	void direction(Vector2i);
+	void direction(Vector2f);
 	void update();
 	void pollevent();
 	void render();

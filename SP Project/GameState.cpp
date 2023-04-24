@@ -119,7 +119,7 @@ void GameState::move_cam(float x_movement,float y_movement)
 void GameState::player_movement() 
 {
 	float x_movement = delta_movement().x * 130 * dt, y_movement = delta_movement().y * 130 * dt;
-	Vector2i direction = { 0,0 };
+	Vector2f direction = { 0,0 };
 
 	int cords_before_x = -map_x / 16.0 + player_entity.getPosition().x / (16.0 * scale), cords_before_y = -map_y / 16.0 + player_entity.getPosition().y / (16.0 * scale);
 
@@ -128,9 +128,9 @@ void GameState::player_movement()
 
 	if (player_entity.legal_tile({ x_movement, 0 })) {
 		direction.x = delta_movement().x;
-		if ((player_entity.getPosition().x + x_movement * scale >= 150 * scale || delta_movement().x == 1) && (player_entity.getPosition().x + x_movement * scale < win_x - 150 * scale || delta_movement().x == -1))
+		if ((player_entity.getPosition().x + x_movement * scale >= 150 * scale || delta_movement().x >= 0) && (player_entity.getPosition().x + x_movement * scale < win_x - 150 * scale || delta_movement().x <= 0))
 			player_entity.move({ x_movement * scale,  0 });
-		else if ((-map_x + x_movement >= 0 || delta_movement().x == 1) && (-map_x * scale + win_x <= size_x * 16 * scale || delta_movement().x == -1))
+		else if ((-map_x + x_movement >= 0 || delta_movement().x >= 0) && (-map_x * scale + win_x <= size_x * 16 * scale || delta_movement().x <= 0))
 			move_cam(x_movement, 0);
 		else if (player_entity.getPosition().x + x_movement * scale >= 0 && player_entity.getPosition().x + x_movement * scale < win_x - 5)
 			player_entity.move({ x_movement * scale,  0 });
@@ -138,10 +138,10 @@ void GameState::player_movement()
 
 	if (player_entity.legal_tile({ 0, y_movement })) {
 		direction.y = delta_movement().y;
-		if ((player_entity.getPosition().y + y_movement * scale >= 100 * scale || delta_movement().y == 1) && (player_entity.getPosition().y + y_movement * scale < win_y - 100 * scale || delta_movement().y == -1))
+		if ((player_entity.getPosition().y + y_movement * scale >= 100 * scale || delta_movement().y >= 0) && (player_entity.getPosition().y + y_movement * scale < win_y - 100 * scale || delta_movement().y <= 0))
 			player_entity.move({ 0, y_movement * scale });
 
-		else if ((-map_y + y_movement >= 0 || delta_movement().y == 1) && (-map_y * scale + win_y <= size_y * 16 * scale || delta_movement().y == -1))
+		else if ((-map_y + y_movement >= 0 || delta_movement().y >= 0) && (-map_y * scale + win_y <= size_y * 16 * scale || delta_movement().y <= 0))
 			move_cam(0, y_movement);
 
 		else if (player_entity.getPosition().y + y_movement * scale >= 0 && player_entity.getPosition().y + y_movement * scale < win_y - 5)
