@@ -25,7 +25,8 @@ void SavesState::update_saves()
 
 						int exceptions[] = { GameID };
 						game.erase_states(exceptions, 1);
-
+						destruct = 1;
+						return;
 					}
 				saves[i].pressed = 0;
 			}
@@ -215,6 +216,8 @@ void SavesState::update()
 
 	tint.setSize({ win_x, win_y });
 	update_saves();
+	if (destruct)
+		return;
 	update_arrow();
 
 }
