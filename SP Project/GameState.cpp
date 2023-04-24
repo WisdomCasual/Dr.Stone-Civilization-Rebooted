@@ -170,10 +170,10 @@ GameState::GameState()
 	player_stats.states_no = 4;
 	for (int i = 0; i < 4; i++) {
 		player_stats.animations[i] = new animation[7];
-		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {0,48,64,65} }; //back
-		player_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {0,48,64,65} }; //right
-		player_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {0,48,64,65} }; //left
-		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {0,48,64,65} }; //front
+		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {17,52,30,14} }; //back
+		player_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {17,52,30,14} }; //right
+		player_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {17,52,30,14} }; //left
+		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {17,52,30,14} }; //front
 	}
 
 }
