@@ -77,6 +77,8 @@ Vector2f State::delta_movement()
 		velocity.y--;
 	if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
 		velocity.y++;
+	if (0 != velocity.x && 0 != velocity.y)
+		velocity.x *= 0.707, velocity.y *= 0.707;
 	return velocity;
 }
 
