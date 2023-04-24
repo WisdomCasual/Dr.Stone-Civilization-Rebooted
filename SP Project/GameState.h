@@ -16,10 +16,7 @@ private:
 
 	Vector2f clicked_on = { -1, -1 };
 
-	struct render_tile {
-		Vector3i* layer[2];
-		short size[2]{}, tile_props = 0;
-	};
+
 	render_tile** static_map;
 
 	struct entity {
@@ -45,6 +42,7 @@ private:
 	void initial_game();
 	void render_map(int);
 	void move_cam(float, float);
+	void player_movement();
 
 public:
 	//constructors/destructors

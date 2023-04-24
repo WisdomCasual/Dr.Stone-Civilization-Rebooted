@@ -1,7 +1,7 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats,string entity_name)
-	: entity_stats(entity_stats)
+Entity::Entity(entity& entity_stats,string entity_name, render_tile**& static_map, float& map_x, float& map_y)
+	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), static_map(static_map)
 {
 	initial_textures("game/entities/" + entity_name);
 	entity_sprite.setTexture(*textures[entity_stats.state]); 
@@ -9,7 +9,9 @@ Entity::Entity(entity& entity_stats,string entity_name)
 
 Entity::~Entity()
 {
-
+	for (int i = 0; i < entity_stats.states_no; i++)
+		delete[] entity_stats.animations[i];
+	delete[] entity_stats.animations;
 }
 
 Vector2f Entity::getPosition()
@@ -24,12 +26,38 @@ void Entity::setPosition(int x_pos, int y_pos)
 
 void Entity::setScale(float scale)
 {
+	sprite_scale = scale;
 	entity_sprite.setScale(scale, scale);
 }
 
 void Entity::move(Vector2f movement)
 {
-	entity_sprite.setPosition(entity_sprite.getPosition().x + movement.x, entity_sprite.getPosition().y + movement.y);
+	entity_sprite.move(movement);
+}
+
+bool Entity::legal_tile(Vector2f movement)
+{
+	/////////////////////////// HITBOXESSSSSSSSSSSSSSS (hot russian babes only) //////////////////////////////////////
+
+
+
+	//current_hitbox = entity_stats.animations[entity_stats.state][current_move].hitbox_rect;
+
+	//int x_cords[2] = { -map_x / 16 + (entity_sprite.getPosition().x - (float)current_hitbox.width / 2 + movement.x * scale) / (16 * scale)
+	//				 , -map_x / 16 + (entity_sprite.getPosition().x + (float)current_hitbox.width / 2 + movement.x * scale) / (16 * scale) },
+	//	y_cords[2] = { -map_y / 16 + (entity_sprite.getPosition().y - (float)current_hitbox.height / 2 + movement.y * scale) / (16 * scale)
+	//				 , -map_y / 16 + (entity_sprite.getPosition().y  + (float)current_hitbox.height / 2 + movement.y * scale) / (16 * scale) };
+
+	//IntRect(   , current_hitbox.width, current_hitbox.height)
+
+
+
+	//for (int i = 0; i < 2; i++)
+	//	for (int j = 0; j < 2; j++)
+	//		if (static_map[x_cords[i]][y_cords[j]].tile_props & 2)
+	//			return false;
+
+	return true;
 }
 
 void Entity::direction(Vector2i direction)
@@ -67,6 +95,13 @@ void Entity::direction(Vector2i direction)
 
 void Entity::update()
 {
+	if (prev_win != window->getSize()) {
+		prev_win = window->getSize();
+		win_x = window->getSize().x, win_y = window->getSize().y;
+		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
+		else scale = win_y / 304.5;
+	}
+
 	if (entity_stats.state != prev_state) {
 		prev_state = entity_stats.state;
 		entity_sprite.setTexture(*textures[entity_stats.state]);
