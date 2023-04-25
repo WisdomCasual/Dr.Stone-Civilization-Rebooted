@@ -26,6 +26,86 @@ private:
 		short health = 100, tool = 0;
 	};
 
+	struct entity_object {
+		Vector2f position = { 0, 0 };   //position on map
+		Vector3i tile = { 0, 0, 0 };   //tile details (x-sheet, y-sheet, texture id)
+	};
+	struct dynamic_objects {
+
+		int size = 1, curr_idx = 0;
+		entity_object* at; //dynamic array of objects
+
+		dynamic_objects() {
+			at = new entity_object[1];
+		}
+
+		dynamic_objects(int size) {
+			at = new entity_object[size];
+			this->size = size;
+		}
+
+		~dynamic_objects() {
+			delete[] at;
+		}
+
+		void resize(int size) {
+			entity_object* new_dynamic_array = new entity_object[size];
+			for (int i = 0; i < curr_idx; i++)
+				new_dynamic_array[i] = at[i];
+			this->size = size;
+			delete[] at;
+			at = new_dynamic_array;
+		}
+
+		void add(entity_object new_object) {
+			if (curr_idx >= size)
+				resize(size*2);
+
+			at[curr_idx] = new_object, curr_idx++;
+		}
+
+		int arr_size() {
+			return curr_idx + 1;
+		}
+	};
+
+	struct dynamic_objects_array {
+		int size = 1, curr_idx = 0;
+		dynamic_objects* at;  //dynamic 2D array of objects
+
+		dynamic_objects_array() {
+			at = new dynamic_objects[1];
+		}
+
+		dynamic_objects_array(int size) {
+			at = new dynamic_objects[size];
+			this->size = size;
+		}
+
+		~dynamic_objects_array() {
+			delete[] at;
+		}
+
+		void resize(int size) {
+			dynamic_objects* new_dynamic_array = new dynamic_objects[size];
+			for (int i = 0; i < curr_idx; i++)
+				new_dynamic_array[i] = at[i];
+			this->size = size;
+			delete[] at;
+			at = new_dynamic_array;
+		}
+
+		void add(dynamic_objects new_object) {
+			if (curr_idx >= size)
+				resize(size * 2);
+
+			at[curr_idx] = new_object, curr_idx++;
+		}
+
+		int arr_size() {
+			return curr_idx + 1;
+		}
+	} dynamic_map;
 
 	int size_x = 0, size_y = 0;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
