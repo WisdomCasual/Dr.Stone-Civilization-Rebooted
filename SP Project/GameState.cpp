@@ -40,10 +40,9 @@ void GameState::load_map(string map_name)
 
 					
 					if (layer_prop & 16) { // inbetween
-						for (int p = 0; p < 2; p++) {
-							temp_layers[p][count[p]] = tle;
-							count[p]++;
-						}
+							temp_layers[0][count[0]] = tle;
+							count[0]++;
+
 						//add to dynamic tiles
 					}
 					else if (layer_prop & 8) { // front
