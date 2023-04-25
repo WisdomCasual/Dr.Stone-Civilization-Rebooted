@@ -18,13 +18,13 @@ struct SettingsState :
     public State
 {
 private:
-    IntRect tipsright[5] = { {190,330,9,18} ,{190,348,9,18} ,{372,312,9,18}, { 190,294,9,18 }, {190,312,9,18} },
+    const IntRect tipsright[5] = { {190,330,9,18} ,{190,348,9,18} ,{372,312,9,18}, { 190,294,9,18 }, {190,312,9,18} },
         tipsleft[5] = { {370,126,9,18} ,{370,90,9,18} ,{372,294,9,18},{ 372,330,9,18 }, {370,108,9,18} },
         mids[5] = { {338,449,18,18} ,{356,368,18,18} ,{356,431,18,18},{338,386,18,18}, {338,368,18,18} },
         arrow = { 303,486,22,21 },
         buttons[4] = { {290,139,93,94} ,{240,0,93,94} ,{290,49,93,94},{201,296,92,92} },
         checkMark = {369,184,16,15};
-    //Colors loaded in arrangment : Yellow -> Red -> Blue
+    //Colors loaded in arrangment : Yellow -> Red -> Blue -> green
     Vector2f clicked_on = { -1, -1 };
     Sprite tissue, back_arrow, devbutton, checkbox, checkmark, panel;
     Text devtext, slider_text;
