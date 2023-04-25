@@ -43,11 +43,11 @@ bool Entity::legal_tile(Vector2f movement)
 
 	current_hitbox = entity_stats.animations[entity_stats.state][current_move].hitbox_rect;
 
-	int x_cords[2] = { -map_x / 16 + (entity_sprite.getPosition().x - (float)current_hitbox.width * sprite_scale / 2 + movement.x * scale) / (16 * scale)
-					 , -map_x / 16 + (entity_sprite.getPosition().x + (float)current_hitbox.width * sprite_scale / 2 + movement.x * scale) / (16 * scale) },
+	int x_cords[2] = { -map_x / 16 + (entity_sprite.getPosition().x - (float)current_hitbox.x * sprite_scale / 2 + movement.x * scale) / (16 * scale)
+					 , -map_x / 16 + (entity_sprite.getPosition().x + (float)current_hitbox.x * sprite_scale / 2 + movement.x * scale) / (16 * scale) },
 	 
-		y_cords[2] = { -map_y / 16 + (entity_sprite.getPosition().y - (float)current_hitbox.height * sprite_scale / 2 + movement.y * scale) / (16 * scale)
-					 , -map_y / 16 + (entity_sprite.getPosition().y  + (float)current_hitbox.height * sprite_scale / 2 + movement.y * scale) / (16 * scale) };
+		y_cords[2] = { -map_y / 16 + (entity_sprite.getPosition().y - (float)current_hitbox.y * sprite_scale / 2 + movement.y * scale) / (16 * scale)
+					 , -map_y / 16 + (entity_sprite.getPosition().y  + (float)current_hitbox.y * sprite_scale / 2 + movement.y * scale) / (16 * scale) };
 
 	Vector2i hitbox_checker;
 	for (int i = 0; i < 2; i++) {
@@ -114,7 +114,7 @@ void Entity::update()
 	current_rect = entity_stats.animations[entity_stats.state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
-	entity_sprite.setOrigin(current_rect.width/2, current_rect.height*3/4); ///////////////
+	entity_sprite.setOrigin(entity_stats.animations[entity_stats.state][current_move].origin); ///////////////
 }
 
 void Entity::pollevent()
