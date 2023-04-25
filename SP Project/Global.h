@@ -68,6 +68,9 @@ namespace globalvar {
 	inline int notification_lines = 1;
 	inline float notification_delay = 0;
 
+	inline const int dx[4] = { 1, -1, 0, 0 };
+	inline const int dy[4] = { 0, 0, 1, -1 };
+
 	struct dialogue {
 		string speaker, text;
 		short expression = 0, pic = 0;

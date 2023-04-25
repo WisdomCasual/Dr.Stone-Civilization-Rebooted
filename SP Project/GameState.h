@@ -31,7 +31,7 @@ private:
 	};
 	struct dynamic_objects {
 
-		int size = 1, curr_idx = 0;
+		int size = 1, curr_idx = 0, layer = 0;
 		entity_object* at; //dynamic array of objects
 
 		dynamic_objects() {
@@ -47,16 +47,16 @@ private:
 			delete[] at;
 		}
 
-		void resize(int size) {
-			entity_object* new_dynamic_array = new entity_object[size];
+		void resize(const int size) {
+			entity_object* old_dynamic_array = at;
+			at = new entity_object[size];
 			for (int i = 0; i < curr_idx; i++)
-				new_dynamic_array[i] = at[i];
+				at[i] = old_dynamic_array[i];
 			this->size = size;
-			delete[] at;
-			at = new_dynamic_array;
+			delete[] old_dynamic_array;
 		}
 
-		void add(entity_object new_object) {
+		void add(const entity_object new_object) {
 			if (curr_idx >= size)
 				resize(size*2);
 
@@ -64,7 +64,7 @@ private:
 		}
 
 		int arr_size() {
-			return curr_idx + 1;
+			return curr_idx;
 		}
 	};
 
@@ -76,7 +76,7 @@ private:
 			at = new dynamic_objects[1];
 		}
 
-		dynamic_objects_array(int size) {
+		dynamic_objects_array(const int size) {
 			at = new dynamic_objects[size];
 			this->size = size;
 		}
@@ -85,33 +85,44 @@ private:
 			delete[] at;
 		}
 
-		void resize(int size) {
-			dynamic_objects* new_dynamic_array = new dynamic_objects[size];
-			for (int i = 0; i < curr_idx; i++)
-				new_dynamic_array[i] = at[i];
+		void resize(const int size) {
+			dynamic_objects* old_dynamic_array = at;
+			at = new dynamic_objects[size];
+			for (int i = 0; i < curr_idx; i++) {
+				at[i].size = old_dynamic_array[i].size;
+				at[i].layer = old_dynamic_array[i].layer;
+				at[i].curr_idx = old_dynamic_array[i].curr_idx;
+				for (int j = 0; j < at[i].curr_idx; j++) {
+					at[i].at[j] = old_dynamic_array[i].at[j];
+				}
+			}
 			this->size = size;
-			delete[] at;
-			at = new_dynamic_array;
+			delete[] old_dynamic_array;
 		}
 
-		void add(dynamic_objects new_object) {
-			if (curr_idx >= size)
+		void add(dynamic_objects& new_objct) {
+			if (curr_idx >= size) {
 				resize(size * 2);
-
-			at[curr_idx] = new_object, curr_idx++;
+			}
+			at[curr_idx].at = new entity_object[new_objct.arr_size()];
+			at[curr_idx].size = new_objct.size;
+			at[curr_idx].layer = new_objct.layer;
+			at[curr_idx].curr_idx = new_objct.curr_idx;
+			for (int i = 0; i < new_objct.curr_idx; i++)
+				at[curr_idx].at[i] = new_objct.at[i];
+			curr_idx++;
 		}
 
 		int arr_size() {
-			return curr_idx + 1;
+			return curr_idx;
 		}
-	} dynamic_map;
+	}dynamic_map;
 
 	struct pointr {
-		dynamic_objects* tile = nullptr; Entity* entity = nullptr;
+		short tile = -1; Entity* entity = nullptr;
 	};
 
-	//not working
-	//set<pair<float, pointr>> dynamic_items; // tile , entity
+	multimap<float, pointr> dynamic_rendering;
 
 
 
@@ -125,10 +136,13 @@ private:
 
 
 	//private functions:
+	void search_front(int, int, int, Vector3i***, bool***, int);
 	void load_map(string);
+	void load_entities();
 	void deload_map();
 	void initial_game();
 	void render_static_map();
+	void render_entities();
 	void move_cam(float, float);
 	void player_movement();
 
