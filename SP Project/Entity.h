@@ -9,12 +9,12 @@ struct render_tile {
 	short size, tile_props = 0;
 };
 struct animation {
-	short frames = 0; IntRect rect{ 0, 0, 0, 0 }, hitbox_rect{ 0, 0, 0, 0 };
+	short frames = 0; IntRect rect{ 0, 0, 0, 0 }; Vector2f hitbox_rect = { 0, 0 }, origin = { 0,0 };
 };
 struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations;
-	short health = 100, damage = 10, state = 0, states_no;
+	short health = 100, damage = 10, state = 2, states_no;
 };
 
 struct Entity : public State
@@ -25,7 +25,8 @@ private:
 	render_tile**& static_map;
 	float  delay = 0, animation_delay = 0.06, &map_x, &map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	short current_move = 3, current_frame = 0, prev_state = -1;
-	IntRect current_rect = { 0,0,0,0 }, current_hitbox = { 0,0,0,0 };
+	IntRect current_rect = { 0,0,0,0 };
+	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
 	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
 	bool inbetween_state = 0;

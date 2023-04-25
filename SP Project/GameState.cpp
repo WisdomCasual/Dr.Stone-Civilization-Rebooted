@@ -120,11 +120,18 @@ void GameState::load_entities()
 	player_stats.states_no = 4;
 	for (int i = 0; i < 4; i++) {
 		player_stats.animations[i] = new animation[7];
-		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {17,52,30,14} }; //back
-		player_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {17,52,30,14} }; //right
-		player_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {17,52,30,14} }; //left
-		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {17,52,30,14} }; //front
+		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
+		player_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
+		player_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
+		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
 	}
+	for (int i = 1; i <= 3; i++) {
+		player_stats.animations[2][0 + i * 4] = { 6, {192, 1365 + (0 + i * 4) * 192, 192, 192}, {30,14}, {92,108} }; //back
+		player_stats.animations[2][1 + i * 4] = { 6, {192, 1365 + (3 + i * 4) * 192, 192, 192}, {30,14}, {92,108} }; //right
+		player_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + i * 4) * 192, 192, 192}, {30,14}, {92,108} }; //left
+		player_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + i * 4) * 192, 192, 192}, {30,14}, {92,108} }; //front
+	}
+
 	dynamic_rendering.insert({ float(-map_y + player_entity.getPosition().y/scale), {-1, &player_entity} });
 }
 
@@ -271,7 +278,6 @@ void GameState::update()
 
 
 }
-
 
 void GameState::render()
 {
