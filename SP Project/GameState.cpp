@@ -9,10 +9,10 @@ void GameState::load_map(string map_name)
 	if (!(ifs >> line))
 		return;
 
-	short mpsize = 0, count[2]{ 0,0 };
+	short mpsize = 0, count = 0;
 	Vector3i tle;
 	char layr;
-	Vector3i temp_layers[2][8]{};
+	Vector3i temp_layers[8]{};
 	short layer_prop = 0;
 
 	deload_map();
@@ -38,33 +38,35 @@ void GameState::load_map(string map_name)
 
 					layer_prop = tile_props[tle.z].properties[tle.x][tle.y].props;
 
-					
+
 					if (layer_prop & 16) { // inbetween
-							temp_layers[0][count[0]] = tle;
-							count[0]++;
+						/*dynamic_objects objct;
+						objct.add({ Vector2f(i * 16, j * 16), tle});
+						dynamic_map.add(objct);*/
+
+
+						//add ptr to set
 
 						//add to dynamic tiles
 					}
-					else if (layer_prop & 8) { // front
-						temp_layers[1][count[1]] = tle;
-						count[1]++;
+					else if ((layer_prop & 8)) { //front
+
+
 					}
-					else { // back
-						temp_layers[0][count[0]] = tle;
-						count[0]++;
+					else {   // back
+						temp_layers[count] = tle;
+						count++;
 					}
 
 					static_map[i][j].tile_props |= layer_prop;
 				}
 
-				for (int p = 0; p < 2; p++) { // front/back
-					static_map[i][j].size[p] = count[p];
-					static_map[i][j].layer[p] = new Vector3i[count[p]];
+				static_map[i][j].size = count;
+				static_map[i][j].layers = new Vector3i[count];
 
-					for (int l = 0; l < count[p]; l++) // layers
-						static_map[i][j].layer[p][l] = temp_layers[p][l];
-					count[p] = 0;
-				}
+				for (int l = 0; l < count; l++) // layers
+					static_map[i][j].layers[l] = temp_layers[l];
+				count = 0;
 			}
 		}
 	}
@@ -77,11 +79,9 @@ void GameState::deload_map()
 	// static map destructor;
 
 	for (int i = 0; i < size_x; i++) {
-		for (int j = 0; j < size_y; j++) {
-			delete[] static_map[i][j].layer[0];
-			delete[] static_map[i][j].layer[1];
+		for (int j = 0; j < size_y; j++)
+			delete[] static_map[i][j].layers;
 
-		}
 		delete[] static_map[i];
 	}
 	if (size_x)
@@ -94,13 +94,13 @@ void GameState::initial_game()
 	load_map("Sheraton");
 }
 
-void GameState::render_map(int priority)
+void GameState::render_static_map()
 {
 	tile.setScale(scale, scale);
 	for (int i = (x_offset > 0) ? x_offset : 0; i < (win_x + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
 		for (int j = (y_offset > 0) ? y_offset : 0; j < (win_y + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
-			auto tile_end = static_map[i][j].layer[priority] + static_map[i][j].size[priority];
-			for (auto map_tile = static_map[i][j].layer[priority]; map_tile != tile_end; map_tile++) {
+			auto tile_end = static_map[i][j].layers + static_map[i][j].size;
+			for (auto map_tile = static_map[i][j].layers; map_tile != tile_end; map_tile++) {
 				tile.setTexture(*tile_sheets[map_tile->z]);
 				tile.setTextureRect(IntRect(map_tile->x * 16, map_tile->y * 16, 16, 16));
 				tile.setPosition(map_x * scale + (16 * scale * i), map_y * scale + (16 * scale * j));
@@ -179,7 +179,7 @@ GameState::GameState()
 
 GameState::~GameState()
 {
-
+	deload_map();
 }
 
 void GameState::update()
@@ -208,11 +208,10 @@ void GameState::update()
 
 void GameState::render()
 {
-	render_map(0);
+	render_static_map();
 
 	player_entity.render();
 
-	render_map(1);
 }
 
 void GameState::pollevent()
