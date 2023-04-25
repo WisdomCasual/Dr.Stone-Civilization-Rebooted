@@ -1,6 +1,19 @@
 #include "GameState.h"
 
 
+void GameState::search_front(int x, int y, int layr, Vector3i*** temp_front, bool*** vis, int idx)
+{
+	vis[layr][x][y] = 1;
+	for (int i = 0; i < 4; i++) {
+		int new_x = x + dx[i], new_y = y + dy[i];
+		if (new_x < size_x && new_y < size_y && new_x >= 0 && new_y >= 0 && temp_front[layr][new_x][new_y].x && !vis[layr][new_x][new_y]) {
+			temp_front[layr][new_x][new_y].x--;
+			dynamic_map.at[idx].add({Vector2f(new_x, new_y), temp_front[layr][new_x][new_y] });
+			search_front(new_x, new_y, layr, temp_front, vis, idx);
+		}
+	}
+}
+
 void GameState::load_map(string map_name)
 {
 	ifstream ifs("Maps/" + map_name + ".mp");
@@ -11,8 +24,10 @@ void GameState::load_map(string map_name)
 
 	short mpsize = 0, count = 0;
 	Vector3i tle;
-	char layr;
+	short layr;
 	Vector3i temp_layers[8]{};
+	Vector3i** temp_front[4];
+	bool** vis[4];
 	short layer_prop = 0;
 
 	deload_map();
@@ -24,9 +39,18 @@ void GameState::load_map(string map_name)
 
 		ifs >> size_x >> size_y;
 
-		static_map = new render_tile* [size_x];
+		for (int i = 0; i < 4; i++) {
+			temp_front[i] = new Vector3i* [size_x];
+			vis[i] = new bool* [size_x];
+		}
+		
+		static_map = new render_tile * [size_x];
 
 		for (int i = 0; i < size_x; i++) {
+			for (int j = 0; j < 4; j++) {
+				temp_front[j][i] = new Vector3i[size_y]({});
+				vis[j][i] = new bool[size_y]({});
+			}
 			
 			static_map[i] = new render_tile[size_y];
 
@@ -40,18 +64,18 @@ void GameState::load_map(string map_name)
 
 
 					if (layer_prop & 16) { // inbetween
-						/*dynamic_objects objct;
-						objct.add({ Vector2f(i * 16, j * 16), tle});
-						dynamic_map.add(objct);*/
-
+						dynamic_objects objct;
+						objct.add({ Vector2f(i, j), tle});
+						objct.layer = layr;
+						dynamic_map.add(objct);
+						dynamic_rendering.insert({ float((j+1) * 16), {short(dynamic_map.curr_idx - 1), nullptr} });
 
 						//add ptr to set
 
 						//add to dynamic tiles
 					}
 					else if ((layer_prop & 8)) { //front
-
-
+						temp_front[layr][i][j] = { tle.x+1, tle.y, tle.z };
 					}
 					else {   // back
 						temp_layers[count] = tle;
@@ -71,6 +95,37 @@ void GameState::load_map(string map_name)
 		}
 	}
 	ifs.close();
+
+	for (int i = 0; i < dynamic_map.curr_idx; i++) {
+		search_front(dynamic_map.at[i].at[0].position.x, dynamic_map.at[i].at[0].position.y, dynamic_map.at[i].layer, temp_front, vis, i);
+	}
+
+
+
+	//destroy temp front
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < size_x; j++) {
+			delete[] temp_front[i][j];
+		}
+		delete[] temp_front[i];
+	}
+}
+
+void GameState::load_entities()
+{
+	player_entity.setPosition(window->getSize().x / 2, window->getSize().y / 2);
+
+
+	player_stats.animations = new animation * [4];
+	player_stats.states_no = 4;
+	for (int i = 0; i < 4; i++) {
+		player_stats.animations[i] = new animation[7];
+		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {17,52,30,14} }; //back
+		player_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {17,52,30,14} }; //right
+		player_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {17,52,30,14} }; //left
+		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {17,52,30,14} }; //front
+	}
+	dynamic_rendering.insert({ float(-map_y + player_entity.getPosition().y/scale), {-1, &player_entity} });
 }
 
 void GameState::deload_map()
@@ -107,6 +162,28 @@ void GameState::render_static_map()
 				window->draw(tile);
 			}
 		}
+}
+
+void GameState::render_entities()
+{
+	for (auto i = dynamic_rendering.lower_bound(-map_y-10); i != dynamic_rendering.end(); ) {
+		//if (i->first > map_y + win_y / scale + 10)
+		//	break;
+		if (i->second.tile != -1) {
+			
+			for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
+				tile.setTexture(*tile_sheets[dynamic_map.at[i->second.tile].at[j].tile.z]);
+				tile.setTextureRect(IntRect(dynamic_map.at[i->second.tile].at[j].tile.x * 16, dynamic_map.at[i->second.tile].at[j].tile.y * 16, 16, 16));
+				tile.setPosition(map_x * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.x), map_y * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.y));
+				window->draw(tile);
+			}
+			i++;
+		}
+		else {
+			i->second.entity->render();
+			i = dynamic_rendering.erase(i);
+		}
+	}
 }
 
 void GameState::move_cam(float x_movement,float y_movement)
@@ -148,6 +225,7 @@ void GameState::player_movement()
 	}
 
 	player_entity.direction(direction);
+	dynamic_rendering.insert({ float(-map_y + player_entity.getPosition().y / scale), {-1, &player_entity} });
 }
 
 GameState::GameState()
@@ -160,20 +238,9 @@ GameState::GameState()
 	initial_tile_sheets("game/tiles");
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
 	initial_game();
+	load_entities();
 
 	/////////////////
-	player_entity.setPosition(window->getSize().x/2, window->getSize().y/2);
-
-	
-	player_stats.animations = new animation*[4];
-	player_stats.states_no = 4;
-	for (int i = 0; i < 4; i++) {
-		player_stats.animations[i] = new animation[7];
-		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {17,52,30,14} }; //back
-		player_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {17,52,30,14} }; //right
-		player_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {17,52,30,14} }; //left
-		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {17,52,30,14} }; //front
-	}
 
 }
 
@@ -209,9 +276,7 @@ void GameState::update()
 void GameState::render()
 {
 	render_static_map();
-
-	player_entity.render();
-
+	render_entities();
 }
 
 void GameState::pollevent()
