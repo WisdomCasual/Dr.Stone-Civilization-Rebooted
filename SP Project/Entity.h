@@ -5,8 +5,8 @@
 using namespace globalvar;
 
 struct render_tile {
-	Vector3i* layer[2];
-	short size[2]{}, tile_props = 0;
+	Vector3i* layers;
+	short size, tile_props = 0;
 };
 struct animation {
 	short frames = 0; IntRect rect{ 0, 0, 0, 0 }, hitbox_rect{ 0, 0, 0, 0 };

@@ -16,8 +16,7 @@ private:
 
 	Vector2f clicked_on = { -1, -1 };
 
-
-	render_tile** static_map;
+	render_tile** static_map, **temp_front;
 
 	struct entity {
 		Vector2f pixel_cords = { 0,0 };
@@ -107,6 +106,15 @@ private:
 		}
 	} dynamic_map;
 
+	struct pointr {
+		dynamic_objects* tile = nullptr; Entity* entity = nullptr;
+	};
+
+	//not working
+	//set<pair<float, pointr>> dynamic_items; // tile , entity
+
+
+
 	int size_x = 0, size_y = 0;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
@@ -120,7 +128,7 @@ private:
 	void load_map(string);
 	void deload_map();
 	void initial_game();
-	void render_map(int);
+	void render_static_map();
 	void move_cam(float, float);
 	void player_movement();
 
