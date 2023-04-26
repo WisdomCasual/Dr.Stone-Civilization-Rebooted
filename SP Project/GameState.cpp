@@ -116,11 +116,10 @@ void GameState::load_entities()
 {
 	player_entity.setPosition(window->getSize().x / 2, window->getSize().y / 2);
 
-
 	player_stats.animations = new animation * [4];
 	player_stats.states_no = 4;
 	for (int i = 0; i < 4; i++) {
-		player_stats.animations[i] = new animation[7];
+		player_stats.animations[i] = new animation[16];
 		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
 		player_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
 		player_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
