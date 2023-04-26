@@ -107,7 +107,8 @@ void GameState::load_map(string map_name)
 		for (int j = 0; j < size_x; j++) {
 			delete[] temp_front[i][j];
 		}
-		delete[] temp_front[i];
+		if (size_x)
+			delete[] temp_front[i];
 	}
 }
 
@@ -126,10 +127,10 @@ void GameState::load_entities()
 		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
 	}
 	for (int i = 1; i <= 3; i++) {
-		player_stats.animations[2][0 + i * 4] = { 6, {192, 1365 + (0 + i * 4) * 192, 192, 192}, {30,14}, {92,108} }; //back
-		player_stats.animations[2][1 + i * 4] = { 6, {192, 1365 + (3 + i * 4) * 192, 192, 192}, {30,14}, {92,108} }; //right
-		player_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + i * 4) * 192, 192, 192}, {30,14}, {92,108} }; //left
-		player_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + i * 4) * 192, 192, 192}, {30,14}, {92,108} }; //front
+		player_stats.animations[2][0 + i * 4] = { 6, {192, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
+		player_stats.animations[2][1 + i * 4] = { 6, {192, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
+		player_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
+		player_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
 	}
 
 	dynamic_rendering.insert({ float(-map_y + player_entity.getPosition().y/scale), {-1, &player_entity} });
@@ -173,6 +174,7 @@ void GameState::render_static_map()
 
 void GameState::render_entities()
 {
+	dynamic_rendering.insert({ float(-map_y + player_entity.getPosition().y / scale), {-1, &player_entity} });
 	for (auto i = dynamic_rendering.lower_bound(-map_y-10); i != dynamic_rendering.end(); ) {
 		//if (i->first > map_y + win_y / scale + 10)
 		//	break;
@@ -201,38 +203,39 @@ void GameState::move_cam(float x_movement,float y_movement)
 
 void GameState::player_movement() 
 {
-	float x_movement = delta_movement().x * 130 * dt, y_movement = delta_movement().y * 130 * dt;
-	Vector2f direction = { 0,0 };
+	if (!player_entity.is_in_action()) {
+		float x_movement = delta_movement().x * 130 * dt, y_movement = delta_movement().y * 130 * dt;
+		Vector2f direction = { 0,0 };
 
-	int cords_before_x = -map_x / 16.0 + player_entity.getPosition().x / (16.0 * scale), cords_before_y = -map_y / 16.0 + player_entity.getPosition().y / (16.0 * scale);
+		int cords_before_x = -map_x / 16.0 + player_entity.getPosition().x / (16.0 * scale), cords_before_y = -map_y / 16.0 + player_entity.getPosition().y / (16.0 * scale);
 
-	int cords_after_x = -map_x / 16 + (player_entity.getPosition().x + x_movement * scale) / (16 * scale), cords_after_y = -map_y / 16 + (player_entity.getPosition().y + y_movement * scale) / (16 * scale);
+		int cords_after_x = -map_x / 16 + (player_entity.getPosition().x + x_movement * scale) / (16 * scale), cords_after_y = -map_y / 16 + (player_entity.getPosition().y + y_movement * scale) / (16 * scale);
 
 
-	if (player_entity.legal_tile({ x_movement, 0 })) {
-		direction.x = delta_movement().x;
-		if ((player_entity.getPosition().x + x_movement * scale >= 150 * scale || delta_movement().x > 0) && (player_entity.getPosition().x + x_movement * scale < win_x - 150 * scale || delta_movement().x <= 0))
-			player_entity.move({ x_movement * scale,  0 });
-		else if ((-map_x + x_movement >= 0 || delta_movement().x > 0) && (-map_x * scale + win_x <= (size_x-1) * 16 * scale || delta_movement().x < 0))
-			move_cam(x_movement, 0);
-		else if (player_entity.getPosition().x + x_movement * scale >= 0 && player_entity.getPosition().x + x_movement * scale < win_x - 5)
-			player_entity.move({ x_movement * scale,  0 });
+		if (player_entity.legal_tile({ x_movement, 0 })) {
+			direction.x = delta_movement().x;
+			if ((player_entity.getPosition().x + x_movement * scale >= 150 * scale || delta_movement().x > 0) && (player_entity.getPosition().x + x_movement * scale < win_x - 150 * scale || delta_movement().x <= 0))
+				player_entity.move({ x_movement * scale,  0 });
+			else if ((-map_x + x_movement >= 0 || delta_movement().x > 0) && (-map_x * scale + win_x <= (size_x - 1) * 16 * scale || delta_movement().x < 0))
+				move_cam(x_movement, 0);
+			else if (player_entity.getPosition().x + x_movement * scale >= 0 && player_entity.getPosition().x + x_movement * scale < win_x - 5)
+				player_entity.move({ x_movement * scale,  0 });
+		}
+
+		if (player_entity.legal_tile({ 0, y_movement })) {
+			direction.y = delta_movement().y;
+			if ((player_entity.getPosition().y + y_movement * scale >= 100 * scale || delta_movement().y > 0) && (player_entity.getPosition().y + y_movement * scale < win_y - 100 * scale || delta_movement().y <= 0))
+				player_entity.move({ 0, y_movement * scale });
+
+			else if ((-map_y + y_movement >= 0 || delta_movement().y > 0) && (-map_y * scale + win_y <= (size_y - 1) * 16 * scale || delta_movement().y < 0))
+				move_cam(0, y_movement);
+
+			else if (player_entity.getPosition().y + y_movement * scale >= 0 && player_entity.getPosition().y + y_movement * scale < win_y - 5)
+				player_entity.move({ 0, y_movement * scale });
+		}
+
+		player_entity.direction(direction);
 	}
-
-	if (player_entity.legal_tile({ 0, y_movement })) {
-		direction.y = delta_movement().y;
-		if ((player_entity.getPosition().y + y_movement * scale >= 100 * scale || delta_movement().y > 0) && (player_entity.getPosition().y + y_movement * scale < win_y - 100 * scale || delta_movement().y <= 0))
-			player_entity.move({ 0, y_movement * scale });
-
-		else if ((-map_y + y_movement >= 0 || delta_movement().y > 0) && (-map_y * scale + win_y <= (size_y-1) * 16 * scale || delta_movement().y < 0))
-			move_cam(0, y_movement);
-
-		else if (player_entity.getPosition().y + y_movement * scale >= 0 && player_entity.getPosition().y + y_movement * scale < win_y - 5)
-			player_entity.move({ 0, y_movement * scale });
-	}
-
-	player_entity.direction(direction);
-	dynamic_rendering.insert({ float(-map_y + player_entity.getPosition().y / scale), {-1, &player_entity} });
 }
 
 GameState::GameState()
@@ -302,6 +305,9 @@ void GameState::pollevent()
 			case Keyboard::F11:
 				fullscreen = !fullscreen;
 				game.update_window();
+				break;
+			case Keyboard::Space:
+				player_entity.action(1); break;
 				break;
 			}
 		case Event::MouseButtonPressed:

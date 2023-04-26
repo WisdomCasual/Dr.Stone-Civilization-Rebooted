@@ -29,7 +29,7 @@ private:
 	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
 	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
-	bool inbetween_state = 0;
+	int active_action = 0;
 
 public:
 	Entity(entity&, string, render_tile**&, float&, float&);
@@ -37,10 +37,12 @@ public:
 	~Entity();
 
 	Vector2f getPosition();
+	bool is_in_action();
 	void setPosition(int x_pos, int y_pos);
 	void setScale(float);
 	bool legal_tile(Vector2f);
 	void move(Vector2f);
+	void action(int);
 	void direction(Vector2f);
 	void update();
 	void pollevent();
