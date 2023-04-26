@@ -19,6 +19,11 @@ Vector2f Entity::getPosition()
 	return entity_sprite.getPosition();
 }
 
+bool Entity::is_in_action()
+{
+	return active_action;
+}
+
 void Entity::setPosition(int x_pos, int y_pos)
 {
 	entity_sprite.setPosition(x_pos, y_pos);
@@ -32,7 +37,17 @@ void Entity::setScale(float scale)
 
 void Entity::move(Vector2f movement)
 {
-	entity_sprite.move(movement);
+	if (!active_action)
+		entity_sprite.move(movement);
+}
+
+void Entity::action(int action_id)
+{
+	if (!active_action) {
+		current_frame = 0, delay = 0;
+		active_action = action_id;
+		current_move += action_id * 4;
+	}
 }
 
 bool Entity::legal_tile(Vector2f movement)
@@ -66,35 +81,36 @@ bool Entity::legal_tile(Vector2f movement)
 
 void Entity::direction(Vector2f direction)
 {
+	if (!active_action) {
+		if (direction.y < 0) {
+			//back
+			current_move = 0;
+		}
+		else if (direction.x > 0) {
+			//right
+			current_move = 1;
+		}
+		else if (direction.x < 0) {
+			//left
+			current_move = 2;
+		}
+		else if (direction.y > 0) {
+			//front
+			current_move = 3;
+		}
+		else {
+			current_frame = 0, delay = 0;
+			return;
+		}
 
-	if (direction.y < 0) {
-		//back
-		current_move = 0;
+		if (delay > animation_delay) {
+			delay = 0;
+			current_frame++;
+			current_frame %= entity_stats.animations[entity_stats.state][current_move].frames;
+		}
+		else
+			delay += dt;
 	}
-	else if (direction.x > 0) {
-		//right
-		current_move = 1;
-	}
-	else if (direction.x < 0) {
-		//left
-		current_move = 2;
-	}
-	else if (direction.y > 0) {
-		//front
-		current_move = 3;
-	}
-	else {
-		current_frame = 0, delay = 0;
-		return;
-	}
-
-	if (delay > animation_delay) {
-		delay = 0;
-		current_frame++;
-		current_frame %= entity_stats.animations[entity_stats.state][current_move].frames;
-	}
-	else
-		delay += dt;
 }
 
 void Entity::update()
@@ -109,6 +125,18 @@ void Entity::update()
 	if (entity_stats.state != prev_state) {
 		prev_state = entity_stats.state;
 		entity_sprite.setTexture(*textures[entity_stats.state]);
+	}
+
+	if (active_action) {
+		if (delay > animation_delay) {
+			delay = 0;
+			current_frame++;
+			if (current_frame % entity_stats.animations[entity_stats.state][current_move].frames == 0) {
+				current_frame = 0, current_move -= 4 * active_action, active_action = 0;
+			}
+		}
+		else
+			delay += dt;
 	}
 
 	current_rect = entity_stats.animations[entity_stats.state][current_move].rect;
