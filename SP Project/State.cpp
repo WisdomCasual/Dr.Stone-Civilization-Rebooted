@@ -54,8 +54,8 @@ void State::initial_tile_sheets(string file)
 				continue;
 			ifs.seekg(ios::beg);
 			if (ifs.is_open()) {
-				for (int i = 0; i < x_size; i++)
-					for (int j = 0; j < y_size; j++) {
+				for (int i = 0; i < tile_props[sheet].x_size; i++)
+					for (int j = 0; j < tile_props[sheet].y_size; j++) {
 						ifs >> priority;
 						tile_props[sheet].properties[i][j] = { priority };
 					}
