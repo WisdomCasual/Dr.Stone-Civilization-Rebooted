@@ -112,6 +112,7 @@ PasswordState::PasswordState()
 
 	txt_box.initializeTextBox(input_password, *textures[2], "Enter Password");
 	txt_box.setMode(1);
+	txt_box.setSubmitBool(&confirmed);
 
 }
 
