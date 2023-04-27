@@ -100,7 +100,7 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 	tile.setScale(scale, scale);
 	for (int i = (x_offset > 0) ? x_offset : 0; i < (x_win + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
 		for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
-			for (auto props : tiles[i][j].layer) {
+			for (auto &props : tiles[i][j].layer) {
 				short prop = tile_props[props.second.z].properties[props.second.x][props.second.y].props;
 				if ((prop & 16 || ((prop & 8 && priority) || (!(prop & 8) && !priority))) && layer_toggle[props.first + 4 * priority]) {
 					tiles[i][j].last_vis = { props.second.x , props.second.y, props.second.z };
@@ -264,8 +264,11 @@ void MapBuilderState::draw_tools()
 								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
 								if (Keyboard::isKeyPressed(Keyboard::LAlt))
 									tiles[i2][j2] = tiles[i1][j1];
-									else
-										tiles[i2][j2].layer[layer] = { tiles[i1][j1].layer[picked_tile.global_layer].x, tiles[i1][j1].layer[picked_tile.global_layer].y, tiles[i1][j1].layer[picked_tile.global_layer].z };
+								else {
+									map<char, Vector3i>::iterator new_tile = tiles[i1][j1].layer.find(picked_tile.global_layer);
+									if (new_tile != tiles[i1][j1].layer.end())
+										tiles[i2][j2].layer[layer] = new_tile->second;
+								}
 						}
 					drawn_map_selection = 1;
 				}
@@ -416,7 +419,7 @@ void MapBuilderState::save_map()
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < size_y; j++) {
 				ofs << tiles[i][j].layer.size() << ' ';
-				for (auto curr_tile : tiles[i][j].layer)
+				for (auto &curr_tile : tiles[i][j].layer)
 					ofs << (int)(curr_tile.first) << ' ' << curr_tile.second.x << ' ' << curr_tile.second.y << ' ' << curr_tile.second.z << ' ';
 			}
 			ofs << '\n';

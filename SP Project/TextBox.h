@@ -14,7 +14,7 @@ private:
 	Vector2f position = { 0, 0 };
 	float scale = 1, bound_y = 0, delay = 0, box_x_bound = 0, text_x_bound = 0;
 	string input_string = "", placeholder = "", clipboard = "", pw_string = "", *display_string = &input_string;
-	bool isActive = 0, selected = 0, cursor = 0, mode = 0;
+	bool isActive = 0, selected = 0, cursor = 0, mode = 0, *submit_bool = nullptr;
 	Text inputted_text, placeholder_text;
 	Sprite box;
 
@@ -38,7 +38,7 @@ public:
 
 	void text_poll(Event event);
 
-	void initializeTextBox(std::string& targ_string, Texture& texture, const string placeholder = "Write Here", Vector2f pos = { 0.0, 0.0 }, float scale = 1, bool mode = 0);
+	void initializeTextBox(std::string& targ_string, Texture& texture, const string placeholder = "Write Here", Vector2f pos = { 0.0, 0.0 }, float scale = 1, bool mode = 0, bool* submit_bool = nullptr);
 
 	void drawTextBox(RenderWindow* window);
 
@@ -46,6 +46,8 @@ public:
 
 	void setMode(bool mode);              //0 = text, 1 = password
 	
+	void setSubmitBool(bool* submit_bool);
+
 	void submit();
 
 	void update();
