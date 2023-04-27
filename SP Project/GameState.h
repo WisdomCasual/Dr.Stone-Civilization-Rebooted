@@ -50,7 +50,8 @@ private:
 		void resize(const int size) {
 			entity_object* old_dynamic_array = at;
 			at = new entity_object[size];
-			for (int i = 0; i < curr_idx; i++)
+			int copy_size = min(curr_idx, size);
+			for (int i = 0; i < copy_size; i++)
 				at[i] = old_dynamic_array[i];
 			this->size = size;
 			delete[] old_dynamic_array;
@@ -88,11 +89,13 @@ private:
 		void resize(const int size) {
 			dynamic_objects* old_dynamic_array = at;
 			at = new dynamic_objects[size];
-			for (int i = 0; i < curr_idx; i++) {
+			int copy_size = min(curr_idx, size);
+			for (int i = 0; i < copy_size; i++) {
 				at[i].size = old_dynamic_array[i].size;
 				at[i].layer = old_dynamic_array[i].layer;
 				at[i].curr_idx = old_dynamic_array[i].curr_idx;
-				for (int j = 0; j < at[i].curr_idx; j++) {
+				int sub_copy_size = min(at[i].curr_idx, at[i].size);
+				for (int j = 0; j < sub_copy_size; j++) {
 					at[i].at[j] = old_dynamic_array[i].at[j];
 				}
 			}
@@ -108,7 +111,8 @@ private:
 			at[curr_idx].size = new_objct.size;
 			at[curr_idx].layer = new_objct.layer;
 			at[curr_idx].curr_idx = new_objct.curr_idx;
-			for (int i = 0; i < new_objct.curr_idx; i++)
+			int copy_size = min(new_objct.curr_idx, new_objct.size);
+			for (int i = 0; i < copy_size; i++)
 				at[curr_idx].at[i] = new_objct.at[i];
 			curr_idx++;
 		}

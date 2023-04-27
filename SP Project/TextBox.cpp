@@ -125,10 +125,11 @@ void TextBox::text_poll(Event event)
 	}
 }
 
-void TextBox::initializeTextBox(string& targ_string, Texture& texture, const string placeholder, Vector2f pos, float scale, bool mode)
+void TextBox::initializeTextBox(string& targ_string, Texture& texture, const string placeholder, Vector2f pos, float scale, bool mode, bool* submit_bool)
 {
 	position = pos;
 	this->scale = scale;
+	this->submit_bool = submit_bool;
 	target_string = &targ_string;
 	placeholder_text.setFont(font);
 	placeholder_text.setFillColor(Color(177, 146, 114, 255));
@@ -157,6 +158,11 @@ void TextBox::setMode(bool mode)
 	display_string = (mode) ? &pw_string : &input_string;
 }
 
+void TextBox::setSubmitBool(bool* submit_bool)
+{
+	this->submit_bool = submit_bool;
+}
+
 void TextBox::submit()
 {
 	if (mode) {
@@ -167,6 +173,8 @@ void TextBox::submit()
 	}
 	else
 		*target_string = input_string;
+	if (submit_bool != nullptr)
+		*submit_bool = 1;
 }
 
 

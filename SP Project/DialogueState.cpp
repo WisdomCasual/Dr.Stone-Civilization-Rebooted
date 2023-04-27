@@ -70,47 +70,63 @@ void DialogueState::render_text()
 	for (int i = 0; i < lines; i++, init_line++) {
 		output_text.setString(y_string);
 		text_y_bound = output_text.getLocalBounds().top + output_text.getLocalBounds().height / 2;
-		output_text.setString(output_strings[i]);
+		if (!add_idx && i == lines - 1)
+			output_text.setString(output_strings[i].substr(0, output_strings[i].size()-1));
+		else
+			output_text.setString(output_strings[i]);
 		output_text.setOrigin(output_text.getLocalBounds().left + output_text.getLocalBounds().width / 2.0, text_y_bound);
 		output_text.setPosition(Vector2f(text_x_offset, position.y + init_line * dis));
+		if (!add_idx && i == lines - 1)
+			output_text.setString(output_strings[i]);
 		window->draw(output_text);
+	}
+}
+
+void DialogueState::word_in_new_line()
+{
+	for (auto i = output_strings[lines - 1].rbegin(); i != output_strings[lines - 1].rend(); i++) {
+		if (!(*i >= '0' && *i <= '9' || *i >= 'a' && *i <= 'z' || *i >= 'A' && *i <= 'Z')) {
+			const bool new_line = (lines >= lim);
+			if (!new_line) {
+				for (auto j = i; j != output_strings[lines - 1].rbegin(); j--) {
+					output_strings[lines] += *j;
+				}
+				output_strings[lines] += *output_strings[lines - 1].rbegin();
+			}
+			for (auto j = output_strings[lines - 1].rbegin(); j != i; j++) {
+				output_strings[lines - 1].pop_back();
+				char_idx -= new_line;
+			}
+			output_strings[lines - 1].pop_back();
+			char_idx -= new_line;
+			break;
+		}
 	}
 }
 
 void DialogueState::write_text()
 {
 	if (text_x_bound >= 0.6 * box_bounds.width || dialogues[dialogue_idx].text[char_idx] == '\n') {
+		if (text_x_bound >= 0.6 * box_bounds.width) {
+			word_in_new_line();
+		}
+		else
+			char_idx++;
 		if (lines >= lim) {
+			output_strings[lines - 1] += '-';
 			reminder_idx = char_idx;
 			typing = 0;
 			return;
 		}
-		if (text_x_bound >= 0.6 * box_bounds.width) {
-			bool not_connected = 0;
-			for (auto i = output_strings[lines - 1].rbegin(); i != output_strings[lines - 1].rend(); i++) {
-				if (!(*i >= '0' && *i <= '9' || *i >= 'a' && *i <= 'z' || *i >= 'A' && *i <= 'Z')) {
-					not_connected = 1;
-					break;
-				}
-			}
-			if (not_connected) {
-				for (auto i = output_strings[lines - 1].rbegin(); i != output_strings[lines - 1].rend(); i++) {
-					if (!(isdigit(*i) || islower(*i) || isupper(*i)))
-						break;
-					output_strings[lines - 1].pop_back();
-					char_idx--;
-				}
-			}
-		}
-		else
-			char_idx++;
 		lines++;
 	}
 	if (dialogues[dialogue_idx].text[char_idx] == '/')
 		commands();
-	output_strings[lines - 1] += dialogues[dialogue_idx].text[char_idx], char_idx++;
-	output_text.setString(output_strings[lines - 1]);
-	text_x_bound = output_text.findCharacterPos(char_idx - reminder_idx).x - output_text.findCharacterPos(0).x;
+	if (char_idx < dialogues[dialogue_idx].text.size()) {
+		output_strings[lines - 1] += dialogues[dialogue_idx].text[char_idx], char_idx++;
+		output_text.setString(output_strings[lines - 1]);
+		text_x_bound = output_text.findCharacterPos(char_idx - reminder_idx).x - output_text.findCharacterPos(0).x;
+	}
 }
 
 void DialogueState::set_expression(short id)
@@ -156,6 +172,19 @@ void DialogueState::update()
 			}
 			else
 				typing = 0, reminder_idx = 0;
+		}
+		else
+			delay += dt;
+	}
+	else {
+		if (add_idx) {
+			output_strings[lines - 1] += ' ';
+			add_idx = 0;
+		}
+		if (delay >= 0.75) {
+			delay = 0;
+			cursor = !cursor;
+			output_strings[lines - 1][output_strings[lines - 1].size() - 1] = (cursor) ? '|' : ' ';
 		}
 		else
 			delay += dt;
@@ -210,7 +239,7 @@ void DialogueState::pollevent()
 				for (int i = 0; i < lines; i++) {
 					output_strings[i].clear();
 				}
-				lines = 1, delay = 0, skip = 0, typing = 1;
+				lines = 1, delay = 0, skip = 0, typing = 1, cursor = 0, add_idx = 1;
 				output_text.setString(output_strings[lines - 1]);
 				text_x_bound = output_text.findCharacterPos(char_idx - reminder_idx).x - output_text.findCharacterPos(0).x;
 			}
