@@ -44,7 +44,7 @@ void GameState::load_map(string map_name)
 			vis[i] = new bool* [size_x];
 		}
 		
-		static_map = new render_tile * [size_x];
+		static_map = new render_tile* [size_x];
 
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < 4; j++) {
@@ -63,7 +63,7 @@ void GameState::load_map(string map_name)
 					layer_prop = tile_props[tle.z].properties[tle.x][tle.y].props;
 
 
-					if (layer_prop & 16) { // inbetween
+					if (layer_prop & 16) { // front core
 						dynamic_objects objct;
 						objct.add({ Vector2f(i, j), tle});
 						objct.layer = layr;
@@ -137,7 +137,6 @@ void GameState::load_entities()
 
 void GameState::deload_map()
 {
-
 	// static map destructor;
 
 	for (int i = 0; i < size_x; i++) {
@@ -205,11 +204,6 @@ void GameState::player_movement()
 	if (!player_entity.is_in_action()) {
 		float x_movement = delta_movement().x * 130 * dt, y_movement = delta_movement().y * 130 * dt;
 		Vector2f direction = { 0,0 };
-
-		int cords_before_x = -map_x / 16.0 + player_entity.getPosition().x / (16.0 * scale), cords_before_y = -map_y / 16.0 + player_entity.getPosition().y / (16.0 * scale);
-
-		int cords_after_x = -map_x / 16 + (player_entity.getPosition().x + x_movement * scale) / (16 * scale), cords_after_y = -map_y / 16 + (player_entity.getPosition().y + y_movement * scale) / (16 * scale);
-
 
 		if (player_entity.legal_tile({ x_movement, 0 })) {
 			direction.x = delta_movement().x;

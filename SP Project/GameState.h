@@ -16,7 +16,7 @@ private:
 
 	Vector2f clicked_on = { -1, -1 };
 
-	render_tile** static_map, **temp_front;
+	render_tile** static_map;
 
 	struct entity {
 		Vector2f pixel_cords = { 0,0 };
