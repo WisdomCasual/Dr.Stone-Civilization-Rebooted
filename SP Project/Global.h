@@ -73,7 +73,7 @@ namespace globalvar {
 
 	struct dialogue {
 		string speaker, text;
-		short expression = 0, pic = 0;
+		short expression = 0, pic = 1;
 	};
 
 	inline void draw_text(string text_string, int x_pos, int y_pos, float characterSize)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
