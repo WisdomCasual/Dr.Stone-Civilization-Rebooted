@@ -113,7 +113,7 @@ void DialogueState::write_text()
 		else
 			char_idx++;
 		if (lines >= lim) {
-			output_strings[lines - 1] += '-';
+			output_strings[lines - 1] += "...";
 			reminder_idx = char_idx;
 			typing = 0;
 			return;
