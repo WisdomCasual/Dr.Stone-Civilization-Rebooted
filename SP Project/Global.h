@@ -1,6 +1,7 @@
 #pragma once
 #include"State.h"
 
+#define PI 3.141593f
 // background: 1, MainMenuState: 2 , SavesState: 3 , NewSaveState: 4 , GameState: 5 , 
 //MapBuilderState: 6, PauseState: 10, SettingsState: 11, ConfirmState: 12: 
 
@@ -93,4 +94,16 @@ namespace globalvar {
 			i = ((i % 256 + rand() % 256) % 94) + 33;
 		}
 	}
+
+	inline float dot(const Vector2f V1, const Vector2f V2) {
+		return V1.x * V2.x + V1.y + V2.y;
+	}
+
+	inline float magnitude(const Vector2f V) {
+		return sqrt(V.x * V.x + V.y * V.y);
+	}
+
+	inline Vector2f toCartesian(const Vector2f V) {
+		return Vector2f(V.x * cos(V.y), V.x * sin(V.y));
+	} //magnitude, direction
 }
