@@ -114,7 +114,9 @@ void GameState::load_map(string map_name)
 
 void GameState::load_entities()
 {
+	player_entity.setPlayerState(1);
 	player_entity.setPosition(window->getSize().x / 2, window->getSize().y / 2);
+
 
 	player_stats.animations = new animation * [4];
 	player_stats.states_no = 4;
@@ -132,7 +134,7 @@ void GameState::load_entities()
 		player_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
 	}
 
-	dynamic_rendering.insert({ float(-map_y + player_entity.getPosition().y/scale), {-1, &player_entity} });
+	dynamic_rendering.insert({ player_entity.getRelativePos().y, {-1, &player_entity} });
 }
 
 void GameState::deload_map()
@@ -172,7 +174,7 @@ void GameState::render_static_map()
 
 void GameState::render_entities()
 {
-	dynamic_rendering.insert({ float(-map_y + player_entity.getPosition().y / scale), {-1, &player_entity} });
+	dynamic_rendering.insert({ player_entity.getRelativePos().y, {-1, &player_entity} });
 	for (auto i = dynamic_rendering.lower_bound(-map_y-10); i != dynamic_rendering.end(); ) {
 		//if (i->first > map_y + win_y / scale + 10)
 		//	break;
@@ -270,7 +272,6 @@ void GameState::update()
 	player_entity.update();
 
 	player_movement();
-
 
 
 }

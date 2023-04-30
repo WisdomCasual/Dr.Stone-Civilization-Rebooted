@@ -14,6 +14,32 @@ Entity::~Entity()
 	delete[] entity_stats.animations;
 }
 
+Vector2f Entity::getRelativePos()
+{
+	return Vector2f(-map_x + getPosition().x / scale, -map_y + getPosition().y / scale);
+}
+
+void Entity::updatePos() {
+	entity_sprite.setPosition(pos.x  + map_x*scale, pos.y + map_y*scale);
+}
+
+bool Entity::entityFound(Entity& target)
+{
+	theta = 45;
+	Vector2f afov = Vector2f(fov.x * 16 * scale, fov.y * PI / 180);
+	float d = magnitude(target.getPosition() - getPosition()), atheta = theta * PI/180;
+	if (d <= afov.x) {
+		Vector2f A = toCartesian(Vector2f(afov.x, afov.y / 2 + atheta)),
+			B = { toCartesian(Vector2f(afov.x, (2 * PI - (afov.y / 2) + atheta))) },
+			p = target.getPosition() - getPosition();
+		float a1 = 2 * atan2(magnitude(magnitude(p) * A - magnitude(A) * p), magnitude(magnitude(p) * A + magnitude(A) * p)),
+			  a2 = 2 * atan2(magnitude(magnitude(p) * B - magnitude(B) * p), magnitude(magnitude(p) * B + magnitude(B) * p));
+		if (a1 + a2 <= afov.y)
+			return 1;
+	}
+	return 0;
+}
+
 Vector2f Entity::getPosition()
 {
 	return entity_sprite.getPosition();
@@ -24,15 +50,22 @@ bool Entity::is_in_action()
 	return active_action;
 }
 
-void Entity::setPosition(int x_pos, int y_pos)
+void Entity::setPosition(float x_pos, float y_pos)
 {
-	entity_sprite.setPosition(x_pos, y_pos);
+	pos = { x_pos, y_pos };
+	if(is_player)
+		entity_sprite.setPosition(pos);
 }
 
 void Entity::setScale(float scale)
 {
 	sprite_scale = scale;
 	entity_sprite.setScale(scale, scale);
+}
+
+void Entity::setPlayerState(bool state)
+{
+	is_player = state;
 }
 
 void Entity::move(Vector2f movement)
