@@ -128,17 +128,18 @@ void GameState::load_entities()
 		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
 	}
 	for (int i = 1; i <= 3; i++) {
-		player_stats.animations[3][0 + i * 4] = { 6, {192, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
-		player_stats.animations[3][1 + i * 4] = { 6, {192, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
-		player_stats.animations[3][2 + i * 4] = { 6, {192, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
-		player_stats.animations[3][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
+		player_stats.animations[2][0 + i * 4] = { 6, {192, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
+		player_stats.animations[2][1 + i * 4] = { 6, {192, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
+		player_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
+		player_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
 	}
-	for (int i = 1; i <= 2; i++) {
+	for (int i = 0; i <= 1; i++) {
 		player_stats.animations[i][4] = { 5, {128, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
 		player_stats.animations[i][5] = { 5, {128, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
 		player_stats.animations[i][6] = { 5, {128, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
 		player_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
+	player_entity.change_state(3);
 
 
 	dynamic_rendering.insert({ player_entity.getRelativePos().y, {-1, &player_entity} });
@@ -308,16 +309,16 @@ void GameState::pollevent()
 				game.update_window();
 				break;
 			case Keyboard::Num1:
-				player_entity.change_state(0);
-				break;
-			case Keyboard::Num2:
 				player_entity.change_state(3);
 				break;
-			case Keyboard::Num3:
+			case Keyboard::Num2:
 				player_entity.change_state(2);
 				break;
-			case Keyboard::Num4:
+			case Keyboard::Num3:
 				player_entity.change_state(1);
+				break;
+			case Keyboard::Num4:
+				player_entity.change_state(0);
 				break;
 			case Keyboard::Space:
 				player_entity.action(1); break;
@@ -328,6 +329,13 @@ void GameState::pollevent()
 			case Mouse::Left:
 				clicked_on = window->mapPixelToCoords(Mouse::getPosition(*window));
 				break;
+			}
+		case Event::MouseWheelMoved:
+			if (event.type == Event::MouseWheelMoved) {
+				int new_state = player_stats.state - event.mouseWheel.delta;
+				if (new_state > 3) new_state = 3;
+				else if (new_state < 0) new_state = 0;
+				player_entity.change_state(new_state);
 			}
 		}
 	}
