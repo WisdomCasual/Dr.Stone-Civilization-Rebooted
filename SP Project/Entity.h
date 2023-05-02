@@ -14,7 +14,7 @@ struct animation {
 struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations;
-	short health = 100, damage = 10, state = 1, states_no;
+	short health = 100, damage = 10, state = 0, states_no;
 };
 
 struct Entity : public State
@@ -35,7 +35,10 @@ private:
 	Vector2f pos = { 0, 0 }, fov = {8.f, 60.f}; //fov = (magnitude, angle)
 	bool is_player = 0;
 	float theta = 0;
-
+	//////////////////7agat el darb//////////////////
+	FloatRect MakanElDarb;
+	Vector2f RangeElDarb={ 5,5 };
+	float Lag = 0;
 public:
 	Entity(entity&, string, render_tile**&, float&, float&);
 
@@ -45,6 +48,7 @@ public:
 	Vector2f getRelativePos();
 	bool is_in_action();
 	void updatePos();
+	void change_state(int);
 	bool entityFound(Entity&);
 	void setPlayerState(bool state); //1 = player, 0 = non-player
 	void setPosition(float x_pos, float y_pos);
@@ -54,6 +58,7 @@ public:
 	void action(int);
 	void direction(Vector2f);
 	void stateMachine(Entity&);
+	void Edrab();
 	void update();
 	void pollevent();
 	void render();
