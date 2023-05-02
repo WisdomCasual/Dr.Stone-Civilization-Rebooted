@@ -19,8 +19,15 @@ Vector2f Entity::getRelativePos()
 	return Vector2f(-map_x + getPosition().x / scale, -map_y + getPosition().y / scale);
 }
 
-void Entity::updatePos() {
+void Entity::updatePos()
+{
 	entity_sprite.setPosition(pos.x  + map_x*scale, pos.y + map_y*scale);
+}
+
+void Entity::change_state(int new_state)
+{
+	if (!is_in_action())
+		entity_stats.state = new_state;
 }
 
 bool Entity::entityFound(Entity& target)

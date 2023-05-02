@@ -14,7 +14,7 @@ struct animation {
 struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations;
-	short health = 100, damage = 10, state = 2, states_no;
+	short health = 100, damage = 10, state = 0, states_no;
 };
 
 struct Entity : public State
@@ -46,6 +46,7 @@ public:
 	Vector2f getRelativePos();
 	bool is_in_action();
 	void updatePos();
+	void change_state(int);
 	bool entityFound(Entity&);
 	void setPlayerState(bool state); //1 = player, 0 = non-player
 	void setPosition(float x_pos, float y_pos);
