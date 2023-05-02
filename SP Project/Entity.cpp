@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats,string entity_name, render_tile**& static_map, float& map_x, float& map_y)
+Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, float& map_x, float& map_y)
 	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), static_map(static_map)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
@@ -157,6 +157,56 @@ void Entity::direction(Vector2f direction)
 	}
 }
 
+void Entity::stateMachine(Entity& target)
+{
+	switch (entity_stats.state) {
+	case 1:
+
+		break;
+	case 2:
+
+		break;
+	default:
+
+		break;
+	}
+}
+
+void Entity::Edrab()
+{
+	if (current_move == 0) {//U
+		if (Lag == 3) {
+			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y - RangeElDarb.y,RangeElDarb.x,RangeElDarb.y };
+
+			Lag = 0;
+		}
+		else Lag += dt;
+	}
+	if (current_move == 1) {//R
+		if (Lag == 3) {
+			MakanElDarb = { getPosition().x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
+			Lag = 0;
+		}
+		else Lag += dt;
+		
+	}
+	if (current_move == 2) {//L
+		if (Lag == 3) {
+			MakanElDarb = { getPosition().x - RangeElDarb.x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
+			Lag = 0;
+		}
+		else Lag += dt;
+	}
+	if (current_move == 3) {//D
+		if (Lag == 3) {
+			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
+			
+			Lag = 0;
+		}
+		else Lag += dt;
+	}
+}
+
 void Entity::update()
 {
 	if (prev_win != window->getSize()) {
@@ -192,6 +242,7 @@ void Entity::update()
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[entity_stats.state][current_move].origin); ///////////////
 }
+
 
 void Entity::pollevent()
 {
