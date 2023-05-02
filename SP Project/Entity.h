@@ -14,7 +14,7 @@ struct animation {
 struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations;
-	short health = 100, damage = 10, state = 2, states_no;
+	short health = 100, damage = 10, state = 1, states_no;
 };
 
 struct Entity : public State
