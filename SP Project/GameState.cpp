@@ -291,14 +291,11 @@ void GameState::update()
 {
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		player_entity.setPosition(player_entity.getPosition().x / scale, player_entity.getPosition().y / scale);
 		win_x = window->getSize().x, win_y = window->getSize().y;
 		x = win_x / 2, y = win_y / 2;
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
-		player_entity.setPosition(player_entity.getPosition().x * scale, player_entity.getPosition().y * scale);
 		/////////////////////
-
 		player_entity.setScale(scale * 0.65);
 	}
 

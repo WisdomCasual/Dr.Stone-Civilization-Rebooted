@@ -3,6 +3,10 @@
 Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, float& map_x, float& map_y)
 	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), static_map(static_map)
 {
+	win_x = window->getSize().x, win_y = window->getSize().y;
+	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
+	else scale = win_y / 304.5;
+
 	initial_textures("game/entities/" + entity_name);
 	entity_sprite.setTexture(*textures[entity_stats.state]); 
 	srand(time(0));
@@ -224,9 +228,13 @@ void Entity::update()
 {
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
+		entity_sprite.setPosition(entity_sprite.getPosition().x / scale, entity_sprite.getPosition().y / scale);
 		win_x = window->getSize().x, win_y = window->getSize().y;
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
+		entity_sprite.setPosition(entity_sprite.getPosition().x * scale, entity_sprite.getPosition().y * scale);
+		////////////////
+
 	}
 
 	if (entity_stats.state != prev_state) {
