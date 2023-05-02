@@ -309,7 +309,9 @@ void GameState::update()
 	enemy_entity.update();
 	enemy_entity.updatePos();
 
+	if (enemy_entity.entityFound(player_entity)) {
 
+	}
 }
 
 void GameState::render()

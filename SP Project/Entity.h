@@ -31,14 +31,14 @@ private:
 	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
 	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
-	int active_action = 0;
-	Vector2f pos = { 0, 0 }, fov = {8.f, 60.f}; //fov = (magnitude, angle)
-	bool is_player = 0;
+	int active_action = 0, move_for;
+	Vector2f pos = { 0, 0 }, fov = {8.f, 60.f}, curr_movement; //fov = (magnitude, angle)
+	bool is_player = 0, will_move = 0;
 	float theta = 0;
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb;
 	Vector2f RangeElDarb={ 5,5 };
-	float Lag = 0;
+	float Lag = 0, motion_delay = 0;
 public:
 	Entity(entity&, string, render_tile**&, float&, float&);
 
@@ -57,7 +57,7 @@ public:
 	void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
-	void stateMachine(Entity&);
+	void stateMachine();
 	void Edrab();
 	void update();
 	void pollevent();
