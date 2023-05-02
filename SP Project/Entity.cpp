@@ -5,6 +5,7 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 {
 	initial_textures("game/entities/" + entity_name);
 	entity_sprite.setTexture(*textures[entity_stats.state]); 
+	srand(time(0));
 }
 
 Entity::~Entity()
@@ -32,7 +33,6 @@ void Entity::change_state(int new_state)
 
 bool Entity::entityFound(Entity& target)
 {
-	theta = 45;
 	Vector2f afov = Vector2f(fov.x * 16 * scale, fov.y * PI / 180);
 	float d = magnitude(target.getPosition() - getPosition()), atheta = theta * PI/180;
 	if (d <= afov.x) {
@@ -77,8 +77,11 @@ void Entity::setPlayerState(bool state)
 
 void Entity::move(Vector2f movement)
 {
-	if (!active_action)
-		entity_sprite.move(movement);
+	if (!active_action) {
+		if(is_player)
+			entity_sprite.move(movement);
+		pos += movement;
+	}
 }
 
 void Entity::action(int action_id)
@@ -153,7 +156,7 @@ void Entity::direction(Vector2f direction)
 	}
 }
 
-void Entity::stateMachine(Entity& target)
+void Entity::stateMachine()
 {
 	switch (entity_stats.state) {
 	case 1:
@@ -163,7 +166,21 @@ void Entity::stateMachine(Entity& target)
 
 		break;
 	default:
+		motion_delay += dt;
 
+		if (motion_delay >= move_for && will_move) {
+			will_move = 0;
+			direction({ 0, 0 });
+		}
+		if (motion_delay >= 4) {
+			motion_delay = 0;
+			theta = (rand() % 36) * 10;
+			will_move = rand() % 4;
+			move_for = 3 + rand() % 2;
+			direction({ 0, 0 });
+			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+		}
+			
 		break;
 	}
 }
@@ -196,7 +213,7 @@ void Entity::Edrab()
 	if (current_move == 3) {//D
 		if (Lag == 3) {
 			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
-			
+
 			Lag = 0;
 		}
 		else Lag += dt;
@@ -233,6 +250,19 @@ void Entity::update()
 
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[entity_stats.state][current_move].origin); ///////////////
+
+
+	if (!is_player)
+		stateMachine();
+
+	if (will_move) {
+		if (legal_tile({ curr_movement.x, 0 }))
+			move({ dt * 100 * curr_movement.x, 0});
+		if (legal_tile({ 0, curr_movement.y }))
+			move({ 0, dt * 100 * curr_movement.y });
+
+		direction({ round(curr_movement.x), round(curr_movement.y) });
+	}
 }
 
 
