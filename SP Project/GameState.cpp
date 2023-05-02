@@ -267,7 +267,7 @@ void GameState::player_movement()
 }
 
 GameState::GameState()
-	: player_entity(player_stats, "character 0", static_map, map_x, map_y), enemy_entity(enemy_stats, "character 0", static_map, map_x, map_y)
+	: player_entity(player_stats, "character 0", static_map, map_x, map_y), enemy_entity(enemy_stats, "character 0", static_map, map_x, map_y, &player_entity)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
@@ -306,9 +306,6 @@ void GameState::update()
 	enemy_entity.update();
 	enemy_entity.updatePos();
 
-	if (enemy_entity.entityFound(player_entity)) {
-
-	}
 }
 
 void GameState::render()
