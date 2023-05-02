@@ -30,6 +30,9 @@ private:
 	Vector2u prev_win = { 0, 0 };
 	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
 	int active_action = 0;
+	Vector2f pos = { 0, 0 }, fov = {8.f, 60.f}; //fov = (magnitude, angle)
+	bool is_player = 0;
+	float theta = 0;
 
 public:
 	Entity(entity&, string, render_tile**&, float&, float&);
@@ -37,8 +40,12 @@ public:
 	~Entity();
 
 	Vector2f getPosition();
+	Vector2f getRelativePos();
 	bool is_in_action();
-	void setPosition(int x_pos, int y_pos);
+	void updatePos();
+	bool entityFound(Entity&);
+	void setPlayerState(bool state); //1 = player, 0 = non-player
+	void setPosition(float x_pos, float y_pos);
 	void setScale(float);
 	bool legal_tile(Vector2f);
 	void move(Vector2f);
