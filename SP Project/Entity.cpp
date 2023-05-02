@@ -1,7 +1,7 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, float& map_x, float& map_y)
-	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), static_map(static_map)
+Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, float& map_x, float& map_y, Entity* player)
+	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), static_map(static_map), player_entity(*player)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
@@ -37,14 +37,14 @@ void Entity::change_state(int new_state)
 
 bool Entity::entityFound(Entity& target)
 {
-	Vector2f afov = Vector2f(fov.x * 16 * scale, fov.y * PI / 180);
+	Vector2f afov = (entity_stats.state != 1) ? Vector2f(fov.x * 16 * scale, fov.y * PI / 180) : Vector2f(fov.x * 32 * scale, fov.y * PI / 180);
 	float d = magnitude(target.getPosition() - getPosition()), atheta = theta * PI/180;
 	if (d <= afov.x) {
 		Vector2f A = toCartesian(Vector2f(afov.x, afov.y / 2 + atheta)),
 			B = { toCartesian(Vector2f(afov.x, (2 * PI - (afov.y / 2) + atheta))) },
 			p = target.getPosition() - getPosition();
-		float a1 = 2 * atan2(magnitude(magnitude(p) * A - magnitude(A) * p), magnitude(magnitude(p) * A + magnitude(A) * p)),
-			  a2 = 2 * atan2(magnitude(magnitude(p) * B - magnitude(B) * p), magnitude(magnitude(p) * B + magnitude(B) * p));
+		float a1 = 2 * atan2f(magnitude(magnitude(p) * A - magnitude(A) * p), magnitude(magnitude(p) * A + magnitude(A) * p)),
+			  a2 = 2 * atan2f(magnitude(magnitude(p) * B - magnitude(B) * p), magnitude(magnitude(p) * B + magnitude(B) * p));
 		if (a1 + a2 <= afov.y)
 			return 1;
 	}
@@ -162,12 +162,39 @@ void Entity::direction(Vector2f direction)
 
 void Entity::stateMachine()
 {
+	if (entity_stats.state != 1 && entityFound(player_entity)) {
+		entity_stats.state = 1;
+		motion_delay = 0;
+	}
 	switch (entity_stats.state) {
-	case 1:
-
+	case 1: {
+		Vector2f delta_pos = player_entity.getRelativePos() - getRelativePos();
+		theta = atan2f(delta_pos.y, delta_pos.x) * 180/PI;
+		curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+		will_move = 1;
+		if (!entityFound(player_entity)) {
+			last_seen = Vector2f((int(last_seen.x / 16 / scale) * 16 + 8) * scale, (int(last_seen.y / 16 / scale) * 16 + 8) * scale);
+			delta_pos = last_seen - getRelativePos();
+			theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
+			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+			last_sign = getRelativePos() - last_seen;
+			entity_stats.state = 2;
+			break;
+		}
+		last_seen = player_entity.getRelativePos();
 		break;
+	}
 	case 2:
-
+		if ((getRelativePos().x - last_seen.x < 0 != last_sign.x < 0) && (getRelativePos().y - last_seen.y < 0 != last_sign.y < 0)) {
+			will_move = 0;
+		}
+		if (!will_move) {
+			if (motion_delay >= 4) {
+				motion_delay = 3.5;
+				entity_stats.state = 0;
+			}
+			motion_delay += dt;
+		}
 		break;
 	default:
 		motion_delay += dt;
@@ -184,7 +211,6 @@ void Entity::stateMachine()
 			direction({ 0, 0 });
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		}
-			
 		break;
 	}
 }
@@ -264,12 +290,15 @@ void Entity::update()
 		stateMachine();
 
 	if (will_move) {
-		if (legal_tile({ curr_movement.x, 0 }))
-			move({ dt * 100 * curr_movement.x, 0});
-		if (legal_tile({ 0, curr_movement.y }))
-			move({ 0, dt * 100 * curr_movement.y });
-
-		direction({ round(curr_movement.x), round(curr_movement.y) });
+		bool legal_x = legal_tile({ curr_movement.x, 0 }), legal_y = legal_tile({ 0, curr_movement.y });
+		if (legal_x)
+			move({ dt * 33 * curr_movement.x * scale, 0});
+		if (legal_y)
+			move({ 0, dt * 33 * curr_movement.y * scale });
+		if (!legal_x && !legal_y)
+			theta += -1 * (rand() % 2) * 30;
+		else
+			direction({ round(curr_movement.x), round(curr_movement.y) });
 	}
 }
 

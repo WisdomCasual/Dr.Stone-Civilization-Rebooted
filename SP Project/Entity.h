@@ -20,7 +20,8 @@ struct entity {
 struct Entity : public State
 {
 private:
-	entity& entity_stats;
+	entity &entity_stats;
+	Entity& player_entity;
 	Sprite entity_sprite;
 	render_tile**& static_map;
 	float  delay = 0, animation_delay = 0.06, &map_x, &map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
@@ -32,7 +33,7 @@ private:
 	Vector2u prev_win = { 0, 0 };
 	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
 	int active_action = 0, move_for;
-	Vector2f pos = { 0, 0 }, fov = {8.f, 60.f}, curr_movement; //fov = (magnitude, angle)
+	Vector2f pos = { 0, 0 }, fov = { 10.f, 120.f }, curr_movement = { 0.f, 0.f }, last_seen = {0.f, 0.f}, last_sign; //fov = (magnitude, angle)
 	bool is_player = 0, will_move = 0;
 	float theta = 0;
 	//////////////////7agat el darb//////////////////
@@ -40,7 +41,7 @@ private:
 	Vector2f RangeElDarb={ 5,5 };
 	float Lag = 0, motion_delay = 0;
 public:
-	Entity(entity&, string, render_tile**&, float&, float&);
+	Entity(entity&, string, render_tile**&, float&, float&, Entity* player = nullptr);
 
 	~Entity();
 

@@ -100,7 +100,7 @@ namespace globalvar {
 	}
 
 	inline float magnitude(const Vector2f V) {
-		return sqrt(V.x * V.x + V.y * V.y);
+		return sqrtf(V.x * V.x + V.y * V.y);
 	}
 
 	inline Vector2f toCartesian(const Vector2f V) {
