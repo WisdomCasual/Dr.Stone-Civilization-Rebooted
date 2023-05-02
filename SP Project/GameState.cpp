@@ -301,7 +301,8 @@ void GameState::pollevent()
 				game.update_window();
 				break;
 			case Keyboard::Space:
-				player_entity.action(1); break;
+				player_entity.action(1);
+				player_entity.Edrab();
 				break;
 			}
 		case Event::MouseButtonPressed:

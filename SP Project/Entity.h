@@ -33,7 +33,10 @@ private:
 	Vector2f pos = { 0, 0 }, fov = {8.f, 60.f}; //fov = (magnitude, angle)
 	bool is_player = 0;
 	float theta = 0;
-
+	//////////////////7agat el darb//////////////////
+	FloatRect MakanElDarb;
+	Vector2f RangeElDarb={ 5,5 };
+	float Lag = 0;
 public:
 	Entity(entity&, string, render_tile**&, float&, float&);
 
@@ -51,6 +54,7 @@ public:
 	void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
+	void Edrab();
 	void update();
 	void pollevent();
 	void render();
