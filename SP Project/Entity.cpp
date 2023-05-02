@@ -23,6 +23,13 @@ void Entity::updatePos() {
 	entity_sprite.setPosition(pos.x  + map_x*scale, pos.y + map_y*scale);
 }
 
+void Entity::change_state(int new_state) {
+	if (!is_in_action()) {
+		entity_stats.state = new_state;
+		current_frame = 0, delay = 0;
+	}
+}
+
 bool Entity::entityFound(Entity& target)
 {
 	theta = 45;
