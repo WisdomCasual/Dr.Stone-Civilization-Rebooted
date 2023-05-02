@@ -133,6 +133,13 @@ void GameState::load_entities()
 		player_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
 		player_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
 	}
+	for (int i = 0; i <= 1; i++) {
+		player_stats.animations[i][4] = { 5, {128, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
+		player_stats.animations[i][5] = { 5, {128, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
+		player_stats.animations[i][6] = { 5, {128, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
+		player_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
+	}
+
 
 	dynamic_rendering.insert({ player_entity.getRelativePos().y, {-1, &player_entity} });
 }
