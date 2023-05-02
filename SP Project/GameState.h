@@ -11,8 +11,8 @@ struct GameState : public State
 private:
 	//variables:
 
-	entity player_stats;
-	Entity player_entity;
+	entity player_stats, enemy_stats;
+	Entity player_entity, enemy_entity;
 
 	Vector2f clicked_on = { -1, -1 };
 
