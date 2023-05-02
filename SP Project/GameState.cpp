@@ -140,6 +140,31 @@ void GameState::load_entities()
 		player_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
 
+	enemy_entity.setPosition(window->getSize().x, window->getSize().y + 50);
+
+
+	enemy_stats.animations = new animation * [4];
+	enemy_stats.states_no = 4;
+	enemy_stats.state = 0;
+	for (int i = 0; i < 4; i++) {
+		enemy_stats.animations[i] = new animation[16];
+		enemy_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
+		enemy_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
+		enemy_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
+		enemy_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
+	}
+	for (int i = 1; i <= 3; i++) {
+		enemy_stats.animations[2][0 + i * 4] = { 6, {192, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
+		enemy_stats.animations[2][1 + i * 4] = { 6, {192, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
+		enemy_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
+		enemy_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
+	}
+	for (int i = 0; i <= 1; i++) {
+		enemy_stats.animations[i][4] = { 5, {128, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
+		enemy_stats.animations[i][5] = { 5, {128, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
+		enemy_stats.animations[i][6] = { 5, {128, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
+		enemy_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
+	}
 
 	dynamic_rendering.insert({ player_entity.getRelativePos().y, {-1, &player_entity} });
 }
@@ -241,7 +266,7 @@ void GameState::player_movement()
 }
 
 GameState::GameState()
-	: player_entity(player_stats, "character 0", static_map, map_x, map_y)
+	: player_entity(player_stats, "character 0", static_map, map_x, map_y), enemy_entity(enemy_stats, "character 0", static_map, map_x, map_y)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
@@ -280,6 +305,9 @@ void GameState::update()
 
 	player_movement();
 
+	enemy_entity.update();
+	enemy_entity.updatePos();
+
 
 }
 
@@ -287,6 +315,7 @@ void GameState::render()
 {
 	render_static_map();
 	render_entities();
+	enemy_entity.render();
 }
 
 void GameState::pollevent()

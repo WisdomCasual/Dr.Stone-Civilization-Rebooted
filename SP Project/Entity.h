@@ -26,6 +26,8 @@ private:
 	float  delay = 0, animation_delay = 0.06, &map_x, &map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	short current_move = 3, current_frame = 0, prev_state = -1;
 	IntRect current_rect = { 0,0,0,0 };
+
+
 	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
 	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
@@ -51,6 +53,7 @@ public:
 	void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
+	void stateMachine(Entity&);
 	void update();
 	void pollevent();
 	void render();

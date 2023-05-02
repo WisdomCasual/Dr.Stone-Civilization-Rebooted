@@ -146,6 +146,21 @@ void Entity::direction(Vector2f direction)
 	}
 }
 
+void Entity::stateMachine(Entity& target)
+{
+	switch (entity_stats.state) {
+		case 1:
+			
+			break;
+		case 2:
+
+			break;
+		default:
+
+			break;
+	}
+}
+
 void Entity::update()
 {
 	if (prev_win != window->getSize()) {
@@ -177,6 +192,7 @@ void Entity::update()
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[entity_stats.state][current_move].origin); ///////////////
 }
+
 
 void Entity::pollevent()
 {
