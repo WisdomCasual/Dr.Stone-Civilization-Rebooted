@@ -35,7 +35,7 @@ void Entity::change_state(int new_state)
 		entity_stats.state = new_state;
 }
 
-bool Entity::visionLines(Entity& target)
+Entity::casted_bool Entity::visionLines(Entity& target)
 {
 	float m[5], delta_y = target.getRelativePos().y - getRelativePos().y,
 				delta_x = target.getRelativePos().x - getRelativePos().x;
@@ -49,7 +49,7 @@ bool Entity::visionLines(Entity& target)
 		for_y[0] = 1;
 	}
 	if (delta_x == 0)
-		return 1;
+		return {1, 1};
 	if ((delta_x > 0)) {
 		initial_pos[0] = getRelativePos();
 		target_pos[0] = target.getRelativePos();
@@ -75,7 +75,7 @@ bool Entity::visionLines(Entity& target)
 				for_y[k] = 1;
 			}
 			if (delta_x == 0)
-				return 1;
+				return { 1, 1 };
 			if ((delta_x > 0)) {
 				initial_pos[k] = getRelativePos();
 				target_pos[k] = {targ_x, targ_y};
@@ -110,12 +110,12 @@ bool Entity::visionLines(Entity& target)
 			}
 		}
 	}
-	return (hit != 5);
+	return { hit != 5, !hit };
 }
 
-bool Entity::entityFound(Entity& target)
+Entity::casted_bool Entity::entityFound(Entity& target)
 {
-
+	
 	Vector2f afov = (entity_stats.state != 1) ? Vector2f(fov.x * 16 * scale, fov.y * PI / 180) : Vector2f(fov.x * 32 * scale, fov.y * PI / 180);
 	float d = magnitude(target.getRelativePos() - getRelativePos()), atheta = theta * PI/180;
 	if (d <= afov.x) {
@@ -124,10 +124,11 @@ bool Entity::entityFound(Entity& target)
 			p = target.getRelativePos() - getRelativePos();
 		float a1 = 2 * atan2f(magnitude(magnitude(p) * A - magnitude(A) * p), magnitude(magnitude(p) * A + magnitude(A) * p)),
 			  a2 = 2 * atan2f(magnitude(magnitude(p) * B - magnitude(B) * p), magnitude(magnitude(p) * B + magnitude(B) * p));
-		if (a1 + a2 <= afov.y && visionLines(target))
-			return 1;
+		if (a1 + a2 <= afov.y) {
+			return visionLines(target);
+		}
 	}
-	return 0;
+	return {0, 0};
 }
 
 Vector2f Entity::getPosition()
@@ -241,23 +242,36 @@ void Entity::direction(Vector2f direction)
 
 void Entity::stateMachine()
 {
-	if (entity_stats.state != 1 && entityFound(player_entity)) {
+
+	casted_bool checker = entityFound(player_entity);
+	if (entity_stats.state != 1 && checker.vision) {
 		entity_stats.state = 1;
 		motion_delay = 0;
 	}
 	switch (entity_stats.state) {
 	case 1: {
 		Vector2f delta_pos = player_entity.getRelativePos() - getRelativePos();
-		theta = atan2f(delta_pos.y, delta_pos.x) * 180/PI;
-		curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-		will_move = 1;
-		if (!entityFound(player_entity)) {
-			last_seen = Vector2f((int(last_seen.x / 16 / scale) * 16 + 8) * scale, (int(last_seen.y / 16 / scale) * 16 + 8) * scale);
-			delta_pos = last_seen - getRelativePos();
+		if (checker.path) {
+			use_astar = 0;
 			theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-			last_sign = getRelativePos() - last_seen;
-			entity_stats.state = 2;
+			will_move = 1;
+		}
+		else {
+			use_astar = 1;
+		}
+		if (!entityFound(player_entity).vision) {
+			if (use_astar) {
+
+			}
+			else {
+				delta_pos = last_seen - getRelativePos();
+				theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
+				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+			}
+				last_seen = Vector2f((int(last_seen.x / 16 / scale) * 16 + 8) * scale, (int(last_seen.y / 16 / scale) * 16 + 8) * scale);
+				last_sign = getRelativePos() - last_seen;
+				entity_stats.state = 2;
 			break;
 		}
 		last_seen = player_entity.getRelativePos();
