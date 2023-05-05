@@ -17,31 +17,6 @@ struct entity {
 	short health = 100, damage = 10, state = 0, states_no;
 };
 
-struct Entity : public State
-{
-private:
-	entity &entity_stats;
-	Entity& player_entity;
-	Sprite entity_sprite;
-	render_tile**& static_map;
-	float  delay = 0, animation_delay = 0.06, &map_x, &map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
-	short current_move = 3, current_frame = 0, prev_state = -1;
-	IntRect current_rect = { 0,0,0,0 };
-
-
-	Vector2f current_hitbox = { 0,0 };
-	Vector2u prev_win = { 0, 0 };
-	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
-	int active_action = 0, move_for;
-	Vector2f pos = { 0, 0 }, fov = { 10.f, 120.f }, curr_movement = { 0.f, 0.f }, last_seen = {0.f, 0.f}, last_sign; //fov = (magnitude, angle)
-	bool is_player = 0, will_move = 0, use_astar = 0;
-	float theta = 0;
-	//////////////////7agat el darb//////////////////
-	FloatRect MakanElDarb, Entity_Hitbox;
-	Vector2f RangeElDarb = { 5,5 }, Size_Hitbox = { 10,10 };
-	float Lag = 0, motion_delay = 4;
-	const float corners[2] = { 1, -1 };
-
 	struct casted_bool {
 		bool vision = 0, path = 0;
 	};
@@ -139,106 +114,128 @@ private:
 		}
 	};
 
-    struct tabor_el_3e4 {
-    private:
+	struct tabor_el_3e4 {
+	private:
 
 
-        int size = 0;
+		int size = 0;
 		comparison_array hp;
-    public:
+	public:
 
 		tabor_el_3e4() {
 			hp.resize(128);
 		}
-        /* heap algorithm */
-        void sheftup(int indx) {
-            int parent = (indx - 1) / 2;
-            if (hp.at[parent].cost > hp.at[indx].cost) {
-                swap(hp.at[parent], hp.at[indx]);
-                sheftup(parent);
-            }
-        }
-        void sheftdown(int indx) {
-            int min_valu = indx, left = (indx * 2) + 1, right = (indx * 2) + 2;
-            if (left < size && hp.at[left].cost < hp.at[min_valu].cost)
-                min_valu = left;
+		/* heap algorithm */
+		void sheftup(int indx) {
+			int parent = (indx - 1) / 2;
+			if (hp.at[parent].cost > hp.at[indx].cost) {
+				swap(hp.at[parent], hp.at[indx]);
+				sheftup(parent);
+			}
+		}
+		void sheftdown(int indx) {
+			int min_valu = indx, left = (indx * 2) + 1, right = (indx * 2) + 2;
+			if (left < size && hp.at[left].cost < hp.at[min_valu].cost)
+				min_valu = left;
 
-            if (right < size && hp.at[right].cost < hp.at[min_valu].cost)
-                min_valu = right;
-
-
-            if (min_valu != indx) {
-
-                swap(hp.at[min_valu], hp.at[indx]);
-                sheftdown(min_valu);
-
-            }
-        }
+			if (right < size && hp.at[right].cost < hp.at[min_valu].cost)
+				min_valu = right;
 
 
-        /* insert function */
+			if (min_valu != indx) {
+
+				swap(hp.at[min_valu], hp.at[indx]);
+				sheftdown(min_valu);
+
+			}
+		}
 
 
-        void Ed5ol(comparison_tile dist) {
-            size++;
+		/* insert function */
+
+
+		void Ed5ol(comparison_tile dist) {
+			size++;
 			hp.add(dist);
-            sheftup(size - 1);
-        }
+			sheftup(size - 1);
+		}
 
-        /* empty function */
-        bool Fare8() {
-            if (!size)
-                return 1;
-            else return 0;
-        }
+		/* empty function */
+		bool Fare8() {
+			if (!size)
+				return 1;
+			else return 0;
+		}
 
-        /* delet top function */
-        void Astika() {
-            hp.at[0] = hp.at[size - 1];
-            size--;
-            sheftdown(0);
-        }
+		/* delet top function */
+		void Astika() {
+			hp.at[0] = hp.at[size - 1];
+			size--;
+			sheftdown(0);
+		}
 
-        /* clear function */
-        void shinra_tensi() {
-            size = 0;
-        }
+		/* clear function */
+		void shinra_tensi() {
+			size = 0;
+		}
 
 
 
 		comparison_tile top() {
-            if (!Fare8()) {
+			if (!Fare8()) {
 
-                return hp.at[0];
-            }
-            return comparison_tile(-1, -1, -1);
-        }
-    } a_star;
+				return hp.at[0];
+			}
+			return comparison_tile(-1, -1, -1);
+		}
+	};
+struct Entity : public State
+{
 
 
 public:
+
+	//Public Variables for all sub-classes
+	entity& entity_stats;
+	Entity& player_entity;
+	Sprite entity_sprite;
+	render_tile**& static_map;
+	float  delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
+	short current_move = 3, current_frame = 0, prev_state = -1;
+	IntRect current_rect = { 0,0,0,0 };
+	Vector2f current_hitbox = { 0,0 };
+	Vector2u prev_win = { 0, 0 };
+	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
+	int active_action = 0, move_for = 0;
+	Vector2f pos = { 0, 0 };
+	const float corners[2] = { 1, -1 };
+
+	//////////////////7agat el darb//////////////////
+	FloatRect MakanElDarb, Entity_Hitbox;
+	Vector2f RangeElDarb = { 5,5 }, Size_Hitbox = { 10,10 };
+	float Lag = 0;
+
+
+
+	//Public functions
 	Entity(entity&, string, render_tile**&, float&, float&, Entity* player = nullptr);
 
-	~Entity();
+	virtual ~Entity();
 
 	Vector2f getPosition();
 	Vector2f getRelativePos();
 	bool is_in_action();
-	void updatePos();
-	void change_state(int);
-	casted_bool visionLines(Entity&);
-	casted_bool entityFound(Entity&);
-	void setPlayerState(bool state); //1 = player, 0 = non-player
-	void setPosition(float x_pos, float y_pos);
+	void change_state(int); 
+	void setPosition(float x_pos, float y_pos);  //modify for player
 	void setScale(float);
 	bool legal_tile(Vector2f);
-	void move(Vector2f);
+	virtual void move(Vector2f);    //modify for player
 	void action(int);
 	void direction(Vector2f);
-	void stateMachine();
-	void Edrab();
-	void update();
-	void pollevent();
+	void updatePos();   //passive
+	void Edrab();   //player
+	virtual void update() = 0;
+	virtual void pollevent();
 	void render();
 
 };
