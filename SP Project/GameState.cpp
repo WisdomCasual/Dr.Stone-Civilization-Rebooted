@@ -304,7 +304,6 @@ void GameState::update()
 	player_movement();
 
 	enemy_entity.update();
-	enemy_entity.updatePos();
 
 }
 

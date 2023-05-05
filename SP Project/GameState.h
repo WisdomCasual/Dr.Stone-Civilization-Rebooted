@@ -2,6 +2,7 @@
 #include"State.h"
 #include"Game.h"
 #include "Entity.h"
+#include "Enemy.h"
 
 #include"Global.h"
 using namespace globalvar;
@@ -12,7 +13,8 @@ private:
 	//variables:
 
 	entity player_stats, enemy_stats;
-	Entity player_entity, enemy_entity;
+	//Player player_entity;                                  //nuke experts only
+	Enemy enemy_entity;
 
 	Vector2f clicked_on = { -1, -1 };
 
