@@ -37,8 +37,8 @@ private:
 	bool is_player = 0, will_move = 0;
 	float theta = 0;
 	//////////////////7agat el darb//////////////////
-	FloatRect MakanElDarb;
-	Vector2f RangeElDarb={ 5,5 };
+	FloatRect MakanElDarb, Entity_Hitbox;
+	Vector2f RangeElDarb = { 5,5 }, Size_Hitbox = { 10,10 };
 	float Lag = 0, motion_delay = 4;
 	const float corners[2] = { 1, -1 };
 
