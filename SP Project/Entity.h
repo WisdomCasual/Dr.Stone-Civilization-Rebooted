@@ -36,9 +36,11 @@ private:
 	bool is_player = 0;
 	float theta = 0;
 	//////////////////7agat el darb//////////////////
-	FloatRect MakanElDarb;
-	Vector2f RangeElDarb={ 5,5 };
+	FloatRect MakanElDarb,Entity_Hitbox;
+	Vector2f RangeElDarb={ 5,5 },Size_Hitbox={10,10};
 	float Lag = 0;
+
+	
 public:
 	Entity(entity&, string, render_tile**&, float&, float&);
 
