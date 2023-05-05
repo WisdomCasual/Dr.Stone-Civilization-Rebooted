@@ -1,8 +1,9 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, float& map_x, float& map_y, Entity* player)
-	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), static_map(static_map), player_entity(*player)
+Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Entity* player)
+	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map), player_entity(*player), x_offset(x_offset), y_offset(y_offset)
 {
+	this->size_x = size_x, this->size_y = size_y;
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
@@ -31,25 +32,23 @@ void Entity::updatePos()
 
 void Entity::change_state(int new_state)
 {
-	if (!is_in_action())
+	if (!active_action)
 		entity_stats.state = new_state;
 }
-
 
 Vector2f Entity::getPosition()
 {
 	return entity_sprite.getPosition();
 }
 
-bool Entity::is_in_action()
-{
-	return active_action;
-}
-
 void Entity::setPosition(float x_pos, float y_pos)
 {
 	pos = { x_pos, y_pos };
-	//	entity_sprite.setPosition(pos);      //Nucelar area, keep off.
+}
+
+void Entity::set_movement_speed(short speed)
+{
+	movement_speed = speed; //I AM SPEED
 
 }
 
@@ -62,7 +61,6 @@ void Entity::setScale(float scale)
 void Entity::move(Vector2f movement)
 {
 	if (!active_action) {
-		//entity_sprite.move(movement);            //Wise men only -----> player
 		pos += movement;
 	}
 }
@@ -78,17 +76,14 @@ void Entity::action(int action_id)
 
 bool Entity::legal_tile(Vector2f movement)
 {
-	/////////////////////////// HITBOXESSSSSSSSSSSSSSS (hot russian babes only) //////////////////////////////////////
-
-
 
 	current_hitbox = entity_stats.animations[entity_stats.state][current_move].hitbox_rect;
 
-	int x_cords[2] = { -map_x / 16 + (entity_sprite.getPosition().x - (float)current_hitbox.x * sprite_scale / 2 + movement.x * scale) / (16 * scale)
-					 , -map_x / 16 + (entity_sprite.getPosition().x + (float)current_hitbox.x * sprite_scale / 2 + movement.x * scale) / (16 * scale) },
+	int x_cords[2] = { (int)(-map_x / 16 + (entity_sprite.getPosition().x - (float)current_hitbox.x * sprite_scale / 2 + movement.x * scale) / (16 * scale))
+					 , (int)(-map_x / 16 + (entity_sprite.getPosition().x + (float)current_hitbox.x * sprite_scale / 2 + movement.x * scale) / (16 * scale)) },
 	 
-		y_cords[2] = { -map_y / 16 + (entity_sprite.getPosition().y - (float)current_hitbox.y * sprite_scale / 2 + movement.y * scale) / (16 * scale)
-					 , -map_y / 16 + (entity_sprite.getPosition().y  + (float)current_hitbox.y * sprite_scale / 2 + movement.y * scale) / (16 * scale) };
+		y_cords[2] = { (int)(-map_y / 16 + (entity_sprite.getPosition().y - (float)current_hitbox.y * sprite_scale / 2 + movement.y * scale) / (16 * scale))
+					 , (int)(-map_y / 16 + (entity_sprite.getPosition().y  + (float)current_hitbox.y * sprite_scale / 2 + movement.y * scale) / (16 * scale)) };
 
 	Vector2i hitbox_checker;
 	for (int i = 0; i < 2; i++) {
@@ -136,40 +131,6 @@ void Entity::direction(Vector2f direction)
 		}
 		else
 			delay += dt;
-	}
-}
-
-void Entity::Edrab()
-{
-	if (current_move == 0) {//U
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y - RangeElDarb.y,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
-	}
-	if (current_move == 1) {//R
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
-		
-	}
-	if (current_move == 2) {//L
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
-	}
-	if (current_move == 200) {//D
-		if (Lag == 3) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
-
-			Lag = 0;
-		}
-		else Lag += dt;
 	}
 }
 

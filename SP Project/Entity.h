@@ -8,30 +8,31 @@ struct render_tile {
 	Vector3i* layers;
 	short size, tile_props = 0;
 };
+
 struct animation {
 	short frames = 0; IntRect rect{ 0, 0, 0, 0 }; Vector2f hitbox_rect = { 0, 0 }, origin = { 0,0 };
 };
+
 struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations;
 	short health = 100, damage = 10, state = 0, states_no;
 };
 
-	struct casted_bool {
+struct casted_bool {
 		bool vision = 0, path = 0;
 	};
 
-	struct comparison_tile {
+struct comparison_tile {
 		float cost = 0, x = 0, y = 0;
 	};
 
-	struct path_tile {
+struct path_tile {
 		float x = 0, y = 0;
 		path_tile* parent = nullptr;
 	};
 
-
-	struct path_array {
+struct path_array {
 
 		int size = 1, curr_idx = 0, layer = 0;
 		comparison_tile* at; //dynamic array of objects
@@ -71,10 +72,7 @@ struct entity {
 		}
 	};
 
-
-
-
-	struct comparison_array {
+struct comparison_array {
 
 		int size = 1, curr_idx = 0, layer = 0;
 		comparison_tile*at; //dynamic array of objects
@@ -114,7 +112,7 @@ struct entity {
 		}
 	};
 
-	struct tabor_el_3e4 {
+struct tabor_el_3e4 {
 	private:
 
 
@@ -189,6 +187,7 @@ struct entity {
 			return comparison_tile(-1, -1, -1);
 		}
 	};
+
 struct Entity : public State
 {
 
@@ -201,7 +200,9 @@ public:
 	Sprite entity_sprite;
 	render_tile**& static_map;
 	float  delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
-	short current_move = 3, current_frame = 0, prev_state = -1;
+	int &size_x, &size_y;
+	float& x_offset, & y_offset;
+	short current_move = 3, current_frame = 0, prev_state = -1, movement_speed = 100;
 	IntRect current_rect = { 0,0,0,0 };
 	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
@@ -218,22 +219,21 @@ public:
 
 
 	//Public functions
-	Entity(entity&, string, render_tile**&, float&, float&, Entity* player = nullptr);
+	Entity(entity&, string, render_tile**&, float&, float&, int&, int&, float&, float&, Entity* player = nullptr);
 
 	virtual ~Entity();
 
 	Vector2f getPosition();
 	Vector2f getRelativePos();
-	bool is_in_action();
 	void change_state(int); 
-	void setPosition(float x_pos, float y_pos);  //modify for player
+	void setPosition(float x_pos, float y_pos);
+	void set_movement_speed(short speed);
 	void setScale(float);
 	bool legal_tile(Vector2f);
-	virtual void move(Vector2f);    //modify for player
+	virtual void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
 	void updatePos();   //passive
-	void Edrab();   //player
 	virtual void update() = 0;
 	virtual void pollevent();
 	void render();

@@ -1,6 +1,10 @@
 #include "Enemy.h"
 
 
+Enemy::~Enemy()
+{
+}
+
 void Enemy::updatePos()
 {
 	entity_sprite.setPosition(pos.x + map_x * scale, pos.y + map_y * scale);

@@ -10,6 +10,7 @@ private:
 	float theta = 0, motion_delay = 4;
 
 public:
+	~Enemy();
 
 	void updatePos();
 	casted_bool visionLines(Entity&);
