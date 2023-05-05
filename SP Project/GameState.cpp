@@ -257,7 +257,7 @@ void GameState::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		/////////////////////
-		player_entity.setScale(scale * 0.65);
+		enemy_entity.setScale(scale*0.4);
 	}
 
 
