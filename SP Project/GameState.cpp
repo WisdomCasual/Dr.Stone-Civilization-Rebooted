@@ -114,9 +114,8 @@ void GameState::load_map(string map_name)
 
 void GameState::load_entities()
 {
-	player_entity.setPlayerState(1);
 	player_entity.setPosition(window->getSize().x / 2, window->getSize().y / 2);
-
+	player_entity.set_movement_speed(130);
 
 	player_stats.animations = new animation * [5];
 	player_stats.states_no = 4;
@@ -228,46 +227,8 @@ void GameState::render_entities()
 	}
 }
 
-void GameState::move_cam(float x_movement,float y_movement)
-{
-	map_x -= x_movement, map_y -= y_movement;
-	x_offset = -map_x / 16, y_offset = -map_y / 16;
-}
-
-void GameState::player_movement() 
-{
-	if (!player_entity.is_in_action()) {
-		float x_movement = delta_movement().x * 130 * dt, y_movement = delta_movement().y * 130 * dt;
-		Vector2f direction = { 0,0 };
-
-		if (player_entity.legal_tile({ x_movement, 0 })) {
-			direction.x = delta_movement().x;
-			if ((player_entity.getPosition().x + x_movement * scale >= 150 * scale || delta_movement().x > 0) && (player_entity.getPosition().x + x_movement * scale < win_x - 150 * scale || delta_movement().x <= 0))
-				player_entity.move({ x_movement * scale,  0 });
-			else if ((-map_x + x_movement >= 0 || delta_movement().x > 0) && (-map_x * scale + win_x <= (size_x - 1) * 16 * scale || delta_movement().x < 0))
-				move_cam(x_movement, 0);
-			else if (player_entity.getPosition().x + x_movement * scale >= 0 && player_entity.getPosition().x + x_movement * scale < win_x - 5)
-				player_entity.move({ x_movement * scale,  0 });
-		}
-
-		if (player_entity.legal_tile({ 0, y_movement })) {
-			direction.y = delta_movement().y;
-			if ((player_entity.getPosition().y + y_movement * scale >= 100 * scale || delta_movement().y > 0) && (player_entity.getPosition().y + y_movement * scale < win_y - 100 * scale || delta_movement().y <= 0))
-				player_entity.move({ 0, y_movement * scale });
-
-			else if ((-map_y + y_movement >= 0 || delta_movement().y > 0) && (-map_y * scale + win_y <= (size_y - 1) * 16 * scale || delta_movement().y < 0))
-				move_cam(0, y_movement);
-
-			else if (player_entity.getPosition().y + y_movement * scale >= 0 && player_entity.getPosition().y + y_movement * scale < win_y - 5)
-				player_entity.move({ 0, y_movement * scale });
-		}
-
-		player_entity.direction(direction);
-	}
-}
-
 GameState::GameState()
-	: player_entity(player_stats, "character 0", static_map, map_x, map_y), enemy_entity(enemy_stats, "character 0", static_map, map_x, map_y, &player_entity)
+	: player_entity(player_stats, "character 0", static_map, map_x, map_y, size_x, size_y, x_offset, y_offset), enemy_entity(enemy_stats, "character 0", static_map, map_x, map_y, size_x, size_y, x_offset, y_offset, &player_entity)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
@@ -301,7 +262,6 @@ void GameState::update()
 
 
 	player_entity.update();
-	player_movement();
 
 	enemy_entity.update();
 

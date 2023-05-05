@@ -153,6 +153,7 @@
     <ClCompile Include="NotificationState.cpp" />
     <ClCompile Include="PasswordState.cpp" />
     <ClCompile Include="PauseState.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="SettingsState.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="NotificationState.h" />
     <ClInclude Include="PasswordState.h" />
     <ClInclude Include="PauseState.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="SavesState.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="TextBox.h" />

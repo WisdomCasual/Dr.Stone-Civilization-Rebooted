@@ -3,6 +3,7 @@
 #include"Game.h"
 #include "Entity.h"
 #include "Enemy.h"
+#include "Player.h"
 
 #include"Global.h"
 using namespace globalvar;
@@ -13,7 +14,7 @@ private:
 	//variables:
 
 	entity player_stats, enemy_stats;
-	//Player player_entity;                                  //nuke experts only
+	Player player_entity;
 	Enemy enemy_entity;
 
 	Vector2f clicked_on = { -1, -1 };
@@ -149,8 +150,7 @@ private:
 	void initial_game();
 	void render_static_map();
 	void render_entities();
-	void move_cam(float, float);
-	void player_movement();
+
 
 public:
 	//constructors/destructors
