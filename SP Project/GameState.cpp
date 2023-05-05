@@ -300,10 +300,11 @@ void GameState::update()
 	}
 
 
+	player_entity.update();
 	player_movement();
 
+	enemy_entity.update();
 	enemy_entity.updatePos();
-	player_entity.update();
 
 }
 
@@ -311,7 +312,6 @@ void GameState::render()
 {
 	render_static_map();
 	render_entities();
-	enemy_entity.update();
 	enemy_entity.render();
 }
 
