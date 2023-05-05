@@ -101,7 +101,7 @@ void Player::update()
 		else scale = win_y / 304.5;
 		entity_sprite.setPosition(entity_sprite.getPosition().x * scale, entity_sprite.getPosition().y * scale);
 		////////////////
-
+		setScale(scale * 0.65);
 	}
 
 	if (entity_stats.state != prev_state) {
