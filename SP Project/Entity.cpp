@@ -21,7 +21,7 @@ Entity::~Entity()
 
 Vector2f Entity::getRelativePos()
 {
-	return Vector2f(-map_x + getPosition().x / scale, -map_y + getPosition().y / scale);
+	return (Vector2f(-map_x + getPosition().x / scale, -map_y + getPosition().y / scale));
 }
 
 void Entity::updatePos()
@@ -35,17 +35,96 @@ void Entity::change_state(int new_state)
 		entity_stats.state = new_state;
 }
 
+bool Entity::visionLines(Entity& target)
+{
+	float m[5], delta_y = target.getRelativePos().y - getRelativePos().y,
+				delta_x = target.getRelativePos().x - getRelativePos().x;
+	Vector2f initial_pos[5], target_pos[5];
+
+	short hit = 0;
+
+	bool for_y[5] = {};
+	if (abs(delta_y) > abs(delta_x)) {
+		swap(delta_y, delta_x);
+		for_y[0] = 1;
+	}
+	if (delta_x == 0)
+		return 1;
+	if ((delta_x > 0)) {
+		initial_pos[0] = getRelativePos();
+		target_pos[0] = target.getRelativePos();
+	}
+	else {
+		initial_pos[0] = target.getRelativePos();
+		target_pos[0] = getRelativePos();
+	}
+
+	m[0] = delta_y / delta_x;
+
+
+	int k = 1;
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 2; j++) {
+			float targ_y = target.getRelativePos().y + corners[j] * ((float)current_hitbox.y * sprite_scale / 4),
+				  targ_x = target.getRelativePos().x + corners[i] * ((float)current_hitbox.x * sprite_scale / 6);
+			delta_y = targ_y - getRelativePos().y,
+			delta_x = targ_x - getRelativePos().x;
+
+			if (abs(delta_y) > abs(delta_x)) {
+				swap(delta_y, delta_x);
+				for_y[k] = 1;
+			}
+			if (delta_x == 0)
+				return 1;
+			if ((delta_x > 0)) {
+				initial_pos[k] = getRelativePos();
+				target_pos[k] = {targ_x, targ_y};
+			}
+			else {
+				initial_pos[k] = { targ_x, targ_y };
+				target_pos[k] = getRelativePos();
+			}
+
+			m[k] = delta_y / delta_x;;
+			k++;
+		}
+	}
+
+	for (int i = 0; i < 5; i++) {
+		if (for_y[i]) {
+			for (float j = initial_pos[i].y; j < target_pos[i].y; j += 16) {
+
+				if (static_map[int((m[i] * (j - initial_pos[i].y) + initial_pos[i].x) / 16)][int((j) / 16)].tile_props & 2) {
+					hit++;
+					break;
+				}
+			}
+		}
+		else {
+			for (float j = initial_pos[i].x; j < target_pos[i].x; j += 16) {
+
+				if (static_map[int((j) / 16)][int((m[i] * (j - initial_pos[i].x) + initial_pos[i].y) / 16)].tile_props & 2) {
+					hit++;
+					break;
+				}
+			}
+		}
+	}
+	return (hit != 5);
+}
+
 bool Entity::entityFound(Entity& target)
 {
+
 	Vector2f afov = (entity_stats.state != 1) ? Vector2f(fov.x * 16 * scale, fov.y * PI / 180) : Vector2f(fov.x * 32 * scale, fov.y * PI / 180);
-	float d = magnitude(target.getPosition() - getPosition()), atheta = theta * PI/180;
+	float d = magnitude(target.getRelativePos() - getRelativePos()), atheta = theta * PI/180;
 	if (d <= afov.x) {
 		Vector2f A = toCartesian(Vector2f(afov.x, afov.y / 2 + atheta)),
 			B = { toCartesian(Vector2f(afov.x, (2 * PI - (afov.y / 2) + atheta))) },
-			p = target.getPosition() - getPosition();
+			p = target.getRelativePos() - getRelativePos();
 		float a1 = 2 * atan2f(magnitude(magnitude(p) * A - magnitude(A) * p), magnitude(magnitude(p) * A + magnitude(A) * p)),
 			  a2 = 2 * atan2f(magnitude(magnitude(p) * B - magnitude(B) * p), magnitude(magnitude(p) * B + magnitude(B) * p));
-		if (a1 + a2 <= afov.y)
+		if (a1 + a2 <= afov.y && visionLines(target))
 			return 1;
 	}
 	return 0;
