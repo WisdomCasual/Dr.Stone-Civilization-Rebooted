@@ -34,13 +34,17 @@ private:
 	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
 	int active_action = 0, move_for;
 	Vector2f pos = { 0, 0 }, fov = { 10.f, 120.f }, curr_movement = { 0.f, 0.f }, last_seen = {0.f, 0.f}, last_sign; //fov = (magnitude, angle)
-	bool is_player = 0, will_move = 0;
+	bool is_player = 0, will_move = 0, use_astar = 0;
 	float theta = 0;
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb;
 	Vector2f RangeElDarb={ 5,5 };
 	float Lag = 0, motion_delay = 4;
 	const float corners[2] = { 1, -1 };
+
+	struct casted_bool {
+		bool vision = 0, path = 0;
+	};
 
 	struct comparison_tile {
 		float cost = 0, x = 0, y = 0;
@@ -222,8 +226,8 @@ public:
 	bool is_in_action();
 	void updatePos();
 	void change_state(int);
-	bool visionLines(Entity&);
-	bool entityFound(Entity&);
+	casted_bool visionLines(Entity&);
+	casted_bool entityFound(Entity&);
 	void setPlayerState(bool state); //1 = player, 0 = non-player
 	void setPosition(float x_pos, float y_pos);
 	void setScale(float);
