@@ -311,15 +311,14 @@ void Entity::stateMachine()
 void Entity::Edrab()
 {
 	if (current_move == 0) {//U
-		if (Lag == 3) {
+		if (Lag == 200) {
 			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y - RangeElDarb.y,RangeElDarb.x,RangeElDarb.y };
-
 			Lag = 0;
 		}
 		else Lag += dt;
 	}
 	if (current_move == 1) {//R
-		if (Lag == 3) {
+		if (Lag == 200) {
 			MakanElDarb = { getPosition().x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
 			Lag = 0;
 		}
@@ -327,13 +326,13 @@ void Entity::Edrab()
 		
 	}
 	if (current_move == 2) {//L
-		if (Lag == 3) {
+		if (Lag == 200) {
 			MakanElDarb = { getPosition().x - RangeElDarb.x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
 			Lag = 0;
 		}
 		else Lag += dt;
 	}
-	if (current_move == 3) {//D
+	if (current_move == 200) {//D
 		if (Lag == 3) {
 			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
 
@@ -372,6 +371,14 @@ void Entity::update()
 		else
 			delay += dt;
 	}
+	/////////////////////HitBox Stuff//////////////////////
+	Entity_Hitbox = { getRelativePos().x,getRelativePos().y,Size_Hitbox.x,Size_Hitbox.y };
+	if (!is_player && Entity_Hitbox.intersects(MakanElDarb)) {
+
+
+
+	}
+
 
 	current_rect = entity_stats.animations[entity_stats.state][current_move].rect;
 
