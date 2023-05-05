@@ -16,6 +16,15 @@
     <Filter Include="States">
       <UniqueIdentifier>{fda262d5-e9d4-4c64-9d3e-bef101a9bcf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{b5c66f81-ea30-46bb-9deb-24fa2dca342d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\State Headers">
+      <UniqueIdentifier>{93377c8c-ce5b-48cb-a70f-11df31a92013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity Headers">
+      <UniqueIdentifier>{49ab2e42-6e53-4a5b-8f6c-a819adc843c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -75,70 +84,76 @@
     <ClCompile Include="DialogueState.cpp">
       <Filter>States</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Enemy.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="State.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MapBuilderState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CreativeMode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Background.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SavesState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MainMenuState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PauseState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorldMapState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NewSaveState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TextBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NewMapState.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Background.h">
+      <Filter>Header Files\State Headers</Filter>
     </ClInclude>
     <ClInclude Include="ConfirmationState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PasswordState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NotificationState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\State Headers</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Entity Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Entity Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="NewMapState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="NewSaveState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MapBuilderState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenuState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PasswordState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SavesState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMapState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Entity Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
