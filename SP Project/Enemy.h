@@ -5,16 +5,22 @@ struct Enemy :
 {
 	using::Entity::Entity;
 private:
-	Vector2f fov = { 10.f, 120.f }, curr_movement = { 0.f, 0.f }, last_seen = { 0.f, 0.f }, last_sign; //fov = (magnitude, angle)
-	bool will_move = 0, use_astar = 0;
+	Vector2f fov = { 10.f, 120.f }, curr_movement = { 0.f, 0.f }; //fov = (magnitude, angle)
+	Vector2i prev_target_tile = { 0, 0 }, last_seen = { 0, 0 };
+	Vector2f target_tile = { -1.f, -1.f }, last_seen_cord = {0.f, 0.f};
+	bool will_move = 0;
 	float theta = 0, motion_delay = 4;
+	path_tile* mp = nullptr;
 
 public:
 	~Enemy();
 
 	void updatePos();
-	casted_bool visionLines(Entity&);
-	casted_bool entityFound(Entity&);
+	bool visionLines(Entity&);
+	bool entityFound(Entity&);
+	path_tile* aStar(Vector2i);
+	void pathFinding(Entity&, path_tile*& mp);
+	Vector2f pathFollow(path_tile*&);
 	void stateMachine();
 	void Edrab();
 	void update();
