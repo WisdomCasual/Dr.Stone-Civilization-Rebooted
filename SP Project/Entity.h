@@ -20,57 +20,13 @@ struct entity {
 	short health = 100, damage = 10, state = 0, states_no;
 };
 
-struct casted_bool {
-		bool vision = 0, path = 0;
-	};
-
 struct comparison_tile {
-		float cost = 0, x = 0, y = 0;
+		float cost = 0;
+		int x = 0, y = 0;
 	};
 
 struct path_tile {
-		float x = 0, y = 0;
-		path_tile* parent = nullptr;
-	};
-
-struct path_array {
-
-		int size = 1, curr_idx = 0, layer = 0;
-		comparison_tile* at; //dynamic array of objects
-
-		path_array() {
-			at = new comparison_tile[1];
-		}
-
-		path_array(int size) {
-			at = new comparison_tile[size];
-			this->size = size;
-		}
-
-		~path_array() {
-			delete[] at;
-		}
-
-		void resize(const int size) {
-			comparison_tile* old_dynamic_array = at;
-			at = new comparison_tile[size];
-			int copy_size = min(curr_idx, size);
-			for (int i = 0; i < copy_size; i++)
-				at[i] = old_dynamic_array[i];
-			this->size = size;
-			delete[] old_dynamic_array;
-		}
-
-		void add(const comparison_tile new_object) {
-			if (curr_idx >= size)
-				resize(size * 2);
-
-			at[curr_idx] = new_object, curr_idx++;
-		}
-
-		int arr_size() {
-			return curr_idx;
-		}
+		int x = 0, y = 0;
 	};
 
 struct comparison_array {
