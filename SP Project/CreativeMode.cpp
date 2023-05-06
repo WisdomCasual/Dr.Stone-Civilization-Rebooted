@@ -190,6 +190,10 @@ CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_t
 	saved_text.setString("Properties Saved\n  Successfully");
 	saved_text.setPosition(27, 15);
 
+	object_type_text.setFont(font);
+	object_type_text.setFillColor(Color::Black);
+	object_type_text.setPosition(27, 25);
+
 	notification_tex.loadFromFile("textures/notification/notification_bg.png");
 	notification_BG.setTexture(notification_tex);
 	notification_BG.setScale(1.35, 1.35);
@@ -206,7 +210,7 @@ CreativeMode::~CreativeMode()
 
 void CreativeMode::update()
 {
-	if ((Mouse::isButtonPressed(Mouse::Right) || Keyboard::isKeyPressed(Keyboard::LShift)) && sidewindow->hasFocus()) {
+	if ((Mouse::isButtonPressed(Mouse::Right) || Keyboard::isKeyPressed(Keyboard::LShift)) && sidewindow->hasFocus() && !active_highlight) {
 		picked_tile->previous_drawn_tile = { -1,-1 }, picked_tile->previous_erased_tile = { -1,-1 };
 		if (!selecting) {
 			picked_tile->selection_start = current_tile;
@@ -246,6 +250,11 @@ void CreativeMode::render()
 		sidewindow->draw(notification_BG);
 		sidewindow->draw(saved_text);
 		saved_delay--;
+	}
+	else if (object_type_delay) {
+		sidewindow->draw(notification_BG);
+		sidewindow->draw(object_type_text);
+		object_type_delay--;
 	}
 	sidewindow->display();
 }
@@ -327,6 +336,18 @@ void CreativeMode::pollevent(bool& picker)
 					picked_tile->select_done = 0; picked_tile->global_select_done = 0;
 					selected(); 
 					break;
+			case Mouse::Right:
+				if (active_highlight & 1) {
+					if (tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props & 32) {
+						tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].object_type++;
+						tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].object_type %= objects_num;
+						object_type_text.setString(object_names[tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].object_type]);
+						object_type_delay = 200;
+					}
+				}
+				else
+				selected();
+				break;
 			}
 		}
 	}

@@ -33,6 +33,13 @@ private:
 	bool &hitbox, &destroyable, &view_layers, &blocked, &opaque;
 	Color& highlight_color;
 
+	//Destroyable Obejects
+	const int objects_num = 3;
+	const string object_names[3] = {"Tree", "Big Stone", "Small Stone" };
+	int object_type_delay = 0;
+	Text object_type_text;
+
+
 	//private functions:
 	void change_tex();
 	void save_props();
