@@ -20,6 +20,8 @@ public:
 	void Edrab();
 	void setPosition(float, float);
 	void use_tool();
+	void mine();
+	void destroy_object(Vector2i);
 	void move(Vector2f);
 	void update();
 	void pollevent();

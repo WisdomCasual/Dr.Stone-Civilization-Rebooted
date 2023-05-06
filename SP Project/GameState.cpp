@@ -62,7 +62,6 @@ void GameState::load_map(string map_name)
 
 					layer_prop = tile_props[tle.z].properties[tle.x][tle.y].props;
 
-
 					if (layer_prop & 16) { // front core
 						dynamic_objects objct;
 						objct.add({ Vector2f(i, j), tle});

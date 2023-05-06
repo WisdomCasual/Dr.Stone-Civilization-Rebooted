@@ -6,7 +6,7 @@ using namespace globalvar;
 
 struct render_tile {
 	Vector3i* layers;
-	short size, tile_props = 0;
+	short size, tile_props = 0, object_type = -1;
 };
 
 struct animation {
@@ -207,6 +207,7 @@ public:
 	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
 	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
+	Vector2i current_direction = { 0,1 };
 	int active_action = 0, move_for = 0;
 	Vector2f pos = { 0, 0 };
 	const float corners[2] = { 1, -1 };
