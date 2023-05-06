@@ -19,6 +19,7 @@ public:
 
 	void Edrab();
 	void setPosition(float, float);
+	void use_tool();
 	void move(Vector2f);
 	void update();
 	void pollevent();

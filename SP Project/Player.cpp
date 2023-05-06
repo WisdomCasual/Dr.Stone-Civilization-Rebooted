@@ -44,35 +44,17 @@ void Player::player_movement()
 
 void Player::Edrab()
 {
-	if (current_move == 0) {//U
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y - RangeElDarb.y,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
+	if (current_move == 0) { //U
+		MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y - RangeElDarb.y,RangeElDarb.x,RangeElDarb.y };
 	}
-	if (current_move == 1) {//R
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
-
+	else if (current_move == 1) { //R
+		MakanElDarb = { getPosition().x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
 	}
-	if (current_move == 2) {//L
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
+	else if (current_move == 2) { //L
+		MakanElDarb = { getPosition().x - RangeElDarb.x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
 	}
-	if (current_move == 200) {//D
-		if (Lag == 3) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
-
-			Lag = 0;
-		}
-		else Lag += dt;
+	else if (current_move == 3) { //D
+		MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
 	}
 }
 
@@ -80,6 +62,25 @@ void Player::setPosition(float x_pos, float y_pos)
 {
 	pos = { x_pos, y_pos };
 	entity_sprite.setPosition(pos);
+}
+
+void Player::use_tool()
+{
+	if (Lag >= 0.8) {
+		if (entity_stats.state == 2) { // sword
+			Edrab();
+			action(rand() % 2 + 1);
+		}
+		else if (entity_stats.state == 1) { // axe
+			//mine(axe)
+			action(1);
+		}
+		else if (entity_stats.state == 0) { // pickaxe
+			//mine(pickaxe)
+			action(1);
+		}
+		Lag = 0;
+	}
 }
 
 void Player::move(Vector2f movement)
@@ -127,7 +128,8 @@ void Player::update()
 
 
 	}
-
+	if (Lag < 0.8)
+		Lag += dt;
 	current_rect = entity_stats.animations[entity_stats.state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
