@@ -62,7 +62,6 @@ void GameState::load_map(string map_name)
 
 					layer_prop = tile_props[tle.z].properties[tle.x][tle.y].props;
 
-
 					if (layer_prop & 16) { // front core
 						dynamic_objects objct;
 						objct.add({ Vector2f(i, j), tle});
@@ -305,8 +304,7 @@ void GameState::pollevent()
 				player_entity.change_state(0);
 				break;
 			case Keyboard::Space:
-				player_entity.action(1);
-				player_entity.Edrab();
+				player_entity.use_tool();
 				break;
 			}
 		case Event::MouseButtonPressed:

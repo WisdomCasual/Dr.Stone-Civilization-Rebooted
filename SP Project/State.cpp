@@ -49,15 +49,17 @@ void State::initial_tile_sheets(string file)
 		ifs.open("textures/" + file + "/properties/sheet " + to_string(sheet) + ".prop");
 		if (ifs.is_open()) {
 			string test;
-			short priority, props;
+			short props;
 			if (!(ifs >> test))
 				continue;
 			ifs.seekg(ios::beg);
 			if (ifs.is_open()) {
 				for (int i = 0; i < tile_props[sheet].x_size; i++)
 					for (int j = 0; j < tile_props[sheet].y_size; j++) {
-						ifs >> priority;
-						tile_props[sheet].properties[i][j] = { priority };
+						ifs >> props;
+						tile_props[sheet].properties[i][j] = { props };
+						if (props & 32)
+							ifs >> tile_props[sheet].properties[i][j].object_type;
 					}
 			}
 		}
