@@ -106,18 +106,22 @@ void Entity::direction(Vector2f direction)
 		if (direction.y < 0) {
 			//back
 			current_move = 0;
+			current_direction = { 0,-1 };
 		}
 		else if (direction.x > 0) {
 			//right
 			current_move = 1;
+			current_direction = { 1,0 };
 		}
 		else if (direction.x < 0) {
 			//left
 			current_move = 2;
+			current_direction = { -1,0 };
 		}
 		else if (direction.y > 0) {
 			//front
 			current_move = 3;
+			current_direction = { 0,1 };
 		}
 		else {
 			current_frame = 0, delay = 0;
