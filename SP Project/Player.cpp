@@ -44,35 +44,17 @@ void Player::player_movement()
 
 void Player::Edrab()
 {
-	if (current_move == 0) {//U
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y - RangeElDarb.y,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
+	if (current_move == 0) { //U
+		MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y - RangeElDarb.y,RangeElDarb.x,RangeElDarb.y };
 	}
-	if (current_move == 1) {//R
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
-
+	else if (current_move == 1) { //R
+		MakanElDarb = { getPosition().x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
 	}
-	if (current_move == 2) {//L
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
+	else if (current_move == 2) { //L
+		MakanElDarb = { getPosition().x - RangeElDarb.x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
 	}
-	if (current_move == 200) {//D
-		if (Lag == 3) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
-
-			Lag = 0;
-		}
-		else Lag += dt;
+	else if (current_move == 3) { //D
+		MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
 	}
 }
 
@@ -80,6 +62,61 @@ void Player::setPosition(float x_pos, float y_pos)
 {
 	pos = { x_pos, y_pos };
 	entity_sprite.setPosition(pos);
+}
+
+void Player::use_tool()
+{
+	if (Lag >= 0.8) {
+		if (entity_stats.state == 2) { // sword
+			Edrab();
+			action(rand() % 2 + 1);
+		}
+		else if (entity_stats.state == 1 || entity_stats.state == 0) { // axe / pickaxe
+			mine();
+			action(1);
+		}
+		Lag = 0;
+	}
+}
+
+void Player::mine()
+{
+	Vector2f check_block = { getRelativePos().x + current_direction.x * 16 , getRelativePos().y  + current_direction.y * 16};
+	Vector2i destroy_location = {-10,-10};
+
+	if (static_map[(int)(check_block.x / 16)][(int)(check_block.y / 16)].tile_props & 32)
+		destroy_location = { (int)(check_block.x / 16),  (int)(check_block.y / 16) };
+	else if (current_direction.x) {
+		if (static_map[(int)(check_block.x / 16)][(int)((check_block.y + 4) / 16)].tile_props & 32)
+			destroy_location = { (int)(check_block.x / 16),  (int)((check_block.y + 4) / 16) };
+		else if (static_map[(int)(check_block.x / 16)][(int)((check_block.y - 4) / 16)].tile_props & 32)
+			destroy_location = { (int)(check_block.x / 16),  (int)((check_block.y - 4) / 16) };
+	}
+	else if (current_direction.y) {
+		if (static_map[(int)((check_block.x + 4) / 16)][(int)(check_block.y / 16)].tile_props & 32)
+			destroy_location = { (int)((check_block.x + 4) / 16),  (int)((check_block.y + 4) / 16) };
+		else if (static_map[(int)((check_block.x - 4) / 16)][(int)(check_block.y / 16)].tile_props & 32)
+			destroy_location = { (int)((check_block.x - 4) / 16),  (int)((check_block.y + 4) / 16) };
+	}
+	if (destroy_location.x > -10) {
+		destroy_object(destroy_location);
+	}
+}
+
+void Player::destroy_object(Vector2i tile_location)
+{
+	static_map[tile_location.x][tile_location.y].tile_props;
+	cout << "destroooy\n";
+
+	//vis[layr][x][y] = 1;
+	//for (int i = 0; i < 4; i++) {
+	//	int new_x = x + dx[i], new_y = y + dy[i];
+	//	if (new_x < size_x && new_y < size_y && new_x >= 0 && new_y >= 0 && temp_front[layr][new_x][new_y].x && !vis[layr][new_x][new_y]) {
+	//		temp_front[layr][new_x][new_y].x--;
+	//		dynamic_map.at[idx].add({ Vector2f(new_x, new_y), temp_front[layr][new_x][new_y] });
+	//		destroy_object(new_x, new_y, layr, temp_front, vis, idx);
+	//	}
+	//}
 }
 
 void Player::move(Vector2f movement)
@@ -127,7 +164,8 @@ void Player::update()
 
 
 	}
-
+	if (Lag < 0.8)
+		Lag += dt;
 	current_rect = entity_stats.animations[entity_stats.state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
