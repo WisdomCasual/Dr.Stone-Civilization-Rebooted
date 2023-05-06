@@ -22,8 +22,11 @@ void CreativeMode::save_props()
 		ofstream ofs("textures/game/tiles/properties/sheet "+ to_string(sheet) + ".prop", ofstream::out, ofstream::trunc);
 		if (ofs.is_open()) {
 			for (int i = 0; i < tile_props[sheet].x_size; i++) {
-				for (int j = 0; j < tile_props[sheet].y_size; j++)
+				for (int j = 0; j < tile_props[sheet].y_size; j++) {
 					ofs << tile_props[sheet].properties[i][j].props << ' ';
+					if (tile_props[sheet].properties[i][j].props & 32)
+						ofs << tile_props[sheet].properties[i][j].object_type << ' ';
+				}
 				ofs << '\n';
 			}
 		}

@@ -71,16 +71,52 @@ void Player::use_tool()
 			Edrab();
 			action(rand() % 2 + 1);
 		}
-		else if (entity_stats.state == 1) { // axe
-			//mine(axe)
-			action(1);
-		}
-		else if (entity_stats.state == 0) { // pickaxe
-			//mine(pickaxe)
+		else if (entity_stats.state == 1 || entity_stats.state == 0) { // axe / pickaxe
+			mine();
 			action(1);
 		}
 		Lag = 0;
 	}
+}
+
+void Player::mine()
+{
+	Vector2f check_block = { getRelativePos().x + current_direction.x * 16 , getRelativePos().y  + current_direction.y * 16};
+	Vector2i destroy_location = {-10,-10};
+
+	if (static_map[(int)(check_block.x / 16)][(int)(check_block.y / 16)].tile_props & 32)
+		destroy_location = { (int)(check_block.x / 16),  (int)(check_block.y / 16) };
+	else if (current_direction.x) {
+		if (static_map[(int)(check_block.x / 16)][(int)((check_block.y + 4) / 16)].tile_props & 32)
+			destroy_location = { (int)(check_block.x / 16),  (int)((check_block.y + 4) / 16) };
+		else if (static_map[(int)(check_block.x / 16)][(int)((check_block.y - 4) / 16)].tile_props & 32)
+			destroy_location = { (int)(check_block.x / 16),  (int)((check_block.y - 4) / 16) };
+	}
+	else if (current_direction.y) {
+		if (static_map[(int)((check_block.x + 4) / 16)][(int)(check_block.y / 16)].tile_props & 32)
+			destroy_location = { (int)((check_block.x + 4) / 16),  (int)((check_block.y + 4) / 16) };
+		else if (static_map[(int)((check_block.x - 4) / 16)][(int)(check_block.y / 16)].tile_props & 32)
+			destroy_location = { (int)((check_block.x - 4) / 16),  (int)((check_block.y + 4) / 16) };
+	}
+	if (destroy_location.x > -10) {
+		destroy_object(destroy_location);
+	}
+}
+
+void Player::destroy_object(Vector2i tile_location)
+{
+	static_map[tile_location.x][tile_location.y].tile_props;
+
+
+	//vis[layr][x][y] = 1;
+	//for (int i = 0; i < 4; i++) {
+	//	int new_x = x + dx[i], new_y = y + dy[i];
+	//	if (new_x < size_x && new_y < size_y && new_x >= 0 && new_y >= 0 && temp_front[layr][new_x][new_y].x && !vis[layr][new_x][new_y]) {
+	//		temp_front[layr][new_x][new_y].x--;
+	//		dynamic_map.at[idx].add({ Vector2f(new_x, new_y), temp_front[layr][new_x][new_y] });
+	//		destroy_object(new_x, new_y, layr, temp_front, vis, idx);
+	//	}
+	//}
 }
 
 void Player::move(Vector2f movement)
