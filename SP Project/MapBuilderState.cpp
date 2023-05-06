@@ -597,32 +597,32 @@ void MapBuilderState::pollevent()
 			case Keyboard::G:
 				active_grid = !active_grid; break;
 			case Keyboard::B:
-				hitbox = 0, destroyable = 0, view_layers = 0, opaque = 0, destruction_core = 0;
+				hitbox = 0, destroyable = 0, view_layers = 0, opaque = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				highlight_color = Color(0, 0, 175, 80);
 				blocked = !blocked;
 				active_highlight = (blocked) ? 4 : 0; break;
 			case Keyboard::H:
-				blocked = 0, destroyable = 0, view_layers = 0, opaque = 0, destruction_core = 0;
+				blocked = 0, destroyable = 0, view_layers = 0, opaque = 0;
 				picked_tile.global_select_done = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				highlight_color = Color(175, 0, 0, 80);
 				hitbox = !hitbox; 
 				active_highlight = (hitbox) ? 2: 0; break;
 			case Keyboard::F:
-				blocked = 0, destroyable = 0, hitbox = 0, opaque = 0, destruction_core = 0;
+				blocked = 0, destroyable = 0, hitbox = 0, opaque = 0;
 				picked_tile.global_select_done = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				view_layers = !view_layers; 
 				active_highlight = (view_layers) ? 8 : 0; break;
 			case Keyboard::Q:
-				blocked = 0, view_layers = 0, hitbox = 0, opaque = 0, destruction_core = 0;
+				blocked = 0, view_layers = 0, hitbox = 0, opaque = 0;
 				picked_tile.global_select_done = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				destroyable = !destroyable; 
 				active_highlight = (destroyable) ? 1 : 0; break;
 			case Keyboard::X:
-				blocked = 0, view_layers = 0, hitbox = 0, destroyable = 0, destruction_core = 0;
+				blocked = 0, view_layers = 0, hitbox = 0, destroyable = 0;
 				picked_tile.global_select_done = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				highlight_color = Color(75, 75, 75, 170);
