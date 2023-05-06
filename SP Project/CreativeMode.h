@@ -30,8 +30,15 @@ private:
 	State::sheet_properties* tile_props;
 	short sheets_no = 0; 
 	short& active_highlight;
-	bool& hitbox, destroyable, view_layers, blocked;
+	bool &hitbox, &destroyable, &view_layers, &blocked, &opaque;
 	Color& highlight_color;
+
+	//Destroyable Obejects
+	const int objects_num = 3;
+	const string object_names[3] = {"Tree", "Big Stone", "Small Stone" };
+	int object_type_delay = 0;
+	Text object_type_text;
+
 
 	//private functions:
 	void change_tex();
@@ -45,7 +52,7 @@ private:
 
 public:
 	//constructors/destructors
-	CreativeMode(vector<Texture*>*, State::tex_tile&, State::sheet_properties[], short, short&, bool&, bool&, bool&, bool&, Color&);
+	CreativeMode(vector<Texture*>*, State::tex_tile&, State::sheet_properties[], short, short&, bool&, bool&, bool&, bool&, bool&, Color&);
 	~CreativeMode();
 
 	//public functions:
