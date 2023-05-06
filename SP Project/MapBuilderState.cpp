@@ -32,7 +32,7 @@ void MapBuilderState::update_info_text()
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
 		+ "\n        Layer (1,2,3,4) " + to_string(layer + 1) + " - brush size (+/-): " + to_string(brush_size) + " - spread chance (alt +/-): " + to_string(spread_chances[spread_chance]) + "^-1"
-		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox) + " - Render Priority (f): " + to_string(view_layers) + " - destroyable (q): " + to_string(destroyable));
+		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox) + " - Render Priority (f): " + to_string(view_layers) + " - destroyable (q): " + to_string(destroyable) + " - opaque (x): " + to_string(opaque));
 
 	//displays layer properties
 	layer_info.setCharacterSize(40 * text_scale);
@@ -96,6 +96,7 @@ void MapBuilderState::grid(int x_win, int y_win)
 void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 {
 	//renders the map in active screen area only
+	bool active = active_highlight != 1 && active_highlight != 8;
 	highlight_rect.setScale(scale, scale);
 	tile.setScale(scale, scale);
 	for (int i = (x_offset > 0) ? x_offset : 0; i < (x_win + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
@@ -109,7 +110,7 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 					tile.setPosition(x + (16 * scale * i), y + (16 * scale * j));
 					window->draw(tile);
 			
-					if (tile_props[props.second.z].properties[props.second.x][props.second.y].props & active_highlight) {
+					if (active && tile_props[props.second.z].properties[props.second.x][props.second.y].props & active_highlight) {
 						highlight_rect.setFillColor(highlight_color);
 						highlight_rect.setPosition(x + (16 * scale * i), y + (16 * scale * j));
 						window->draw(highlight_rect);
@@ -138,6 +139,23 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 				}
 			}
 		}
+	else if (active_highlight == 1 && priority) {
+		for (int i = (x_offset > 0) ? x_offset : 0; i < (x_win + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
+			for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
+				if (tiles[i][j].last_vis.x > -1) {
+					highlight_rect.setPosition(x + (16 * scale * i), y + (16 * scale * j));
+					if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 32) {
+						highlight_rect.setFillColor(Color(250, 120, 0, 80));
+						window->draw(highlight_rect);
+					}
+					else if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 1) {
+						highlight_rect.setFillColor(Color(0, 175, 0, 80));
+						window->draw(highlight_rect);
+					}
+					tiles[i][j].last_vis.x = -1;
+				}
+			}
+	}
 	grid(x_win, y_win);
 	if (display_text) {
 		tile.setTextureRect(IntRect(picked_tile.x * 16, picked_tile.y * 16, 16, 16));
@@ -571,7 +589,7 @@ void MapBuilderState::pollevent()
 				break;
 			case Keyboard::E:
 				if (picker)
-					tex_picker = new CreativeMode(&tile_sheets, picked_tile, tile_props, sheets_no, active_highlight, hitbox, destroyable, view_layers, blocked, highlight_color);
+					tex_picker = new CreativeMode(&tile_sheets, picked_tile, tile_props, sheets_no, active_highlight, hitbox, destroyable, opaque, view_layers, blocked, highlight_color);
 				else
 					delete this->tex_picker;
 				picker = !picker; break;
@@ -579,31 +597,37 @@ void MapBuilderState::pollevent()
 			case Keyboard::G:
 				active_grid = !active_grid; break;
 			case Keyboard::B:
-				hitbox = 0, destroyable = 0, view_layers = 0;
+				hitbox = 0, destroyable = 0, view_layers = 0, opaque = 0, destruction_core = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				highlight_color = Color(0, 0, 175, 80);
 				blocked = !blocked;
 				active_highlight = (blocked) ? 4 : 0; break;
 			case Keyboard::H:
-				blocked = 0, destroyable = 0, view_layers = 0;
+				blocked = 0, destroyable = 0, view_layers = 0, opaque = 0, destruction_core = 0;
 				picked_tile.global_select_done = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				highlight_color = Color(175, 0, 0, 80);
 				hitbox = !hitbox; 
 				active_highlight = (hitbox) ? 2: 0; break;
 			case Keyboard::F:
-				blocked = 0, destroyable = 0, hitbox = 0;
+				blocked = 0, destroyable = 0, hitbox = 0, opaque = 0, destruction_core = 0;
 				picked_tile.global_select_done = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
 				view_layers = !view_layers; 
 				active_highlight = (view_layers) ? 8 : 0; break;
 			case Keyboard::Q:
-				blocked = 0, view_layers = 0, hitbox = 0;
+				blocked = 0, view_layers = 0, hitbox = 0, opaque = 0, destruction_core = 0;
 				picked_tile.global_select_done = 0;
 				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-				highlight_color = Color(0, 175, 0, 80);
 				destroyable = !destroyable; 
 				active_highlight = (destroyable) ? 1 : 0; break;
+			case Keyboard::X:
+				blocked = 0, view_layers = 0, hitbox = 0, destroyable = 0, destruction_core = 0;
+				picked_tile.global_select_done = 0;
+				picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
+				highlight_color = Color(75, 75, 75, 170);
+				opaque = !opaque;
+				active_highlight = (opaque) ? 64 : 0; break;
 			case Keyboard::Num1:
 				if ((Keyboard::isKeyPressed(Keyboard::LAlt)))
 					layer_toggle[0] = !layer_toggle[0];
