@@ -30,7 +30,7 @@ private:
 	State::sheet_properties* tile_props;
 	short sheets_no = 0; 
 	short& active_highlight;
-	bool& hitbox, destroyable, view_layers, blocked;
+	bool &hitbox, &destroyable, &view_layers, &blocked, &opaque;
 	Color& highlight_color;
 
 	//private functions:
@@ -45,7 +45,7 @@ private:
 
 public:
 	//constructors/destructors
-	CreativeMode(vector<Texture*>*, State::tex_tile&, State::sheet_properties[], short, short&, bool&, bool&, bool&, bool&, Color&);
+	CreativeMode(vector<Texture*>*, State::tex_tile&, State::sheet_properties[], short, short&, bool&, bool&, bool&, bool&, bool&, Color&);
 	~CreativeMode();
 
 	//public functions:

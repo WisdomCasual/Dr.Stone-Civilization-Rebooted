@@ -90,6 +90,16 @@ void CreativeMode::selected()
 		else
 			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 8;
 	}
+	else if (active_highlight & 1) {
+		short prev_priority = tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props;
+		if (prev_priority & 1 && prev_priority & 32) {
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 33;
+		}
+		else if (prev_priority & 1)
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 32;
+		else
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 1;
+	}
 	else if (active_highlight)
 		tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= active_highlight;
 	else {
@@ -135,6 +145,21 @@ void CreativeMode::highlight()
 				highlight_rect.setPosition(Vector2f(i * 16, j * 16));
 				sidewindow->draw(highlight_rect);
 			}
+			else if (active_highlight & 1) {
+
+				if (prop & 32) {
+					highlight_color = Color(250, 120, 0, 80);
+					highlight_rect.setFillColor(highlight_color);
+					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+					sidewindow->draw(highlight_rect);
+				}
+				else if (prop & 1) {
+					highlight_color = Color(0, 175, 0, 80);
+					highlight_rect.setFillColor(highlight_color);
+					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+					sidewindow->draw(highlight_rect);
+				}
+			}
 			else if (prop & active_highlight) {
 				highlight_rect.setPosition(Vector2f(i * 16, j * 16));
 				sidewindow->draw(highlight_rect);
@@ -142,8 +167,8 @@ void CreativeMode::highlight()
 		}
 }
 
-CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile, State::sheet_properties tile_props[], short sheets_no, short& active_highlight, bool& hitbox, bool& destroyable, bool& view_layers, bool& blocked, Color& highlight_color)
-	: hitbox(hitbox), destroyable(destroyable), view_layers(view_layers), blocked(blocked), active_highlight(active_highlight), highlight_color(highlight_color)
+CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile, State::sheet_properties tile_props[], short sheets_no, short& active_highlight, bool& hitbox, bool& destroyable, bool& opaque, bool& view_layers, bool& blocked, Color& highlight_color)
+	: hitbox(hitbox), destroyable(destroyable), view_layers(view_layers), blocked(blocked),  opaque(opaque), active_highlight(active_highlight), highlight_color(highlight_color)
 {
 	sidewindow = new RenderWindow(videomode, "Texture Picker", Style::Titlebar | Style::Close);
 	sidewindow->setFramerateLimit(60);
@@ -263,24 +288,29 @@ void CreativeMode::pollevent(bool& picker)
 				change_tex();
 				break;
 			case Keyboard::B:
-				hitbox = 0, destroyable = 0, view_layers = 0;
+				hitbox = 0, destroyable = 0, view_layers = 0, opaque = 0;
 				highlight_color = Color(0, 0, 175, 80);
 				blocked = !blocked;
 				active_highlight = (blocked) ? 4 : 0; break;
 			case Keyboard::H:
-				blocked = 0, destroyable = 0, view_layers = 0;
+				blocked = 0, destroyable = 0, view_layers = 0, opaque = 0;
 				highlight_color = Color(175, 0, 0, 80);
 				hitbox = !hitbox;
 				active_highlight = (hitbox) ? 2 : 0; break;
 			case Keyboard::F:
-				blocked = 0, destroyable = 0, hitbox = 0;
+				blocked = 0, destroyable = 0, hitbox = 0, opaque = 0;
 				view_layers = !view_layers;
 				active_highlight = (view_layers) ? 8 : 0; break;
 			case Keyboard::Q:
-				blocked = 0, view_layers = 0, hitbox = 0;
+				blocked = 0, view_layers = 0, hitbox = 0, opaque = 0;
 				highlight_color = Color(0, 175, 0, 80);
 				destroyable = !destroyable;
 				active_highlight = (destroyable) ? 1 : 0; break;
+			case Keyboard::X:
+				blocked = 0, view_layers = 0, hitbox = 0, destroyable = 0;
+				highlight_color = Color(75, 75, 75, 170);
+				opaque = !opaque;
+				active_highlight = (opaque) ? 64 : 0; break;
 			case Keyboard::F6:
 				save_props();
 				saved_delay = 300;
