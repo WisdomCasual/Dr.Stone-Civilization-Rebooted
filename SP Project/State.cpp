@@ -59,7 +59,7 @@ void State::initial_tile_sheets(string file)
 						ifs >> props;
 						tile_props[sheet].properties[i][j] = { props };
 						if (props & 32)
-							ifs >> tile_props[sheet].properties[i][j].object_type;
+							ifs >> tile_props[sheet].properties[i][j].object_type >> tile_props[sheet].properties[i][j].tool_type;
 					}
 			}
 		}
