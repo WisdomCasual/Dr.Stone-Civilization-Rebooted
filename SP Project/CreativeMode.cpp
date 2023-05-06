@@ -25,7 +25,7 @@ void CreativeMode::save_props()
 				for (int j = 0; j < tile_props[sheet].y_size; j++) {
 					ofs << tile_props[sheet].properties[i][j].props << ' ';
 					if (tile_props[sheet].properties[i][j].props & 32)
-						ofs << tile_props[sheet].properties[i][j].object_type << ' ';
+						ofs << tile_props[sheet].properties[i][j].object_type << ' ' << tile_props[sheet].properties[i][j].tool_type << ' ';
 				}
 				ofs << '\n';
 			}
@@ -341,6 +341,7 @@ void CreativeMode::pollevent(bool& picker)
 					if (tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props & 32) {
 						tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].object_type++;
 						tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].object_type %= objects_num;
+						tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].tool_type = tool[tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].object_type];
 						object_type_text.setString(object_names[tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].object_type]);
 						object_type_delay = 200;
 					}

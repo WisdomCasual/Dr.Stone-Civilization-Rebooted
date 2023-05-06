@@ -99,24 +99,37 @@ void Player::mine()
 			destroy_location = { (int)((check_block.x - 4) / 16),  (int)((check_block.y + 4) / 16) };
 	}
 	if (destroy_location.x > -10) {
-		destroy_object(destroy_location);
+		if(static_map[destroy_location.x][destroy_location.y].tool_type == entity_stats.state)
+			destroy_object(destroy_location);
 	}
 }
 
 void Player::destroy_object(Vector2i tile_location)
 {
-	static_map[tile_location.x][tile_location.y].tile_props;
-	cout << "destroooy\n";
+	for (int i = 0; i < 3; i++)
+		for (int j = 1; j < 4; j++) {
+			Vector2i destroy_area{ tile_location.x + dx[i], tile_location.y + dy[j] };
 
-	//vis[layr][x][y] = 1;
-	//for (int i = 0; i < 4; i++) {
-	//	int new_x = x + dx[i], new_y = y + dy[i];
-	//	if (new_x < size_x && new_y < size_y && new_x >= 0 && new_y >= 0 && temp_front[layr][new_x][new_y].x && !vis[layr][new_x][new_y]) {
-	//		temp_front[layr][new_x][new_y].x--;
-	//		dynamic_map.at[idx].add({ Vector2f(new_x, new_y), temp_front[layr][new_x][new_y] });
-	//		destroy_object(new_x, new_y, layr, temp_front, vis, idx);
-	//	}
-	//}
+			if (static_map[destroy_area.x][destroy_area.y].tile_props & 16) {
+
+			}
+			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 32) {
+				if(!dx[i] && !dy[j])
+					destroy_tile(destroy_area);
+			}
+			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 1) {
+				destroy_tile(destroy_area);
+			}
+		}
+}
+
+void Player::destroy_tile(Vector2i destroy_tile)
+{
+	short last = static_map[destroy_tile.x][destroy_tile.y].size - 1;
+	Vector3i last_tile = static_map[destroy_tile.x][destroy_tile.y].layers[last];
+	cout << tile_props[last_tile.z].properties[last_tile.x][last_tile.y].props << '\n';
+	static_map[destroy_tile.x][destroy_tile.y].disable_top = 1;
+	static_map[destroy_tile.x][destroy_tile.y].tile_props ^= tile_props[last_tile.z].properties[last_tile.x][last_tile.y].props;
 }
 
 void Player::move(Vector2f movement)

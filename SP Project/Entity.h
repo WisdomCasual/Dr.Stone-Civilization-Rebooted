@@ -6,7 +6,8 @@ using namespace globalvar;
 
 struct render_tile {
 	Vector3i* layers;
-	short size, tile_props = 0, object_type = -1;
+	short size, tile_props = 0, object_type = -1, tool_type = -1;
+	bool disable_top = 0;
 };
 
 struct animation {
@@ -211,6 +212,7 @@ public:
 	int active_action = 0, move_for = 0;
 	Vector2f pos = { 0, 0 };
 	const float corners[2] = { 1, -1 };
+	sheet_properties* tile_props;
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;
@@ -220,7 +222,7 @@ public:
 
 
 	//Public functions
-	Entity(entity&, string, render_tile**&, float&, float&, int&, int&, float&, float&, Entity* player = nullptr);
+	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, Entity* player = nullptr);
 
 	virtual ~Entity();
 
