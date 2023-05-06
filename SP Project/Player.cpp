@@ -106,7 +106,7 @@ void Player::mine()
 void Player::destroy_object(Vector2i tile_location)
 {
 	static_map[tile_location.x][tile_location.y].tile_props;
-
+	cout << "destroooy\n";
 
 	//vis[layr][x][y] = 1;
 	//for (int i = 0; i < 4; i++) {
