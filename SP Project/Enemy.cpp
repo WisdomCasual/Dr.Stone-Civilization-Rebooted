@@ -5,9 +5,17 @@ Enemy::~Enemy()
 {
 }
 
+void Enemy::Mawgood()
+{
+	if (abs(player_entity.getRelativePos().x - getRelativePos().x)<=RangeElWgood&& abs(player_entity.getRelativePos().y - getRelativePos().y) <= RangeElWgood) {
+		
+	}
+}
+
 void Enemy::updatePos()
 {
 	entity_sprite.setPosition(pos.x + map_x * scale, pos.y + map_y * scale);
+	Mawgood();
 }
 
 bool Enemy::visionLines(Entity& target)
@@ -366,7 +374,7 @@ void Enemy::update()
 	Entity_Hitbox = { getRelativePos().x,getRelativePos().y,Size_Hitbox.x,Size_Hitbox.y };
 	if (Entity_Hitbox.intersects(MakanElDarb)) {
 
-
+		cout << "Moot ya motwa7esh\n";
 
 	}
 
@@ -391,6 +399,7 @@ void Enemy::update()
 		else
 			direction({ round(curr_movement.x), round(curr_movement.y) });
 	}
+	Mawgood();
 }
 
 void Enemy::pollevent()
