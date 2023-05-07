@@ -22,6 +22,7 @@ public:
 	void use_tool();
 	void mine();
 	void destroy_object(Vector2i);
+	void bigbang(Vector2i, bool);
 	void move(Vector2f);
 	void update();
 	void pollevent();
