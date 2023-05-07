@@ -20,6 +20,7 @@ private:
 	float scale = 1, win_x=0, win_y=0, x=1, y=1;
 	Vector2f mouse_pos = { 0,0 }, clicked_on = { -1, -1 };
 	Vector2u prev_win = { 0, 0 };
+	int save_no;
 
 	//button
 	bool confirmed=0;
@@ -49,9 +50,10 @@ private:
 
 	void update_characters();
 	void render_characters();
+	void add_save();
 public:
 	//constructors/destructors:
-	NewSaveState();
+	NewSaveState(int);
 	~NewSaveState();
 	//public functions:
 	void update();

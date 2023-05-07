@@ -155,7 +155,7 @@ private:
 
 public:
 	//constructors/destructors
-	GameState();
+	GameState(int);
 	~GameState();
 	
 	//public functions:

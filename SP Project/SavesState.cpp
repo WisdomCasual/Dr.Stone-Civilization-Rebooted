@@ -15,12 +15,12 @@ void SavesState::update_saves()
 			else {
 				if (saves[i].pressed)
 					if (saves[i].empty) {
-						states->insert(NewSaveST);
+						states->insert({ NewSaveID, new NewSaveState(i)});
 						states->at(NewSaveID)->update();
 						saves[i].hover = 0;
 					}
 					else {
-						states->insert(GameST);
+						states->insert({ GameID, new GameState(saves[i].character_id)});
 						states->at(GameID)->update();
 
 						int exceptions[] = { GameID };
@@ -40,13 +40,19 @@ void SavesState::update_saves()
 		if (del.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			if (Mouse::isButtonPressed(Mouse::Left) && del.getGlobalBounds().contains(clicked_on))saves[i].del_pressed = 1;
 			else {
+				saves[i].del_hover = 1;
+
 				if (saves[i].del_pressed) {
-					saves[i].empty = 1;
 					//delete save //////////////////
+					del_save_no = i + 1;
+					string strings_array[] = { "Are you sure that you", "want to delete", '"' + saves[i].name + '"'};
+					states->insert({ 14, new ConfirmationState(strings_array,3, del_save) });
+					states->at(ConfirmationID)->update();
+					saves[i].del_hover = 0;
 				}
 				saves[i].del_pressed = 0;
 			}
-			saves[i].del_hover = 1;
+			
 		}
 		else {
 			saves[i].del_pressed = 0;
@@ -71,15 +77,17 @@ void SavesState::render_saves()
 			save_bg.setTextureRect(IntRect(0, 0, 100, 200));
 
 		save_bg.setPosition(x + saves[i].x * scale, y + saves[i].y * scale);
-		if (saves[i].del_pressed)
-			del.setScale(0.95,0.95);
-		else
-			del.setScale(1,1);
 
 		if (saves[i].del_hover)
 			del.setFillColor(Color::Red);
 		else 
 			del.setFillColor(Color(164, 0, 0));
+
+		if (saves[i].del_pressed)
+			del.setScale(0.95,0.95);
+		else 
+			del.setScale(1, 1);
+
 
 		window->draw(save_bg);
 		
@@ -98,9 +106,9 @@ void SavesState::render_saves()
 			//draw_text(window, "Generator", pos_x, pos_y + dis * 2, 50 * scale);
 
 		    ////////////place holder/////////
-			charactertex.setTextureRect(IntRect( saves[i].character_id * (496 / 6.0), 0, 496 / 6.0, 373 / 2.0));
+			charactertex.setTextureRect(IntRect( (saves[i].character_id-1) * 64, 0, 64, 64));
 			charactertex.setPosition(x + saves[i].x * scale, y - 30 * scale);
-			charactertex.setScale(scale * 0.35, scale * 0.35);
+			charactertex.setScale(scale * 0.95, scale * 0.95);
 			window->draw(charactertex);
 			/////////////////////
 
@@ -119,7 +127,7 @@ SavesState::SavesState()
 	initial_saves();
 	////////////place holder/////////
 	charactertex.setTexture(*textures[2]);
-	charactertex.setTextureRect(IntRect(0, 0, 496 / 6.0, 373 / 2.0));
+	charactertex.setTextureRect(IntRect(0, 0, 64, 64));
 	charactertex.setOrigin(charactertex.getLocalBounds().width / 2.0, charactertex.getLocalBounds().height / 2.0);
 	//////////////
 
@@ -145,6 +153,7 @@ SavesState::SavesState()
 
 SavesState::~SavesState()
 {
+
 }
 
 void SavesState::update_arrow()
@@ -195,7 +204,7 @@ void SavesState::initial_saves()
 		if (ifs.is_open()) {
 			string name;
 			int progress, character_id;
-			ifs >> name;
+			getline(ifs, name);
 			saves[i].name = name;
 			ifs >> character_id;
 			saves[i].character_id = character_id;
@@ -215,6 +224,14 @@ void SavesState::update()
 
 
 	tint.setSize({ win_x, win_y });
+
+	if (del_save) {
+		string file_name = "Saves/Save" + to_string(del_save_no) + ".ini";
+		remove(file_name.c_str());
+		saves[del_save_no-1].empty = 1;
+		del_save = 0;
+	}
+
 	update_saves();
 	if (destruct)
 		return;
