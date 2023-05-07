@@ -6,7 +6,7 @@ using namespace globalvar;
 
 struct render_tile {
 	Vector3i* layers;
-	short size, tile_props = 0, object_type = -1, tool_type = -1;
+	short size, tile_props = 0, object_type = -1, tool_type = -1, dynamic_idx = -1;
 	bool disable_top = 0;
 };
 
@@ -159,7 +159,7 @@ public:
 	float  delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
 	float& x_offset, & y_offset;
-	short current_move = 3, current_frame = 0, prev_state = -1, movement_speed = 100;
+	short current_move = 3, current_frame = 0, prev_state = -1, movement_speed = 100, &disable_dynamic_obj;
 	IntRect current_rect = { 0,0,0,0 };
 	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
@@ -178,7 +178,7 @@ public:
 
 
 	//Public functions
-	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, Entity* player = nullptr);
+	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr);
 
 	virtual ~Entity();
 
@@ -198,4 +198,3 @@ public:
 	void render();
 
 };
-

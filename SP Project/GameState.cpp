@@ -72,6 +72,7 @@ void GameState::load_map(string map_name)
 						objct.layer = layr;
 						dynamic_map.add(objct);
 						dynamic_rendering.insert({ float((j+1) * 16), {short(dynamic_map.curr_idx - 1), nullptr} });
+						static_map[i][j].dynamic_idx = dynamic_map.curr_idx - 1;
 						//add ptr to set
 
 						//add to dynamic tiles
@@ -215,10 +216,16 @@ void GameState::render_entities()
 		if (i->second.tile != -1) {
 			
 			for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
-				tile.setTexture(*tile_sheets[dynamic_map.at[i->second.tile].at[j].tile.z]);
-				tile.setTextureRect(IntRect(dynamic_map.at[i->second.tile].at[j].tile.x * 16, dynamic_map.at[i->second.tile].at[j].tile.y * 16, 16, 16));
-				tile.setPosition(map_x * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.x), map_y * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.y));
-				window->draw(tile);
+				if(i->second.tile == disable_dynamic_obj){
+					i = dynamic_rendering.erase(i);
+					disable_dynamic_obj = -1;
+				}
+				else {
+					tile.setTexture(*tile_sheets[dynamic_map.at[i->second.tile].at[j].tile.z]);
+					tile.setTextureRect(IntRect(dynamic_map.at[i->second.tile].at[j].tile.x * 16, dynamic_map.at[i->second.tile].at[j].tile.y * 16, 16, 16));
+					tile.setPosition(map_x * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.x), map_y * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.y));
+					window->draw(tile);
+				}
 			}
 			i++;
 		}
@@ -230,7 +237,7 @@ void GameState::render_entities()
 }
 
 GameState::GameState()
-	: player_entity(player_stats, "character 0", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset), enemy_entity(enemy_stats, "character 0", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, &player_entity)
+	: player_entity(player_stats, "character 0", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), enemy_entity(enemy_stats, "character 0", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;

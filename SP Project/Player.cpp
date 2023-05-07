@@ -111,24 +111,23 @@ void Player::destroy_object(Vector2i tile_location)
 			Vector2i destroy_area{ tile_location.x + dx[i], tile_location.y + dy[j] };
 
 			if (static_map[destroy_area.x][destroy_area.y].tile_props & 16) {
-
+				disable_dynamic_obj = static_map[destroy_area.x][destroy_area.y].dynamic_idx;
 			}
 			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 32) {
 				if(!dx[i] && !dy[j])
-					destroy_tile(destroy_area);
+					bigbang(destroy_area, 1);
 			}
 			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 1) {
-				destroy_tile(destroy_area);
+				bigbang(destroy_area, 1);
 			}
 		}
 }
 
-void Player::destroy_tile(Vector2i destroy_tile)
+void Player::bigbang(Vector2i destroy_tile, bool destroy = 0)
 {
 	short last = static_map[destroy_tile.x][destroy_tile.y].size - 1;
 	Vector3i last_tile = static_map[destroy_tile.x][destroy_tile.y].layers[last];
-	cout << tile_props[last_tile.z].properties[last_tile.x][last_tile.y].props << '\n';
-	static_map[destroy_tile.x][destroy_tile.y].disable_top = 1;
+	static_map[destroy_tile.x][destroy_tile.y].disable_top = destroy;
 	static_map[destroy_tile.x][destroy_tile.y].tile_props ^= tile_props[last_tile.z].properties[last_tile.x][last_tile.y].props;
 }
 
