@@ -143,7 +143,7 @@ void GameState::load_entities()
 	}
 	player_entity.change_state(3);
 
-	enemy_entity.setPosition((player_entity.getRelativePos().x - 16) * scale, (player_entity.getRelativePos().y + 16) * scale);
+	enemy_entity.setPosition(300 * scale, 200 * scale);
 
 
 	enemy_stats.animations = new animation * [4];
