@@ -84,10 +84,9 @@ void NewSaveState::render_buttons()
 void NewSaveState::update_characters()
 {
 	//characters update
-	characters.setScale(scale * 0.4, scale * 0.4);
 	for (int i = 0; i < 3; i++) {
-		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
-		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
+		characters.setTextureRect({ i * 64,0,64,64 });
+		characters.setPosition(x - 60 * scale + 60 * scale * i, y + 20 * scale);
 		if (characters.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			if (Mouse::isButtonPressed(Mouse::Left) && characters.getGlobalBounds().contains(clicked_on))pressed = 1;
 		}
@@ -106,8 +105,8 @@ void NewSaveState::render_characters()
 {
 	//charaters render
 	for (int i = 0; i < 3; i++) {
-		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
-		characters.setPosition((x - ((30 * scale) * i) - (20 * scale) * i) + 50 * scale, y + 15 * scale);
+		characters.setTextureRect({ i * 64,0,64,64 });
+		characters.setPosition(x - 60 * scale + 60 * scale * i, y + 20 * scale);
 		if (i + 1 == selected)
 		{
 			characters.setColor({ og_color.r,og_color.g,og_color.b });
@@ -120,14 +119,28 @@ void NewSaveState::render_characters()
 	}
 }
 
-NewSaveState::NewSaveState()
+void NewSaveState::add_save()
 {
+	ofstream ofs("Saves/Save" + to_string(save_no + 1) + ".ini", ofstream::out, ofstream::trunc);
+
+	if (ofs.is_open()) {
+		ofs << test_str << '\n';
+		ofs << (int)selected << '\n';
+		ofs << 1 << '\n';
+	}
+	ofs.close();
+}
+
+NewSaveState::NewSaveState(int save_no)
+{
+	this->save_no = save_no;
+
 	State::initial_textures("newsave");
 
 	tissue.setTexture(*textures[0]);
 	tissue.setOrigin(700 / 2, 700 / 2);
 
-	panel.setTexture(*textures[6]);
+	panel.setTexture(*textures[5]);
 	panel.setOrigin(600 / 2, 600 / 2);
 
 	back_arrow.setTexture(*textures[1]);
@@ -142,7 +155,7 @@ NewSaveState::NewSaveState()
 	if (win_x > 1280) scale *= 0.75;
 	txt_box.initializeTextBox(test_str, *textures[2], "Enter name", Vector2f(win_x / 2.0, (win_y / 2) + 5 * scale), scale * 1.2);
 
-	buttontex.setTexture(*textures[5]);
+	buttontex.setTexture(*textures[4]);
 	buttontex.setTextureRect(IntRect(0, 0, 108, 49));
 	buttontex.setOrigin(108 / 2, 49 / 2);
 	button_color = buttontex.getColor();
@@ -159,14 +172,15 @@ NewSaveState::NewSaveState()
 	char_color.g -= 120;
 	char_color.b -= 120;
 	for (int i = 0; i < 3; i++) {
-		characters.setTextureRect({ (i + 1) * 86,0,80,170 });
-		characters.setOrigin(43, 85);
+		characters.setTextureRect({ i * 64,0,64,64 });
+		characters.setOrigin(32, 32);
 		characters.setColor({ char_color.r,char_color.g,char_color.b });
 	}
 }
 
 NewSaveState::~NewSaveState()
 {
+
 }
 
 void NewSaveState::update()
@@ -188,12 +202,15 @@ void NewSaveState::update()
 		tint.setSize({ win_x, win_y });
 		txt_box.setScale(scale * 0.6);
 		txt_box.setPosition({ x, y - 52 * scale });
+		characters.setScale(1.2 * scale, 1.2 * scale);
 	}
 	tissue.setPosition(x, y);
 	update_buttons();
 	if (confirmed) {
 		//button functionality
-
+		add_save();
+		states->insert({ GameID, new GameState((int)selected) });
+		states->at(GameID)->update();
 		confirmed = 0;
 		return;
 	}
@@ -213,6 +230,7 @@ void NewSaveState::render()
 	txt_box.drawTextBox(window);
 	window->draw(back_arrow);
 	render_buttons();
+	text.setFillColor(Color::Black);
 	draw_text("Choose name and", x, y - 112 * scale, 26 * scale);
 	draw_text("character", x, y - 112 * scale+ (20 * scale), 26 * scale);
 	render_characters();

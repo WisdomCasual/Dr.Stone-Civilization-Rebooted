@@ -30,7 +30,8 @@ private:
 	float x_win = 0, y_win = 0;
 	float x = 0, y = 0;
 	float pos_x = 0, pos_y = 0, dis = 0;
-	bool arrow_pressed = 0, destruct = 0;
+	bool arrow_pressed = 0, destruct = 0, del_save = 0;
+	int del_save_no = 0;
 
 	//private functions:
 	void initial_saves();

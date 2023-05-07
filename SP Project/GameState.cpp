@@ -236,8 +236,8 @@ void GameState::render_entities()
 	}
 }
 
-GameState::GameState()
-	: player_entity(player_stats, "character 0", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), enemy_entity(enemy_stats, "character 0", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity)
+GameState::GameState(int character_id = 1)
+	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), enemy_entity(enemy_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
