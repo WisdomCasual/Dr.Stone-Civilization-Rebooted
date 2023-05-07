@@ -148,14 +148,14 @@ private:
 	void load_map(string);
 	void load_entities();
 	void deload_map();
-	void initial_game();
+	void initial_game(string);
 	void render_static_map();
 	void render_entities();
 
 
 public:
 	//constructors/destructors
-	GameState(int);
+	GameState(int, string, Vector2i);
 	~GameState();
 	
 	//public functions:
