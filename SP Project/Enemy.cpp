@@ -40,8 +40,8 @@ bool Enemy::visionLines(Entity& target)
 	int k = 1;
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
-			float targ_y = target.getRelativePos().y + corners[j] * ((float)target.current_hitbox.y * target.sprite_scale / 4),
-				targ_x = target.getRelativePos().x + corners[i] * ((float)target.current_hitbox.x * target.sprite_scale / 6);
+			float targ_y = target.getRelativePos().y + corners[j] * ((float)target.current_hitbox.y * target.sprite_scale / (2 * scale)),
+				targ_x = target.getRelativePos().x + corners[i] * ((float)target.current_hitbox.x * target.sprite_scale / (2 * scale));
 			delta_y = targ_y - getRelativePos().y,
 				delta_x = targ_x - getRelativePos().x;
 
@@ -90,8 +90,11 @@ bool Enemy::visionLines(Entity& target)
 
 bool Enemy::entityFound(Entity& target)
 {
-	Vector2f afov = (entity_stats.state != 1) ? Vector2f(fov.x * 16 * scale, fov.y * PI / 180) : Vector2f(fov.x * 32 * scale, fov.y * PI / 180);
+	Vector2f afov = (entity_stats.state != 1) ? Vector2f(fov.x * 16, fov.y * PI / 180) : Vector2f(fov.x * 32, fov.y * PI / 180);
 	float d = magnitude(target.getRelativePos() - getRelativePos()), atheta = theta * PI / 180;
+	if (d <= sound_range * 16) {
+		return 1;
+	}
 	if (d <= afov.x) {
 		Vector2f A = toCartesian(Vector2f(afov.x, afov.y / 2 + atheta)),
 			B = { toCartesian(Vector2f(afov.x, (2 * PI - (afov.y / 2) + atheta))) },
@@ -109,6 +112,8 @@ path_tile* Enemy::aStar(Vector2i target)
 {
 	path_tile* mp = new path_tile[size_x * size_y];
 	bool** vis = new bool * [size_x];
+	bool found_path = 0;
+	float g_val = 0;
 	for (int i = 0; i < size_x; i++) {
 		vis[i] = new bool[size_y]({});
 	}
@@ -120,23 +125,31 @@ path_tile* Enemy::aStar(Vector2i target)
 	while (!pathes.empty()) {
 		curr_tile = pathes.top();
 		pathes.pop();
+		curr_tile.first += g_val;
 		if (curr_tile.second.first == int(getRelativePos().x / 16) && curr_tile.second.second == int(getRelativePos().y / 16)) {
+			found_path = 1;
+			break;
+		}
+		if (curr_tile.first < -35) {
+			found_path = 0;
 			break;
 		}
 		int new_x, new_y;
 		for (int i = 0; i < 4; i++) {
 			new_x = curr_tile.second.first + dx[i],
 			new_y = curr_tile.second.second + dy[i];
-			float g_val, delta_x, delta_y;
+			float delta_x, delta_y;
 			if (new_x >= 0 && new_x < size_x && new_y >= 0 && new_y < size_y) {
 				if (!vis[new_x][new_y] && !(static_map[new_x][new_y].tile_props & 2)) {
-					delta_x = abs(new_x - int(getRelativePos().x / 16)),
-						delta_y = abs(new_y - int(getRelativePos().y / 16));
-					//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
-					g_val = sqrtf(delta_y*delta_y + delta_x * delta_x);
-					vis[new_x][new_y] = 1;
-					mp[new_y * size_x + new_x] = { curr_tile.second.first, curr_tile.second.second };
-					pathes.push({ curr_tile.first - 1 - g_val, {new_x, new_y} });
+					if (legal_tile(Vector2f((new_x * 16), (new_y * 16)) - getRelativePos())) {
+						vis[new_x][new_y] = 1;
+						delta_x = abs(new_x - int(getRelativePos().x / 16)),
+							delta_y = abs(new_y - int(getRelativePos().y / 16));
+						//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
+						g_val = sqrtf(delta_y * delta_y + delta_x * delta_x);
+						mp[new_y * size_x + new_x] = { curr_tile.second.first, curr_tile.second.second };
+						pathes.push({ curr_tile.first - 1 - g_val, {new_x, new_y} });
+					}
 				}
 			}
 		}
@@ -144,30 +157,33 @@ path_tile* Enemy::aStar(Vector2i target)
 			for (int j = 0; j < 2; j++) {
 				new_x = curr_tile.second.first + corners[i],
 				new_y = curr_tile.second.second + corners[j];
-				float g_val, delta_x, delta_y;
+				float delta_x, delta_y;
 				if (new_x >= 0 && new_x < size_x && new_y >= 0 && new_y < size_y) {
-					if (!vis[new_x][new_y] && !(static_map[new_x][new_y].tile_props & 2)) {
-						delta_x = abs(new_x - int(getRelativePos().x / 16)),
-							delta_y = abs(new_y - int(getRelativePos().y / 16));
-						//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
-						g_val = sqrtf(delta_y * delta_y + delta_x * delta_x);
-						vis[new_x][new_y] = 1;
-						mp[new_y * size_x + new_x] = { curr_tile.second.first, curr_tile.second.second };
-						pathes.push({ curr_tile.first - 1.4142f - g_val, {new_x, new_y} });
+					if (!vis[new_x][new_y] && !(static_map[new_x][new_y].tile_props & 2) &&
+						!(static_map[new_x][curr_tile.second.second].tile_props & 2) && !(static_map[curr_tile.second.first][new_y].tile_props & 2)) {
+							if (legal_tile(Vector2f((new_x * 16), (new_y * 16)) - getRelativePos())) {
+								vis[new_x][new_y] = 1;
+								delta_x = abs(new_x - int(getRelativePos().x / 16)),
+									delta_y = abs(new_y - int(getRelativePos().y / 16));
+								//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
+								g_val = sqrtf(delta_y * delta_y + delta_x * delta_x);
+								mp[new_y * size_x + new_x] = { curr_tile.second.first, curr_tile.second.second };
+								pathes.push({ curr_tile.first - 1.4142f - g_val, {new_x, new_y} });
+							}
 					}
 				}
 			}
 		}
 		
 	}
-	bool found_path = vis[int(getRelativePos().x / 16)][int(getRelativePos().y / 16)];
 	for (int i = 0; i < size_x; i++) {
 		delete[] vis[i];
 	}
 	delete[] vis;
-	if (found_path)
+	if (found_path) {
 		return mp;
-	else return nullptr;
+	}
+	return nullptr;
 }
 
 void Enemy::pathFinding(Entity& target, path_tile*& mp)
@@ -198,9 +214,18 @@ void Enemy::stateMachine()
 {
 	bool checker = entityFound(player_entity);
 	if (entity_stats.state != 1 && checker) {
-		entity_stats.state = 1;
-		motion_delay = 0;
+		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
+		if (checker != prev_check || enemy_tile != prev_target_tile) {
+			pathFinding(player_entity, mp);
+			target_tile = pathFollow(mp);
+			if (target_tile.x != -1.f) {
+				entity_stats.state = 1;
+				motion_delay = 2;
+			}
+		}
+		prev_target_tile = enemy_tile;
 	}
+	prev_check = checker;
 	switch (entity_stats.state) {
 	case 1: {
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
@@ -212,8 +237,10 @@ void Enemy::stateMachine()
 
 
 		target_tile = pathFollow(mp);
+
 		if (target_tile.x == -1.f) {
 			will_move = 0;
+			entity_stats.state = 0;
 			break;
 		}
 		Vector2f delta_pos = target_tile - getRelativePos();
@@ -234,13 +261,14 @@ void Enemy::stateMachine()
 		break;
 	}
 	case 2: {
-		Vector2f delta_pos = target_tile - getRelativePos();
 		target_tile = pathFollow(mp);
-		delta_pos = target_tile - getRelativePos();
-		theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
-		curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		if (target_tile.x == -1.f) {
 			will_move = 0;
+		}
+		else {
+			Vector2f delta_pos = target_tile - getRelativePos();
+			theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
+			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		}
 
 		if (!will_move) {
