@@ -128,6 +128,7 @@ void NewSaveState::add_save()
 		ofs << (int)selected << '\n';
 		ofs << 1 << '\n';
 		ofs << "Sheraton" << '\n';
+		ofs << 800 << ' ' << 800 << '\n';
 	}
 	ofs.close();
 }
@@ -210,8 +211,12 @@ void NewSaveState::update()
 	if (confirmed) {
 		//button functionality
 		add_save();
-		states->insert({ GameID, new GameState((int)selected,"Sheraton", {0,0})});
+		states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800})});
 		states->at(GameID)->update();
+
+		int exceptions[] = {GameID};
+		game.erase_states(exceptions, 1);
+
 		confirmed = 0;
 		return;
 	}
