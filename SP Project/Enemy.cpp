@@ -69,7 +69,7 @@ bool Enemy::visionLines(Entity& target)
 		if (for_y[i]) {
 			for (float j = initial_pos[i].y; j < target_pos[i].y; j += 16) {
 
-				if (static_map[int((m[i] * (j - initial_pos[i].y) + initial_pos[i].x) / 16)][int((j) / 16)].tile_props & 2) {
+				if (static_map[int((m[i] * (j - initial_pos[i].y) + initial_pos[i].x) / 16)][int((j) / 16)].tile_props & 64) {
 					hit++;
 					break;
 				}
@@ -78,7 +78,7 @@ bool Enemy::visionLines(Entity& target)
 		else {
 			for (float j = initial_pos[i].x; j < target_pos[i].x; j += 16) {
 
-				if (static_map[int((j) / 16)][int((m[i] * (j - initial_pos[i].x) + initial_pos[i].y) / 16)].tile_props & 2) {
+				if (static_map[int((j) / 16)][int((m[i] * (j - initial_pos[i].x) + initial_pos[i].y) / 16)].tile_props & 64) {
 					hit++;
 					break;
 				}
