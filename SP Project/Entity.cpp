@@ -82,18 +82,18 @@ bool Entity::legal_tile(Vector2f movement)
 
 	current_hitbox = entity_stats.animations[entity_stats.state][current_move].hitbox_rect;
 
-	int x_cords[2] = { (int)(-map_x / 16 + (entity_sprite.getPosition().x - (float)current_hitbox.x * sprite_scale / 2 + movement.x * scale) / (16 * scale))
-					 , (int)(-map_x / 16 + (entity_sprite.getPosition().x + (float)current_hitbox.x * sprite_scale / 2 + movement.x * scale) / (16 * scale)) },
-	 
-		y_cords[2] = { (int)(-map_y / 16 + (entity_sprite.getPosition().y - (float)current_hitbox.y * sprite_scale / 2 + movement.y * scale) / (16 * scale))
-					 , (int)(-map_y / 16 + (entity_sprite.getPosition().y  + (float)current_hitbox.y * sprite_scale / 2 + movement.y * scale) / (16 * scale)) };
+	int x_cords[2] = { (int)(getRelativePos().x - (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16
+					, (int)(getRelativePos().x + (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16 },
 
+		y_cords[2] = { (int)(getRelativePos().y - (float)current_hitbox.y * sprite_scale / (2 * scale) + movement.y) / 16
+					 , (int)(getRelativePos().y + (float)current_hitbox.y * sprite_scale / (2 * scale) + movement.y) / 16 };
+	
 	Vector2i hitbox_checker;
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
 			hitbox_checker = { x_cords[i], y_cords[j] };
 			while (hitbox_checker.x >= x_cords[0] && hitbox_checker.x <= x_cords[1] && hitbox_checker.y >= y_cords[0] && hitbox_checker.y <= y_cords[1]) {
-				if (static_map[hitbox_checker.x][hitbox_checker.y].tile_props & 2)
+				if (hitbox_checker.x < 0 || hitbox_checker.y < 0 || hitbox_checker.x >= size_x || hitbox_checker.y >= size_y || static_map[hitbox_checker.x][hitbox_checker.y].tile_props & 2)
 					return false;
 				hitbox_checker.x += hitbox_check[i][j].x, hitbox_checker.y += hitbox_check[i][j].y;
 			}
