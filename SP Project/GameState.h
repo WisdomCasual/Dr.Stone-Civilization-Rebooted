@@ -136,6 +136,7 @@ private:
 	int size_x = 0, size_y = 0;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
+	short disable_dynamic_obj = -1;
 	float map_x = 0, map_y = 0;
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0;
 	Vector2u prev_win = { 0, 0 };
