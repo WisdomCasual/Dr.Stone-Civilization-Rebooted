@@ -269,8 +269,6 @@ void Enemy::pathFinding(Entity& target, path_tile*& mp)
 	mp = aStar({ int(target.getRelativePos().x / 16), int(target.getRelativePos().y / 16) });
 }
 
-
-
 Vector2f Enemy::pathFollow(path_tile*& mp)
 {
 	if (mp == nullptr) {
@@ -426,10 +424,8 @@ void Enemy::update()
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
-		pos /= scale;
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
-		pos *= scale;
 		////////////////
 
 	}
