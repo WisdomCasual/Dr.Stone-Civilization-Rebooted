@@ -27,6 +27,7 @@ struct comparison_tile {
 
 struct path_tile {
 		int x = 0, y = 0;
+		Vector2f direction = {-1.f, -1.f};
 	};
 
 struct comparison_array {
@@ -62,6 +63,10 @@ struct comparison_array {
 				resize(size * 2);
 
 			at[curr_idx] = new_object, curr_idx++;
+		}
+
+		void remove() {
+			curr_idx--;
 		}
 
 		int arr_size() {
@@ -125,6 +130,7 @@ struct tabor_el_3e4 {
 		/* delete top function */
 		void Astika() {
 			hp.at[0] = hp.at[size - 1];
+			hp.remove();
 			size--;
 			sheftdown(0);
 		}
@@ -188,11 +194,10 @@ public:
 	void setPosition(float x_pos, float y_pos);
 	void set_movement_speed(short speed);
 	void setScale(float);
-	bool legal_tile(Vector2f);
+	bool legal_tile(Vector2f, Vector2f curr_hitbox = { -1, -1 });
 	virtual void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
-	void updatePos();   //passive
 	virtual void update() = 0;
 	virtual void pollevent();
 	void render();

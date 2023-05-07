@@ -116,68 +116,143 @@ bool Enemy::entityFound(Entity& target)
 	return 0;
 }
 
+bool Enemy::legal_direction(Vector2f tile_pos, short dx, short dy)
+{
+	short move_num = 0;
+		if (dy < 0) {
+			move_num = 0;
+		}
+		else if (dx > 0) {
+			move_num = 1;
+		}
+		else if (dx < 0) {
+			move_num = 2;
+		}
+		else if (dy > 0) {
+			move_num = 3;
+		}
+		return legal_tile(tile_pos, entity_stats.animations[entity_stats.state][move_num].hitbox_rect);
+}
+
 path_tile* Enemy::aStar(Vector2i target)
 {
 	path_tile* mp = new path_tile[size_x * size_y];
 	bool** vis = new bool * [size_x];
 	bool found_path = 0;
 	float g_val = 0;
+	Vector2i mntile = { -1, -1 }, to_pos = {-1, -1};
+	bool is_legal = 0;
+	for (int i = 0; i < 4 && !is_legal; i++) {
+		is_legal = legal_direction(Vector2f((target.x * 16 + 8), (target.y * 16 + 8)) - getRelativePos(), dx[i], dy[i]);
+	}
+	if (!is_legal) {
+		float delta_x, delta_y, mn = 1e9, g_temp;
+		int new_x, new_y;
+		short hitbox_count = 0;
+		Vector2i found_box = { -1, -1 }, found_empty = { -1, -1 };
+		for (int i = 0; i < 4; i++) {
+			new_x = target.x + dx[i], new_y = target.y + dy[i];
+			if ((static_map[new_x][new_y].tile_props & 2))
+				hitbox_count++, found_box = { dx[i], dy[i] };
+			else
+				found_empty = { dx[i], dy[i] };
+		}
+		switch (hitbox_count) {
+		case 2:
+			if ((static_map[target.x - found_box.x][target.y - found_box.y].tile_props & 2)) {
+				new_x = target.x - found_box.y, new_y = target.y - found_box.x;
+				delta_x = abs(new_x - to_pos.x),
+					delta_y = abs(new_y - to_pos.y);
+				mn = sqrtf(delta_y * delta_y + delta_x * delta_x);
+				mntile = { new_x, new_y };
+				new_x = target.x + found_box.y, new_y = target.y + found_box.x;
+				delta_x = abs(new_x - to_pos.x),
+					delta_y = abs(new_y - to_pos.y);
+				g_temp = sqrtf(delta_y * delta_y + delta_x * delta_x);
+				if (g_temp < mn)
+					mntile = { new_x, new_y };
+			}
+
+			else {
+				if ((static_map[target.x + found_box.y][target.y + found_box.x].tile_props & 2)) {
+					mntile = { target.x - found_box.y - found_box.x, target.y - found_box.y - found_box.x };
+					break;
+				}
+				mntile = { target.x + found_box.y - found_box.x, target.y - found_box.y + found_box.x };
+			}
+
+			break;
+		case 3:
+			mntile = found_empty;
+			break;
+		default:
+			mntile = target - found_box;
+			break;
+		}
+	}
 	for (int i = 0; i < size_x; i++) {
 		vis[i] = new bool[size_y]({});
 	}
-	priority_queue<pair<float, pair<int, int>>> pathes;
-	pair<float, pair<int, int>> curr_tile;
-	pathes.push({ 0, {target.x, target.y} });
+	tabor_el_3e4 pathes;
+	comparison_tile curr_tile;
+	to_pos = Vector2i(int(getRelativePos().x / 16), int(getRelativePos().y / 16));
 	vis[target.x][target.y] = 1;
 	mp[target.y*size_x + target.x] = { -1, -1 };
-	while (!pathes.empty()) {
+	if (mntile.x == -1.f) {
+		pathes.Ed5ol({ 0, target.x, target.y });
+	}
+	else {
+		mp[mntile.y * size_x + mntile.x] = { target.x, target.y};
+		vis[mntile.x][mntile.y] = 1;
+		pathes.Ed5ol({ 0, mntile.x, mntile.y });
+	}
+	while (!pathes.Fare8()) {
 		curr_tile = pathes.top();
-		pathes.pop();
-		curr_tile.first += g_val;
-		if (curr_tile.second.first == int(getRelativePos().x / 16) && curr_tile.second.second == int(getRelativePos().y / 16)) {
+		pathes.Astika();
+		curr_tile.cost -= g_val;
+		if (curr_tile.x == to_pos.x && curr_tile.y == to_pos.y) {
 			found_path = 1;
 			break;
 		}
-		if (curr_tile.first < -35) {
+		if (curr_tile.cost > 35) {
 			found_path = 0;
 			break;
 		}
 		int new_x, new_y;
 		for (int i = 0; i < 4; i++) {
-			new_x = curr_tile.second.first + dx[i],
-			new_y = curr_tile.second.second + dy[i];
+			new_x = curr_tile.x + dx[i],
+			new_y = curr_tile.y + dy[i];
 			float delta_x, delta_y;
 			if (new_x >= 0 && new_x < size_x && new_y >= 0 && new_y < size_y) {
-				if (!vis[new_x][new_y] && !(static_map[new_x][new_y].tile_props & 2)) {
-					if (legal_tile(Vector2f((new_x * 16), (new_y * 16)) - getRelativePos())) {
+				if (!vis[new_x][new_y] && (legal_direction(Vector2f((new_x * 16 + 8), (new_y * 16 + 8)) - getRelativePos(), -dx[i], -dy[i]) ||
+					new_x == to_pos.x && new_y == to_pos.y)) {
 						vis[new_x][new_y] = 1;
-						delta_x = abs(new_x - int(getRelativePos().x / 16)),
-							delta_y = abs(new_y - int(getRelativePos().y / 16));
+						delta_x = abs(new_x - to_pos.x),
+							delta_y = abs(new_y - to_pos.y);
 						//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
 						g_val = sqrtf(delta_y * delta_y + delta_x * delta_x);
-						mp[new_y * size_x + new_x] = { curr_tile.second.first, curr_tile.second.second };
-						pathes.push({ curr_tile.first - 1 - g_val, {new_x, new_y} });
-					}
+						mp[new_y * size_x + new_x] = { curr_tile.x, curr_tile.y };
+						pathes.Ed5ol({ curr_tile.cost + 1 + g_val, new_x, new_y });
 				}
 			}
 		}
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				new_x = curr_tile.second.first + corners[i],
-				new_y = curr_tile.second.second + corners[j];
+				new_x = curr_tile.x + corners[i],
+				new_y = curr_tile.y + corners[j];
 				float delta_x, delta_y;
 				if (new_x >= 0 && new_x < size_x && new_y >= 0 && new_y < size_y) {
-					if (!vis[new_x][new_y] && !(static_map[new_x][new_y].tile_props & 2) &&
-						!(static_map[new_x][curr_tile.second.second].tile_props & 2) && !(static_map[curr_tile.second.first][new_y].tile_props & 2)) {
-							if (legal_tile(Vector2f((new_x * 16), (new_y * 16)) - getRelativePos())) {
-								vis[new_x][new_y] = 1;
-								delta_x = abs(new_x - int(getRelativePos().x / 16)),
-									delta_y = abs(new_y - int(getRelativePos().y / 16));
-								//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
-								g_val = sqrtf(delta_y * delta_y + delta_x * delta_x);
-								mp[new_y * size_x + new_x] = { curr_tile.second.first, curr_tile.second.second };
-								pathes.push({ curr_tile.first - 1.4142f - g_val, {new_x, new_y} });
-							}
+					if (!vis[new_x][new_y] && (legal_direction(Vector2f((new_x * 16 + 8), (new_y * 16 + 8)) - getRelativePos(), -corners[i], -corners[j]) ||
+						new_x == to_pos.x && new_y == to_pos.y) &&
+						legal_direction(Vector2f((new_x * 16 + 8), (curr_tile.y * 16 + 8)) - getRelativePos(), -corners[i], -corners[j]) &&
+						legal_direction(Vector2f((curr_tile.x * 16 + 8), (new_y * 16 + 8)) - getRelativePos(), -corners[i], -corners[j])) {
+							vis[new_x][new_y] = 1;
+							delta_x = abs(new_x - to_pos.x),
+							delta_y = abs(new_y - to_pos.y);
+							//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
+							g_val = sqrtf(delta_y * delta_y + delta_x * delta_x);
+							mp[new_y * size_x + new_x] = { curr_tile.x, curr_tile.y};
+							pathes.Ed5ol({ curr_tile.cost + 1.4142f + g_val, new_x, new_y });
 					}
 				}
 			}
@@ -202,8 +277,6 @@ void Enemy::pathFinding(Entity& target, path_tile*& mp)
 	mp = aStar({ int(target.getRelativePos().x / 16), int(target.getRelativePos().y / 16) });
 }
 
-
-
 Vector2f Enemy::pathFollow(path_tile*& mp)
 {
 	if (mp == nullptr) {
@@ -226,6 +299,7 @@ void Enemy::stateMachine()
 		if (checker != prev_check || enemy_tile != prev_target_tile) {
 			pathFinding(player_entity, mp);
 			target_tile = pathFollow(mp);
+			delta_sign = target_tile - getRelativePos();
 			if (target_tile.x != -1.f) {
 				entity_stats.state = 1;
 				motion_delay = 2;
@@ -244,14 +318,19 @@ void Enemy::stateMachine()
 		prev_target_tile = enemy_tile;
 
 
-		target_tile = pathFollow(mp);
+		Vector2f delta_pos = target_tile - getRelativePos();
+		Vector2f compar = { roundf(delta_pos.x), roundf(delta_pos.y) };
+		if ((compar.x == 0 || (delta_pos.x < 0) != (delta_sign.x < 0)) && (compar.y == 0 || (delta_pos.y < 0) != (delta_sign.y < 0))) {
+			target_tile = pathFollow(mp);
+			delta_sign = target_tile - getRelativePos();
+			delta_pos = delta_sign;
+		}
 
 		if (target_tile.x == -1.f) {
 			will_move = 0;
 			entity_stats.state = 0;
 			break;
 		}
-		Vector2f delta_pos = target_tile - getRelativePos();
 		theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
 		curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		will_move = 1;
@@ -262,6 +341,8 @@ void Enemy::stateMachine()
 				delete[] mp;
 			}
 			mp = aStar(last_seen);
+			target_tile = pathFollow(mp);
+			delta_sign = target_tile - getRelativePos();
 			entity_stats.state = 2;
 			break;
 		}
@@ -269,12 +350,17 @@ void Enemy::stateMachine()
 		break;
 	}
 	case 2: {
-		target_tile = pathFollow(mp);
+		Vector2f delta_pos = target_tile - getRelativePos();
+		Vector2f compar = { roundf(delta_pos.x), roundf(delta_pos.y) };
+		if ((compar.x == 0 || (delta_pos.x < 0) != (delta_sign.x < 0)) && (compar.y == 0 || (delta_pos.y < 0) != (delta_sign.y < 0))) {
+			target_tile = pathFollow(mp);
+			delta_sign = target_tile - getRelativePos();
+			delta_pos = delta_sign;
+		}
 		if (target_tile.x == -1.f) {
 			will_move = 0;
 		}
 		else {
-			Vector2f delta_pos = target_tile - getRelativePos();
 			theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		}
@@ -346,10 +432,8 @@ void Enemy::update()
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
-		pos /= scale;
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
-		pos *= scale;
 		////////////////
 
 	}
@@ -391,9 +475,9 @@ void Enemy::update()
 	if (will_move) {
 		bool legal_x = legal_tile({ curr_movement.x, 0 }), legal_y = legal_tile({ 0, curr_movement.y });
 		if (legal_x)
-			move({ dt * 33 * curr_movement.x * scale, 0 });
+			move({ dt * 33 * curr_movement.x, 0 });
 		if (legal_y)
-			move({ 0, dt * 33 * curr_movement.y * scale });
+			move({ 0, dt * 33 * curr_movement.y});
 		if (!legal_x && !legal_y)
 			theta += -1 * (rand() % 2) * 30;
 		else

@@ -28,11 +28,6 @@ Vector2f Entity::getRelativePos()
 	return (Vector2f(-map_x + getPosition().x / scale, -map_y + getPosition().y / scale));
 }
 
-void Entity::updatePos()
-{
-	entity_sprite.setPosition(pos.x  + map_x*scale, pos.y + map_y*scale);
-}
-
 void Entity::change_state(int new_state)
 {
 	if (!active_action)
@@ -77,11 +72,10 @@ void Entity::action(int action_id)
 	}
 }
 
-bool Entity::legal_tile(Vector2f movement)
+bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 {
 
-	current_hitbox = entity_stats.animations[entity_stats.state][current_move].hitbox_rect;
-
+	current_hitbox = (curr_hitbox.x == -1.f) ? entity_stats.animations[entity_stats.state][current_move].hitbox_rect : curr_hitbox;
 	int x_cords[2] = { (int)(getRelativePos().x - (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16
 					, (int)(getRelativePos().x + (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16 },
 

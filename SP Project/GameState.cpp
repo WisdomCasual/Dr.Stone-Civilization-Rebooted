@@ -115,9 +115,8 @@ void GameState::load_map(string map_name)
 	}
 }
 
-void GameState::load_entities()
+void GameState::load_entities(float player_relative_y_pos)
 {
-	player_entity.setPosition(window->getSize().x / 2 - 30 * scale, window->getSize().y / 2 - 30 * scale);
 	player_entity.set_movement_speed(130);
 
 	player_stats.animations = new animation * [5];
@@ -143,7 +142,7 @@ void GameState::load_entities()
 	}
 	player_entity.change_state(3);
 
-	enemy_entity.setPosition((player_entity.getRelativePos().x - 16) * scale, (player_entity.getRelativePos().y + 16) * scale);
+	enemy_entity.setPosition(800, 800);
 
 
 	enemy_stats.animations = new animation * [4];
@@ -169,7 +168,7 @@ void GameState::load_entities()
 		enemy_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
 
-	dynamic_rendering.insert({ player_entity.getRelativePos().y, {-1, &player_entity} });
+	dynamic_rendering.insert({ player_relative_y_pos, {-1, &player_entity} });
 }
 
 void GameState::deload_map()
@@ -187,9 +186,30 @@ void GameState::deload_map()
 	size_x = 0, size_y = 0;
 }
 
-void GameState::initial_game(string current_map)
+void GameState::initial_game(string current_map, Vector2f player_pos)
 {
 	load_map(current_map);
+	center_cam(player_pos);
+}
+
+void GameState::center_cam(Vector2f player_pos)
+{
+	map_x = -(player_pos.x - win_x / 2 / scale);
+	map_y = -(player_pos.y - win_y / 2 / scale);
+
+	if (-map_x < 0)
+		map_x = 0;
+	else if (-map_x > size_x * 16 - win_x / scale)
+		map_x = -(size_x * 16 - win_x / scale);
+
+	if (-map_y < 0)
+		map_y = 0;
+	else if (-map_y > size_y * 16 - win_y / scale)
+		map_y = -(size_y * 16 - win_y / scale);
+
+	x_offset = -map_x / 16, y_offset = -map_y / 16;
+
+	player_entity.setPosition((player_pos.x + map_x) * scale, (player_pos.y + map_y) * scale);
 }
 
 void GameState::render_static_map()
@@ -236,7 +256,7 @@ void GameState::render_entities()
 	}
 }
 
-GameState::GameState(int character_id, string current_map, Vector2i player_pos)
+GameState::GameState(int character_id, string current_map, Vector2f player_pos)
 	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), enemy_entity(enemy_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
@@ -245,8 +265,9 @@ GameState::GameState(int character_id, string current_map, Vector2i player_pos)
 
 	initial_tile_sheets("game/tiles");
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
-	initial_game(current_map);
-	load_entities();
+	load_entities(player_pos.y);
+	initial_game(current_map, player_pos);
+
 
 	/////////////////
 
@@ -267,6 +288,7 @@ void GameState::update()
 		else scale = win_y / 304.5;
 		/////////////////////
 		enemy_entity.setScale(scale);
+		center_cam(player_entity.getRelativePos());
 	}
 
 
