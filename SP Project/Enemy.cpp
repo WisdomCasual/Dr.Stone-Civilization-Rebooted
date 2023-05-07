@@ -114,62 +114,121 @@ path_tile* Enemy::aStar(Vector2i target)
 	bool** vis = new bool * [size_x];
 	bool found_path = 0;
 	float g_val = 0;
+	Vector2i mntile = { -1, -1 }, to_pos = {-1, -1};
+	bool is_legal = 0;
+	for (int i = 0; i < 4 && !is_legal; i++) {
+		direction(Vector2f(dx[i], dy[i]));
+		is_legal = legal_tile(Vector2f((target.x*16 + 8), (target.y*16 + 8)) - getRelativePos());
+	}
+	if (!is_legal) {
+		float delta_x, delta_y, mn = 1e9, g_temp;
+		int new_x, new_y;
+		short hitbox_count = 0;
+		Vector2i found_box = { -1, -1 }, found_empty = { -1, -1 };
+		for (int i = 0; i < 4; i++) {
+			new_x = target.x + dx[i], new_y = target.y + dy[i];
+			if ((static_map[new_x][new_y].tile_props & 2))
+				hitbox_count++, found_box = { dx[i], dy[i] };
+			else
+				found_empty = { dx[i], dy[i] };
+		}
+		switch (hitbox_count) {
+		case 2:
+			if ((static_map[target.x - found_box.x][target.y - found_box.y].tile_props & 2)) {
+				new_x = target.x - found_box.y, new_y = target.y - found_box.x;
+				delta_x = abs(new_x - to_pos.x),
+					delta_y = abs(new_y - to_pos.y);
+				mn = sqrtf(delta_y * delta_y + delta_x * delta_x);
+				mntile = { new_x, new_y };
+				new_x = target.x + found_box.y, new_y = target.y + found_box.x;
+				delta_x = abs(new_x - to_pos.x),
+					delta_y = abs(new_y - to_pos.y);
+				g_temp = sqrtf(delta_y * delta_y + delta_x * delta_x);
+				if (g_temp < mn)
+					mntile = { new_x, new_y };
+			}
+
+			else {
+				if ((static_map[target.x + found_box.y][target.y + found_box.x].tile_props & 2)) {
+					mntile = { target.x - found_box.y - found_box.x, target.y - found_box.y - found_box.x };
+					break;
+				}
+				mntile = { target.x + found_box.y - found_box.x, target.y - found_box.y + found_box.x };
+			}
+
+			break;
+		case 3:
+			mntile = found_empty;
+			break;
+		default:
+			mntile = target - found_box;
+			break;
+		}
+	}
 	for (int i = 0; i < size_x; i++) {
 		vis[i] = new bool[size_y]({});
 	}
-	priority_queue<pair<float, pair<int, int>>> pathes;
-	pair<float, pair<int, int>> curr_tile;
-	pathes.push({ 0, {target.x, target.y} });
+	tabor_el_3e4 pathes;
+	comparison_tile curr_tile;
+	to_pos = Vector2i(int(getRelativePos().x / 16), int(getRelativePos().y / 16));
 	vis[target.x][target.y] = 1;
 	mp[target.y*size_x + target.x] = { -1, -1 };
-	while (!pathes.empty()) {
+	if (mntile.x == -1.f) {
+		pathes.Ed5ol({ 0, target.x, target.y });
+	}
+	else {
+		mp[mntile.y * size_x + mntile.x] = { target.x, target.y};
+		vis[mntile.x][mntile.y] = 1;
+		pathes.Ed5ol({ 0, mntile.x, mntile.y });
+	}
+	while (!pathes.Fare8()) {
 		curr_tile = pathes.top();
-		pathes.pop();
-		curr_tile.first += g_val;
-		if (curr_tile.second.first == int(getRelativePos().x / 16) && curr_tile.second.second == int(getRelativePos().y / 16)) {
+		pathes.Astika();
+		curr_tile.cost -= g_val;
+		if (curr_tile.x == to_pos.x && curr_tile.y == to_pos.y) {
 			found_path = 1;
 			break;
 		}
-		if (curr_tile.first < -35) {
+		if (curr_tile.cost > 35) {
 			found_path = 0;
 			break;
 		}
 		int new_x, new_y;
 		for (int i = 0; i < 4; i++) {
-			new_x = curr_tile.second.first + dx[i],
-			new_y = curr_tile.second.second + dy[i];
+			new_x = curr_tile.x + dx[i],
+			new_y = curr_tile.y + dy[i];
 			float delta_x, delta_y;
 			if (new_x >= 0 && new_x < size_x && new_y >= 0 && new_y < size_y) {
-				if (!vis[new_x][new_y] && !(static_map[new_x][new_y].tile_props & 2)) {
-					if (legal_tile(Vector2f((new_x * 16), (new_y * 16)) - getRelativePos())) {
+				direction(Vector2f(-dx[i], -dy[i]));
+				if (!vis[new_x][new_y] && (legal_tile(Vector2f((new_x * 16 + 8), (new_y * 16 + 8)) - getRelativePos()) || 
+					new_x == to_pos.x && new_y == to_pos.y)) {
 						vis[new_x][new_y] = 1;
-						delta_x = abs(new_x - int(getRelativePos().x / 16)),
-							delta_y = abs(new_y - int(getRelativePos().y / 16));
+						delta_x = abs(new_x - to_pos.x),
+							delta_y = abs(new_y - to_pos.y);
 						//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
 						g_val = sqrtf(delta_y * delta_y + delta_x * delta_x);
-						mp[new_y * size_x + new_x] = { curr_tile.second.first, curr_tile.second.second };
-						pathes.push({ curr_tile.first - 1 - g_val, {new_x, new_y} });
-					}
+						mp[new_y * size_x + new_x] = { curr_tile.x, curr_tile.y };
+						pathes.Ed5ol({ curr_tile.cost + 1 + g_val, new_x, new_y });
 				}
 			}
 		}
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				new_x = curr_tile.second.first + corners[i],
-				new_y = curr_tile.second.second + corners[j];
+				new_x = curr_tile.x + corners[i],
+				new_y = curr_tile.y + corners[j];
 				float delta_x, delta_y;
 				if (new_x >= 0 && new_x < size_x && new_y >= 0 && new_y < size_y) {
-					if (!vis[new_x][new_y] && !(static_map[new_x][new_y].tile_props & 2) &&
-						!(static_map[new_x][curr_tile.second.second].tile_props & 2) && !(static_map[curr_tile.second.first][new_y].tile_props & 2)) {
-							if (legal_tile(Vector2f((new_x * 16), (new_y * 16)) - getRelativePos())) {
-								vis[new_x][new_y] = 1;
-								delta_x = abs(new_x - int(getRelativePos().x / 16)),
-									delta_y = abs(new_y - int(getRelativePos().y / 16));
-								//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
-								g_val = sqrtf(delta_y * delta_y + delta_x * delta_x);
-								mp[new_y * size_x + new_x] = { curr_tile.second.first, curr_tile.second.second };
-								pathes.push({ curr_tile.first - 1.4142f - g_val, {new_x, new_y} });
-							}
+					direction(Vector2f(-corners[i], -corners[j]));
+					if (!vis[new_x][new_y] && (legal_tile(Vector2f((new_x * 16 + 8), (new_y * 16 + 8)) - getRelativePos()) ||
+						new_x == to_pos.x && new_y == to_pos.y) &&
+						!(static_map[new_x][curr_tile.y].tile_props & 2) && !(static_map[curr_tile.x][new_y].tile_props & 2)) {
+							vis[new_x][new_y] = 1;
+							delta_x = abs(new_x - to_pos.x),
+							delta_y = abs(new_y - to_pos.y);
+							//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
+							g_val = sqrtf(delta_y * delta_y + delta_x * delta_x);
+							mp[new_y * size_x + new_x] = { curr_tile.x, curr_tile.y};
+							pathes.Ed5ol({ curr_tile.cost + 1.4142f + g_val, new_x, new_y });
 					}
 				}
 			}

@@ -64,6 +64,10 @@ struct comparison_array {
 			at[curr_idx] = new_object, curr_idx++;
 		}
 
+		void remove() {
+			curr_idx--;
+		}
+
 		int arr_size() {
 			return curr_idx;
 		}
@@ -125,6 +129,7 @@ struct tabor_el_3e4 {
 		/* delet top function */
 		void Astika() {
 			hp.at[0] = hp.at[size - 1];
+			hp.remove();
 			size--;
 			sheftdown(0);
 		}
