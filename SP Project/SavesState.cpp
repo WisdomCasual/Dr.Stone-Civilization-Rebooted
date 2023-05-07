@@ -20,7 +20,7 @@ void SavesState::update_saves()
 						saves[i].hover = 0;
 					}
 					else {
-						states->insert({ GameID, new GameState(saves[i].character_id, saves[i].current_map, {0,0}) });
+						states->insert({ GameID, new GameState(saves[i].character_id, saves[i].current_map, saves[i].player_pos) });
 						states->at(GameID)->update();
 
 						int exceptions[] = { GameID };
@@ -203,6 +203,7 @@ void SavesState::initial_saves()
 		ifs.seekg(ios::beg);
 		if (ifs.is_open()) {
 			string name, cur_map;
+			Vector2f player_pos;
 			int progress, character_id;
 			getline(ifs, name);
 			saves[i].name = name;
@@ -213,6 +214,8 @@ void SavesState::initial_saves()
 			ifs.ignore();
 			getline(ifs, cur_map);
 			saves[i].current_map = cur_map;
+			ifs >> player_pos.x >> player_pos.y;
+			saves[i].player_pos = player_pos;
 		}
 		ifs.close();
 	}

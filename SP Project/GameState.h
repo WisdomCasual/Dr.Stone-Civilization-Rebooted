@@ -146,16 +146,17 @@ private:
 	//private functions:
 	void search_front(int, int, int, Vector3i***, bool***, int);
 	void load_map(string);
-	void load_entities();
+	void load_entities(float);
 	void deload_map();
-	void initial_game(string);
+	void initial_game(string, Vector2f);
+	void center_cam(Vector2f);
 	void render_static_map();
 	void render_entities();
 
 
 public:
 	//constructors/destructors
-	GameState(int, string, Vector2i);
+	GameState(int, string, Vector2f);
 	~GameState();
 	
 	//public functions:
