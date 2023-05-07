@@ -14,7 +14,7 @@ private:
 	struct save { // stores save 
 		int x, y, no;
 		int progress = 0, character_id = 0;
-		string name;
+		string name, current_map;
 		bool empty = 1, hover = 0, del_hover = 0, pressed = 0, del_pressed = 0, del = 0;
 	};
 

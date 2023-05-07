@@ -187,9 +187,9 @@ void GameState::deload_map()
 	size_x = 0, size_y = 0;
 }
 
-void GameState::initial_game()
+void GameState::initial_game(string current_map)
 {
-	load_map("Sheraton");
+	load_map(current_map);
 }
 
 void GameState::render_static_map()
@@ -236,7 +236,7 @@ void GameState::render_entities()
 	}
 }
 
-GameState::GameState(int character_id = 1)
+GameState::GameState(int character_id, string current_map, Vector2i player_pos)
 	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), enemy_entity(enemy_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
@@ -245,7 +245,7 @@ GameState::GameState(int character_id = 1)
 
 	initial_tile_sheets("game/tiles");
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
-	initial_game();
+	initial_game(current_map);
 	load_entities();
 
 	/////////////////
