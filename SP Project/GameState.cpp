@@ -117,7 +117,7 @@ void GameState::load_map(string map_name)
 
 void GameState::load_entities()
 {
-	player_entity.setPosition(window->getSize().x / 2, window->getSize().y / 2);
+	player_entity.setPosition(window->getSize().x / 2 - 30 * scale, window->getSize().y / 2 - 30 * scale);
 	player_entity.set_movement_speed(130);
 
 	player_stats.animations = new animation * [5];
@@ -143,7 +143,7 @@ void GameState::load_entities()
 	}
 	player_entity.change_state(3);
 
-	enemy_entity.setPosition(window->getSize().x, window->getSize().y + 50);
+	enemy_entity.setPosition((player_entity.getRelativePos().x - 16) * scale, (player_entity.getRelativePos().y + 16) * scale);
 
 
 	enemy_stats.animations = new animation * [4];
@@ -266,7 +266,7 @@ void GameState::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		/////////////////////
-		enemy_entity.setScale(scale*0.4);
+		enemy_entity.setScale(scale);
 	}
 
 
