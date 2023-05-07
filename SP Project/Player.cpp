@@ -144,11 +144,9 @@ void Player::update()
 {
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		entity_sprite.setPosition(entity_sprite.getPosition().x / scale, entity_sprite.getPosition().y / scale);
 		win_x = window->getSize().x, win_y = window->getSize().y;
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
-		entity_sprite.setPosition(entity_sprite.getPosition().x * scale, entity_sprite.getPosition().y * scale);
 		////////////////
 		setScale(scale * 0.65);
 	}
