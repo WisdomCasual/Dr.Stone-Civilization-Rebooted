@@ -127,7 +127,7 @@ struct tabor_el_3e4 {
 			else return 0;
 		}
 
-		/* delet top function */
+		/* delete top function */
 		void Astika() {
 			hp.at[0] = hp.at[size - 1];
 			hp.remove();
