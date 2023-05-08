@@ -118,6 +118,7 @@ void GameState::load_map(string map_name)
 void GameState::load_entities(float player_relative_y_pos)
 {
 	player_entity.set_movement_speed(130);
+	enemy_entity.set_movement_speed(80);
 
 	player_stats.animations = new animation * [5];
 	player_stats.states_no = 4;
@@ -287,7 +288,7 @@ void GameState::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		/////////////////////
-		enemy_entity.setScale(scale);
+		enemy_entity.setScale(scale * 0.4);
 		center_cam(player_entity.getRelativePos());
 	}
 

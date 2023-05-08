@@ -302,6 +302,7 @@ void Enemy::stateMachine()
 	prev_check = checker;
 	switch (entity_stats.state) {
 	case 1: {
+		move_speed = movement_speed;
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
 		if (enemy_tile != prev_target_tile) {
 			pathFinding(player_entity, mp);
@@ -342,6 +343,7 @@ void Enemy::stateMachine()
 		break;
 	}
 	case 2: {
+		move_speed = movement_speed;
 		Vector2f delta_pos = target_tile - getRelativePos();
 		Vector2f compar = { roundf(delta_pos.x), roundf(delta_pos.y) };
 		if ((compar.x == 0 || (delta_pos.x < 0) != (delta_sign.x < 0)) && (compar.y == 0 || (delta_pos.y < 0) != (delta_sign.y < 0))) {
@@ -374,6 +376,7 @@ void Enemy::stateMachine()
 			direction({ 0, 0 });
 		}
 		if (motion_delay >= 4) {
+			move_speed = movement_speed / 2;
 			motion_delay = 0;
 			theta = (rand() % 36) * 10;
 			will_move = rand() % 4;
@@ -467,9 +470,9 @@ void Enemy::update()
 	if (will_move) {
 		bool legal_x = legal_tile({ curr_movement.x, 0 }), legal_y = legal_tile({ 0, curr_movement.y });
 		if (legal_x)
-			move({ dt * 33 * curr_movement.x, 0 });
+			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
-			move({ 0, dt * 33 * curr_movement.y});
+			move({ 0, dt * move_speed * curr_movement.y});
 		if (!legal_x && !legal_y)
 			theta += -1 * (rand() % 2) * 30;
 		else
