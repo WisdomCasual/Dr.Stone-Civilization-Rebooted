@@ -14,7 +14,7 @@ void Enemy::Mawgood()
 
 void Enemy::updatePos()
 {
-	entity_sprite.setPosition(pos.x + map_x * scale, pos.y + map_y * scale);
+	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
 	Mawgood();
 }
 
