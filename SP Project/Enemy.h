@@ -9,7 +9,7 @@ private:
 	Vector2i prev_target_tile = { 0, 0 }, last_seen = { 0, 0 };
 	Vector2f target_tile = { -1.f, -1.f }, last_seen_cord = { 0.f, 0.f }, delta_sign = {-1, -1};
 	bool will_move = 0, prev_check = 0;
-	float theta = 0, motion_delay = 4, sound_range = 5.f;
+	float theta = 0, motion_delay = 4, sound_range = 5.f, move_speed;
 	path_tile* mp = nullptr;
 
 public:
