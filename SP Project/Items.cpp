@@ -47,6 +47,7 @@ void Items::update()
 
 	}
 
+
      intersect();
 	 move();
 }
