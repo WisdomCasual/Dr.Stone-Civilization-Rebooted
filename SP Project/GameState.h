@@ -4,7 +4,7 @@
 #include "Entity.h"
 #include "Enemy.h"
 #include "Player.h"
-
+#include"Items.h"
 #include"Global.h"
 
 #define default_enemy 0, enemy_stats, "character 1", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
@@ -45,7 +45,7 @@ private:
 			}
 		}
 
-		void add(short type, entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }) {
+		void add(short type, entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }, Texture** tile_textures =nullptr, Vector3i tile_info={0,0,0}) {
 			if (curr_idx < limit) {
 				switch (type) {
 					case 0:
@@ -55,6 +55,7 @@ private:
 						break;
 					case 1:
 						//items
+						entities[curr_idx] = new Items(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
 						break;
 					case 2:
 						//passive
@@ -71,7 +72,8 @@ private:
 			entities[idx] = entities[curr_idx];
 			entities[curr_idx] = nullptr;
 		}
-	} enemies;
+
+	} enemies,items;
 
 	struct entity {
 		Vector2f pixel_cords = { 0,0 };

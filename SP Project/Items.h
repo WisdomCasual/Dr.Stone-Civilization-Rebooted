@@ -7,7 +7,6 @@ struct Items:
 public:
     //Public Variables
     int item_ID = 0;
-    bool taken = 0;
     float time = 0;
     Vector2f velocity = { (rand() % 40 - 20),(rand() % 40 - 20) };
  
