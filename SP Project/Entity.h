@@ -171,7 +171,7 @@ public:
 	entity& entity_stats ;
 	Entity& player_entity ;
 	Sprite entity_sprite;
-	Texture** tile_textures;
+	Texture** tile_textures = nullptr;
 	render_tile**& static_map;
 	float  delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
