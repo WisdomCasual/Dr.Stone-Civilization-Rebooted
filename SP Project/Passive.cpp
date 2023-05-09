@@ -32,7 +32,7 @@ void Passive::stateMachine()
 	switch (state) {
 	case 1: {
 		motion_delay += dt, switch_delay += dt;
-		if (motion_delay >= 2) {
+		if (motion_delay >= 1) {
 			move_speed = entity_stats.base_movement_speed;
 			motion_delay = 0;
 			theta = (rand() % 8) * 45;
@@ -44,8 +44,8 @@ void Passive::stateMachine()
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
 		}
-		if (switch_delay >= 10)
-			state = 0, motion_delay = 0, will_move = 0;
+		if (switch_delay >= 8)
+			state = 0, motion_delay = 0, will_move = 1;
 		break;
 	}
 	default:
@@ -55,12 +55,12 @@ void Passive::stateMachine()
 			will_move = 0;
 			direction({ 0, 0 });
 		}
-		if (motion_delay >= 5) {
+		if (motion_delay >= 4) {
 			move_speed = entity_stats.base_movement_speed / 2;
 			motion_delay = 0;
 			theta = (rand() % 8) * 45;
 			will_move = rand() % 4;
-			move_for = 3 + rand() % 3;
+			move_for = 3 + rand() % 2;
 			direction({ 0, 0 });
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			while (!legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y))) {
