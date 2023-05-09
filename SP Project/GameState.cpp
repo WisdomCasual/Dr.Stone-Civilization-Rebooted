@@ -117,10 +117,13 @@ void GameState::load_map(string map_name)
 
 void GameState::load_entities(float player_relative_y_pos)
 {
-	player_entity.set_movement_speed(130);
 
-	player_stats.animations = new animation * [5];
+	enemies.add(default_enemy, {800, 800});
+	enemies.add(default_enemy, { 850, 850 });
+
+	player_stats.animations = new animation * [5]({});
 	player_stats.states_no = 4;
+	player_stats.base_movement_speed = 130;
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
 		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
@@ -142,12 +145,12 @@ void GameState::load_entities(float player_relative_y_pos)
 	}
 	player_entity.change_state(3);
 
-	enemy_entity.setPosition(window->getSize().x, window->getSize().y + 50);
 
 
 	enemy_stats.animations = new animation * [4];
+	enemy_stats.scale_const = 0.4;
 	enemy_stats.states_no = 4;
-	enemy_stats.state = 0;
+	enemy_stats.base_movement_speed = 80;
 	for (int i = 0; i < 4; i++) {
 		enemy_stats.animations[i] = new animation[16];
 		enemy_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
@@ -168,7 +171,6 @@ void GameState::load_entities(float player_relative_y_pos)
 		enemy_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
 
-	dynamic_rendering.insert({ player_relative_y_pos, {-1, &player_entity} });
 }
 
 void GameState::deload_map()
@@ -230,6 +232,10 @@ void GameState::render_static_map()
 void GameState::render_entities()
 {
 	dynamic_rendering.insert({ player_entity.getRelativePos().y, {-1, &player_entity} });
+	for (int i = 0; i < enemies.curr_idx; i++) {
+		dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]}});
+	}
+
 	for (auto i = dynamic_rendering.lower_bound(-map_y-10); i != dynamic_rendering.end(); ) {
 		//if (i->first > map_y + win_y / scale + 10)
 		//	break;
@@ -257,7 +263,7 @@ void GameState::render_entities()
 }
 
 GameState::GameState(int character_id, string current_map, Vector2f player_pos)
-	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), enemy_entity(enemy_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity)
+	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), enemies(20)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
@@ -287,14 +293,17 @@ void GameState::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		/////////////////////
-		enemy_entity.setScale(scale*0.4);
+		for (int i = 0; i < enemies.curr_idx; i++) {
+			enemies.entities[i]->setScale(scale * enemies.entities[i]->entity_stats.scale_const);
+		}
 		center_cam(player_entity.getRelativePos());
 	}
 
 
 	player_entity.update();
-
-	enemy_entity.update();
+	for (int i = 0; i < enemies.curr_idx; i++) {
+		enemies.entities[i]->update();
+	}
 
 }
 
@@ -302,7 +311,6 @@ void GameState::render()
 {
 	render_static_map();
 	render_entities();
-	enemy_entity.render();
 }
 
 void GameState::pollevent()
@@ -347,7 +355,7 @@ void GameState::pollevent()
 			}
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved) {
-				int new_state = player_stats.state - event.mouseWheel.delta;
+				int new_state = player_entity.state - event.mouseWheel.delta;
 				if (new_state > 3) new_state = 3;
 				else if (new_state < 0) new_state = 0;
 				player_entity.change_state(new_state);

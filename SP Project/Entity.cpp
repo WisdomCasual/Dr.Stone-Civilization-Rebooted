@@ -26,9 +26,7 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 
 Entity::~Entity()
 {
-	for (int i = 0; i < entity_stats.states_no; i++)
-		delete[] entity_stats.animations[i];
-	delete[] entity_stats.animations;
+
 }
 
 Vector2f Entity::getRelativePos()
@@ -36,15 +34,10 @@ Vector2f Entity::getRelativePos()
 	return (Vector2f(-map_x + getPosition().x / scale, -map_y + getPosition().y / scale));
 }
 
-void Entity::updatePos()
-{
-	entity_sprite.setPosition(pos.x  + map_x*scale, pos.y + map_y*scale);
-}
-
 void Entity::change_state(int new_state)
 {
 	if (!active_action)
-		entity_stats.state = new_state;
+		state = new_state;
 }
 
 Vector2f Entity::getPosition()
@@ -59,7 +52,7 @@ void Entity::setPosition(float x_pos, float y_pos)
 
 void Entity::set_movement_speed(short speed)
 {
-	movement_speed = speed; //I AM SPEED
+	entity_stats.base_movement_speed = speed; //I AM SPEED
 
 }
 
@@ -85,11 +78,10 @@ void Entity::action(int action_id)
 	}
 }
 
-bool Entity::legal_tile(Vector2f movement)
+bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 {
 
-	current_hitbox = entity_stats.animations[entity_stats.state][current_move].hitbox_rect;
-
+	current_hitbox = (curr_hitbox.x == -1.f) ? entity_stats.animations[state][current_move].hitbox_rect : curr_hitbox;
 	int x_cords[2] = { (int)(getRelativePos().x - (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16
 					, (int)(getRelativePos().x + (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16 },
 
@@ -142,7 +134,7 @@ void Entity::direction(Vector2f direction)
 		if (delay > animation_delay) {
 			delay = 0;
 			current_frame++;
-			current_frame %= entity_stats.animations[entity_stats.state][current_move].frames;
+			current_frame %= entity_stats.animations[state][current_move].frames;
 		}
 		else
 			delay += dt;
