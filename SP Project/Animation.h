@@ -13,7 +13,7 @@ private:
 	int frame_count, current_frame = 0;
 	float &map_x, &map_y;
 	float delay, prev_scale = 0;
-	bool loop;
+	bool loop, despawn = 0;
 
 
 public:
