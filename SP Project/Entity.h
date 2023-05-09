@@ -17,7 +17,17 @@ struct animation {
 struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations;
-	short health = 100, damage = 10, state = 0, states_no;
+	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no;
+	float scale_const = 1;
+	~entity() {
+
+		if (animations != nullptr) {
+			for (int i = 0; i < states_no; i++)
+				if (animations[i] != nullptr)
+					delete[] animations[i];
+			delete[] animations;
+		}
+	}
 };
 
 struct comparison_tile {
@@ -158,14 +168,15 @@ struct Entity : public State
 public:
 
 	//Public Variables for all sub-classes
-	entity& entity_stats;
-	Entity& player_entity;
+	entity& entity_stats ;
+	Entity& player_entity ;
 	Sprite entity_sprite;
+	Texture** tile_textures = nullptr;
 	render_tile**& static_map;
 	float  delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
 	float& x_offset, & y_offset;
-	short current_move = 3, current_frame = 0, prev_state = -1, movement_speed = 100, &disable_dynamic_obj;
+	short current_move = 3, current_frame = 0, prev_state = -1, &disable_dynamic_obj;
 	IntRect current_rect = { 0,0,0,0 };
 	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
@@ -175,6 +186,9 @@ public:
 	Vector2f pos = { 0, 0 };
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
+	
+	bool despawn = 0;
+	short state = 0, health = 100, damage = 10;
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;
@@ -183,8 +197,7 @@ public:
 
 
 	//Public functions
-	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr);
-
+	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr,Texture** tile_textures=nullptr, Vector3i tile_info={0,0,0});
 	virtual ~Entity();
 
 	Vector2f getPosition();

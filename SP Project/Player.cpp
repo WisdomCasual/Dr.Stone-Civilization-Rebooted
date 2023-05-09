@@ -14,7 +14,7 @@ void Player::move_cam(float x_movement, float y_movement)
 void Player::player_movement()
 {
 	if (!active_action) {
-		float x_movement = delta_movement().x * movement_speed * dt, y_movement = delta_movement().y * movement_speed * dt;
+		float x_movement = delta_movement().x * entity_stats.base_movement_speed * dt, y_movement = delta_movement().y * entity_stats.base_movement_speed * dt;
 		Vector2f dir = { 0,0 };
 		if (legal_tile({ x_movement, 0 })) {
 			dir.x = delta_movement().x;
@@ -79,7 +79,7 @@ void Player::use_tool()
 			Edrab(ElShakl);
 			action(ElShakl+1);
 		}
-		else if (entity_stats.state == 1 || entity_stats.state == 0) { // axe / pickaxe
+		else if (state == 1 || state == 0) { // axe / pickaxe
 			mine();
 			action(1);
 		}
@@ -107,7 +107,7 @@ void Player::mine()
 			destroy_location = { (int)((check_block.x - 4) / 16),  (int)((check_block.y + 4) / 16) };
 	}
 	if (destroy_location.x > -10) {
-		if(static_map[destroy_location.x][destroy_location.y].tool_type == entity_stats.state)
+		if(static_map[destroy_location.x][destroy_location.y].tool_type == state)
 			destroy_object(destroy_location);
 	}
 }
@@ -159,16 +159,16 @@ void Player::update()
 		setScale(scale * 0.65);
 	}
 
-	if (entity_stats.state != prev_state) {
-		prev_state = entity_stats.state;
-		entity_sprite.setTexture(*textures[entity_stats.state]);
+	if (state != prev_state) {
+		prev_state = state;
+		entity_sprite.setTexture(*textures[state]);
 	}
 
 	if (active_action) {
 		if (delay > animation_delay) {
 			delay = 0;
 			current_frame++;
-			if (current_frame % entity_stats.animations[entity_stats.state][current_move].frames == 0) {
+			if (current_frame % entity_stats.animations[state][current_move].frames == 0) {
 				current_frame = 0, current_move -= 4 * active_action, active_action = 0;
 			}
 		}
@@ -179,10 +179,10 @@ void Player::update()
 	MakanElDarb = { -10,-10,1,1 };
 	if (Lag < 0.8)
 		Lag += dt;
-	current_rect = entity_stats.animations[entity_stats.state][current_move].rect;
+	current_rect = entity_stats.animations[state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
-	entity_sprite.setOrigin(entity_stats.animations[entity_stats.state][current_move].origin);
+	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
 	player_movement();
 }
 

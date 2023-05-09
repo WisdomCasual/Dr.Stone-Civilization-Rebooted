@@ -1,8 +1,11 @@
 #include "SettingsState.h"
+// length of slider (mostly used to give the size for the hollow slider)
 #define sliderconst 135.0
 
 void SettingsState::update_arrow()
 {
+	// here we save the new settings in the config file
+	// also set the position for the arrow and detect for clicks and add a little animation for the click
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
@@ -13,13 +16,16 @@ void SettingsState::update_arrow()
 			back_arrow.setScale(scale * 0.27, scale * 0.27);
 		}
 		else {
+			// go back to previous state and apply the changes 
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-
+				// set the new resolution and framelimit
 				game.windowbounds = resolutions[resolution];
 				game.framelimit = framelimits[framelimit];
-
+				//deletes the current window and draws a new window 
 				game.update_window();
+
+				//check for the previous state to go back to it
 
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
 					states->insert(MainMenuST);
@@ -28,6 +34,12 @@ void SettingsState::update_arrow()
 					states->insert(PauseST);
 				}
 
+				/*
+				arrays by the name "exceptions" mean that whenever a specific state is removed we erase all unwanted states
+				including the state we were in itself, so when we exit the settings state in our example here we want to delete
+				all the states except the states that we can access the settings from, those exceptions are the elements
+				of the array below. (Since this is somewhat a huge explaination it'll only be included here)
+				*/
 
 				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID, NotificationID };
 				game.erase_states(exceptions, 7);
@@ -43,8 +55,10 @@ void SettingsState::update_arrow()
 	}
 }
 
+// a button to go to map builder state but if pressed pushes the password state for authentication
 void SettingsState::dev_button()
 {
+	// Positioning the button and it's text
 	if (scale != previous_scale) {
 		previous_scale = scale;
 		devbutton.setScale(scale * 0.2, scale * 0.2);
@@ -54,6 +68,7 @@ void SettingsState::dev_button()
 	}
 	devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
 	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
+	// detect for clicks
 	if (devbutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		if (Mouse::isButtonPressed(Mouse::Left) && devbutton.getGlobalBounds().contains(clicked_on)) {
 			button_pressed = 1;
@@ -62,6 +77,7 @@ void SettingsState::dev_button()
 		}
 		else {
 			if (button_pressed) {
+				// pushing the password state 
 				button_pressed = 0;
 
 				states->insert(PasswordST);
@@ -86,8 +102,22 @@ void SettingsState::dev_button()
 
 void SettingsState::update_slider(slider_info* sliders, int target)
 {
+	// what does the .disabled function do?
+	// we shouldn't be able to apply changes to specific sliders in specific modes
+	// for example: if fullscreen mode is enabled then resolution slider should be disabled, same with the framelimit.
 	if (!sliders[target].disabled) {
 		if (Mouse::isButtonPressed(Mouse::Left)) {
+
+			/*
+			Here we detect for clicks on the slider and apply changes accordingly,
+			We have a sprite named tip which we overwrite according to the part we are dealing with in the slider.
+			for example the left tip should have a fixed position all the time and just position it according to the current
+			resolution.
+			For the middle part we should scale it according to the mouse position on the x axis.
+			The right tip should be moving also with the mouse position on the x axis
+			Also we detect for clicks on the whole slider so slider should be movable from any part of it and if you press
+			of a random part of the slider the right tip will go there and also the mid will be scaled
+			*/
 
 			tip.setScale(scale / 3, scale / 3);
 			tip.setTextureRect(tipsleft[sliders[target].color]);
@@ -115,6 +145,7 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 		else
 			sliders[target].presssed = 0;
 		if (sliders[target].presssed) {
+			// make sure that the slider doesn't pass it's boundries
 			float initpos = x + (sliders[target].x + 9) * (scale / 3), mxlen = sliderconst * (scale / 3), stepsize = mxlen / sliders[target].mx;
 			if (mouse_pos.x < initpos) sliders[target].tipx = initpos;
 			else if (mouse_pos.x > initpos + mxlen) sliders[target].tipx = initpos + mxlen;
@@ -132,7 +163,7 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 void SettingsState::render_slider(int target)
 {
 	//background
-
+	// the left tip wasn't rendered because it'll never appear in any case (Hollow slider/background)
 	tip.setScale(sliderconst / 18 * (scale / 3), (scale / 3));
 	tip.setTextureRect(mids[3]);
 	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
@@ -146,9 +177,14 @@ void SettingsState::render_slider(int target)
 	window->draw(tip);
 
 	//foreground
+	
+	// first we check if the slider was disabled if so, we change it's color to a dimmer color.
+
 	color = tip.getColor();
 	if (sliders[target].disabled)
 		tip.setColor(Color(color.r-100, color.g-100, color.b-100));
+	
+	// here we just draw and position every part of the slider
 
 	tip.setScale(scale / 3, scale / 3);
 	tip.setTextureRect(tipsleft[sliders[target].color]);
@@ -169,10 +205,14 @@ void SettingsState::render_slider(int target)
 
 	window->draw(tip);
 
+	// add the slider functionality name on top of the slider 
+
 	slider_text.setCharacterSize(5.5 * scale);
 	slider_text.setString(sliders[target].name);
 	slider_text.setPosition(x + sliders[target].x * (scale / 3), y + (sliders[target].y - 11) * scale);
 	window->draw(slider_text);
+
+	// add some text to the right side of the slider to show it's current value (game sound, framelimit, etc...)
 
 	slider_text.setCharacterSize(5 * scale);
 	if (sliders[target].text_type == 0)
@@ -184,6 +224,7 @@ void SettingsState::render_slider(int target)
 	slider_text.setPosition(x + (sliders[target].x + 9 + sliderconst + 15) * (scale / 3), y + (sliders[target].y - 4) * scale);
 	window->draw(slider_text);
 
+	// ?? 
 	tip.setColor(color);
 }
 
@@ -204,6 +245,10 @@ void SettingsState::settings_intializer()
 			break;
 		}
 	}
+	
+	// if a custom resolution is added straight in the config file it's added in the end of the array and game
+	// will function normally
+
 	if (resolution == resnum)
 		resolutions[resnum] = game.windowbounds, resolutions_text[resnum] = to_string(game.windowbounds.width) + " x " + to_string(game.windowbounds.height);
 
@@ -220,6 +265,9 @@ void SettingsState::settings_intializer()
 		}
 	}
 
+	// if a custom framelimit is added straight in the config file it's added in the end of the array and game
+	// will function normally
+
 	if (framelimit == framelimnum)
 		framelimits[framelimnum] = game.framelimit, framelimits_text[framelimnum] = to_string(game.framelimit);
 
@@ -235,6 +283,8 @@ void SettingsState::settings_intializer()
 		sliders[i].midscale = (sliders[i].tipx - (x + (sliders[i].x + 9) * (scale / 3))) / (18 * (scale / 3));
 	}
 }
+
+// checkboxes positioning, scaling and functionality
 
 void SettingsState::update_checkbox(int i)
 {
@@ -289,6 +339,8 @@ void SettingsState::render_checkbox(int i)
 
 SettingsState::SettingsState()
 {
+
+	// initialize the texture file
 	initial_textures("settings");
 
 	panel.setTexture(*textures[4]);
@@ -296,12 +348,16 @@ SettingsState::SettingsState()
 
 	tissue.setTexture(*textures[3]);
 	tissue.setOrigin(700 / 2, 700 / 2);
+
 	tint.setSize({ 1920, 1080 });
 	tint.setFillColor(Color(0, 0, 0, 154));
 
 	back_arrow.setTexture(*textures[1]);
 	back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
 	back_arrow.setOrigin(22 / 2, 21 / 2);
+
+	// we add a check so that we can't access the map builder (see the dev button) in certain occasions.
+	// we can't access it while being in the map builder itself neither in the game and the world map
 
 	if (states->find(MapBuilderID) != states->end() || states->find(GameID) != states->end() || states->find(WorldMapID) != states->end())
 		dev_button_active = 0;
@@ -342,9 +398,15 @@ SettingsState::~SettingsState()
 
 void SettingsState::update()
 {
+
+	//get real time mouse position and store it in a variable
+
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
 	if (prev_win != window->getSize()) {
+		// we always store the last window reslution in a variable and compare it with the current one
+		// if there is a difference we get the new resolution and update our scale accordingly
+		// also the variables for the window size the screen mid point
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
 		x = win_x / 2, y = win_y / 2;
@@ -364,6 +426,7 @@ void SettingsState::update()
 
 	}
 
+	// some simple conditions to make sure that everything is disabled in the right time
 
 	if (fullscreen)
 		sliders[0].disabled = 1;
@@ -375,6 +438,7 @@ void SettingsState::update()
 	else
 		sliders[1].disabled = 0;
 
+	// a for loop to update all sliders and checkboxes and also the dev button
 
 	for (int i = 0; i < 4; i++)
 		update_slider(sliders, i);
@@ -395,6 +459,8 @@ void SettingsState::update()
 void SettingsState::render()
 {
 
+	// drawing the whole settings 
+
 	window->draw(tint);
 	window->draw(panel);
 	window->draw(tissue);
@@ -402,9 +468,13 @@ void SettingsState::render()
 		window->draw(devbutton);
 		window->draw(devtext);
 	}
+
 	window->draw(back_arrow);
 	text.setFillColor(Color::Black);
 	draw_text("Settings", x, y - 35 * scale, 6.5 * scale);
+
+	// for loops to render the sliders and checkboxex
+
 	for (int i = 0; i < 4; i++)
 		render_slider(i);
 	for (int i = 0; i < 2; i++)
@@ -422,6 +492,8 @@ void SettingsState::pollevent()
 			switch (event.key.code) {
 			case Keyboard::Escape:
 				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
+					// if escape is pressed while not being in the map builder or game state or world map the main menu state is pushed
+					// any other place the pause state is pushed
 					states->insert(MainMenuST);
 				}
 				else {
@@ -445,6 +517,7 @@ void SettingsState::pollevent()
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:
+				// clicked on is a vector2f that stores the position of the mouse when the left mouse button is clicked
 				clicked_on = window->mapPixelToCoords(Mouse::getPosition(*window));
 				break;
 			}
