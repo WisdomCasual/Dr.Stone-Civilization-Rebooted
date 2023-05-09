@@ -12,7 +12,8 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 	else scale = win_y / 304.5;
 	if (entity_name != "none") {
 		initial_textures("game/entities/" + entity_name);
-		entity_sprite.setTexture(*textures[entity_stats.state]);
+		entity_sprite.setTexture(*textures[state]);
+		health = entity_stats.max_health, damage = entity_stats.base_damage;
 	}
 	if (tile_textures != nullptr) {
 		this->tile_textures = tile_textures;
