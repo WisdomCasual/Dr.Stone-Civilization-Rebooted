@@ -148,6 +148,6 @@ void Entity::pollevent()
 
 void Entity::render()
 {
-	window->draw(hashofak);
+	//window->draw(hashofak);
 	window->draw(entity_sprite);
 }
