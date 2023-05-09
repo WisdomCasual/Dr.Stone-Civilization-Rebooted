@@ -294,8 +294,6 @@ void GameState::update()
 		center_cam(player_entity.getRelativePos());
 	}
 
-	enemy_entity.update();
-
 	if (enemies.vis == nullptr) {
 		enemies.vis = new short* [enemies.find_size_x];
 		for (int i = 0; i < enemies.find_size_x; i++) {

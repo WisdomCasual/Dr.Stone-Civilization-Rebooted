@@ -74,7 +74,7 @@ void Player::setPosition(float x_pos, float y_pos)
 void Player::use_tool()
 {
 	if (Lag >= 0.8) {
-		if (entity_stats.state == 2) { // sword
+		if (state == 2) { // sword
 			int ElShakl = 0;//rand() % 2;
 			Edrab(ElShakl);
 			action(ElShakl+1);

@@ -47,12 +47,7 @@ void Items::update()
 	}
 
 	/////////////////////HitBox Stuff//////////////////////
-	Entity_Hitbox = { getRelativePos().x,getRelativePos().y,Size_Hitbox.x,Size_Hitbox.y };
-	if (Entity_Hitbox.intersects(MakanElDarb)) {
-
-
-
-	}
+	//Entity_Hitbox = { getRelativePos().x,getRelativePos().y,Size_Hitbox.x,Size_Hitbox.y };          WHAT IS THIS BESISA?
 
     // updatePos();
      intersect();
