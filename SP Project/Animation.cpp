@@ -7,7 +7,7 @@ Animation::Animation(IntRect frame, int frame_count, Color texture_color, bool l
 	this->frame_count = frame_count;
 	this->loop = loop;
 
-	animation_sprite
+	animation_sprite.setTextureRect(frame);
 	animation_sprite.setOrigin(8, 8);
 
 }
@@ -31,15 +31,14 @@ void Animation::update(float scale)
 			if (loop)
 				current_frame = 0;
 			else {
-				//self destruct
+				despawn = 1;
 			}
 
 		}
+		animation_sprite.setTextureRect(IntRect(frame.left + frame.width * current_frame, frame.top, frame.width, frame.height));
 	}
 	else
 		delay += dt;
-
-
 }
 
 void Animation::render()
