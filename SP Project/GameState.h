@@ -6,6 +6,9 @@
 #include "Player.h"
 
 #include"Global.h"
+
+#define default_enemy 0, enemy_stats, "character 1", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+
 using namespace globalvar;
 
 struct GameState : public State
@@ -15,11 +18,55 @@ private:
 
 	entity player_stats, enemy_stats;
 	Player player_entity;
-	Enemy enemy_entity;
+	
 
 	Vector2f clicked_on = { -1, -1 };
 
 	render_tile** static_map;
+
+	struct entities_container {
+		int limit = 1, curr_idx = 0;
+		Entity** entities = nullptr;
+		entities_container(int limit = 20, Vector2f starting_position = {0, 0}) {
+			entities = new Entity * [limit]({});
+			this->limit = limit;
+		}
+		~entities_container() {
+			if (entities != nullptr) {
+				for (int i = 0; i < curr_idx; i++) {
+					if (entities[i] != nullptr) {
+						delete entities[i];
+					}
+				}
+				delete[] entities;
+			}
+		}
+
+		void add(short type, entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }) {
+			if (curr_idx < limit) {
+				switch (type) {
+					case 0:
+						entities[curr_idx] = new Enemy(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
+						break;
+					case 1:
+						//items
+						break;
+					case 2:
+						//passive
+						break;
+				}
+				entities[curr_idx]->setPosition(initial_position.x, initial_position.y);
+				curr_idx++;
+			}
+		} //types: 0 = enemy, 1 = item, 2 = passive
+
+		void remove(int idx) {
+			delete entities[idx];
+			curr_idx--;
+			entities[idx] = entities[curr_idx];
+			entities[curr_idx] = nullptr;
+		}
+	} enemies;
 
 	struct entity {
 		Vector2f pixel_cords = { 0,0 };
