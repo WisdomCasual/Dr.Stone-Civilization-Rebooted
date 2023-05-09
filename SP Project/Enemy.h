@@ -12,7 +12,8 @@ private:
 	bool will_move = 0, prev_check = 0;
 	float theta = 0, motion_delay = 4, sound_range = 5.f, move_speed, RangeElWgood = 90.0;
 	path_tile* mp = nullptr;
-	short find_size_x = 1, find_size_y = 1;//, id = 1, ** vis = nullptr;
+	short find_size_x = 50, find_size_y = 50, id = 1, *** vis = nullptr;
+	bool* astar_done = nullptr;
 
 
 
@@ -27,8 +28,8 @@ public:
 	void pathFinding(Entity&, path_tile*& mp);
 	Vector2f pathFollow(path_tile*&);
 	void stateMachine();
-	//void setID(short);
-	//void setVisArray(short**&);
+	void setID(short);
+	void setVisArray(short***, bool* astar_done, short new_find_size_x = 50, short new_find_size_y = 50);
 	void Edrab();
 	void update();
 	void pollevent();

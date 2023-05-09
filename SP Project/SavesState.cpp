@@ -210,7 +210,7 @@ void SavesState::initial_saves()
 			ifs >> character_id;
 			saves[i].character_id = character_id;
 			ifs >> progress;
-			saves[i].progress = progress;      //<-- will be calculated by number of missons
+			saves[i].progress = progress / quests_no * 100;      //<-- calculated by number of missons
 			ifs.ignore();
 			getline(ifs, cur_map);
 			saves[i].current_map = cur_map;
