@@ -80,7 +80,6 @@ void Entity::action(int action_id)
 
 bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 {
-
 	current_hitbox = (curr_hitbox.x == -1.f) ? entity_stats.animations[state][current_move].hitbox_rect : curr_hitbox;
 	int x_cords[2] = { (int)(getRelativePos().x - (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16
 					, (int)(getRelativePos().x + (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16 },

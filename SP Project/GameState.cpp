@@ -236,6 +236,10 @@ void GameState::render_entities()
 		dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]}});
 	}
 
+	for (int i = 0; i < items.curr_idx; i++) {
+		dynamic_rendering.insert({ items.entities[i]->getRelativePos().y, {-1, items.entities[i]} });
+	}
+
 	for (auto i = dynamic_rendering.lower_bound(-map_y-10); i != dynamic_rendering.end(); ) {
 		//if (i->first > map_y + win_y / scale + 10)
 		//	break;
@@ -313,6 +317,18 @@ void GameState::update()
 		enemies.astar_done = 0;
 	}
 	player_entity.update();
+
+	for (int i = 0; i < items.curr_idx; i++) {
+		if (items.entities[i]->despawn) {
+			items.remove(i);
+			i--;
+			// add item to player_inventory
+		}
+		else {
+			items.entities[i]->update();
+		}
+		
+	}
 
 }
 
