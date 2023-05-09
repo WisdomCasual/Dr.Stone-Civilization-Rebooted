@@ -211,7 +211,8 @@ public:
 	virtual void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
-	virtual void update() = 0;
+	virtual void setID(short) {};
+	virtual void setVisArray(short***, bool*, short new_find_size_x = 50, short new_find_size_y = 50) {};
 	virtual void pollevent();
 	void render();
 
