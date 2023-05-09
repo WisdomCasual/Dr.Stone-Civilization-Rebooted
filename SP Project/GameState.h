@@ -18,6 +18,7 @@ private:
 
 	entity player_stats, enemy_stats;
 	Player player_entity;
+
 	
 
 	Vector2f clicked_on = { -1, -1 };
@@ -25,7 +26,9 @@ private:
 	render_tile** static_map;
 
 	struct entities_container {
-		int limit = 1, curr_idx = 0;
+		int limit = 1, curr_idx = 0, find_size_x = 50, find_size_y = 50;
+		short** vis = nullptr;
+		bool astar_done = 0;
 		Entity** entities = nullptr;
 		entities_container(int limit = 20, Vector2f starting_position = {0, 0}) {
 			entities = new Entity * [limit]({});
@@ -47,6 +50,8 @@ private:
 				switch (type) {
 					case 0:
 						entities[curr_idx] = new Enemy(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
+						entities[curr_idx]->setVisArray(&vis, &astar_done, find_size_x, find_size_y);
+						entities[curr_idx]->setID(curr_idx + 1);
 						break;
 					case 1:
 						//items

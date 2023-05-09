@@ -300,9 +300,24 @@ void GameState::update()
 	}
 
 
+	if (enemies.vis == nullptr) {
+		enemies.vis = new short* [enemies.find_size_x];
+		for (int i = 0; i < enemies.find_size_x; i++) {
+			(enemies.vis)[i] = new short[enemies.find_size_y]({});
+		}
+	}
 	player_entity.update();
 	for (int i = 0; i < enemies.curr_idx; i++) {
 		enemies.entities[i]->update();
+	}
+	
+	if (enemies.astar_done) {
+		for (int i = 0; i < enemies.find_size_x; i++) {
+			delete[] enemies.vis[i];
+		}
+		delete[] enemies.vis;
+		enemies.vis = nullptr;
+		enemies.astar_done = 0;
 	}
 
 }
