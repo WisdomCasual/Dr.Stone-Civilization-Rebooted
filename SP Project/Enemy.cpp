@@ -17,7 +17,6 @@ void Enemy::Mawgood()
 void Enemy::updatePos()
 {
 	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
-	Mawgood();
 }
 
 bool Enemy::visionLines(Entity& target)
@@ -493,12 +492,7 @@ void Enemy::update()
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
 		}
-		else
-			direction({ round(curr_movement.x), round(curr_movement.y) });
+		direction({ round(curr_movement.x), round(curr_movement.y) });
 	}
 	Mawgood();
-}
-
-void Enemy::pollevent()
-{
 }
