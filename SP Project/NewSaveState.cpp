@@ -141,7 +141,7 @@ void NewSaveState::add_save()
 	if (ofs.is_open()) {
 		ofs << test_str << '\n';
 		ofs << (int)selected << '\n';
-		ofs << 1 << '\n';
+		ofs << 0 << '\n';
 		ofs << "Sheraton" << '\n';
 		ofs << 800 << ' ' << 800 << '\n';
 	}
