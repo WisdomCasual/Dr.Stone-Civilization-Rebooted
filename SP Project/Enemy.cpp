@@ -100,7 +100,7 @@ bool Enemy::visionLines(Entity& target)
 
 bool Enemy::entityFound(Entity& target)
 {
-	Vector2f afov = (entity_stats.state != 1) ? Vector2f(fov.x * 16, fov.y * PI / 180) : Vector2f(fov.x * 24, fov.y * PI / 180);
+	Vector2f afov = (state != 1) ? Vector2f(fov.x * 16, fov.y * PI / 180) : Vector2f(fov.x * 24, fov.y * PI / 180);
 	float d = magnitude(target.getRelativePos() - getRelativePos()), atheta = theta * PI / 180;
 	if (d <= sound_range * 16) {
 		return 1;
@@ -133,12 +133,12 @@ bool Enemy::legal_direction(Vector2f tile_pos, short dx, short dy)
 		else if (dy > 0) {
 			move_num = 3;
 		}
-		return legal_tile(tile_pos, entity_stats.animations[entity_stats.state][move_num].hitbox_rect);
+		return legal_tile(tile_pos, entity_stats.animations[state][move_num].hitbox_rect);
 }
 
 path_tile* Enemy::aStar(Vector2i target)
 {
-	find_size_x = min(size_x, 50), find_size_y = min(size_y, 50);
+	find_size_x = min(size_x, 50), find_size_y = min(size_y, 50);                   //to path find around enemy with n (50) blocks area
 	Vector2i mid = { find_size_x / 2, find_size_y / 2 };
 
 
@@ -182,7 +182,7 @@ path_tile* Enemy::aStar(Vector2i target)
 					delta_y = abs(new_pos.y - path_start.y);
 				g_temp = sqrtf(delta_y * delta_y + delta_x * delta_x);
 				if (g_temp < mn)
-					mntile = new_pos - path_delta;
+					mntile = new_pos - path_delta;    //to convert actual tile to astar tile
 			}
 
 			else {
@@ -228,7 +228,7 @@ path_tile* Enemy::aStar(Vector2i target)
 			break;
 		}
 		int new_x, new_y, anew_x, anew_y;
-		Vector2i acurr_tile = { curr_tile.x + path_delta.x, curr_tile.y + path_delta.y };
+		Vector2i acurr_tile = { curr_tile.x + path_delta.x, curr_tile.y + path_delta.y }; //actual tile = astar tile + path_delta
 		for (int i = 0; i < 4; i++) {
 			new_x = curr_tile.x + dx[i],
 			new_y = curr_tile.y + dy[i];
@@ -296,36 +296,36 @@ Vector2f Enemy::pathFollow(path_tile*& mp)
 	if (mp == nullptr) {
 		return { -1.f, -1.f };
 	}
-	path_tile temp = mp[find_size_x * (int(getRelativePos().y / 16) - path_delta.y) + (int(getRelativePos().x / 16) - path_delta.x)];
+	path_tile temp = mp[find_size_x * (int(getRelativePos().y / 16) - path_delta.y) + (int(getRelativePos().x / 16) - path_delta.x)]; //convert to astar path
 	if (temp.x == -1) {
 		return { -1.f, -1.f };
 	}
 	else {
-		temp.x += path_delta.x, temp.y += path_delta.y;
+		temp.x += path_delta.x, temp.y += path_delta.y; //convert to actual path
 		return(Vector2f(temp.x * 16 + 8, temp.y * 16 + 8));
 	}
-}
+} //returns actual path (astar path + path_delta)
 
 void Enemy::stateMachine()
 {
 	bool checker = entityFound(player_entity);
-	if (entity_stats.state != 1 && checker) {
+	if (state != 1 && checker) {
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
 		if (checker != prev_check || enemy_tile != prev_target_tile) {
 			pathFinding(player_entity, mp);
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
 			if (target_tile.x != -1.f) {
-				entity_stats.state = 1;
+				state = 1;
 				motion_delay = 2;
 			}
 		}
 		prev_target_tile = enemy_tile;
 	}
 	prev_check = checker;
-	switch (entity_stats.state) {
+	switch (state) {
 	case 1: {
-		move_speed = movement_speed;
+		move_speed = entity_stats.base_movement_speed;
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
 		if (enemy_tile != prev_target_tile) {
 			pathFinding(player_entity, mp);
@@ -344,7 +344,7 @@ void Enemy::stateMachine()
 
 		if (target_tile.x == -1.f) {
 			will_move = 0;
-			entity_stats.state = 0;
+			state = 0;
 			break;
 		}
 		theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
@@ -359,14 +359,14 @@ void Enemy::stateMachine()
 			mp = aStar(last_seen);
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
-			entity_stats.state = 2;
+			state = 2;
 			break;
 		}
 		last_seen_cord = player_entity.getRelativePos();
 		break;
 	}
 	case 2: {
-		move_speed = movement_speed;
+		move_speed = entity_stats.base_movement_speed;
 		Vector2f delta_pos = target_tile - getRelativePos();
 		Vector2f compar = { roundf(delta_pos.x), roundf(delta_pos.y) };
 		if ((compar.x == 0 || (delta_pos.x < 0) != (delta_sign.x < 0)) && (compar.y == 0 || (delta_pos.y < 0) != (delta_sign.y < 0))) {
@@ -385,7 +385,7 @@ void Enemy::stateMachine()
 		if (!will_move) {
 			if (motion_delay >= 4) {
 				motion_delay = 3.5;
-				entity_stats.state = 0;
+				state = 0;
 			}
 			motion_delay += dt;
 		}
@@ -399,7 +399,7 @@ void Enemy::stateMachine()
 			direction({ 0, 0 });
 		}
 		if (motion_delay >= 4) {
-			move_speed = movement_speed / 2;
+			move_speed = entity_stats.base_movement_speed / 2;
 			motion_delay = 0;
 			theta = (rand() % 8) * 45;
 			will_move = rand() % 4;
@@ -414,6 +414,16 @@ void Enemy::stateMachine()
 		break;
 	}
 }
+
+//void Enemy::setID(short new_id)
+//{
+//	id = new_id;
+//}
+//
+//void Enemy::setVisArray(short**& new_vis)
+//{
+//	vis = new_vis;
+//}
 
 void Enemy::Edrab()
 {
@@ -460,16 +470,16 @@ void Enemy::update()
 
 	}
 
-	if (entity_stats.state != prev_state) {
-		prev_state = entity_stats.state;
-		entity_sprite.setTexture(*textures[entity_stats.state]);
+	if (state != prev_state) {
+		prev_state = state;
+		entity_sprite.setTexture(*textures[state]);
 	}
 
 	if (active_action) {
 		if (delay > animation_delay) {
 			delay = 0;
 			current_frame++;
-			if (current_frame % entity_stats.animations[entity_stats.state][current_move].frames == 0) {
+			if (current_frame % entity_stats.animations[state][current_move].frames == 0) {
 				current_frame = 0, current_move -= 4 * active_action, active_action = 0;
 			}
 		}
@@ -485,10 +495,10 @@ void Enemy::update()
 	}
 
 
-	current_rect = entity_stats.animations[entity_stats.state][current_move].rect;
+	current_rect = entity_stats.animations[state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
-	entity_sprite.setOrigin(entity_stats.animations[entity_stats.state][current_move].origin); ///////////////
+	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin); ///////////////
 	updatePos();
 	stateMachine();
 
@@ -501,7 +511,7 @@ void Enemy::update()
 			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
 			move({ 0, dt * move_speed * curr_movement.y});
-		if ((!legal_x || !legal_y) && entity_stats.state == 0) {
+		if ((!legal_x || !legal_y) && state == 0) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
