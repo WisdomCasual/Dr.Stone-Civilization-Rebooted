@@ -1,7 +1,7 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player)
-	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map), player_entity(*player), x_offset(x_offset), y_offset(y_offset), disable_dynamic_obj(disable_dynamic_obj)
+Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr,float& map_x, float& map_y, int& size_x, int& size_y,float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Texture** tile_textures)
+	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map),player_entity(*player), x_offset(x_offset), y_offset(y_offset), disable_dynamic_obj(disable_dynamic_obj)
 {
 	this->size_x = size_x, this->size_y = size_y;
 
@@ -10,9 +10,13 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
-
-	initial_textures("game/entities/" + entity_name);
-	entity_sprite.setTexture(*textures[entity_stats.state]); 
+	if (entity_name != "none") {
+		initial_textures("game/entities/" + entity_name);
+		entity_sprite.setTexture(*textures[entity_stats.state]);
+	}
+	 if (tile_textures != nullptr) {
+		this->tile_textures = tile_textures;
+	}
 	srand(time(0));
 }
 

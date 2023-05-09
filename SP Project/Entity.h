@@ -152,9 +152,10 @@ struct Entity : public State
 public:
 
 	//Public Variables for all sub-classes
-	entity& entity_stats;
-	Entity& player_entity;
+	entity& entity_stats ;
+	Entity& player_entity ;
 	Sprite entity_sprite;
+	Texture** tile_textures;
 	render_tile**& static_map;
 	float  delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
@@ -178,7 +179,7 @@ public:
 
 
 	//Public functions
-	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr);
+	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr,Texture** tile_textures=nullptr);
 
 	virtual ~Entity();
 
