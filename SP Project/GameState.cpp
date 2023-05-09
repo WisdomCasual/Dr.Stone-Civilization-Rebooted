@@ -263,15 +263,10 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos)
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
-
 	initial_tile_sheets("game/tiles");
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
 	load_entities(player_pos.y);
 	initial_game(current_map, player_pos);
-
-
-	/////////////////
-
 }
 
 GameState::~GameState()
@@ -292,10 +287,10 @@ void GameState::update()
 		center_cam(player_entity.getRelativePos());
 	}
 
+	enemy_entity.update();
 
 	player_entity.update();
 
-	enemy_entity.update();
 
 }
 

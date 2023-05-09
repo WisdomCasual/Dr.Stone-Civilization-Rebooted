@@ -11,8 +11,7 @@ private:
 	bool will_move = 0, prev_check = 0;
 	float theta = 0, motion_delay = 4, sound_range = 5.f, move_speed, RangeElWgood = 90.0;
 	path_tile* mp = nullptr;
-
-
+	
 public:
 	~Enemy();
 	void Mawgood();

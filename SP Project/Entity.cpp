@@ -10,7 +10,6 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
-
 	initial_textures("game/entities/" + entity_name);
 	entity_sprite.setTexture(*textures[entity_stats.state]); 
 	srand(time(0));
@@ -142,5 +141,6 @@ void Entity::pollevent()
 
 void Entity::render()
 {
+	window->draw(hashofak);
 	window->draw(entity_sprite);
 }
