@@ -45,7 +45,7 @@ void Passive::stateMachine()
 			}
 		}
 		if (switch_delay >= 8)
-			state = 0, motion_delay = 0, will_move = 1;
+			state = 0, motion_delay = 2, will_move = 0;
 		break;
 	}
 	default:
