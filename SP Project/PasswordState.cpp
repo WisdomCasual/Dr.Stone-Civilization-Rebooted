@@ -2,6 +2,9 @@
 
 void PasswordState::update_arrow()
 {
+
+	// giving positon to the back arrow and detecting for clicks
+
 	back_arrow.setPosition(x - 40 * scale, y - (float)8.5 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
@@ -14,6 +17,9 @@ void PasswordState::update_arrow()
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
+				
+				//functionality of back button
+
 				states->erase(PasswordID);
 				destruct = 1;
 				return;
@@ -29,10 +35,13 @@ void PasswordState::update_arrow()
 
 void PasswordState::update_buttons()
 {
+
 	if (!txt_box.empty()) {
 		if (wrong_password)
+			// if the password is wrong the and clicked on the button turns a bit red
 			buttontex.setColor(Color(button_color.r, button_color.g - 100, button_color.b - 100));
 		else
+			// set the button color to it's original color
 			buttontex.setColor(button_color);
 		buttontex.setPosition(x + confirm.x * scale / 3.5, y + confirm.y * scale / 3.5);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
@@ -50,6 +59,7 @@ void PasswordState::update_buttons()
 		}
 	}
 	else {
+		// when nothing is typed the button's color to a dim color
 		buttontex.setColor(Color(button_color.r - 100, button_color.g - 100, button_color.b - 100));
 		wrong_password = 0;
 	}
@@ -163,6 +173,10 @@ void PasswordState::update()
 		confirmed = 0;
 		if (input_password == "xdCy1N" || input_password == "O-FxJ<" || input_password == "rHU6F" || input_password == ")YPN6" 
 			|| input_password == "ay=yr") {    //password: team7 - raheeq - amany - sobia
+			
+			// when the password is confirmed we remove the settings state and the password state and add the worldmap state
+			// which we can access map builder state from
+			
 			states->insert(WorldMapST_admin);
 			states->at(WorldMapID)->update();
 			states->erase(SettingsID);

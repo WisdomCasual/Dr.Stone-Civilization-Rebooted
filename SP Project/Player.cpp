@@ -42,21 +42,28 @@ void Player::player_movement()
 	}
 }
 
-void Player::Edrab()
+void Player::Edrab(int Shakl)
 {
 	if (current_move == 0) { //U
-		MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y - RangeElDarb.y,RangeElDarb.x,RangeElDarb.y };
+		if (!Shakl)
+			MakanElDarb = { getRelativePos().x - 35, getRelativePos().y - 33,52,20 };
+		else
+			MakanElDarb = { getRelativePos().x - 28, getRelativePos().y - 33,56,20 };
 	}
 	else if (current_move == 1) { //R
-		MakanElDarb = { getPosition().x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
+		//MakanElDarb = { getRelativePos().x, getRelativePos().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
 	}
 	else if (current_move == 2) { //L
-		MakanElDarb = { getPosition().x - RangeElDarb.x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
+		//MakanElDarb = { getRelativePos().x - RangeElDarb.x, getRelativePos().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
 	}
 	else if (current_move == 3) { //D
-		MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
+		//MakanElDarb = { getRelativePos().x - RangeElDarb.x / 2, getRelativePos().y,RangeElDarb.x,RangeElDarb.y };
 	}
+	hashofak.setFillColor(Color::Magenta);
+	hashofak.setSize({MakanElDarb.width*scale,MakanElDarb.height*scale});
+	hashofak.setPosition((MakanElDarb.left + map_x) * scale, (MakanElDarb.top + map_y) * scale);
 }
+
 
 void Player::setPosition(float x_pos, float y_pos)
 {
@@ -68,8 +75,9 @@ void Player::use_tool()
 {
 	if (Lag >= 0.8) {
 		if (state == 2) { // sword
-			Edrab();
-			action(rand() % 2 + 1);
+			int ElShakl = 0;//rand() % 2;
+			Edrab(ElShakl);
+			action(ElShakl+1);
 		}
 		else if (state == 1 || state == 0) { // axe / pickaxe
 			mine();
@@ -168,12 +176,7 @@ void Player::update()
 			delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
-	Entity_Hitbox = { getRelativePos().x,getRelativePos().y,Size_Hitbox.x,Size_Hitbox.y };
-	if (Entity_Hitbox.intersects(MakanElDarb)) {
-
-
-
-	}
+	MakanElDarb = { -10,-10,1,1 };
 	if (Lag < 0.8)
 		Lag += dt;
 	current_rect = entity_stats.animations[state][current_move].rect;

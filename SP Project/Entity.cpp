@@ -20,7 +20,6 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 		entity_sprite.setTexture(*this->tile_textures[tile_info.z]);
 		entity_sprite.setTextureRect(IntRect(tile_info.x * 16,tile_info.y * 16, 16, 16));
 		entity_sprite.setOrigin(8,8); 
-
 	}
 	srand(time(0));
 }
@@ -81,7 +80,6 @@ void Entity::action(int action_id)
 
 bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 {
-
 	current_hitbox = (curr_hitbox.x == -1.f) ? entity_stats.animations[state][current_move].hitbox_rect : curr_hitbox;
 	int x_cords[2] = { (int)(getRelativePos().x - (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16
 					, (int)(getRelativePos().x + (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16 },
@@ -149,5 +147,6 @@ void Entity::pollevent()
 
 void Entity::render()
 {
+	window->draw(hashofak);
 	window->draw(entity_sprite);
 }

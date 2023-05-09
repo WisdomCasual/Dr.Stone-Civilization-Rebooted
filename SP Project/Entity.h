@@ -171,7 +171,7 @@ public:
 	entity& entity_stats ;
 	Entity& player_entity ;
 	Sprite entity_sprite;
-	Texture** tile_textures;
+	Texture** tile_textures = nullptr;
 	render_tile**& static_map;
 	float  delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
@@ -192,9 +192,8 @@ public:
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;
-	Vector2f RangeElDarb = { 5,5 }, Size_Hitbox = { 10,10 };
+	RectangleShape hashofak;
 	float Lag = 0;
-
 
 
 	//Public functions
@@ -211,7 +210,8 @@ public:
 	virtual void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
-	virtual void update() = 0;
+	virtual void setID(short) {};
+	virtual void setVisArray(short***, bool*, short new_find_size_x = 50, short new_find_size_y = 50) {};
 	virtual void pollevent();
 	void render();
 
