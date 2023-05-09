@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="ConfirmationState.cpp" />
     <ClCompile Include="CreativeMode.cpp" />
@@ -167,6 +168,7 @@
     <ClCompile Include="WorldMapState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Background.h" />
     <ClInclude Include="ConfirmationState.h" />
     <ClInclude Include="CreativeMode.h" />

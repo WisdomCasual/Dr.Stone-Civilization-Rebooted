@@ -5,6 +5,9 @@
 // background: 1, MainMenuState: 2 , SavesState: 3 , NewSaveState: 4 , GameState: 5 , 
 //MapBuilderState: 6, PauseState: 10, SettingsState: 11, ConfirmState: 12: 
 
+
+#define quests_no 1
+
 #define BackgroundID 1
 #define BackgroundST { 1, new Background }
 
