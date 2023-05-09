@@ -3,21 +3,21 @@
 
 void PauseState::update_buttons()
 {
-	for (auto& button : buttons) {
-		buttontex.setTextureRect(IntRect(0, button.pressed * 49, 190, 49));
-		buttontex.setPosition(x + button.x * scale * 0.33, y + button.y * scale * 0.33);
+	for (int i = 0; i < 3; i++) {
+		buttontex.setTextureRect(IntRect(0, buttons[i].pressed * 49, 190, 49));
+		buttontex.setPosition(x + buttons[i].x * scale * 0.33, y + buttons[i].y * scale * 0.33);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))button.pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))buttons[i].pressed = 1;
 			else {
-				if (button.pressed)
-					button.execute = 1;
-				button.pressed = 0;
+				if (buttons[i].pressed)
+					*buttons[i].execute = 1;
+				buttons[i].pressed = 0;
 			}
-			button.hover = 1;
+			buttons[i].hover = 1;
 		}
 		else {
-			button.pressed = 0;
-			button.hover = 0;
+			buttons[i].pressed = 0;
+			buttons[i].hover = 0;
 		}
 	}
 }
@@ -58,10 +58,10 @@ PauseState::PauseState()
 	buttontex.setOrigin(190 / 2, 49 / 2);
 
 	button_text.setFont(font);
-	buttons.push_back({ "Resume",0,-48, resume });
-	buttons.push_back({ "Settings",0,16, settings });
-	buttons.push_back({ "Save and Exit" ,0,80, exit });
-
+	
+	buttons[0].execute = &resume;
+	buttons[1].execute = &settings;
+	buttons[2].execute = &exit;
 }
 
 PauseState::~PauseState()

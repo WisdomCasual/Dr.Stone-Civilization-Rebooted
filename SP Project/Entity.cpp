@@ -14,6 +14,7 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 	initial_textures("game/entities/" + entity_name);
 	entity_sprite.setTexture(*textures[entity_stats.state]); 
 	srand(time(0));
+	srand(time(0));
 }
 
 Entity::~Entity()
