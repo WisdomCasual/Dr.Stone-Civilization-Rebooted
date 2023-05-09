@@ -13,11 +13,13 @@ private:
 	void move_cam(float, float);
 	void player_movement();
 
+	//Private variables
+	
 public:
 
 	~Player();
 
-	void Edrab();
+	void Edrab(int);
 	void setPosition(float, float);
 	void use_tool();
 	void mine();

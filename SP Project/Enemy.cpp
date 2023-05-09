@@ -427,36 +427,7 @@ void Enemy::stateMachine()
 
 void Enemy::Edrab()
 {
-	if (current_move == 0) {//U
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y - RangeElDarb.y,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
-	}
-	if (current_move == 1) {//R
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
-
-	}
-	if (current_move == 2) {//L
-		if (Lag == 200) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x, getPosition().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
-			Lag = 0;
-		}
-		else Lag += dt;
-	}
-	if (current_move == 200) {//D
-		if (Lag == 3) {
-			MakanElDarb = { getPosition().x - RangeElDarb.x / 2, getPosition().y,RangeElDarb.x,RangeElDarb.y };
-
-			Lag = 0;
-		}
-		else Lag += dt;
-	}
+	
 }
 
 void Enemy::update()
@@ -487,11 +458,10 @@ void Enemy::update()
 			delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
-	Entity_Hitbox = { getRelativePos().x,getRelativePos().y,Size_Hitbox.x,Size_Hitbox.y };
-	if (Entity_Hitbox.intersects(MakanElDarb)) {
-
-		cout << "Moot ya motwa7esh\n";
-
+	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
+	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
+	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
+			cout << "Moot ya motwa7esh\n";
 	}
 
 
