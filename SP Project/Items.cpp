@@ -54,7 +54,7 @@ void Items::update()
 
 	}
 
-     updatePos();
+    // updatePos();
      intersect();
 }
 
