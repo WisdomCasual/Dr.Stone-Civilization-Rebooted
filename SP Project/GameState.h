@@ -5,9 +5,11 @@
 #include "Enemy.h"
 #include "Player.h"
 #include"Items.h"
+#include "Passive.h"
 #include"Global.h"
 
 #define default_enemy 0, enemy_stats, "character 1", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+#define default_passive 2, passive_stats, "character 3", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
 
 using namespace globalvar;
 
@@ -16,7 +18,7 @@ struct GameState : public State
 private:
 	//variables:
 
-	entity player_stats, enemy_stats;
+	entity player_stats, enemy_stats, passive_stats;
 	Player player_entity;
 
 	
@@ -58,7 +60,7 @@ private:
 						entities[curr_idx] = new Items(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
 						break;
 					case 2:
-						//passive
+						entities[curr_idx] = new Passive(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
 						break;
 				}
 				entities[curr_idx]->setPosition(initial_position.x, initial_position.y);
@@ -73,7 +75,7 @@ private:
 			entities[curr_idx] = nullptr;
 		}
 
-	} enemies,items;
+	} enemies, items, passive;
 
 	struct entity {
 		Vector2f pixel_cords = { 0,0 };
