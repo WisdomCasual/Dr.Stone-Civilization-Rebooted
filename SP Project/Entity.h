@@ -17,7 +17,17 @@ struct animation {
 struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations;
-	short health = 100, damage = 10, state = 0, states_no;
+	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no;
+	float scale_const = 1;
+	~entity() {
+
+		if (animations != nullptr) {
+			for (int i = 0; i < states_no; i++)
+				if (animations[i] != nullptr)
+					delete[] animations[i];
+			delete[] animations;
+		}
+	}
 };
 
 struct comparison_tile {
@@ -27,6 +37,7 @@ struct comparison_tile {
 
 struct path_tile {
 		int x = 0, y = 0;
+		Vector2f direction = {-1.f, -1.f};
 	};
 
 struct comparison_array {
@@ -62,6 +73,10 @@ struct comparison_array {
 				resize(size * 2);
 
 			at[curr_idx] = new_object, curr_idx++;
+		}
+
+		void remove() {
+			curr_idx--;
 		}
 
 		int arr_size() {
@@ -122,9 +137,10 @@ struct tabor_el_3e4 {
 			else return 0;
 		}
 
-		/* delet top function */
+		/* delete top function */
 		void Astika() {
 			hp.at[0] = hp.at[size - 1];
+			hp.remove();
 			size--;
 			sheftdown(0);
 		}
@@ -160,7 +176,7 @@ public:
 	float  delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
 	float& x_offset, & y_offset;
-	short current_move = 3, current_frame = 0, prev_state = -1, movement_speed = 100, &disable_dynamic_obj;
+	short current_move = 3, current_frame = 0, prev_state = -1, &disable_dynamic_obj;
 	IntRect current_rect = { 0,0,0,0 };
 	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
@@ -170,6 +186,9 @@ public:
 	Vector2f pos = { 0, 0 };
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
+	
+	bool despawn = 0;
+	short state = 0, health = 100, damage = 10;
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;
@@ -188,11 +207,10 @@ public:
 	void setPosition(float x_pos, float y_pos);
 	void set_movement_speed(short speed);
 	void setScale(float);
-	bool legal_tile(Vector2f);
+	bool legal_tile(Vector2f, Vector2f curr_hitbox = { -1, -1 });
 	virtual void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
-	void updatePos();   //passive
 	virtual void update() = 0;
 	virtual void pollevent();
 	void render();
