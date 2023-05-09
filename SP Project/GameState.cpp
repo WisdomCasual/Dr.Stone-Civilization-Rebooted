@@ -310,8 +310,6 @@ void GameState::update()
 			(enemies.vis)[i] = new short[enemies.find_size_y]({});
 		}
 	}
-	player_entity.update();
-	
 	for (int i = 0; i < enemies.curr_idx; i++) {
 		enemies.entities[i]->update();
 	}
@@ -324,6 +322,7 @@ void GameState::update()
 		enemies.vis = nullptr;
 		enemies.astar_done = 0;
 	}
+	player_entity.update();
 
 	for (int i = 0; i < effects.curr_idx; i++) {
 		if (effects.animations[i]->despawn) {
