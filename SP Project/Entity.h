@@ -192,7 +192,7 @@ public:
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;
-	RectangleShape hashofak;
+	//RectangleShape hashofak;
 	float Lag = 0;
 
 

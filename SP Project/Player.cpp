@@ -44,24 +44,34 @@ void Player::player_movement()
 
 void Player::Edrab(int Shakl)
 {
-	if (current_move == 0) { //U
-		if (!Shakl)
-			MakanElDarb = { getRelativePos().x - 35, getRelativePos().y - 33,52,20 };
+	if (current_move == 0) { //UP
+		if (Shakl)
+			MakanElDarb = { getRelativePos().x - 30, getRelativePos().y - 35,60,28 };
 		else
-			MakanElDarb = { getRelativePos().x - 28, getRelativePos().y - 33,56,20 };
+			MakanElDarb = { getRelativePos().x - 25, getRelativePos().y - 35,60,28 };
 	}
-	else if (current_move == 1) { //R
-		//MakanElDarb = { getRelativePos().x, getRelativePos().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
+	else if (current_move == 1) { //RIGHT
+		if (Shakl)
+			MakanElDarb = { getRelativePos().x + 10, getRelativePos().y - 25,40,28 };
+		else
+			MakanElDarb = { getRelativePos().x + 10, getRelativePos().y - 25,40,22 };
 	}
-	else if (current_move == 2) { //L
-		//MakanElDarb = { getRelativePos().x - RangeElDarb.x, getRelativePos().y - RangeElDarb.y / 2,RangeElDarb.x,RangeElDarb.y };
+	else if (current_move == 2) { //LEFT
+		if (Shakl)
+			MakanElDarb = { getRelativePos().x - 45, getRelativePos().y - 25,35,27 };
+		else
+			MakanElDarb = { getRelativePos().x - 45, getRelativePos().y - 25,35,27 };
 	}
-	else if (current_move == 3) { //D
-		//MakanElDarb = { getRelativePos().x - RangeElDarb.x / 2, getRelativePos().y,RangeElDarb.x,RangeElDarb.y };
+	else if (current_move == 3) { //DOWN
+		if (Shakl)
+			MakanElDarb = { getRelativePos().x - 15, getRelativePos().y - 3,48,15 };
+		else
+			MakanElDarb = { getRelativePos().x - 23, getRelativePos().y-3,55,16 };
 	}
-	hashofak.setFillColor(Color::Magenta);
+	/*hashofak.setFillColor(Color::Magenta);
 	hashofak.setSize({MakanElDarb.width*scale,MakanElDarb.height*scale});
 	hashofak.setPosition((MakanElDarb.left + map_x) * scale, (MakanElDarb.top + map_y) * scale);
+	*/
 }
 
 
@@ -75,7 +85,7 @@ void Player::use_tool()
 {
 	if (Lag >= 0.8) {
 		if (state == 2) { // sword
-			int ElShakl = 0;//rand() % 2;
+			int ElShakl = 0;// rand() % 2;
 			Edrab(ElShakl);
 			action(ElShakl+1);
 		}
@@ -176,7 +186,9 @@ void Player::update()
 			delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
-	MakanElDarb = { -10,-10,1,1 };
+	if (Lag >= 0.6) {
+		MakanElDarb = { -10,-10,1,1 };
+	}
 	if (Lag < 0.8)
 		Lag += dt;
 	current_rect = entity_stats.animations[state][current_move].rect;
