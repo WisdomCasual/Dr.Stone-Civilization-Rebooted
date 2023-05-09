@@ -192,9 +192,8 @@ public:
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;
-	Vector2f RangeElDarb = { 5,5 }, Size_Hitbox = { 10,10 };
+	RectangleShape hashofak;
 	float Lag = 0;
-
 
 
 	//Public functions
