@@ -20,9 +20,7 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 		entity_sprite.setTexture(*this->tile_textures[tile_info.z]);
 		entity_sprite.setTextureRect(IntRect(tile_info.x * 16,tile_info.y * 16, 16, 16));
 		entity_sprite.setOrigin(8,8); 
-
 	}
-	srand(time(0));
 	srand(time(0));
 }
 
