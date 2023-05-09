@@ -1,11 +1,12 @@
 #pragma once
 #include"State.h"
 #include"Game.h"
-#include "Entity.h"
-#include "Enemy.h"
-#include "Player.h"
+#include"Entity.h"
+#include"Enemy.h"
+#include"Player.h"
 #include"Items.h"
 #include"Global.h"
+#include"Animation.h"
 
 #define default_enemy 0, enemy_stats, "character 1", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
 
@@ -73,7 +74,44 @@ private:
 			entities[curr_idx] = nullptr;
 		}
 
-	} enemies,items;
+	} enemies, items;
+
+
+	struct animations_container {
+		int limit = 1, curr_idx = 0, find_size_x = 50, find_size_y = 50;
+		short** vis = nullptr;
+		bool astar_done = 0;
+		Animation** animations = nullptr;
+		animations_container(int limit = 20, Vector2f starting_position = { 0, 0 }) {
+			animations = new Animation * [limit]({});
+			this->limit = limit;
+		}
+		~animations_container() {
+			if (animations != nullptr) {
+				for (int i = 0; i < curr_idx; i++) {
+					if (animations[i] != nullptr) {
+						delete animations[i];
+					}
+				}
+				delete[] animations;
+			}
+		}
+
+		void add(IntRect frame, int frame_count, Color texture_color, bool loop, float& map_x, float& map_y, Vector2i initial_position) {
+			if (curr_idx < limit) {
+				animations[curr_idx] = new Animation(frame, frame_count, initial_position, texture_color, loop, map_x, map_y);
+				curr_idx++;
+			}
+		} //types: 0 = enemy, 1 = item, 2 = passive
+
+		void remove(int idx) {
+			delete animations[idx];
+			curr_idx--;
+			animations[idx] = animations[curr_idx];
+			animations[curr_idx] = nullptr;
+		}
+
+	}effects;
 
 	struct entity {
 		Vector2f pixel_cords = { 0,0 };

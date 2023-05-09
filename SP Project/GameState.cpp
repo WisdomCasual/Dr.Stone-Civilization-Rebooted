@@ -227,6 +227,12 @@ void GameState::render_static_map()
 				window->draw(tile);
 			}
 		}
+
+	//render effects
+	for (int i = 0; i < effects.curr_idx; i++) {
+		effects.animations[i]->render();
+	}
+
 }
 
 void GameState::render_entities()
@@ -317,6 +323,15 @@ void GameState::update()
 		delete[] enemies.vis;
 		enemies.vis = nullptr;
 		enemies.astar_done = 0;
+	}
+
+	for (int i = 0; i < effects.curr_idx; i++) {
+		if (effects.animations[i]->despawn) {
+			effects.remove(i);
+			i--;
+		}
+		else
+			effects.animations[i]->update(scale);
 	}
 
 	for (int i = 0; i < items.curr_idx; i++) {
