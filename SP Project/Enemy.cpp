@@ -464,9 +464,13 @@ void Enemy::update()
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
 	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
+		if (!mamotish) {
 			cout << "Moot ya motwa7esh\n";
+			mamotish = 1;
+		}
 	}
-
+	if (mamotish)mamotish -= dt;
+	if (mamotish < 0)mamotish = 0;
 
 	current_rect = entity_stats.animations[state][current_move].rect;
 
