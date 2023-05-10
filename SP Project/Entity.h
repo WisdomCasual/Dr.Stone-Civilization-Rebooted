@@ -197,12 +197,13 @@ public:
 	float raya7 = 0;
 	//RectangleShape hashofak;
 	float Lag = 0;
-
-
+	float knockback_v;
+	/////////////////////////////////////////////////
 	//Public functions
 	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr,Texture** tile_textures=nullptr, Vector3i tile_info={0,0,0});
 	virtual ~Entity();
 
+	void knockback();
 	Vector2f getPosition();
 	Vector2f getRelativePos();
 	void change_state(int); 

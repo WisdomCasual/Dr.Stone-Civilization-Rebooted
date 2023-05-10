@@ -40,6 +40,12 @@ void Entity::change_state(int new_state)
 		state = new_state;
 }
 
+void Entity::knockback()
+{
+	knockback_v = 5.0;
+
+}
+
 Vector2f Entity::getPosition()
 {
 	return entity_sprite.getPosition();

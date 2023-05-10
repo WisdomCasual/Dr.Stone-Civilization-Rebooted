@@ -8,7 +8,7 @@ void Passive::a7mar(Color& original, float& delay)
 {
 	original = entity_sprite.getColor();
 	entity_sprite.setColor(Color(original.r, original.g - 100, original.b - 100));
-	delay = 0.2;
+	delay = 0.4;
 }
 
 void Passive::updatePos()
