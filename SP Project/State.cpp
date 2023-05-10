@@ -52,8 +52,11 @@ void State::initial_tile_sheets(string file)
 		}
 		tile_sheets_no = num;
 		tile_sheets = new Texture* [num];
-		for (int i = 0; i < num; i++)
+		tile_sheets_img = new Image[num];
+		for (int i = 0; i < num; i++) {
 			tile_sheets[i] = temp_textures[i];
+			tile_sheets_img[i] = tile_sheets[i]->copyToImage();
+		}
 	}	
 
 	ifs.close();
@@ -119,6 +122,9 @@ State::~State()
 
 	if (tile_sheets != nullptr)
 		delete[] tile_sheets;
+
+	if (tile_sheets_img != nullptr)
+		delete[] tile_sheets_img;
 
 	//tile props
 	for (int sheet = 0; sheet < sheets_no; sheet++){
