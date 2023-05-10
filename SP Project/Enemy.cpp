@@ -106,7 +106,7 @@ bool Enemy::visionLines(Entity& target)
 
 bool Enemy::entityFound(Entity& target)
 {
-	Vector2f afov = (state != 1) ? Vector2f(fov.x * 16, fov.y * PI / 180) : Vector2f(fov.x * 24, fov.y * PI / 180);
+	Vector2f afov = (action_state != 1) ? Vector2f(fov.x * 16, fov.y * PI / 180) : Vector2f(fov.x * 24, fov.y * PI / 180);
 	float d = magnitude(target.getRelativePos() - getRelativePos()), atheta = theta * PI / 180;
 	if (d <= sound_range * 16) {
 		return 1;
@@ -316,21 +316,21 @@ Vector2f Enemy::pathFollow(path_tile*& mp)
 void Enemy::stateMachine()
 {
 	bool checker = entityFound(player_entity);
-	if (state != 1 && checker) {
+	if (action_state != 1 && checker) {
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
 		if (checker != prev_check || enemy_tile != prev_target_tile) {
 			pathFinding(player_entity, mp);
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
 			if (target_tile.x != -1.f) {
-				state = 1;
+				action_state = 1;
 				motion_delay = 2;
 			}
 		}
 		prev_target_tile = enemy_tile;
 	}
 	prev_check = checker;
-	switch (state) {
+	switch (action_state) {
 	case 1: {
 		move_speed = entity_stats.base_movement_speed;
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
@@ -351,7 +351,7 @@ void Enemy::stateMachine()
 
 		if (target_tile.x == -1.f) {
 			will_move = 0;
-			state = 0;
+			action_state = 0;
 			break;
 		}
 		theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
@@ -366,7 +366,7 @@ void Enemy::stateMachine()
 			mp = aStar(last_seen);
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
-			state = 2;
+			action_state = 2;
 			break;
 		}
 		last_seen_cord = player_entity.getRelativePos();
@@ -392,7 +392,7 @@ void Enemy::stateMachine()
 		if (!will_move) {
 			if (motion_delay >= 4) {
 				motion_delay = 3.5;
-				state = 0;
+				action_state = 0;
 			}
 			motion_delay += dt;
 		}
@@ -497,7 +497,7 @@ void Enemy::update()
 			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
 			move({ 0, dt * move_speed * curr_movement.y});
-		if ((!legal_x || !legal_y) && state == 0) {
+		if ((!legal_x || !legal_y) && action_state == 0) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));

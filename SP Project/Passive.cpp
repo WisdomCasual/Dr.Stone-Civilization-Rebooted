@@ -36,7 +36,7 @@ bool Passive::legal_direction(Vector2f tile_pos, short dx, short dy)
 
 void Passive::stateMachine()
 {
-	switch (state) {
+	switch (action_state) {
 	case 1: {
 		motion_delay += dt, switch_delay += dt;
 		if (motion_delay >= 1) {
@@ -52,7 +52,7 @@ void Passive::stateMachine()
 			}
 		}
 		if (switch_delay >= 8)
-			state = 0, motion_delay = 2, will_move = 0;
+			action_state = 0, motion_delay = 2, will_move = 0;
 		break;
 	}
 	default:
@@ -114,7 +114,7 @@ void Passive::update()
 		if (mamotish<=0) {
 			cout << "Moot ya motwa7esh\n";
 			a7mar(original, raya7);
-			state = 1;
+			action_state = 1;
 			switch_delay = 0;
 			motion_delay = 2;
 			mamotish = 1;
