@@ -7,12 +7,18 @@ void State::initial_textures(string file)
 	string tex;
 	ifstream ifs("textures/"+ file +"/texturenames.ini");
 	if (ifs.is_open()) {
+		Texture* temp_textures[20];
+		int textures_count = 0;
 		while (!ifs.eof()) {
 			getline(ifs, tex);
-			textures.push_back(new Texture);
-			textures.back()->loadFromFile("textures/" + file + "/" + tex + ".png");
+			temp_textures[textures_count] = new Texture;
+			temp_textures[textures_count]->loadFromFile("textures/" + file + "/" + tex + ".png");
+			textures_count++;
 		}
-
+		textures_no = textures_count;
+		textures = new Texture* [textures_count];
+		for (int i = 0; i < textures_count; i++)
+			textures[i] = temp_textures[i];
 	}
 	ifs.close();
 }
@@ -24,13 +30,16 @@ void State::initial_tile_sheets(string file)
 	int num = 0, x_size, y_size;
 	ifstream ifs("textures/" + file + "/texturenames.ini");
 	if (ifs.is_open()) {
+		Texture* temp_textures[20];
+
 		while (!ifs.eof()) {
 			getline(ifs, tex);
-			tile_sheets.push_back(new Texture);
-			tile_sheets.back()->loadFromFile("textures/" + file + "/" + tex + ".png");
+			
+			temp_textures[num] =  new Texture;
+			temp_textures[num]->loadFromFile("textures/" + file + "/" + tex + ".png");
 
-			x_size = ceil(tile_sheets.back()->getSize().x / 16.0);
-			y_size = ceil(tile_sheets.back()->getSize().y / 16.0);
+			x_size = ceil(temp_textures[num]->getSize().x / 16.0);
+			y_size = ceil(temp_textures[num]->getSize().y / 16.0);
 
 			tile_props[num].x_size = x_size;
 			tile_props[num].y_size = y_size;
@@ -41,7 +50,15 @@ void State::initial_tile_sheets(string file)
 
 			num++;
 		}
+		tile_sheets_no = num;
+		tile_sheets = new Texture* [num];
+		tile_sheets_img = new Image[num];
+		for (int i = 0; i < num; i++) {
+			tile_sheets[i] = temp_textures[i];
+			tile_sheets_img[i] = tile_sheets[i]->copyToImage();
+		}
 	}	
+
 	ifs.close();
 	sheets_no = num;
 	//loads tile properties
@@ -93,10 +110,21 @@ State::~State()
 {
 	//destructor for:
 	//textures map
-	for (auto tex : textures) {
-		delete tex;
-	}
-	textures.clear();
+
+	for (int i = 0; i < textures_no ; i++)
+		delete textures[i];
+
+	if (textures != nullptr)
+		delete[] textures;
+
+	for (int i = 0; i < tile_sheets_no; i++)
+		delete tile_sheets[i];
+
+	if (tile_sheets != nullptr)
+		delete[] tile_sheets;
+
+	if (tile_sheets_img != nullptr)
+		delete[] tile_sheets_img;
 
 	//tile props
 	for (int sheet = 0; sheet < sheets_no; sheet++){

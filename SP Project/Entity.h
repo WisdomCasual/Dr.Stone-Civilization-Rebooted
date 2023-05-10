@@ -6,7 +6,7 @@ using namespace globalvar;
 
 struct render_tile {
 	Vector3i* layers;
-	short size, tile_props = 0, object_type = -1, tool_type = -1, dynamic_idx = -1;
+	short size, tile_props = 0, object_ID = -1, tool_type = -1, dynamic_idx = -1;
 	bool disable_top = 0;
 };
 
@@ -16,8 +16,8 @@ struct animation {
 
 struct entity {
 	//states[]->moves[]->animation{}
-	animation** animations;
-	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no;
+	animation** animations = nullptr;
+	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no = 0;
 	float scale_const = 1;
 	~entity() {
 
@@ -173,7 +173,7 @@ public:
 	Sprite entity_sprite;
 	Texture** tile_textures = nullptr;
 	render_tile**& static_map;
-	float delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
+	float delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
 	float& x_offset, & y_offset;
 	short current_move = 3, current_frame = 0, prev_state = -1, &disable_dynamic_obj;
@@ -188,7 +188,7 @@ public:
 	sheet_properties* tile_props;
 	
 	bool despawn = 0;
-	short state = 0, health = 100, damage = 10;
+	short state = 0, action_state = 0, health = 100, damage = 10;
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;

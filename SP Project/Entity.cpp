@@ -62,10 +62,10 @@ void Entity::set_movement_speed(short speed)
 
 }
 
-void Entity::setScale(float scale)
+void Entity::setScale(float new_scale_const)
 {
-	sprite_scale = scale;
-	entity_sprite.setScale(scale, scale);
+	entity_stats.scale_const = new_scale_const;
+	entity_sprite.setScale(new_scale_const * scale, new_scale_const * scale);
 }
 
 void Entity::move(Vector2f movement)
@@ -86,12 +86,14 @@ void Entity::action(int action_id)
 
 bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 {
-	current_hitbox = (curr_hitbox.x == -1.f) ? entity_stats.animations[state][current_move].hitbox_rect : curr_hitbox;
-	int x_cords[2] = { (int)(getRelativePos().x - (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16
-					, (int)(getRelativePos().x + (float)current_hitbox.x * sprite_scale / (2 * scale) + movement.x) / 16 },
+	current_hitbox = (curr_hitbox.x == -1.f) ? entity_stats.animations[state][current_move].hitbox_rect: curr_hitbox;
+	current_hitbox *= entity_stats.scale_const;
 
-		y_cords[2] = { (int)(getRelativePos().y - (float)current_hitbox.y * sprite_scale / (2 * scale) + movement.y) / 16
-					 , (int)(getRelativePos().y + (float)current_hitbox.y * sprite_scale / (2 * scale) + movement.y) / 16 };
+	int x_cords[2] = { (int)(getRelativePos().x - (float)current_hitbox.x  / 2 + movement.x) / 16
+					, (int)(getRelativePos().x + (float)current_hitbox.x  / 2 + movement.x) / 16 },
+
+		y_cords[2] = { (int)(getRelativePos().y - (float)current_hitbox.y / 2 + movement.y) / 16
+					 , (int)(getRelativePos().y + (float)current_hitbox.y / 2 + movement.y) / 16 };
 	
 	Vector2i hitbox_checker;
 	for (int i = 0; i < 2; i++) {

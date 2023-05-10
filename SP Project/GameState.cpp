@@ -27,6 +27,8 @@ void GameState::load_map(string map_name)
 	short layr;
 	Vector3i temp_layers[8]{};
 	Vector3i** temp_front[4];
+	//base_stats temp_destructable[200];
+	short destructable_count = 0;
 	bool** vis[4];
 	short layer_prop = 0;
 
@@ -63,8 +65,10 @@ void GameState::load_map(string map_name)
 					layer_prop = tile_props[tle.z].properties[tle.x][tle.y].props;
 
 					if (layer_prop & 32) {
-						static_map[i][j].object_type = tile_props[tle.z].properties[tle.x][tle.y].object_type;
 						static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
+						static_map[i][j].object_ID = destructable_count;
+						//temp_destructable[destructable_count] = object_stats[tile_props[tle.z].properties[tle.x][tle.y].object_type];
+						destructable_count++;
 					}
 					if (layer_prop & 16) { // front core
 						dynamic_objects objct;
@@ -103,6 +107,11 @@ void GameState::load_map(string map_name)
 		search_front(dynamic_map.at[i].at[0].position.x, dynamic_map.at[i].at[0].position.y, dynamic_map.at[i].layer, temp_front, vis, i);
 	}
 
+	//destructable_objects = new base_stats[destructable_count];
+
+	//for (int i = 0; i < destructable_count; i++) {
+	//	destructable_objects[i] = temp_destructable[i];
+	//}
 
 
 	//destroy temp front
@@ -117,59 +126,126 @@ void GameState::load_map(string map_name)
 
 void GameState::load_entities(float player_relative_y_pos)
 {
-
-	enemies.add(default_enemy, {800, 800});
+	enemies.add(default_enemy, { 800, 800 });
 	enemies.add(default_enemy, { 850, 850 });
 	passive.add(default_passive, { 750, 750 });
 
+	//player
 	player_stats.animations = new animation * [5]({});
 	player_stats.states_no = 4;
 	player_stats.base_movement_speed = 130;
+	player_stats.scale_const = 0.65;
+
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
-		player_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
-		player_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
-		player_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
-		player_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
+		player_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
+		player_stats.animations[i][1] = { 9, {0, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
+		player_stats.animations[i][2] = { 9, {0, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
+		player_stats.animations[i][3] = { 9, {0, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
 	}
 	for (int i = 1; i <= 3; i++) {
-		player_stats.animations[2][0 + i * 4] = { 6, {192, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
-		player_stats.animations[2][1 + i * 4] = { 6, {192, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
-		player_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
-		player_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
+		player_stats.animations[2][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
+		player_stats.animations[2][1 + i * 4] = { 6, {0, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
+		player_stats.animations[2][2 + i * 4] = { 6, {0, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
+		player_stats.animations[2][3 + i * 4] = { 6, {0, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
 	}
 	for (int i = 0; i <= 1; i++) {
-		player_stats.animations[i][4] = { 5, {128, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
-		player_stats.animations[i][5] = { 5, {128, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
-		player_stats.animations[i][6] = { 5, {128, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
-		player_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
+		player_stats.animations[i][4] = { 5, {0, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
+		player_stats.animations[i][5] = { 5, {0, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
+		player_stats.animations[i][6] = { 5, {0, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
+		player_stats.animations[i][7] = { 5, {0, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
 	player_entity.change_state(3);
 
+	//animals
+	lion_stats.animations = new animation * [1];
+	lion_stats.scale_const = 0.7;
+	lion_stats.base_movement_speed = 80;
 
+	lion_stats.states_no = 1;
+	lion_stats.animations[0] = new animation[4];
+	lion_stats.animations[0][0] = { 4, {0, 0 * 64, 64, 64}, {20,63}, {32,32} }; //back
+	lion_stats.animations[0][1] = { 5, {0, 2 * 64, 64, 64}, {63,16}, {32,47} }; //right
+	lion_stats.animations[0][2] = { 5, {0, 1 * 64, 64, 64}, {63,16}, {32,48} }; //left
+	lion_stats.animations[0][3] = { 4, {0, 3 * 64, 64, 64}, {20,63}, {32,225} }; //front
 
+	wolf_stats.animations = new animation* [1];
+	wolf_stats.scale_const = 0.7;
+	wolf_stats.base_movement_speed = 80;
+	wolf_stats.states_no = 1;
+
+	wolf_stats.animations[0] = new animation[12];
+	wolf_stats.animations[0][0] = { 4, {0, 128, 32, 65}, {22,60}, {176,160} }; //back
+	wolf_stats.animations[0][1] = { 5, {0, 95, 64, 32}, {62,12}, {351,122} }; //right
+	wolf_stats.animations[0][2] = { 5, {0, 287, 64, 32}, {62,12}, {351,312} }; //left
+	wolf_stats.animations[0][3] = { 4, {0, 128, 32 , 65}, {22,60}, {16,160} };//front
+
+	wolf_stats.animations[0][4] = { 5, {32, 195, 32, 65}, {22,60}, {176,225} }; //back attack
+	wolf_stats.animations[0][5] = { 5, {64,127,64, 32}, {62,12}, {351,152} }; //right attack
+	wolf_stats.animations[0][6] = { 5, {64, 320,64, 32}, {62,12}, {351,346} }; //left attack
+	wolf_stats.animations[0][7] = { 5, {32, 195,32, 65}, {22,60}, {16,225} }; //front attack
+
+	wolf_stats.animations[0][8] = { 5, {32, 256,32 , 65}, {22,60}, {176,286} }; //back attack bsnanoh
+	wolf_stats.animations[0][9] = { 5, {64, 158,64 , 32}, {62,12}, {351,186} }; //right attack bsnanoh
+	wolf_stats.animations[0][10] = { 5, {64, 350,64 , 32}, {62,12}, {351,379} }; //left attack bsnanoh
+	wolf_stats.animations[0][11] = { 5, {32, 256,32 , 65}, {22,60}, {16,286} }; //front attack bsnanoh
+
+	cow_stats.animations = new animation * [1];
+	cow_stats.scale_const = 0.7;
+	cow_stats.base_movement_speed = 80;
+	cow_stats.states_no = 1;
+
+	cow_stats.animations[0] = new animation[4];
+	cow_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {28,72}, {64,64} }; //back
+	cow_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {88,16}, {64,64} }; //right
+	cow_stats.animations[0][2] = { 4, {0, 1 * 128, 128, 128}, {88,16}, {64,64} }; //left
+	cow_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {28,57}, {64,64} }; //front
+
+	deer_stats.animations = new animation * [1];
+	deer_stats.scale_const = 0.7;
+	deer_stats.base_movement_speed = 80;
+	deer_stats.states_no = 1;
+
+	deer_stats.animations[0] = new animation[5];
+	deer_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,56} }; //back
+	deer_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,276} }; //right
+	deer_stats.animations[0][2] = { 4, {0, 1 * 96,64, 96}, {63,14}, {32,177} }; //left
+	deer_stats.animations[0][3] = { 4, {0, 3 * 96, 64, 96}, {22,75}, {32,347} }; //front
+
+	llama_stats.animations = new animation * [1];
+	llama_stats.scale_const = 0.7;
+	llama_stats.base_movement_speed = 80;
+	llama_stats.states_no = 1;
+
+	llama_stats.animations[0] = new animation[5];
+	llama_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {63,60} }; //back
+	llama_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {47,17}, {63,466} }; //right
+	llama_stats.animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {63,208} }; //left
+	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {63,317} }; //front
+
+	//TO BE REMOVED
 	enemy_stats.animations = new animation * [4];
 	enemy_stats.scale_const = 0.4;
 	enemy_stats.states_no = 4;
 	enemy_stats.base_movement_speed = 80;
 	for (int i = 0; i < 4; i++) {
 		enemy_stats.animations[i] = new animation[16];
-		enemy_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
-		enemy_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
-		enemy_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
-		enemy_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
+		enemy_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
+		enemy_stats.animations[i][1] = { 9, {0, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
+		enemy_stats.animations[i][2] = { 9, {0, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
+		enemy_stats.animations[i][3] = { 9, {0, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
 	}
 	for (int i = 1; i <= 3; i++) {
-		enemy_stats.animations[2][0 + i * 4] = { 6, {192, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
-		enemy_stats.animations[2][1 + i * 4] = { 6, {192, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
-		enemy_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
-		enemy_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
+		enemy_stats.animations[2][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
+		enemy_stats.animations[2][1 + i * 4] = { 6, {0, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
+		enemy_stats.animations[2][2 + i * 4] = { 6, {0, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
+		enemy_stats.animations[2][3 + i * 4] = { 6, {0, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
 	}
 	for (int i = 0; i <= 1; i++) {
-		enemy_stats.animations[i][4] = { 5, {128, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
-		enemy_stats.animations[i][5] = { 5, {128, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
-		enemy_stats.animations[i][6] = { 5, {128, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
-		enemy_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
+		enemy_stats.animations[i][4] = { 5, {0, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
+		enemy_stats.animations[i][5] = { 5, {0, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
+		enemy_stats.animations[i][6] = { 5, {0, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
+		enemy_stats.animations[i][7] = { 5, {0, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
 
 	passive_stats.animations = new animation * [4];
@@ -178,22 +254,22 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats.base_movement_speed = 100;
 	for (int i = 0; i < 4; i++) {
 		passive_stats.animations[i] = new animation[16];
-		passive_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
-		passive_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
-		passive_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
-		passive_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
+		passive_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
+		passive_stats.animations[i][1] = { 9, {0, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
+		passive_stats.animations[i][2] = { 9, {0, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
+		passive_stats.animations[i][3] = { 9, {0, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
 	}
 	for (int i = 1; i <= 3; i++) {
-		passive_stats.animations[2][0 + i * 4] = { 6, {192, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
-		passive_stats.animations[2][1 + i * 4] = { 6, {192, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
-		passive_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
-		passive_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
+		passive_stats.animations[2][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
+		passive_stats.animations[2][1 + i * 4] = { 6, {0, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
+		passive_stats.animations[2][2 + i * 4] = { 6, {0, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
+		passive_stats.animations[2][3 + i * 4] = { 6, {0, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
 	}
 	for (int i = 0; i <= 1; i++) {
-		passive_stats.animations[i][4] = { 5, {128, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
-		passive_stats.animations[i][5] = { 5, {128, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
-		passive_stats.animations[i][6] = { 5, {128, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
-		passive_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
+		passive_stats.animations[i][4] = { 5, {0, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
+		passive_stats.animations[i][5] = { 5, {0, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
+		passive_stats.animations[i][6] = { 5, {0, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
+		passive_stats.animations[i][7] = { 5, {0, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
 
 }
@@ -211,6 +287,9 @@ void GameState::deload_map()
 	if (size_x)
 		delete[] static_map;
 	size_x = 0, size_y = 0;
+
+	//if(destructable_objects!= nullptr)
+	//	delete[] destructable_objects;
 }
 
 void GameState::initial_game(string current_map, Vector2f player_pos)
@@ -327,9 +406,6 @@ void GameState::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		/////////////////////
-		for (int i = 0; i < enemies.curr_idx; i++) {
-			enemies.entities[i]->setScale(scale * enemies.entities[i]->entity_stats.scale_const);
-		}
 		center_cam(player_entity.getRelativePos());
 	}
 
@@ -419,11 +495,8 @@ void GameState::pollevent()
 			case Keyboard::Space:
 				player_entity.use_tool();
 				if (player_entity.tool_used_on.x > -1) {
-					//TEMPORARY, WILL LATER JUST SAVE THE COLOR INN THE OBJECT INFO
-					Image sheet_img;
 					Vector3i tile_info = static_map[player_entity.tool_used_on.x/16][player_entity.tool_used_on.y / 16].layers[static_map[player_entity.tool_used_on.x / 16][player_entity.tool_used_on.y / 16].size - 1];
-					sheet_img = tile_sheets[tile_info.z]->copyToImage();
-					Color tile_color = sheet_img.getPixel(tile_info.x * 16 + 8, tile_info.y * 16 + 6);
+					Color tile_color = tile_sheets_img[tile_info.z].getPixel(tile_info.x * 16 + 8, tile_info.y * 16 + 6);
 					effects.add({ 0,0,100,100 }, 24, { player_entity.tool_used_on.x , player_entity.tool_used_on.y }, "break_animation", tile_color, 0, map_x, map_y);
 					player_entity.tool_used_on.x = -1;
 				}

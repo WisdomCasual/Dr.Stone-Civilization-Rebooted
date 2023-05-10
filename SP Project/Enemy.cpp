@@ -56,8 +56,8 @@ bool Enemy::visionLines(Entity& target)
 	int k = 1;
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
-			float targ_y = target.getRelativePos().y + corners[j] * ((float)target.current_hitbox.y * target.sprite_scale / (2 * scale)),
-				targ_x = target.getRelativePos().x + corners[i] * ((float)target.current_hitbox.x * target.sprite_scale / (2 * scale));
+			float targ_y = target.getRelativePos().y + corners[j] * ((float)target.current_hitbox.y * target.entity_stats.scale_const / (2 * scale)),
+				targ_x = target.getRelativePos().x + corners[i] * ((float)target.current_hitbox.x * target.entity_stats.scale_const / (2 * scale));
 			delta_y = targ_y - getRelativePos().y,
 				delta_x = targ_x - getRelativePos().x;
 
@@ -106,7 +106,7 @@ bool Enemy::visionLines(Entity& target)
 
 bool Enemy::entityFound(Entity& target)
 {
-	Vector2f afov = (state != 1) ? Vector2f(fov.x * 16, fov.y * PI / 180) : Vector2f(fov.x * 24, fov.y * PI / 180);
+	Vector2f afov = (action_state != 1) ? Vector2f(fov.x * 16, fov.y * PI / 180) : Vector2f(fov.x * 24, fov.y * PI / 180);
 	float d = magnitude(target.getRelativePos() - getRelativePos()), atheta = theta * PI / 180;
 	if (d <= sound_range * 16) {
 		return 1;
@@ -316,21 +316,21 @@ Vector2f Enemy::pathFollow(path_tile*& mp)
 void Enemy::stateMachine()
 {
 	bool checker = entityFound(player_entity);
-	if (state != 1 && checker) {
+	if (action_state != 1 && checker) {
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
 		if (checker != prev_check || enemy_tile != prev_target_tile) {
 			pathFinding(player_entity, mp);
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
 			if (target_tile.x != -1.f) {
-				state = 1;
+				action_state = 1;
 				motion_delay = 2;
 			}
 		}
 		prev_target_tile = enemy_tile;
 	}
 	prev_check = checker;
-	switch (state) {
+	switch (action_state) {
 	case 1: {
 		//Chase state
 		move_speed = entity_stats.base_movement_speed;
@@ -353,7 +353,7 @@ void Enemy::stateMachine()
 
 		if (target_tile.x == -1.f) {
 			will_move = 0;
-			state = 0;
+			action_state = 0;
 			break;
 		}
 		theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
@@ -368,7 +368,7 @@ void Enemy::stateMachine()
 			mp = aStar(last_seen);
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
-			state = 2;
+			action_state = 2;
 			break;
 		}
 		last_seen_cord = player_entity.getRelativePos();
@@ -395,7 +395,7 @@ void Enemy::stateMachine()
 		if (!will_move) {
 			if (motion_delay >= 4) {
 				motion_delay = 3.5;
-				state = 0;
+				action_state = 0;
 			}
 			motion_delay += dt;
 		}
@@ -469,7 +469,7 @@ void Enemy::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		////////////////
-
+		entity_sprite.setScale(scale * entity_stats.scale_const, scale * entity_stats.scale_const);
 	}
 
 	if (state != prev_state) {
@@ -512,7 +512,7 @@ void Enemy::update()
 	//////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
-	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
+	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin); ///////////////
 	updatePos();
 	stateMachine();
@@ -526,7 +526,7 @@ void Enemy::update()
 			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
 			move({ 0, dt * move_speed * curr_movement.y});
-		if ((!legal_x || !legal_y) && state == 0) {
+		if ((!legal_x || !legal_y) && action_state == 0) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));

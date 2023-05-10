@@ -176,5 +176,8 @@
     <ClInclude Include="Passive.h">
       <Filter>Header Files\Entity Headers</Filter>
     </ClInclude>
+    <ClInclude Include="EntityStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
