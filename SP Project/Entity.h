@@ -195,7 +195,7 @@ public:
 	float mamotish = 0;
 	Color original = entity_sprite.getColor();
 	Color og_player_color;
-	float raya7 = 0, daye5 = 0;
+	float daye5 = 0;
 	//RectangleShape hashofak;
 	float Lag = 0;
 	float knockback_v;
@@ -204,7 +204,6 @@ public:
 	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr,Texture** tile_textures=nullptr, Vector3i tile_info={0,0,0});
 	virtual ~Entity();
 
-	void knockback();
 	Vector2f getPosition();
 	Vector2f getRelativePos();
 	void change_state(int); 

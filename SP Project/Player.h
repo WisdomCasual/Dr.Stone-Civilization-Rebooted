@@ -20,6 +20,7 @@ public:
 
 	~Player();
 
+	void knockback();
 	void a7mar(Color&, float&, Sprite&);
 	void Edrab(int);
 	void setPosition(float, float);
