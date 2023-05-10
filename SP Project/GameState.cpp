@@ -27,6 +27,8 @@ void GameState::load_map(string map_name)
 	short layr;
 	Vector3i temp_layers[8]{};
 	Vector3i** temp_front[4];
+	//base_stats temp_destructable[200];
+	short destructable_count = 0;
 	bool** vis[4];
 	short layer_prop = 0;
 
@@ -63,8 +65,10 @@ void GameState::load_map(string map_name)
 					layer_prop = tile_props[tle.z].properties[tle.x][tle.y].props;
 
 					if (layer_prop & 32) {
-						static_map[i][j].object_type = tile_props[tle.z].properties[tle.x][tle.y].object_type;
 						static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
+						static_map[i][j].object_ID = destructable_count;
+						//temp_destructable[destructable_count] = object_stats[tile_props[tle.z].properties[tle.x][tle.y].object_type];
+						destructable_count++;
 					}
 					if (layer_prop & 16) { // front core
 						dynamic_objects objct;
@@ -103,6 +107,11 @@ void GameState::load_map(string map_name)
 		search_front(dynamic_map.at[i].at[0].position.x, dynamic_map.at[i].at[0].position.y, dynamic_map.at[i].layer, temp_front, vis, i);
 	}
 
+	//destructable_objects = new base_stats[destructable_count];
+
+	for (int i = 0; i < destructable_count; i++) {
+	//	destructable_objects[i] = temp_destructable[i];
+	}
 
 
 	//destroy temp front
@@ -211,6 +220,9 @@ void GameState::deload_map()
 	if (size_x)
 		delete[] static_map;
 	size_x = 0, size_y = 0;
+
+	//if(destructable_objects!= nullptr)
+	//	delete[] destructable_objects;
 }
 
 void GameState::initial_game(string current_map, Vector2f player_pos)

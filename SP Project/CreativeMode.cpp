@@ -4,7 +4,7 @@ void CreativeMode::change_tex()
 {	
 	delete this->Tex;
 	Tex = new Sprite;
-	Tex->setTexture(*textures->at(curr_tex_set));
+	Tex->setTexture(*textures[curr_tex_set]);
 	a = Tex->getGlobalBounds().width, b = Tex->getGlobalBounds().height;
 	videomode = { a,b };
 	window_pos = sidewindow->getPosition();
@@ -179,13 +179,14 @@ void CreativeMode::highlight()
 		}
 }
 
-CreativeMode::CreativeMode(vector<Texture*>* textures, State::tex_tile& picked_tile, State::sheet_properties tile_props[], short sheets_no, short& active_highlight, bool& hitbox, bool& destroyable, bool& opaque, bool& view_layers, bool& blocked, Color& highlight_color)
+CreativeMode::CreativeMode(Texture** textures, int textures_no, State::tex_tile& picked_tile, State::sheet_properties tile_props[], short sheets_no, short& active_highlight, bool& hitbox, bool& destroyable, bool& opaque, bool& view_layers, bool& blocked, Color& highlight_color)
 	: hitbox(hitbox), destroyable(destroyable), view_layers(view_layers), blocked(blocked),  opaque(opaque), active_highlight(active_highlight), highlight_color(highlight_color)
 {
 	sidewindow = new RenderWindow(videomode, "Texture Picker", Style::Titlebar | Style::Close);
 	sidewindow->setFramerateLimit(60);
 	sidewindow->setPosition({ 0,0 });
 	this->textures = textures;
+	this->textures_no = textures_no;
 	this->picked_tile = &picked_tile;
 	this->tile_props = tile_props;
 	this->sheets_no = sheets_no;
@@ -298,13 +299,13 @@ void CreativeMode::pollevent(bool& picker)
 			case Keyboard::Comma:
 
 				if (curr_tex_set == 0)
-					curr_tex_set = textures->size();
+					curr_tex_set = textures_no;
 				--curr_tex_set;
 				change_tex();
 				break;
 			case Keyboard::Period:
 				++curr_tex_set;
-				if (curr_tex_set == textures->size())
+				if (curr_tex_set == textures_no)
 					curr_tex_set = 0;
 				change_tex();
 				break;
