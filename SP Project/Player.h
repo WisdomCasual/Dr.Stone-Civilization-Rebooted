@@ -14,13 +14,13 @@ private:
 	void player_movement();
 
 	//Private variables
-	
+	bool malosh_lazma = 1;
 public:
-
 	Vector2i tool_used_on = { -1,-1 }; //x, y
 
 	~Player();
 
+	void a7mar(Color&, float&, Sprite&);
 	void Edrab(int);
 	void setPosition(float, float);
 	void use_tool();

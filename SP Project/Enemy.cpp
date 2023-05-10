@@ -14,10 +14,10 @@ void Enemy::Mawgood()
 	}
 }
 
-void Enemy::a7mar(Color& original,float& delay)
+void Enemy::a7mar(Color& original,float& delay,Sprite& Entity)
 {
-	original = entity_sprite.getColor();
-	entity_sprite.setColor(Color(original.r, original.g-100, original.b-100));
+	original = Entity.getColor();
+	Entity.setColor(Color(original.r, 155, 155));
 	delay = 0.4;
 }
 
@@ -332,8 +332,10 @@ void Enemy::stateMachine()
 	prev_check = checker;
 	switch (state) {
 	case 1: {
+		//Chase state
 		move_speed = entity_stats.base_movement_speed;
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
+		Edrab();
 		if (enemy_tile != prev_target_tile) {
 			pathFinding(player_entity, mp);
 			target_tile = pathFollow(mp);
@@ -373,6 +375,7 @@ void Enemy::stateMachine()
 		break;
 	}
 	case 2: {
+		//Last seen state
 		move_speed = entity_stats.base_movement_speed;
 		Vector2f delta_pos = target_tile - getRelativePos();
 		Vector2f compar = { roundf(delta_pos.x), roundf(delta_pos.y) };
@@ -396,9 +399,12 @@ void Enemy::stateMachine()
 			}
 			motion_delay += dt;
 		}
+
+		MakanElDarb = { -10,-10,1,1 };
 		break;
 	}
 	default:
+		//Wandering state
 		motion_delay += dt;
 
 		if (motion_delay >= move_for && will_move) {
@@ -418,6 +424,7 @@ void Enemy::stateMachine()
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
 		}
+		MakanElDarb = { -10,-10,1,1 };
 		break;
 	}
 }
@@ -436,7 +443,22 @@ void Enemy::setVisArray(short*** new_vis, bool* astar_done_ptr, short new_find_s
 
 void Enemy::Edrab()
 {
-	
+	if (current_move == 0) { //UP
+		MakanElDarb = { getRelativePos().x - 7, getRelativePos().y - 18,15,15 };
+	}
+	else if (current_move == 1) { //RIGHT
+		MakanElDarb = { getRelativePos().x+3, getRelativePos().y - 7,15,15 };
+	}
+	else if (current_move == 2) { //LEFT
+		MakanElDarb = { getRelativePos().x - 18, getRelativePos().y - 7,15,15 };
+	}
+	else if (current_move == 3) { //DOWN
+		MakanElDarb = { getRelativePos().x - 7, getRelativePos().y,18,15 };
+	}
+	/*hashofak.setFillColor(Color::Magenta);
+	hashofak.setSize({MakanElDarb.width*scale,MakanElDarb.height*scale});
+	hashofak.setPosition((MakanElDarb.left + map_x) * scale, (MakanElDarb.top + map_y) * scale);
+	*/
 }
 
 void Enemy::update()
@@ -471,15 +493,22 @@ void Enemy::update()
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
 	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
 		if (mamotish<=0) {
-			cout << "Moot ya motwa7esh\n";
-			a7mar(original,raya7);
+			//cout << "Moot ya motwa7esh\n";
+			a7mar(original,raya7,entity_sprite);
 			mamotish = 1;
 		}
 	}
 	if(raya7<=0)entity_sprite.setColor(Color(original));
-	else raya7 -= dt;
-
-	if (mamotish)mamotish -= dt;
+	else if(raya7>0)raya7 -= dt;
+	if (mamotish>0)mamotish -= dt;
+	//////////////////Darb El Enemy//////////////////////
+	if (MakanElDarb.intersects(player_entity.Entity_Hitbox)) {
+		if (player_entity.mamotish <= 0) {
+			//cout << "Ay\n";
+			player_entity.a7mar(player_entity.og_player_color, player_entity.daye5, player_entity.entity_sprite);
+			player_entity.mamotish = 2;
+		}
+	}
 	//////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 

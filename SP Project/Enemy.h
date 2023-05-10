@@ -20,7 +20,7 @@ private:
 public:
 	~Enemy();
 	void Mawgood();
-	void a7mar(Color&,float&);
+	void a7mar(Color&,float&,Sprite&);
 	void updatePos();
 	bool visionLines(Entity&);
 	bool entityFound(Entity&);
