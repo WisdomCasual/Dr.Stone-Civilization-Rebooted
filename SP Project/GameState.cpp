@@ -120,6 +120,7 @@ void GameState::load_entities(float player_relative_y_pos)
 
 	enemies.add(default_enemy, {800, 800});
 	enemies.add(default_enemy, { 850, 850 });
+	passive.add(default_passive, { 750, 750 });
 
 	player_stats.animations = new animation * [5]({});
 	player_stats.states_no = 4;
@@ -169,6 +170,30 @@ void GameState::load_entities(float player_relative_y_pos)
 		enemy_stats.animations[i][5] = { 5, {128, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
 		enemy_stats.animations[i][6] = { 5, {128, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
 		enemy_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
+	}
+
+	passive_stats.animations = new animation * [4];
+	passive_stats.scale_const = 0.6;
+	passive_stats.states_no = 4;
+	passive_stats.base_movement_speed = 100;
+	for (int i = 0; i < 4; i++) {
+		passive_stats.animations[i] = new animation[16];
+		passive_stats.animations[i][0] = { 9, {64, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
+		passive_stats.animations[i][1] = { 9, {64, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
+		passive_stats.animations[i][2] = { 9, {64, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
+		passive_stats.animations[i][3] = { 9, {64, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
+	}
+	for (int i = 1; i <= 3; i++) {
+		passive_stats.animations[2][0 + i * 4] = { 6, {192, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
+		passive_stats.animations[2][1 + i * 4] = { 6, {192, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
+		passive_stats.animations[2][2 + i * 4] = { 6, {192, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
+		passive_stats.animations[2][3 + i * 4] = { 6, {192, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
+	}
+	for (int i = 0; i <= 1; i++) {
+		passive_stats.animations[i][4] = { 5, {128, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
+		passive_stats.animations[i][5] = { 5, {128, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
+		passive_stats.animations[i][6] = { 5, {128, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
+		passive_stats.animations[i][7] = { 5, {128, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
 
 }
@@ -227,6 +252,12 @@ void GameState::render_static_map()
 				window->draw(tile);
 			}
 		}
+
+	//render effects
+	for (int i = 0; i < effects.curr_idx; i++) {
+		effects.animations[i]->render();
+	}
+
 }
 
 void GameState::render_entities()
@@ -238,6 +269,10 @@ void GameState::render_entities()
 
 	for (int i = 0; i < items.curr_idx; i++) {
 		dynamic_rendering.insert({ items.entities[i]->getRelativePos().y, {-1, items.entities[i]} });
+	}
+
+	for (int i = 0; i < passive.curr_idx; i++) {
+		dynamic_rendering.insert({ passive.entities[i]->getRelativePos().y, {-1, passive.entities[i]} });
 	}
 
 	for (auto i = dynamic_rendering.lower_bound(-map_y-10); i != dynamic_rendering.end(); ) {
@@ -267,7 +302,7 @@ void GameState::render_entities()
 }
 
 GameState::GameState(int character_id, string current_map, Vector2f player_pos)
-	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), enemies(20)
+	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
@@ -307,6 +342,10 @@ void GameState::update()
 	for (int i = 0; i < enemies.curr_idx; i++) {
 		enemies.entities[i]->update();
 	}
+
+	for (int i = 0; i < passive.curr_idx; i++) {
+		passive.entities[i]->update();
+	}
 	
 	if (enemies.astar_done) {
 		for (int i = 0; i < enemies.find_size_x; i++) {
@@ -317,6 +356,15 @@ void GameState::update()
 		enemies.astar_done = 0;
 	}
 	player_entity.update();
+
+	for (int i = 0; i < effects.curr_idx; i++) {
+		if (effects.animations[i]->despawn) {
+			effects.remove(i);
+			i--;
+		}
+		else
+			effects.animations[i]->update(scale);
+	}
 
 	for (int i = 0; i < items.curr_idx; i++) {
 		if (items.entities[i]->despawn) {
