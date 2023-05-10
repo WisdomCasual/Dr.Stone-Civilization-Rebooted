@@ -20,7 +20,7 @@ struct GameState : public State
 private:
 	//variables:
 
-	entity player_stats, enemy_stats, passive_stats;
+	entity player_stats, enemy_stats, passive_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats;
 	Player player_entity;
 
 	
