@@ -465,12 +465,13 @@ void Enemy::update()
 	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
 		if (!mamotish) {
 			cout << "Moot ya motwa7esh\n";
+			
 			mamotish = 1;
 		}
 	}
 	if (mamotish)mamotish -= dt;
 	if (mamotish < 0)mamotish = 0;
-
+	//////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
