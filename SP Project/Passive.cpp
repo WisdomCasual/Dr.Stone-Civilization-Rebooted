@@ -4,6 +4,13 @@ Passive::~Passive()
 {
 }
 
+void Passive::a7mar(Color& original, float& delay)
+{
+	original = entity_sprite.getColor();
+	entity_sprite.setColor(Color(original.r, original.g - 100, original.b - 100));
+	delay = 0.2;
+}
+
 void Passive::updatePos()
 {
 	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
@@ -100,15 +107,23 @@ void Passive::update()
 			delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
+	/////////////WARNING TOUCH AT YOUR OWN RISK////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
 	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
-		state = 1;
-		switch_delay = 0;
-		motion_delay = 2;
+		if (mamotish<=0) {
+			cout << "Moot ya motwa7esh\n";
+			a7mar(original, raya7);
+			state = 1;
+			switch_delay = 0;
+			motion_delay = 2;
+			mamotish = 1;
+		}
 	}
-
-
+	if (mamotish)mamotish -= dt;
+	if (raya7 <= 0)entity_sprite.setColor(Color(original));
+	else raya7 -= dt;
+	///////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));

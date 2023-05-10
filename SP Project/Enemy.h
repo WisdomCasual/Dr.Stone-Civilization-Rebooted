@@ -15,12 +15,12 @@ private:
 	short find_size_x = 50, find_size_y = 50, id = 1, *** vis = nullptr;
 	bool* astar_done = nullptr;
 	//Combat Variables
-	float mamotish=0;
-
+	
 
 public:
 	~Enemy();
 	void Mawgood();
+	void a7mar(Color&,float&);
 	void updatePos();
 	bool visionLines(Entity&);
 	bool entityFound(Entity&);
