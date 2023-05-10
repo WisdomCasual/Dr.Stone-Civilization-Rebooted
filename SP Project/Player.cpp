@@ -186,7 +186,7 @@ void Player::update()
 			delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
-	if (Lag >= 0.6) {
+	if (Lag >= 0.4) {
 		MakanElDarb = { -10,-10,1,1 };
 	}
 	if (Lag < 0.8)
