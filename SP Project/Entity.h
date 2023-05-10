@@ -188,7 +188,7 @@ public:
 	sheet_properties* tile_props;
 	
 	bool despawn = 0;
-	short state = 0, health = 100, damage = 10;
+	short state = 0, action_state = 0, health = 100, damage = 10;
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;
