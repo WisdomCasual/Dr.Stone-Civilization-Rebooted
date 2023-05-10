@@ -162,18 +162,30 @@ void Player::mine()
 void Player::destroy_object(Vector2i tile_location)
 {
 	for (int i = 0; i < 3; i++)
-		for (int j = 1; j < 5; j++) {
+		for (int j = 1; j < 4; j++) {
 			Vector2i destroy_area{ tile_location.x + dx[i], tile_location.y + dy[j] };
 
-			if (static_map[destroy_area.x][destroy_area.y].tile_props & 16) {
+			if (static_map[destroy_area.x][destroy_area.y].tile_props & 16)
 				disable_dynamic_obj = static_map[destroy_area.x][destroy_area.y].dynamic_idx;
-			}
 			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 32) {
-				if(!dx[i] && !dy[j])
+				if (!dx[i] && !dy[j])
 					bigbang(destroy_area, 1);
 			}
-			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 1) {
+			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 1)
 				bigbang(destroy_area, 1);
+			else 
+				continue;
+
+			if (dy[j] == -1) {
+				if (static_map[destroy_area.x][destroy_area.y - 1].tile_props & 16)
+					disable_dynamic_obj = static_map[destroy_area.x][destroy_area.y - 1].dynamic_idx;
+				else if (static_map[destroy_area.x][destroy_area.y - 1].tile_props & 32) {
+					if (!dx[i] && !dy[j])
+						bigbang(destroy_area, 1);
+				}
+				else if (static_map[destroy_area.x][destroy_area.y - 1].tile_props & 1)
+					bigbang(destroy_area, 1);
+
 			}
 		}
 }
