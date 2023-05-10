@@ -148,6 +148,10 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 						highlight_rect.setFillColor(Color(250, 120, 0, 80));
 						window->draw(highlight_rect);
 					}
+					else if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 128) {
+						highlight_rect.setFillColor(Color(80, 80, 175, 80));
+						window->draw(highlight_rect);
+					}
 					else if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 1) {
 						highlight_rect.setFillColor(Color(0, 175, 0, 80));
 						window->draw(highlight_rect);
