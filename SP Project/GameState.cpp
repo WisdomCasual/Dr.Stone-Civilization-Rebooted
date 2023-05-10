@@ -163,8 +163,8 @@ void GameState::load_entities(float player_relative_y_pos)
 	lion_stats.states_no = 1;
 	lion_stats.animations[0] = new animation[4];
 	lion_stats.animations[0][0] = { 4, {0, 0 * 64, 64, 64}, {20,63}, {32,32} }; //back
-	lion_stats.animations[0][1] = { 5, {0, 2 * 64, 64, 64}, {63,16}, {32,175} }; //right
-	lion_stats.animations[0][2] = { 5, {0, 1 * 64, 64, 64}, {63,16}, {32,112} }; //left
+	lion_stats.animations[0][1] = { 5, {0, 2 * 64, 64, 64}, {63,16}, {32,47} }; //right
+	lion_stats.animations[0][2] = { 5, {0, 1 * 64, 64, 64}, {63,16}, {32,48} }; //left
 	lion_stats.animations[0][3] = { 4, {0, 3 * 64, 64, 64}, {20,63}, {32,225} }; //front
 
 	wolf_stats.animations = new animation* [1];
