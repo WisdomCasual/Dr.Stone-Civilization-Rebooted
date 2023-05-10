@@ -8,7 +8,6 @@
 #include "Passive.h"
 #include"Global.h"
 #include"Animation.h"
-//#include"EntityStats.h"
 
 #define default_enemy 0, wolf_stats, "wolf", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
 #define default_passive 2, cow_stats, "cow", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
@@ -29,7 +28,15 @@ private:
 
 	render_tile** static_map;
 
-	//base_stats* destructable_objects = nullptr;
+
+	struct base_stats {
+		short health;
+		short* item_drops;
+		short drops_no = 0;
+		short damage = 0;
+		short speed = 0;
+	} object_stats[30], *destructable_objects = nullptr;
+
 
 	struct entities_container {
 		int limit = 1, curr_idx = 0, find_size_x = 50, find_size_y = 50;
@@ -81,7 +88,6 @@ private:
 
 	} enemies, items, passive;
 
-
 	struct animations_container {
 		int limit = 1, curr_idx = 0, find_size_x = 50, find_size_y = 50;
 		short** vis = nullptr;
@@ -129,6 +135,7 @@ private:
 		Vector2f position = { 0, 0 };   //position on map
 		Vector3i tile = { 0, 0, 0 };   //tile details (x-sheet, y-sheet, texture id)
 	};
+
 	struct dynamic_objects {
 
 		int size = 1, curr_idx = 0, layer = 0;

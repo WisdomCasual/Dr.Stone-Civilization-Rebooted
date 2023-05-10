@@ -167,28 +167,28 @@ void GameState::load_entities(float player_relative_y_pos)
 	lion_stats.animations[0][0] = { 4, {0, 0 * 64, 64, 64}, {20,63}, {32,32} }; //back
 	lion_stats.animations[0][1] = { 5, {0, 2 * 64, 64, 64}, {63,16}, {32,47} }; //right
 	lion_stats.animations[0][2] = { 5, {0, 1 * 64, 64, 64}, {63,16}, {32,48} }; //left
-	lion_stats.animations[0][3] = { 4, {0, 3 * 64, 64, 64}, {20,63}, {32,225} }; //front
+	lion_stats.animations[0][3] = { 4, {0, 3 * 64, 64, 64}, {20,63}, {32,33} }; //front
 
-	wolf_stats.animations = new animation* [1];
+	wolf_stats.animations = new animation * [1];
 	wolf_stats.scale_const = 0.7;
 	wolf_stats.base_movement_speed = 80;
 	wolf_stats.states_no = 1;
 
 	wolf_stats.animations[0] = new animation[12];
-	wolf_stats.animations[0][0] = { 4, {0, 128, 32, 65}, {22,60}, {176,160} }; //back
-	wolf_stats.animations[0][1] = { 5, {0, 95, 64, 32}, {62,12}, {351,122} }; //right
-	wolf_stats.animations[0][2] = { 5, {0, 287, 64, 32}, {62,12}, {351,312} }; //left
-	wolf_stats.animations[0][3] = { 4, {0, 128, 32 , 65}, {22,60}, {16,160} };//front
+	wolf_stats.animations[0][0] = { 4, {160, 128, 32, 64}, {22,60}, {16,30} }; //back
+	wolf_stats.animations[0][1] = { 5, {320, 96, 64, 32}, {62,12}, {34,28} }; //right
+	wolf_stats.animations[0][2] = { 5, {320, 288, 64, 32}, {62,12}, {34,28} }; //left
+	wolf_stats.animations[0][3] = { 4, {0, 128, 32 , 64}, {22,60}, {16,30} };//front
 
-	wolf_stats.animations[0][4] = { 5, {32, 195, 32, 65}, {22,60}, {176,225} }; //back attack
-	wolf_stats.animations[0][5] = { 5, {64,127,64, 32}, {62,12}, {351,152} }; //right attack
-	wolf_stats.animations[0][6] = { 5, {64, 320,64, 32}, {62,12}, {351,346} }; //left attack
-	wolf_stats.animations[0][7] = { 5, {32, 195,32, 65}, {22,60}, {16,225} }; //front attack
+	wolf_stats.animations[0][4] = { 5, {160, 196, 32, 64}, {22,60}, {16,30} }; //back attack
+	wolf_stats.animations[0][5] = { 5, {320, 128, 64, 32}, {62,12}, {34,28} }; //right attack
+	wolf_stats.animations[0][6] = { 5, {320, 320, 64, 32}, {62,12}, {34,28} }; //left attack
+	wolf_stats.animations[0][7] = { 5, {0, 196, 32, 64}, {22,60}, {16,30} }; //front attack
 
-	wolf_stats.animations[0][8] = { 5, {32, 256,32 , 65}, {22,60}, {176,286} }; //back attack bsnanoh
-	wolf_stats.animations[0][9] = { 5, {64, 158,64 , 32}, {62,12}, {351,186} }; //right attack bsnanoh
-	wolf_stats.animations[0][10] = { 5, {64, 350,64 , 32}, {62,12}, {351,379} }; //left attack bsnanoh
-	wolf_stats.animations[0][11] = { 5, {32, 256,32 , 65}, {22,60}, {16,286} }; //front attack bsnanoh
+	wolf_stats.animations[0][8] = { 5, {160, 256, 32, 64}, {22,60}, {16,30} }; //back attack bsnanoh
+	wolf_stats.animations[0][9] = { 5, {320, 160, 64, 32}, {62,12}, {34,28} }; //right attack bsnanoh
+	wolf_stats.animations[0][10] = { 5, {320, 352, 64, 32}, {62,12}, {34,28} }; //left attack bsnanoh
+	wolf_stats.animations[0][11] = { 5, {0, 256, 32, 64}, {22,60}, {16,30} }; //front attack bsnanoh
 
 	cow_stats.animations = new animation * [1];
 	cow_stats.scale_const = 0.7;
@@ -207,10 +207,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	deer_stats.states_no = 1;
 
 	deer_stats.animations[0] = new animation[5];
-	deer_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,56} }; //back
-	deer_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,276} }; //right
-	deer_stats.animations[0][2] = { 4, {0, 1 * 96,64, 96}, {63,14}, {32,177} }; //left
-	deer_stats.animations[0][3] = { 4, {0, 3 * 96, 64, 96}, {22,75}, {32,347} }; //front
+	deer_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,48} }; //back
+	deer_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,84} }; //right
+	deer_stats.animations[0][2] = { 4, {0, 1 * 96,64, 96}, {63,14}, {32,84} }; //left
+	deer_stats.animations[0][3] = { 4, {0, 3 * 96, 64, 96}, {22,75}, {32,59} }; //front
 
 	llama_stats.animations = new animation * [1];
 	llama_stats.scale_const = 0.7;
@@ -218,10 +218,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	llama_stats.states_no = 1;
 
 	llama_stats.animations[0] = new animation[5];
-	llama_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {63,60} }; //back
-	llama_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {47,17}, {63,466} }; //right
-	llama_stats.animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {63,208} }; //left
-	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {63,317} }; //front
+	llama_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {64,64} }; //back
+	llama_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {47,17}, {64,82} }; //right
+	llama_stats.animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {64,82} }; //left
+	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
 	//TO BE REMOVED
 	enemy_stats.animations = new animation * [4];
