@@ -2,6 +2,7 @@
 
 Passive::~Passive()
 {
+
 }
 
 void Passive::a7mar(Color& original, float& delay)
@@ -36,7 +37,7 @@ bool Passive::legal_direction(Vector2f tile_pos, short dx, short dy)
 
 void Passive::stateMachine()
 {
-	switch (state) {
+	switch (action_state) {
 	case 1: {
 		motion_delay += dt, switch_delay += dt;
 		if (motion_delay >= 1) {
@@ -52,7 +53,7 @@ void Passive::stateMachine()
 			}
 		}
 		if (switch_delay >= 8)
-			state = 0, motion_delay = 2, will_move = 0;
+			action_state = 0, motion_delay = 2, will_move = 0;
 		break;
 	}
 	default:
@@ -87,7 +88,7 @@ void Passive::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		////////////////
-
+		entity_sprite.setScale(scale * entity_stats.scale_const, scale * entity_stats.scale_const);
 	}
 
 	if (state != prev_state) {
@@ -114,7 +115,7 @@ void Passive::update()
 		if (mamotish<=0) {
 			cout << "Moot ya motwa7esh\n";
 			a7mar(original, raya7);
-			state = 1;
+			action_state = 1;
 			switch_delay = 0;
 			motion_delay = 2;
 			mamotish = 1;
@@ -126,7 +127,7 @@ void Passive::update()
 	///////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
-	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
+	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin); ///////////////
 	updatePos();
 	stateMachine();

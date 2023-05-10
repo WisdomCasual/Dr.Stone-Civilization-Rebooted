@@ -25,8 +25,8 @@ void Items::move()
 }
 
 void Items::intersect(){
-	FloatRect item_hitbox = { entity_sprite.getPosition().x-8*sprite_scale,entity_sprite.getPosition().y-8*sprite_scale,16*sprite_scale,16* sprite_scale };
-	 if (item_hitbox.intersects(FloatRect(player_entity.getPosition().x-(player_entity.current_hitbox.x*player_entity.sprite_scale)/2.0,player_entity.getPosition().y - (player_entity.current_hitbox.y * player_entity.sprite_scale) / 2.0, player_entity.current_hitbox.x * player_entity.sprite_scale, player_entity.current_hitbox.y * player_entity.sprite_scale)))
+	FloatRect item_hitbox = { entity_sprite.getPosition().x - 8 * entity_stats.scale_const ,entity_sprite.getPosition().y - 8 * entity_stats.scale_const,16 * entity_stats.scale_const,16 * entity_stats.scale_const };
+	if (item_hitbox.intersects(FloatRect(player_entity.getPosition().x - (player_entity.current_hitbox.x * player_entity.entity_stats.scale_const) / 2.0, player_entity.getPosition().y - (player_entity.current_hitbox.y * player_entity.entity_stats.scale_const) / 2.0, player_entity.current_hitbox.x * player_entity.entity_stats.scale_const, player_entity.current_hitbox.y * player_entity.entity_stats.scale_const)))
 	 {
 	  //destroys item
 		 despawn = 1;

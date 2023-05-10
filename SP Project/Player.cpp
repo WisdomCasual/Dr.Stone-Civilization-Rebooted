@@ -81,7 +81,6 @@ void Player::Edrab(int Shakl)
 	*/
 }
 
-
 void Player::setPosition(float x_pos, float y_pos)
 {
 	pos = { x_pos, y_pos };
@@ -170,18 +169,30 @@ void Player::mine()
 void Player::destroy_object(Vector2i tile_location)
 {
 	for (int i = 0; i < 3; i++)
-		for (int j = 1; j < 5; j++) {
+		for (int j = 1; j < 4; j++) {
 			Vector2i destroy_area{ tile_location.x + dx[i], tile_location.y + dy[j] };
 
-			if (static_map[destroy_area.x][destroy_area.y].tile_props & 16) {
+			if (static_map[destroy_area.x][destroy_area.y].tile_props & 16)
 				disable_dynamic_obj = static_map[destroy_area.x][destroy_area.y].dynamic_idx;
-			}
 			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 32) {
-				if(!dx[i] && !dy[j])
+				if (!dx[i] && !dy[j])
 					bigbang(destroy_area, 1);
 			}
-			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 1) {
+			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 1)
 				bigbang(destroy_area, 1);
+			else 
+				continue;
+
+			if (dy[j] == -1) {
+				if (static_map[destroy_area.x][destroy_area.y - 1].tile_props & 16)
+					disable_dynamic_obj = static_map[destroy_area.x][destroy_area.y - 1].dynamic_idx;
+				else if (static_map[destroy_area.x][destroy_area.y - 1].tile_props & 32) {
+					if (!dx[i] && !dy[j])
+						bigbang(destroy_area, 1);
+				}
+				else if (static_map[destroy_area.x][destroy_area.y - 1].tile_props & 1)
+					bigbang(destroy_area, 1);
+
 			}
 		}
 }
@@ -211,7 +222,7 @@ void Player::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		////////////////
-		setScale(scale * 0.65);
+		entity_sprite.setScale(scale * entity_stats.scale_const, scale * entity_stats.scale_const);
 	}
 	if (state != prev_state) {
 		prev_state = state;
@@ -254,7 +265,7 @@ void Player::update()
 	//////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
-	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
+	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
 	player_movement();
 }
