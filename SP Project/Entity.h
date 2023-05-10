@@ -192,6 +192,9 @@ public:
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;
+	float mamotish = 0;
+	Color original = entity_sprite.getColor();
+	float raya7 = 0;
 	//RectangleShape hashofak;
 	float Lag = 0;
 

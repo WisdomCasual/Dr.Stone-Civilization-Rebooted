@@ -14,6 +14,13 @@ void Enemy::Mawgood()
 	}
 }
 
+void Enemy::a7mar(Color& original,float& delay)
+{
+	original = entity_sprite.getColor();
+	entity_sprite.setColor(Color(original.r, original.g-100, original.b-100));
+	delay = 0.2;
+}
+
 void Enemy::updatePos()
 {
 	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
@@ -463,14 +470,16 @@ void Enemy::update()
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
 	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
-		if (!mamotish) {
+		if (mamotish<=0) {
 			cout << "Moot ya motwa7esh\n";
-			
+			a7mar(original,raya7);
 			mamotish = 1;
 		}
 	}
+	if(raya7<=0)entity_sprite.setColor(Color(original));
+	else raya7 -= dt;
+
 	if (mamotish)mamotish -= dt;
-	if (mamotish < 0)mamotish = 0;
 	//////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
