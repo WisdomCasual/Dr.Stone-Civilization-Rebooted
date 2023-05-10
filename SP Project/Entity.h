@@ -173,7 +173,7 @@ public:
 	Sprite entity_sprite;
 	Texture** tile_textures = nullptr;
 	render_tile**& static_map;
-	float  delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
+	float delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, sprite_scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
 	float& x_offset, & y_offset;
 	short current_move = 3, current_frame = 0, prev_state = -1, &disable_dynamic_obj;
@@ -192,6 +192,9 @@ public:
 
 	//////////////////7agat el darb//////////////////
 	FloatRect MakanElDarb, Entity_Hitbox;
+	float mamotish = 0;
+	Color original = entity_sprite.getColor();
+	float raya7 = 0;
 	//RectangleShape hashofak;
 	float Lag = 0;
 
