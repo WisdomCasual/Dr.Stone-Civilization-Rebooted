@@ -161,18 +161,18 @@ void GameState::load_entities(float player_relative_y_pos)
 	lion_stats.base_movement_speed = 80;
 
 	lion_stats.states_no = 1;
-	lion_stats.animations[0] = new animation[5];
+	lion_stats.animations[0] = new animation[4];
 	lion_stats.animations[0][0] = { 4, {0, 0 * 64, 64, 64}, {20,63}, {32,32} }; //back
 	lion_stats.animations[0][1] = { 5, {0, 2 * 64, 64, 64}, {63,16}, {32,175} }; //right
 	lion_stats.animations[0][2] = { 5, {0, 1 * 64, 64, 64}, {63,16}, {32,112} }; //left
 	lion_stats.animations[0][3] = { 4, {0, 3 * 64, 64, 64}, {20,63}, {32,225} }; //front
 
-	wolf_stats.animations = new animation * [1];
+	wolf_stats.animations = new animation* [1];
 	wolf_stats.scale_const = 0.7;
 	wolf_stats.base_movement_speed = 80;
+	wolf_stats.states_no = 1;
 
-	wolf_stats.states_no = 3;
-	wolf_stats.animations[0] = new animation[13];
+	wolf_stats.animations[0] = new animation[12];
 	wolf_stats.animations[0][0] = { 4, {0, 128, 32, 65}, {22,60}, {176,160} }; //back
 	wolf_stats.animations[0][1] = { 5, {0, 95, 64, 32}, {62,12}, {351,122} }; //right
 	wolf_stats.animations[0][2] = { 5, {0, 287, 64, 32}, {62,12}, {351,312} }; //left
@@ -191,9 +191,9 @@ void GameState::load_entities(float player_relative_y_pos)
 	cow_stats.animations = new animation * [1];
 	cow_stats.scale_const = 0.7;
 	cow_stats.base_movement_speed = 80;
-
 	cow_stats.states_no = 1;
-	cow_stats.animations[0] = new animation[5];
+
+	cow_stats.animations[0] = new animation[4];
 	cow_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {28,72}, {64,64} }; //back
 	cow_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {88,16}, {64,64} }; //right
 	cow_stats.animations[0][2] = { 4, {0, 1 * 128, 128, 128}, {88,16}, {64,64} }; //left
@@ -202,8 +202,8 @@ void GameState::load_entities(float player_relative_y_pos)
 	deer_stats.animations = new animation * [1];
 	deer_stats.scale_const = 0.7;
 	deer_stats.base_movement_speed = 80;
-
 	deer_stats.states_no = 1;
+
 	deer_stats.animations[0] = new animation[5];
 	deer_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,56} }; //back
 	deer_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,276} }; //right
@@ -213,8 +213,8 @@ void GameState::load_entities(float player_relative_y_pos)
 	llama_stats.animations = new animation * [1];
 	llama_stats.scale_const = 0.7;
 	llama_stats.base_movement_speed = 80;
-
 	llama_stats.states_no = 1;
+
 	llama_stats.animations[0] = new animation[5];
 	llama_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {63,60} }; //back
 	llama_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {47,17}, {63,466} }; //right

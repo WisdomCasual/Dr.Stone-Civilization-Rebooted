@@ -2,6 +2,7 @@
 
 Passive::~Passive()
 {
+
 }
 
 void Passive::a7mar(Color& original, float& delay)
