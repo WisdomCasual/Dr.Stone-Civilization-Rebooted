@@ -42,6 +42,13 @@ void Player::player_movement()
 	}
 }
 
+void Player::a7mar(Color& original, float& delay, Sprite& Entity)
+{
+	original = Entity.getColor();
+	Entity.setColor(Color(original.r, 155, 155));
+	delay = 0.4;
+}
+
 void Player::Edrab(int Shakl)
 {
 	if (current_move == 0) { //UP
@@ -64,9 +71,9 @@ void Player::Edrab(int Shakl)
 	}
 	else if (current_move == 3) { //DOWN
 		if (Shakl)
-			MakanElDarb = { getRelativePos().x - 15, getRelativePos().y - 3,48,15 };
+			MakanElDarb = { getRelativePos().x - 15, getRelativePos().y - 3,48,19 };
 		else
-			MakanElDarb = { getRelativePos().x - 23, getRelativePos().y-3,55,16 };
+			MakanElDarb = { getRelativePos().x - 23, getRelativePos().y-3,55,19 };
 	}
 	/*hashofak.setFillColor(Color::Magenta);
 	hashofak.setSize({MakanElDarb.width*scale,MakanElDarb.height*scale});
@@ -234,11 +241,28 @@ void Player::update()
 			delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
+	if (malosh_lazma) {
+		malosh_lazma = 0;
+		og_player_color = entity_sprite.getColor();
+	}
+	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	if (Lag >= 0.4) {
 		MakanElDarb = { -10,-10,1,1 };
 	}
 	if (Lag < 0.8)
 		Lag += dt;
+
+	if (daye5 <= 0) {
+		//cout << "here\n";
+		//cout << daye5 << endl;
+		entity_sprite.setColor(Color(og_player_color));
+	}
+	else if (daye5 > 0) {
+		//cout << stun << endl;
+		daye5 -= dt;
+	}
+	if (mamotish > 0)mamotish -= dt;
+	//////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
