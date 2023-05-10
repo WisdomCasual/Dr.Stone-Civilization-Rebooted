@@ -215,7 +215,7 @@ void Player::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		////////////////
-		setScale(scale * 0.65);
+		entity_sprite.setScale(scale * entity_stats.scale_const, scale * entity_stats.scale_const);
 	}
 	if (state != prev_state) {
 		prev_state = state;

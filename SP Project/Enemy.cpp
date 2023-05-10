@@ -56,8 +56,8 @@ bool Enemy::visionLines(Entity& target)
 	int k = 1;
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
-			float targ_y = target.getRelativePos().y + corners[j] * ((float)target.current_hitbox.y * target.sprite_scale / (2 * scale)),
-				targ_x = target.getRelativePos().x + corners[i] * ((float)target.current_hitbox.x * target.sprite_scale / (2 * scale));
+			float targ_y = target.getRelativePos().y + corners[j] * ((float)target.current_hitbox.y * target.entity_stats.scale_const / (2 * scale)),
+				targ_x = target.getRelativePos().x + corners[i] * ((float)target.current_hitbox.x * target.entity_stats.scale_const / (2 * scale));
 			delta_y = targ_y - getRelativePos().y,
 				delta_x = targ_x - getRelativePos().x;
 
@@ -447,7 +447,7 @@ void Enemy::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		////////////////
-
+		entity_sprite.setScale(scale * entity_stats.scale_const, scale * entity_stats.scale_const);
 	}
 
 	if (state != prev_state) {

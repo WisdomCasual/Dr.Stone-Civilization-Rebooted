@@ -134,6 +134,8 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.animations = new animation * [5]({});
 	player_stats.states_no = 4;
 	player_stats.base_movement_speed = 130;
+	player_stats.scale_const = 0.65;
+
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
 		player_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
@@ -404,9 +406,6 @@ void GameState::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		/////////////////////
-		for (int i = 0; i < enemies.curr_idx; i++) {
-			enemies.entities[i]->setScale(scale * enemies.entities[i]->entity_stats.scale_const);
-		}
 		center_cam(player_entity.getRelativePos());
 	}
 
