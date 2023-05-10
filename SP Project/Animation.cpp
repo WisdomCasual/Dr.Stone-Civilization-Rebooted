@@ -8,9 +8,10 @@ Animation::Animation(IntRect frame, int frame_count, Vector2i position, string a
 	this->loop = loop;
 	pos = position;
 
-	animation_tex.loadFromFile("textures/game/effects" + animation_name + ".png");
+	animation_tex.loadFromFile("textures/game/effects/" + animation_name + ".png");
 	animation_sprite.setTexture(animation_tex);
 	animation_sprite.setTextureRect(frame);
+	animation_sprite.setColor(texture_color);
 	animation_sprite.setOrigin(animation_sprite.getLocalBounds().width / 2.0, animation_sprite.getLocalBounds().height / 2.0);
 }
 
@@ -23,10 +24,10 @@ void Animation::update(float scale)
 {
 	if (prev_scale != scale) {
 		prev_scale = scale;
-		animation_sprite.setScale(scale, scale);
+		animation_sprite.setScale(scale * 0.6, scale * 0.6);
 	}
-
-	if (delay >= 200) {
+	
+	if (delay >= 0.01) {
 		delay = 0;
 		current_frame++;
 		if (current_frame >= frame_count) {
