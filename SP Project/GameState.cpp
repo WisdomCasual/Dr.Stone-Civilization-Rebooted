@@ -131,6 +131,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	enemies.add(default_enemy, { 850, 850 });
 	passive.add(default_passive, { 750, 750 });
 
+	//player
 	player_stats.animations = new animation * [5]({});
 	player_stats.states_no = 4;
 	player_stats.base_movement_speed = 130;
@@ -155,8 +156,58 @@ void GameState::load_entities(float player_relative_y_pos)
 	}
 	player_entity.change_state(3);
 
+	//animals
+	lion_stats.animations = new animation * [1];
+	lion_stats.states_no = 1;
+	lion_stats.animations[0] = new animation[4];
+	lion_stats.animations[0][0] = { 4, {64, 0 * 64, 64, 64}, {20,63}, {32,32} }; //back
+	lion_stats.animations[0][1] = { 5, {64, 2 * 64, 64, 64}, {63,16}, {32,175} }; //right
+	lion_stats.animations[0][2] = { 5, {64, 1 * 64, 64, 64}, {63,16}, {32,112} }; //left
+	lion_stats.animations[0][3] = { 4, {64, 3 * 64, 64, 64}, {20,63}, {32,225} }; //front
 
+	wolf_stats.animations = new animation * [1];
+	wolf_stats.states_no = 3;
+	wolf_stats.animations[0] = new animation[12];
+	wolf_stats.animations[0][0] = { 4, {32, 128, 32, 65}, {22,60}, {176,160} }; //back
+	wolf_stats.animations[0][1] = { 5, {64, 95, 64, 32}, {62,12}, {351,122} }; //right
+	wolf_stats.animations[0][2] = { 5, {64, 287, 64, 32}, {62,12}, {351,312} }; //left
+	wolf_stats.animations[0][3] = { 4, {32, 128,32 , 65}, {22,60}, {16,160} };//front
 
+	wolf_stats.animations[0][4] = { 5, {32, 195, 32, 65}, {22,60}, {176,225} }; //back attack
+	wolf_stats.animations[0][5] = { 5, {64,127,64, 32}, {62,12}, {351,152} }; //right attack
+	wolf_stats.animations[0][6] = { 5, {64, 320,64, 32}, {62,12}, {351,346} }; //left attack
+	wolf_stats.animations[0][7] = { 5, {32, 195,32, 65}, {22,60}, {16,225} }; //front attack
+
+	wolf_stats.animations[0][8] = { 5, {32, 256,32 , 65}, {22,60}, {176,286} }; //back attack bsnanoh
+	wolf_stats.animations[0][9] = { 5, {64, 158,64 , 32}, {62,12}, {351,186} }; //right attack bsnanoh
+	wolf_stats.animations[0][10] = { 5, {64, 350,64 , 32}, {62,12}, {351,379} }; //left attack bsnanoh
+	wolf_stats.animations[0][11] = { 5, {32, 256,32 , 65}, {22,60}, {16,286} }; //front attack bsnanoh
+
+	cow_stats.animations = new animation * [1];
+	cow_stats.states_no = 1;
+	cow_stats.animations[0] = new animation[4];
+	cow_stats.animations[0][0] = { 4, {182, 0 * 128, 128, 128}, {28,72}, {64,64} }; //back
+	cow_stats.animations[0][1] = { 4, {182, 3 * 128, 128, 128}, {88,16}, {64,470} }; //right
+	cow_stats.animations[0][2] = { 4, {182,  1 * 128, 128, 128}, {88,16}, {64,215} }; //left
+	cow_stats.animations[0][3] = { 4, {182, 2 * 128, 128, 128}, {28,57}, {64,330} }; //front
+
+	deer_stats.animations = new animation * [1];
+	deer_stats.states_no = 1;
+	deer_stats.animations[0] = new animation[4];
+	deer_stats.animations[0][0] = { 4, {64, 0 * 96, 64, 96}, {22,78}, {32,56} }; //back
+	deer_stats.animations[0][1] = { 4, {64, 2 * 96, 64, 96}, {63,14}, {32,276} }; //right
+	deer_stats.animations[0][2] = { 4, {64, 1 * 96,64, 96}, {63,14}, {32,177} }; //left
+	deer_stats.animations[0][3] = { 4, {64, 3 * 96, 64, 96}, {22,75}, {32,347} }; //front
+
+	llama_stats.animations = new animation * [1];
+	llama_stats.states_no = 1;
+	llama_stats.animations[0] = new animation[4];
+	llama_stats.animations[0][0] = { 4, {128, 0 * 128, 128, 128}, {26,68}, {63,60} }; //back
+	llama_stats.animations[0][1] = { 4, {128, 3 * 128, 128, 128}, {47,17}, {63,466} }; //right
+	llama_stats.animations[0][2] = { 4, {128 , 1 * 128, 128, 128}, {47,17}, {63,208} }; //left
+	llama_stats.animations[0][3] = { 4, {128, 2 * 128, 128, 128}, {26,62}, {63,317} }; //front
+
+	//TO BE REMOVED
 	enemy_stats.animations = new animation * [4];
 	enemy_stats.scale_const = 0.4;
 	enemy_stats.states_no = 4;
