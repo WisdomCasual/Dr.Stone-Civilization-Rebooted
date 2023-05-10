@@ -241,7 +241,7 @@ void Player::update()
 		Lag += dt;
 	current_rect = entity_stats.animations[state][current_move].rect;
 
-	entity_sprite.setTextureRect(IntRect(current_frame * current_rect.left, current_rect.top, current_rect.width, current_rect.height));
+	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
 	player_movement();
 }
