@@ -100,26 +100,62 @@ void Player::use_tool()
 void Player::mine()
 {
 	Vector2f check_block = { getRelativePos().x + current_direction.x * 16 , getRelativePos().y  + current_direction.y * 16};
-	Vector2i destroy_location = {-10,-10};
+	Vector2i destroy_location = {-10,-10}, core_location = { -10,-10 };
 
-	if (static_map[(int)(check_block.x / 16)][(int)(check_block.y / 16)].tile_props & 32)
+	if (static_map[(int)(check_block.x / 16)][(int)(check_block.y / 16)].tile_props & 32) {
 		destroy_location = { (int)(check_block.x / 16),  (int)(check_block.y / 16) };
+		core_location = destroy_location;
+	}
+	else if (static_map[(int)(check_block.x / 16)][(int)(check_block.y / 16)].tile_props & 32)
+		destroy_location = { (int)(check_block.x / 16), (int)(check_block.y / 16) };
+
 	else if (current_direction.x) {
-		if (static_map[(int)(check_block.x / 16)][(int)((check_block.y + 4) / 16)].tile_props & 32)
+		if (static_map[(int)(check_block.x / 16)][(int)((check_block.y + 4) / 16)].tile_props & 32) {
 			destroy_location = { (int)(check_block.x / 16),  (int)((check_block.y + 4) / 16) };
-		else if (static_map[(int)(check_block.x / 16)][(int)((check_block.y - 4) / 16)].tile_props & 32)
+			core_location = destroy_location;
+		}
+		else if (static_map[(int)(check_block.x / 16)][(int)((check_block.y - 4) / 16)].tile_props & 32) {
 			destroy_location = { (int)(check_block.x / 16),  (int)((check_block.y - 4) / 16) };
+			core_location = destroy_location;
+		}
+		else if (static_map[(int)(check_block.x / 16)][(int)((check_block.y + 4) / 16)].tile_props & 128)
+			destroy_location = { (int)(check_block.x / 16), (int)((check_block.y + 4) / 16) };
+
+		else if (static_map[(int)(check_block.x / 16)][(int)((check_block.y - 4) / 16)].tile_props & 128)
+			destroy_location = { (int)(check_block.x / 16), (int)((check_block.y - 4) / 16) };
 	}
+
 	else if (current_direction.y) {
-		if (static_map[(int)((check_block.x + 4) / 16)][(int)(check_block.y / 16)].tile_props & 32)
-			destroy_location = { (int)((check_block.x + 4) / 16),  (int)((check_block.y + 4) / 16) };
-		else if (static_map[(int)((check_block.x - 4) / 16)][(int)(check_block.y / 16)].tile_props & 32)
-			destroy_location = { (int)((check_block.x - 4) / 16),  (int)((check_block.y + 4) / 16) };
+		if (static_map[(int)((check_block.x + 4) / 16)][(int)(check_block.y / 16)].tile_props & 32) {
+			destroy_location = { (int)((check_block.x + 4) / 16),  (int)(check_block.y / 16) };
+			core_location = destroy_location;
+		}
+		else if (static_map[(int)((check_block.x - 4) / 16)][(int)(check_block.y / 16)].tile_props & 32) {
+			destroy_location = { (int)((check_block.x - 4) / 16),  (int)(check_block.y / 16) };
+			core_location = destroy_location;
+		}
+
+		else if (static_map[(int)((check_block.x + 4) / 16)][(int)(check_block.y / 16)].tile_props & 128)
+			destroy_location = { (int)((check_block.x + 4) / 16),  (int)(check_block.y / 16) };
+
+		else if (static_map[(int)((check_block.x - 4) / 16)][(int)(check_block.y / 16)].tile_props & 128)
+			destroy_location = { (int)((check_block.x - 4) / 16),  (int)(check_block.y / 16) };
 	}
+
 	if (destroy_location.x > -10) {
-		if (static_map[destroy_location.x][destroy_location.y].tool_type == state) {
+		for (int i = 0; i < 3; i++)
+			if (core_location.x == -10) {
+				for (int j = 1; j < 4; j++)
+					if (static_map[destroy_location.x + dx[i]][destroy_location.y + dy[j]].tile_props & 32) {
+						core_location = { destroy_location.x + dx[i], destroy_location.y + dy[j] };
+						break;
+					}
+			}
+			else break;
+
+		if (static_map[core_location.x][core_location.y].tool_type == state) {
 			tool_used_on = { destroy_location.x * 16 + 8, destroy_location.y * 16 + 8};
-			//destroy_object(destroy_location);
+			destroy_object(core_location);
 		}
 	}
 }
@@ -127,7 +163,7 @@ void Player::mine()
 void Player::destroy_object(Vector2i tile_location)
 {
 	for (int i = 0; i < 3; i++)
-		for (int j = 1; j < 4; j++) {
+		for (int j = 1; j < 5; j++) {
 			Vector2i destroy_area{ tile_location.x + dx[i], tile_location.y + dy[j] };
 
 			if (static_map[destroy_area.x][destroy_area.y].tile_props & 16) {

@@ -73,7 +73,7 @@ namespace globalvar {
 	inline float notification_delay = 0;
 
 	inline const int dx[4] = { 1, -1, 0, 0 };
-	inline const int dy[4] = { 0, 0, 1, -1 };
+	inline const int dy[5] = { 0, 0, 1, -1, -2}; //ignore the -2 (used in object destruction)
 
 	struct dialogue {
 		string speaker, text;
