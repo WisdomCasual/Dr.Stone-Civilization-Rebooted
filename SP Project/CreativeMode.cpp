@@ -96,7 +96,10 @@ void CreativeMode::selected()
 	else if (active_highlight & 1) {
 		short prev_priority = tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props;
 		if (prev_priority & 1 && prev_priority & 32) {
-			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 33;
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 160;
+		}
+		else if (prev_priority & 1 && prev_priority & 128) {
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 129;
 		}
 		else if (prev_priority & 1)
 			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 32;
@@ -152,6 +155,12 @@ void CreativeMode::highlight()
 
 				if (prop & 32) {
 					highlight_color = Color(250, 120, 0, 80);
+					highlight_rect.setFillColor(highlight_color);
+					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+					sidewindow->draw(highlight_rect);
+				}
+				else if (prop & 128) {
+					highlight_color = Color(80, 80, 175, 80);
 					highlight_rect.setFillColor(highlight_color);
 					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
 					sidewindow->draw(highlight_rect);
@@ -260,7 +269,7 @@ void CreativeMode::render()
 }
 
 void CreativeMode::pollevent(bool& picker)
-{				
+{
 	while (sidewindow->pollEvent(event)) {
 		switch (event.type) {
 		case Event::Closed:
@@ -331,11 +340,12 @@ void CreativeMode::pollevent(bool& picker)
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:
-				if (sidewindow->hasFocus())
+				if (sidewindow->hasFocus()) {
 					picked_tile->previous_drawn_tile = { -1,-1 }, picked_tile->previous_erased_tile = { -1,-1 };
 					picked_tile->select_done = 0; picked_tile->global_select_done = 0;
-					selected(); 
-					break;
+				}
+				selected();
+				break;
 			case Mouse::Right:
 				if (active_highlight & 1) {
 					if (tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props & 32) {
@@ -345,10 +355,10 @@ void CreativeMode::pollevent(bool& picker)
 						object_type_text.setString(object_names[tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].object_type]);
 						object_type_delay = 200;
 					}
+					else
+						selected();
+					break;
 				}
-				else
-				selected();
-				break;
 			}
 		}
 	}

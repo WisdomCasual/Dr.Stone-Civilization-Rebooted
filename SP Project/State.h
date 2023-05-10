@@ -23,7 +23,7 @@ public:
 
 	//public variables:
 	struct tile_properties {
-		short props = 0; // (AND &) destructable: 1, hitbox: 2, blocked: 4, back/front: 8, front core: 16, destruction core: 32, opaque: 64
+		short props = 0; // (AND &) destructable: 1, hitbox: 2, blocked: 4, back/front: 8, front core: 16, destruction core: 32, opaque: 64, , destruction core link: 128
 		short object_type = -1, tool_type = -1; //type of object & required tool (if desruction core) 
 	};
 	struct sheet_properties {
