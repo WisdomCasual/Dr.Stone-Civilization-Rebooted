@@ -8,6 +8,7 @@
 #include "Passive.h"
 #include"Global.h"
 #include"Animation.h"
+//#include"EntityStats.h"
 
 #define default_enemy 0, enemy_stats, "character 1", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
 #define default_passive 2, passive_stats, "character 3", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
@@ -27,6 +28,8 @@ private:
 	Vector2f clicked_on = { -1, -1 };
 
 	render_tile** static_map;
+
+	//base_stats* destructable_objects = nullptr;
 
 	struct entities_container {
 		int limit = 1, curr_idx = 0, find_size_x = 50, find_size_y = 50;

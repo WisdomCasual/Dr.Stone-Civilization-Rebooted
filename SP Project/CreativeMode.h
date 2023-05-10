@@ -15,7 +15,8 @@ private:
 	VideoMode videomode {800, 600};
 	Vector2i window_pos{ 0,0 };
 	Vector2i mouse_pos = { 0, 0 }, current_tile = { 0,0 };
-	vector<Texture*>* textures;
+	Texture** textures;
+	int textures_no = 0;
 	Sprite* Tex;
 	Event event;
 	State::tex_tile* picked_tile;
@@ -53,7 +54,7 @@ private:
 
 public:
 	//constructors/destructors
-	CreativeMode(vector<Texture*>*, State::tex_tile&, State::sheet_properties[], short, short&, bool&, bool&, bool&, bool&, bool&, Color&);
+	CreativeMode(Texture**, int, State::tex_tile&, State::sheet_properties[], short, short&, bool&, bool&, bool&, bool&, bool&, Color&);
 	~CreativeMode();
 
 	//public functions:

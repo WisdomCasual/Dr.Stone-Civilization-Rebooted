@@ -593,7 +593,7 @@ void MapBuilderState::pollevent()
 				break;
 			case Keyboard::E:
 				if (picker)
-					tex_picker = new CreativeMode(&tile_sheets, picked_tile, tile_props, sheets_no, active_highlight, hitbox, destroyable, opaque, view_layers, blocked, highlight_color);
+					tex_picker = new CreativeMode(tile_sheets, tile_sheets_no,picked_tile, tile_props, sheets_no, active_highlight, hitbox, destroyable, opaque, view_layers, blocked, highlight_color);
 				else
 					delete this->tex_picker;
 				picker = !picker; break;

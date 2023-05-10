@@ -6,7 +6,7 @@ using namespace globalvar;
 
 struct render_tile {
 	Vector3i* layers;
-	short size, tile_props = 0, object_type = -1, tool_type = -1, dynamic_idx = -1;
+	short size, tile_props = 0, object_ID = -1, tool_type = -1, dynamic_idx = -1;
 	bool disable_top = 0;
 };
 

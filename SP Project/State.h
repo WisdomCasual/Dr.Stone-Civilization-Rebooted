@@ -31,7 +31,9 @@ public:
 		tile_properties** properties; // 2d array
 	};
 	short sheets_no = 0;
-	vector <Texture*> textures, tile_sheets; //<-- current loaded Textures
+	Texture** textures = nullptr, **tile_sheets = nullptr; //<-- current loaded Textures
+	int textures_no = 0, tile_sheets_no = 0;
+	Image* tile_sheets_img;
 	sheet_properties tile_props[15];
 
 	Vector2f delta_movement();
