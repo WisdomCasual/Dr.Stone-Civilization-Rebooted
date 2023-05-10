@@ -494,17 +494,18 @@ void Enemy::update()
 	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
 		if (mamotish<=0) {
 			//cout << "Moot ya motwa7esh\n";
-			a7mar(original,raya7,entity_sprite);
+			a7mar(original,daye5,entity_sprite);
 			mamotish = 1;
 		}
 	}
-	if(raya7<=0)entity_sprite.setColor(Color(original));
-	else if(raya7>0)raya7 -= dt;
+	if(daye5<=0)entity_sprite.setColor(Color(original));
+	else if(daye5>0)daye5 -= dt;
 	if (mamotish>0)mamotish -= dt;
 	//////////////////Darb El Enemy//////////////////////
 	if (MakanElDarb.intersects(player_entity.Entity_Hitbox)) {
 		if (player_entity.mamotish <= 0) {
 			//cout << "Ay\n";
+			player_entity.current_frame = 0;
 			player_entity.a7mar(player_entity.og_player_color, player_entity.daye5, player_entity.entity_sprite);
 			player_entity.mamotish = 2;
 		}

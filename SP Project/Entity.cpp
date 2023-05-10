@@ -40,12 +40,6 @@ void Entity::change_state(int new_state)
 		state = new_state;
 }
 
-void Entity::knockback()
-{
-	knockback_v = 5.0;
-
-}
-
 Vector2f Entity::getPosition()
 {
 	return entity_sprite.getPosition();
@@ -70,7 +64,7 @@ void Entity::setScale(float new_scale_const)
 
 void Entity::move(Vector2f movement)
 {
-	if (!active_action) {
+	if (!active_action&&daye5<=0) {
 		pos += movement;
 	}
 }
@@ -112,7 +106,7 @@ bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 
 void Entity::direction(Vector2f direction)
 {
-	if (!active_action) {
+	if (!active_action&&daye5<=0) {
 		if (direction.y < 0) {
 			//back
 			current_move = 0;

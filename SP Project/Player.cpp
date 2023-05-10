@@ -42,6 +42,11 @@ void Player::player_movement()
 	}
 }
 
+void Player::knockback() {
+
+
+}
+
 void Player::a7mar(Color& original, float& delay, Sprite& Entity)
 {
 	original = Entity.getColor();
@@ -89,9 +94,9 @@ void Player::setPosition(float x_pos, float y_pos)
 
 void Player::use_tool()
 {
-	if (Lag >= 0.8) {
+	if (Lag >= 0.8&&daye5<=0) {
 		if (state == 2) { // sword
-			int ElShakl = 0;// rand() % 2;
+			int ElShakl = rand() % 2;
 			Edrab(ElShakl);
 			action(ElShakl+1);
 		}
@@ -208,7 +213,7 @@ void Player::bigbang(Vector2i destroy_tile, bool destroy = 0)
 void Player::move(Vector2f movement)
 {
 
-	if (!active_action) {
+	if (!active_action&&daye5<=0) {
 		entity_sprite.move(movement);
 		pos += movement;
 	}
