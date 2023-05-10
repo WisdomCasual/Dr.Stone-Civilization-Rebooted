@@ -17,6 +17,8 @@ private:
 	
 public:
 
+	Vector2i tool_used_on = { -1,-1 }; //x, y
+
 	~Player();
 
 	void Edrab(int);

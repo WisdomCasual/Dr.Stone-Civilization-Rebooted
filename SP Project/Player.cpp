@@ -117,8 +117,10 @@ void Player::mine()
 			destroy_location = { (int)((check_block.x - 4) / 16),  (int)((check_block.y + 4) / 16) };
 	}
 	if (destroy_location.x > -10) {
-		if(static_map[destroy_location.x][destroy_location.y].tool_type == state)
-			destroy_object(destroy_location);
+		if (static_map[destroy_location.x][destroy_location.y].tool_type == state) {
+			tool_used_on = { destroy_location.x * 16 + 8, destroy_location.y * 16 + 8};
+			//destroy_object(destroy_location);
+		}
 	}
 }
 

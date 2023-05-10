@@ -194,6 +194,7 @@ NewSaveState::NewSaveState(int save_no)
 	//characters
 	characters.setTexture(*textures[3]);
 	og_color = characters.getColor();
+	cout << (char)og_color.r << ' ' << (char)og_color.g << ' ' << (char)og_color.b << '\n';
 	char_color = characters.getColor();
 	char_color.r -= 120;
 	char_color.g -= 120;
