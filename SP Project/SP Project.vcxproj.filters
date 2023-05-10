@@ -99,6 +99,12 @@
     <ClCompile Include="Items.cpp">
       <Filter>cpps\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>cpps\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Passive.cpp">
+      <Filter>cpps\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -162,6 +168,12 @@
       <Filter>Header Files\Entity Headers</Filter>
     </ClInclude>
     <ClInclude Include="Items.h">
+      <Filter>Header Files\Entity Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Passive.h">
       <Filter>Header Files\Entity Headers</Filter>
     </ClInclude>
   </ItemGroup>

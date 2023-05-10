@@ -170,7 +170,6 @@ void Player::update()
 		////////////////
 		setScale(scale * 0.65);
 	}
-
 	if (state != prev_state) {
 		prev_state = state;
 		entity_sprite.setTexture(*textures[state]);
