@@ -74,7 +74,6 @@ void Player::Edrab(int Shakl)
 	*/
 }
 
-
 void Player::setPosition(float x_pos, float y_pos)
 {
 	pos = { x_pos, y_pos };

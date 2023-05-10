@@ -109,9 +109,9 @@ void GameState::load_map(string map_name)
 
 	//destructable_objects = new base_stats[destructable_count];
 
-	for (int i = 0; i < destructable_count; i++) {
+	//for (int i = 0; i < destructable_count; i++) {
 	//	destructable_objects[i] = temp_destructable[i];
-	}
+	//}
 
 
 	//destroy temp front
@@ -431,11 +431,8 @@ void GameState::pollevent()
 			case Keyboard::Space:
 				player_entity.use_tool();
 				if (player_entity.tool_used_on.x > -1) {
-					//TEMPORARY, WILL LATER JUST SAVE THE COLOR INN THE OBJECT INFO
-					Image sheet_img;
 					Vector3i tile_info = static_map[player_entity.tool_used_on.x/16][player_entity.tool_used_on.y / 16].layers[static_map[player_entity.tool_used_on.x / 16][player_entity.tool_used_on.y / 16].size - 1];
-					sheet_img = tile_sheets[tile_info.z]->copyToImage();
-					Color tile_color = sheet_img.getPixel(tile_info.x * 16 + 8, tile_info.y * 16 + 6);
+					Color tile_color = tile_sheets_img[tile_info.z].getPixel(tile_info.x * 16 + 8, tile_info.y * 16 + 6);
 					effects.add({ 0,0,100,100 }, 24, { player_entity.tool_used_on.x , player_entity.tool_used_on.y }, "break_animation", tile_color, 0, map_x, map_y);
 					player_entity.tool_used_on.x = -1;
 				}

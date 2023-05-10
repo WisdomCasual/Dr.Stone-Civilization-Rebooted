@@ -1,5 +1,5 @@
 #pragma once
-#include"State.h"
+
 struct base_stats {
 	short health;
 	short* item_drops;

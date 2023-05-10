@@ -33,7 +33,7 @@ public:
 	short sheets_no = 0;
 	Texture** textures = nullptr, **tile_sheets = nullptr; //<-- current loaded Textures
 	int textures_no = 0, tile_sheets_no = 0;
-	Image* tile_sheets_img;
+	Image* tile_sheets_img = nullptr;
 	sheet_properties tile_props[15];
 
 	Vector2f delta_movement();
