@@ -194,7 +194,8 @@ public:
 	FloatRect MakanElDarb, Entity_Hitbox;
 	float mamotish = 0;
 	Color original = entity_sprite.getColor();
-	float raya7 = 0;
+	Color og_player_color;
+	float raya7 = 0, daye5 = 0;
 	//RectangleShape hashofak;
 	float Lag = 0;
 	float knockback_v;
@@ -214,6 +215,7 @@ public:
 	virtual void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
+	virtual void a7mar(Color&, float&, Sprite&) {};
 	virtual void setID(short) {};
 	virtual void setVisArray(short***, bool*, short new_find_size_x = 50, short new_find_size_y = 50) {};
 	virtual void pollevent();
