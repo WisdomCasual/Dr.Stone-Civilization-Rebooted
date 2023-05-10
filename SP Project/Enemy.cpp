@@ -17,7 +17,6 @@ void Enemy::Mawgood()
 void Enemy::updatePos()
 {
 	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
-	Mawgood();
 }
 
 bool Enemy::visionLines(Entity& target)
@@ -464,9 +463,13 @@ void Enemy::update()
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
 	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
+		if (!mamotish) {
 			cout << "Moot ya motwa7esh\n";
+			mamotish = 1;
+		}
 	}
-
+	if (mamotish)mamotish -= dt;
+	if (mamotish < 0)mamotish = 0;
 
 	current_rect = entity_stats.animations[state][current_move].rect;
 
@@ -493,12 +496,7 @@ void Enemy::update()
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
 		}
-		else
-			direction({ round(curr_movement.x), round(curr_movement.y) });
+		direction({ round(curr_movement.x), round(curr_movement.y) });
 	}
 	Mawgood();
-}
-
-void Enemy::pollevent()
-{
 }
