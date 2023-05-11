@@ -22,6 +22,8 @@ private:
 
 	//Private variables
 	bool malosh_lazma = 1;
+	Vector2f knockback_direction = { -1, -1 };
+
 	base_stats* object_stats, **destructable_objects;
 	short *item_drops, * item_drops_count;
 
