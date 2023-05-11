@@ -30,6 +30,10 @@ private:
 	entity player_stats, enemy_stats, passive_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats;
 	Player player_entity;
 
+	bool will_spawn = 0, spawn_type = 0; //0 = enemy, 1 = passive
+	string character_name, current_map;
+	int character_id, save_num;
+
 	base_stats object_stats[30], * destructable_objects = nullptr;
 	Vector3i drop_stats[30];
 
@@ -262,7 +266,7 @@ private:
 
 public:
 	//constructors/destructors
-	GameState(int, string, Vector2f);
+	GameState(int, string, Vector2f, string, int);
 	~GameState();
 	
 	//public functions:
