@@ -27,7 +27,7 @@ void GameState::load_map(string map_name)
 	short layr;
 	Vector3i temp_layers[8]{};
 	Vector3i** temp_front[4];
-	//base_stats temp_destructable[200];
+	short temp_destructable[800];
 	short destructable_count = 0;
 	bool** vis[4];
 	short layer_prop = 0;
@@ -67,7 +67,7 @@ void GameState::load_map(string map_name)
 					if (layer_prop & 32) {
 						static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
 						static_map[i][j].object_ID = destructable_count;
-						//temp_destructable[destructable_count] = object_stats[tile_props[tle.z].properties[tle.x][tle.y].object_type];
+						temp_destructable[destructable_count] = tile_props[tle.z].properties[tle.x][tle.y].object_type;
 						destructable_count++;
 					}
 					if (layer_prop & 16) { // front core
@@ -107,12 +107,10 @@ void GameState::load_map(string map_name)
 		search_front(dynamic_map.at[i].at[0].position.x, dynamic_map.at[i].at[0].position.y, dynamic_map.at[i].layer, temp_front, vis, i);
 	}
 
-	//destructable_objects = new base_stats[destructable_count];
-
-	//for (int i = 0; i < destructable_count; i++) {
-	//	destructable_objects[i] = temp_destructable[i];
-	//}
-
+	destructable_objects = new base_stats[destructable_count];
+	for (int i = 0; i < destructable_count; i++) {
+		destructable_objects[i] = object_stats[temp_destructable[i]];
+	}
 
 	//destroy temp front
 	for (int i = 0; i < 4; i++) {
@@ -171,28 +169,28 @@ void GameState::load_entities(float player_relative_y_pos)
 	lion_stats.animations[0][0] = { 4, {0, 0 * 64, 64, 64}, {20,63}, {32,32} }; //back
 	lion_stats.animations[0][1] = { 5, {0, 2 * 64, 64, 64}, {63,16}, {32,47} }; //right
 	lion_stats.animations[0][2] = { 5, {0, 1 * 64, 64, 64}, {63,16}, {32,48} }; //left
-	lion_stats.animations[0][3] = { 4, {0, 3 * 64, 64, 64}, {20,63}, {32,225} }; //front
+	lion_stats.animations[0][3] = { 4, {0, 3 * 64, 64, 64}, {20,63}, {32,33} }; //front
 
-	wolf_stats.animations = new animation* [1];
+	wolf_stats.animations = new animation * [1];
 	wolf_stats.scale_const = 0.7;
 	wolf_stats.base_movement_speed = 80;
 	wolf_stats.states_no = 1;
 
 	wolf_stats.animations[0] = new animation[12];
-	wolf_stats.animations[0][0] = { 4, {0, 128, 32, 65}, {22,60}, {176,160} }; //back
-	wolf_stats.animations[0][1] = { 5, {0, 95, 64, 32}, {62,12}, {351,122} }; //right
-	wolf_stats.animations[0][2] = { 5, {0, 287, 64, 32}, {62,12}, {351,312} }; //left
-	wolf_stats.animations[0][3] = { 4, {0, 128, 32 , 65}, {22,60}, {16,160} };//front
+	wolf_stats.animations[0][0] = { 4, {160, 128, 32, 64}, {22,60}, {16,30} }; //back
+	wolf_stats.animations[0][1] = { 5, {320, 96, 64, 32}, {62,12}, {34,28} }; //right
+	wolf_stats.animations[0][2] = { 5, {320, 288, 64, 32}, {62,12}, {34,28} }; //left
+	wolf_stats.animations[0][3] = { 4, {0, 128, 32 , 64}, {22,60}, {16,30} };//front
 
-	wolf_stats.animations[0][4] = { 5, {32, 195, 32, 65}, {22,60}, {176,225} }; //back attack
-	wolf_stats.animations[0][5] = { 5, {64,127,64, 32}, {62,12}, {351,152} }; //right attack
-	wolf_stats.animations[0][6] = { 5, {64, 320,64, 32}, {62,12}, {351,346} }; //left attack
-	wolf_stats.animations[0][7] = { 5, {32, 195,32, 65}, {22,60}, {16,225} }; //front attack
+	wolf_stats.animations[0][4] = { 5, {160, 196, 32, 64}, {22,60}, {16,30} }; //back attack
+	wolf_stats.animations[0][5] = { 5, {320, 128, 64, 32}, {62,12}, {34,28} }; //right attack
+	wolf_stats.animations[0][6] = { 5, {320, 320, 64, 32}, {62,12}, {34,28} }; //left attack
+	wolf_stats.animations[0][7] = { 5, {0, 196, 32, 64}, {22,60}, {16,30} }; //front attack
 
-	wolf_stats.animations[0][8] = { 5, {32, 256,32 , 65}, {22,60}, {176,286} }; //back attack bsnanoh
-	wolf_stats.animations[0][9] = { 5, {64, 158,64 , 32}, {62,12}, {351,186} }; //right attack bsnanoh
-	wolf_stats.animations[0][10] = { 5, {64, 350,64 , 32}, {62,12}, {351,379} }; //left attack bsnanoh
-	wolf_stats.animations[0][11] = { 5, {32, 256,32 , 65}, {22,60}, {16,286} }; //front attack bsnanoh
+	wolf_stats.animations[0][8] = { 5, {160, 256, 32, 64}, {22,60}, {16,30} }; //back attack bsnanoh
+	wolf_stats.animations[0][9] = { 5, {320, 160, 64, 32}, {62,12}, {34,28} }; //right attack bsnanoh
+	wolf_stats.animations[0][10] = { 5, {320, 352, 64, 32}, {62,12}, {34,28} }; //left attack bsnanoh
+	wolf_stats.animations[0][11] = { 5, {0, 256, 32, 64}, {22,60}, {16,30} }; //front attack bsnanoh
 
 	cow_stats.animations = new animation * [1];
 	cow_stats.scale_const = 0.6;
@@ -211,10 +209,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	deer_stats.states_no = 1;
 
 	deer_stats.animations[0] = new animation[5];
-	deer_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,56} }; //back
-	deer_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,276} }; //right
-	deer_stats.animations[0][2] = { 4, {0, 1 * 96,64, 96}, {63,14}, {32,177} }; //left
-	deer_stats.animations[0][3] = { 4, {0, 3 * 96, 64, 96}, {22,75}, {32,347} }; //front
+	deer_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,48} }; //back
+	deer_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,84} }; //right
+	deer_stats.animations[0][2] = { 4, {0, 1 * 96,64, 96}, {63,14}, {32,84} }; //left
+	deer_stats.animations[0][3] = { 4, {0, 3 * 96, 64, 96}, {22,75}, {32,59} }; //front
 
 	llama_stats.animations = new animation * [1];
 	llama_stats.scale_const = 0.7;
@@ -222,10 +220,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	llama_stats.states_no = 1;
 
 	llama_stats.animations[0] = new animation[5];
-	llama_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {63,60} }; //back
-	llama_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {47,17}, {63,466} }; //right
-	llama_stats.animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {63,208} }; //left
-	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {63,317} }; //front
+	llama_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {64,64} }; //back
+	llama_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {47,17}, {64,82} }; //right
+	llama_stats.animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {64,82} }; //left
+	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
 	//TO BE REMOVED
 	enemy_stats.animations = new animation * [4];
@@ -295,6 +293,44 @@ void GameState::deload_map()
 	//if(destructable_objects!= nullptr)
 	//	delete[] destructable_objects;
 }
+
+void GameState::initial_stats()
+{
+	////// tree /////////
+	object_stats[0].health = 3;
+	object_stats[0].idx = 0;
+	object_stats[0].drops_no = 3;
+	object_stats[0].item_drops[0] = 0;
+	object_stats[0].item_drops[1] = 0;
+	object_stats[0].item_drops[2] = 0;
+
+	//////// big rock /////////
+	object_stats[1].health = 3;
+	object_stats[1].idx = 1;
+	object_stats[1].drops_no = 3;
+	object_stats[1].item_drops[0] = 1;
+	object_stats[1].item_drops[1] = 1;
+	object_stats[1].item_drops[2] = 1;
+
+	/////// small rock //////////
+	object_stats[2].health = 1;
+	object_stats[2].idx = 2;
+	object_stats[2].drops_no = 1;
+	object_stats[2].item_drops[0] = 1;
+
+
+
+
+
+	//////////////// item drops /////////////////
+
+	/////// wood ///////
+	drop_stats[0] = {13, 5, 3};
+	/////// stone ///////
+	drop_stats[1] = { 1, 13, 3 };
+}
+
+
 
 void GameState::initial_game(string current_map, Vector2f player_pos)
 {
@@ -385,20 +421,25 @@ void GameState::render_entities()
 }
 
 GameState::GameState(int character_id, string current_map, Vector2f player_pos)
-	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj)
+	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), items(50)
 {
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
 	initial_tile_sheets("game/tiles");
+	initial_stats();
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
-	load_entities(player_pos.y);
+	load_entities(player_pos.y);	
 	initial_game(current_map, player_pos);
+	player_entity.setObjectStats(object_stats, &destructable_objects, item_drops, &item_drops_count);
 }
 
 GameState::~GameState()
 {
 	deload_map();
+
+	if (destructable_objects != nullptr)
+		delete destructable_objects;
 }
 
 void GameState::update()
@@ -502,6 +543,13 @@ void GameState::pollevent()
 					Vector3i tile_info = static_map[player_entity.tool_used_on.x/16][player_entity.tool_used_on.y / 16].layers[static_map[player_entity.tool_used_on.x / 16][player_entity.tool_used_on.y / 16].size - 1];
 					Color tile_color = tile_sheets_img[tile_info.z].getPixel(tile_info.x * 16 + 8, tile_info.y * 16 + 6);
 					effects.add({ 0,0,100,100 }, 24, { player_entity.tool_used_on.x , player_entity.tool_used_on.y }, "break_animation", tile_color, 0, map_x, map_y);
+					if (item_drops_count != -1) {
+						Vector3i temp;
+						for (int i = 0; i < item_drops_count; i++) {
+							items.add(1, cow_stats, "item", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity, { (float)player_entity.tool_used_on.x , (float)player_entity.tool_used_on.y }, tile_sheets, drop_stats[item_drops[i]]);
+						}
+						item_drops_count = -1;
+					}
 					player_entity.tool_used_on.x = -1;
 				}
 				break;

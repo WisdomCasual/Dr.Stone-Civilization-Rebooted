@@ -42,6 +42,11 @@ void Player::player_movement()
 	}
 }
 
+void Player::knockback() {
+
+
+}
+
 void Player::a7mar(Color& original, float& delay, Sprite& Entity)
 {
 	original = Entity.getColor();
@@ -81,6 +86,14 @@ void Player::Edrab(int Shakl)
 	*/
 }
 
+void Player::setObjectStats(base_stats* object_stats, base_stats** destructable_objects, short* item_drops, short* item_drops_count)
+{
+	this->object_stats = object_stats;
+	this->destructable_objects = destructable_objects;
+	this->item_drops = item_drops;
+	this->item_drops_count = item_drops_count;
+}
+
 void Player::setPosition(float x_pos, float y_pos)
 {
 	pos = { x_pos, y_pos };
@@ -89,9 +102,9 @@ void Player::setPosition(float x_pos, float y_pos)
 
 void Player::use_tool()
 {
-	if (Lag >= 0.8) {
+	if (Lag >= 0.8&&daye5<=0) {
 		if (state == 2) { // sword
-			int ElShakl = 0;// rand() % 2;
+			int ElShakl = rand() % 2;
 			Edrab(ElShakl);
 			action(ElShakl+1);
 		}
@@ -161,7 +174,18 @@ void Player::mine()
 
 		if (static_map[core_location.x][core_location.y].tool_type == state) {
 			tool_used_on = { destroy_location.x * 16 + 8, destroy_location.y * 16 + 8};
-			destroy_object(core_location);
+
+		   (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].health--;
+		   if (!(*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].health) {
+			   //resets stats
+			   (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID] = object_stats[(*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].idx];
+			   //destroys object
+			   *item_drops_count = (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].drops_no;
+			   for (int i = 0; i < *item_drops_count; i++) {
+				   item_drops[i] = (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].item_drops[i];
+			   }
+			   destroy_object(core_location);
+		   }
 		}
 	}
 }
@@ -208,7 +232,7 @@ void Player::bigbang(Vector2i destroy_tile, bool destroy = 0)
 void Player::move(Vector2f movement)
 {
 
-	if (!active_action) {
+	if (!active_action&&daye5<=0) {
 		entity_sprite.move(movement);
 		pos += movement;
 	}
