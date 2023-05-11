@@ -243,7 +243,7 @@ void NewSaveState::update()
 	if (confirmed) {
 		//button functionality
 		add_save();
-		states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800})});
+		states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800},test_str , save_no)});
 		states->at(GameID)->update();
 
 		// exceptions arrays were explained in the settings state

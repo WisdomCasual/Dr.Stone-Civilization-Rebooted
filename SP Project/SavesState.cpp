@@ -20,7 +20,7 @@ void SavesState::update_saves()
 						saves[i].hover = 0;
 					}
 					else {
-						states->insert({ GameID, new GameState(saves[i].character_id, saves[i].current_map, saves[i].player_pos) });
+						states->insert({ GameID, new GameState(saves[i].character_id, saves[i].current_map, saves[i].player_pos, saves[i].name, i)});
 						states->at(GameID)->update();
 
 						int exceptions[] = { GameID };

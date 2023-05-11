@@ -428,9 +428,11 @@ void GameState::render_entities()
 	}
 }
 
-GameState::GameState(int character_id, string current_map, Vector2f player_pos)
+GameState::GameState(int character_id, string current_map, Vector2f player_pos, string character_name, int save_num)
 	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), items(50)
 {
+	this->character_name = character_name, this->current_map = current_map;
+	this->character_id = character_id, this->save_num = save_num;
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
@@ -506,7 +508,42 @@ void GameState::update()
 		}
 		
 	}
+	/*will_spawn = !(rand() % 10);
+	if (will_spawn) {
+		short choices = (x_offset - 10 >= 0) + (x_offset + 10 + roundf(window->getSize().x / 16.f / scale) >= 0) +
+			(y_offset - 10 >= 0) + (y_offset + 10 + roundf(window->getSize().y / 16.f / scale) < size_y),
+			choice;
+		short boundry_len_x = roundf(window->getSize().x / 16.f / scale),
+			boundry_len_y = roundf(window->getSize().y / 16.f / scale);
+		if (choices) {
+			choice = rand() % choices;
+		spawn_type = rand() % 2;
 
+		}
+		if (x_offset - 10 >= 0) {
+			if (!choice) {
+
+			}
+				
+			else
+				choice--;
+		}
+		if (x_offset + 10 + boundry_len_x >= 0) {
+			if (!choice)
+
+			else
+				choice--;
+		}
+		if (y_offset - 10 >= 0) {
+			if (!choice)
+
+			else
+				choice--;
+		}
+		if (y_offset + 10 + boundry_len_y < size_y) {
+			
+		}
+	}*/
 }
 
 void GameState::render()
@@ -529,6 +566,23 @@ void GameState::pollevent()
 				break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
+			case Keyboard::F6:
+			{
+				string notification_s[] = { "Saved Successfully" };
+				game.notification(notification_s, 1);
+				ofstream ofs("Saves/Save" + to_string(save_num + 1) + ".ini", ofstream::out, ofstream::trunc);
+
+				if (ofs.is_open()) {
+					ofs << character_name << '\n';
+					ofs << (int)character_id << '\n';
+					ofs << 1 << '\n';
+					ofs << current_map << '\n';
+					ofs << player_entity.getRelativePos().x << ' ' << player_entity.getRelativePos().x << '\n';
+				}
+				ofs.close();
+			}
+
+					break;
 			case Keyboard::F11:
 				fullscreen = !fullscreen;
 				game.update_window();
