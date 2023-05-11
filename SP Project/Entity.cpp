@@ -5,6 +5,9 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 {
 	this->size_x = size_x, this->size_y = size_y;
 
+	health = entity_stats.max_health;
+	damage = entity_stats.base_damage;
+
 	tile_props = tile_props_ptr;
 
 	win_x = window->getSize().x, win_y = window->getSize().y;

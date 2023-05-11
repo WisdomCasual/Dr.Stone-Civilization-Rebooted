@@ -537,6 +537,7 @@ void Enemy::update()
 			delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
+	////////////////////Darb El Player////////////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
 	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
@@ -544,8 +545,10 @@ void Enemy::update()
 			//cout << "Moot ya motwa7esh\n";
 			a7mar(original,daye5,entity_sprite);
 			mamotish = 1;
+			health -= player_entity.damage;
 		}
 	}
+	if (health <= 0) despawn = 1;
 	if(daye5<=0)entity_sprite.setColor(Color(original));
 	else if(daye5>0)daye5 -= dt;
 	if (mamotish>0)mamotish -= dt;
@@ -558,7 +561,12 @@ void Enemy::update()
 			player_entity.mamotish = 0.6;
 			player_entity.knockback(curr_movement,150);
 			hit_cooldown = 0.8;
+			player_entity.health -= damage;
 		}
+	}
+	//cout << player_entity.health << '\t' << health << endl;
+	if (player_entity.health <= 0) {
+		player_entity.despawn = 1;
 	}
 	hit_cooldown -= dt*(hit_cooldown>0);
 	//////////////////////////////////////////////////////

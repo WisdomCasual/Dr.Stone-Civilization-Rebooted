@@ -138,7 +138,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.base_movement_speed = 130;
 	player_stats.scale_const = 0.65;
 	player_stats.base_animation_speed = 16.6;
-
+	player_stats.base_damage = 20;
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
 		player_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
@@ -338,8 +338,6 @@ void GameState::initial_stats()
 	drop_stats[1] = { 1, 13, 3 };
 }
 
-
-
 void GameState::initial_game(string current_map, Vector2f player_pos)
 {
 	load_map(current_map);
@@ -437,6 +435,18 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
 	initial_tile_sheets("game/tiles");
+	initial_textures("game");
+	hotbar.setTexture(*textures[0]);
+	hotbar_selection.setTexture(*textures[1]);
+	hotbar.setOrigin(hotbar.getLocalBounds().width / 2, hotbar.getLocalBounds().height / 2);
+	hotbar_selection.setOrigin(25, hotbar_selection.getLocalBounds().height / 2);
+	tool_icons[0].setTexture(*textures[2]);
+	tool_icons[1].setTexture(*textures[3]);
+	tool_icons[2].setTexture(*textures[4]);
+	for (int i = 0; i < 3; i++) {
+		tool_icons[i].setOrigin(tool_icons[i].getLocalBounds().width / 2, tool_icons[i].getLocalBounds().height / 2);
+		tool_icons[i].setColor(Color(130, 130, 130));
+	}
 	initial_stats();
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
 	load_entities(player_pos.y);	
@@ -462,6 +472,14 @@ void GameState::update()
 		else scale = win_y / 304.5;
 		/////////////////////
 		center_cam(player_entity.getRelativePos());
+		hotbar.setScale(scale * 0.1, scale * 0.1);
+		hotbar.setPosition(win_x/2, win_y - 20 * scale);
+		hotbar_selection.setScale(scale * 0.1, scale * 0.1);
+		for (int i = 0; i < 3; i++) {
+			tool_icons[i].setPosition(win_x / 2 + 3*scale, win_y - 20 * scale);
+			tool_icons[i].setScale(scale * 0.1, scale * 0.1);
+		}
+		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
 	}
 
 	if (enemies.vis == nullptr) {
@@ -471,11 +489,21 @@ void GameState::update()
 		}
 	}
 	for (int i = 0; i < enemies.curr_idx; i++) {
-		enemies.entities[i]->update();
+		if (!enemies.entities[i]->despawn)
+			enemies.entities[i]->update();
+		else {
+			effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", Color(150, 50, 50, 240), 0, map_x, map_y);
+			enemies.remove(i);
+		}
 	}
 
 	for (int i = 0; i < passive.curr_idx; i++) {
-		passive.entities[i]->update();
+		if (!passive.entities[i]->despawn)
+			passive.entities[i]->update();
+		else {
+			effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y) }, "break_animation", Color(150, 50, 50, 240), 0, map_x, map_y);
+			passive.remove(i);
+		}
 	}
 	
 	if (enemies.astar_done) {
@@ -486,7 +514,25 @@ void GameState::update()
 		enemies.vis = nullptr;
 		enemies.astar_done = 0;
 	}
-	player_entity.update();
+	if (!player_entity.despawn) {
+		no_update = 0;
+		player_entity.update();
+	}
+	else {
+		states->insert({ DialogueID,new DialogueState(death_message,{win_x / 2,win_y / 2},scale / 2.f,2) });
+		no_update++;
+		if (no_update>=2) {
+			string file_name = "Saves/Save" + to_string(save_num + 1) + ".ini";
+			remove(file_name.c_str());
+			states->insert(MainMenuST);
+			if (states->find(BackgroundID) == states->end())
+				states->insert(BackgroundST);
+
+			int exceptions[] = { MainMenuID , BackgroundID };
+			game.erase_states(exceptions, 2);
+			return;
+		}
+	}
 
 	for (int i = 0; i < effects.curr_idx; i++) {
 		if (effects.animations[i]->despawn) {
@@ -513,8 +559,8 @@ void GameState::update()
 		short choices = (x_offset - 10 >= 0) + (x_offset + 10 + roundf(window->getSize().x / 16.f / scale) >= 0) +
 			(y_offset - 10 >= 0) + (y_offset + 10 + roundf(window->getSize().y / 16.f / scale) < size_y),
 			choice;
-		short boundry_len_x = roundf(window->getSize().x / 16.f / scale),
-			boundry_len_y = roundf(window->getSize().y / 16.f / scale);
+		short boundry_len_x = roundf(win_x / 16.f / scale),
+			boundry_len_y = roundf(win_y / 16.f / scale);
 		if (choices) {
 			choice = rand() % choices;
 		spawn_type = rand() % 2;
@@ -522,34 +568,226 @@ void GameState::update()
 		}
 		if (x_offset - 10 >= 0) {
 			if (!choice) {
-
+				bool no_spawn = 0;
+				if (!spawn_type) {
+					for (int i = y_offset; i < boundry_len_y + y_offset; i++) {
+						no_spawn = 0;
+						for (int k = -1; k < 2; k++) {
+							for (int l = -1; l < 2; l++) {
+								if ((static_map[int(x_offset - 10) + k][i + l].tile_props & 2)); {
+									no_spawn = 1;
+									break;
+								}
+							}
+							if (no_spawn) break;
+						}
+						if (no_spawn) break;
+						short enemy_type = rand() % 2;
+						switch (enemy_type) {
+							cout << "spawnl\n";
+							case 0:
+								enemies.add(0, wolf, { float(x_offset - 10), (float)i });
+							case 1:
+								enemies.add(0, lion, { float(x_offset - 10), (float)i });
+						}
+					}
+				}
+				else {
+					for (int i = y_offset; i < boundry_len_y + y_offset; i++) {
+						no_spawn = 0;
+						for (int k = -1; k < 2; k++) {
+							for (int l = -1; l < 2; l++) {
+								if ((static_map[int(x_offset - 10) + k][i + l].tile_props & 2)); {
+									no_spawn = 1;
+									break;
+								}
+							}
+							if (no_spawn) break;
+						}
+						if (no_spawn) break;
+						short enemy_type = rand() % 2;
+						switch (enemy_type) {
+							cout << "spawnl\n";
+						case 0:
+							enemies.add(0, cow, { float(x_offset - 10), (float)i });
+						case 1:
+							enemies.add(0, llama, { float(x_offset - 10), (float)i });
+						}
+					}
+				}
 			}
 				
 			else
 				choice--;
 		}
 		if (x_offset + 10 + boundry_len_x >= 0) {
-			if (!choice)
+			if (!choice) {
+				bool no_spawn = 0;
+				if (!spawn_type) {
+					for (int i = y_offset; i < boundry_len_y + y_offset; i++) {
+						no_spawn = 0;
+						for (int k = -1; k < 2; k++) {
+							for (int l = -1; l < 2; l++) {
+								if ((static_map[int(x_offset + 10) + k][i + l].tile_props & 2)); {
+									no_spawn = 1;
+									break;
+								}
+							}
+							if (no_spawn) break;
+						}
+						if (no_spawn) break;
+						short enemy_type = rand() % 2;
+						switch (enemy_type) {
+							cout << "spawnr\n";
+						case 0:
+							enemies.add(0, wolf, { float(x_offset + 10), (float)i });
+						case 1:
+							enemies.add(0, lion, { float(x_offset + 10), (float)i });
+						}
+					}
+				}
+				else {
+					for (int i = y_offset; i < boundry_len_y + y_offset; i++) {
+						no_spawn = 0;
+						for (int k = -1; k < 2; k++) {
+							for (int l = -1; l < 2; l++) {
+								if ((static_map[int(x_offset + 10) + k][i + l].tile_props & 2)); {
+									no_spawn = 1;
+									break;
+								}
+							}
+							if (no_spawn) break;
+						}
+						if (no_spawn) break;
+						short enemy_type = rand() % 2;
+						switch (enemy_type) {
+							cout << "spawnr\n";
+						case 0:
+							enemies.add(0, cow, { float(x_offset + 10), (float)i });
+						case 1:
+							enemies.add(0, llama, { float(x_offset + 10), (float)i });
+						}
+					}
+				}
+			}
 
 			else
 				choice--;
 		}
 		if (y_offset - 10 >= 0) {
-			if (!choice)
+			if (!choice) {
+				bool no_spawn = 0;
+				if (!spawn_type) {
+					for (int i = x_offset; i < boundry_len_y + x_offset; i++) {
+						no_spawn = 0;
+						for (int k = -1; k < 2; k++) {
+							for (int l = -1; l < 2; l++) {
+								if ((static_map[int(y_offset - 10) + k][i + l].tile_props & 2)); {
+									no_spawn = 1;
+									break;
+								}
+							}
+							if (no_spawn) break;
+						}
+						if (no_spawn) break;
+						short enemy_type = rand() % 2;
+						cout << "spawnu\n";
+						switch (enemy_type) {
+						case 0:
+							enemies.add(0, wolf, { float(y_offset - 10), (float)i });
+						case 1:
+							enemies.add(0, lion, { float(y_offset - 10), (float)i });
+						}
+					}
+				}
+				else {
+					for (int i = x_offset; i < boundry_len_y + x_offset; i++) {
+						no_spawn = 0;
+						for (int k = -1; k < 2; k++) {
+							for (int l = -1; l < 2; l++) {
+								if ((static_map[int(y_offset - 10) + k][i + l].tile_props & 2)); {
+									no_spawn = 1;
+									break;
+								}
+							}
+							if (no_spawn) break;
+						}
+						if (no_spawn) break;
+						short enemy_type = rand() % 2;
+						cout << "spawnu\n";
+						switch (enemy_type) {
+						case 0:
+							enemies.add(0, cow, { float(y_offset - 10), (float)i });
+						case 1:
+							enemies.add(0, llama, { float(y_offset - 10), (float)i });
+						}
+					}
+				}
+			}
 
 			else
 				choice--;
 		}
 		if (y_offset + 10 + boundry_len_y < size_y) {
-			
+			bool no_spawn = 0;
+			if (!spawn_type) {
+				for (int i = x_offset; i < boundry_len_y + x_offset; i++) {
+					no_spawn = 0;
+					for (int k = -1; k < 2; k++) {
+						for (int l = -1; l < 2; l++) {
+							if ((static_map[int(y_offset + 10) + k][i + l].tile_props & 2)); {
+								no_spawn = 1;
+								break;
+							}
+						}
+						if (no_spawn) break;
+					}
+					if (no_spawn) break;
+					short enemy_type = rand() % 2;
+					cout << "spawnd\n";
+					switch (enemy_type) {
+					case 0:
+						enemies.add(0, wolf, { float(y_offset + 10), (float)i });
+					case 1:
+						enemies.add(0, lion, { float(y_offset + 10), (float)i });
+					}
+				}
+			}
+			else {
+				for (int i = x_offset; i < boundry_len_y + x_offset; i++) {
+					no_spawn = 0;
+					for (int k = -1; k < 2; k++) {
+						for (int l = -1; l < 2; l++) {
+							if ((static_map[int(y_offset + 10) + k][i + l].tile_props & 2)); {
+								no_spawn = 1;
+								break;
+							}
+						}
+						if (no_spawn) break;
+					}
+					if (no_spawn) break;
+					short enemy_type = rand() % 2;
+					cout << "spawnd\n";
+					switch (enemy_type) {
+					case 0:
+						enemies.add(0, cow, { float(y_offset + 10), (float)i });
+					case 1:
+						enemies.add(0, llama, { float(y_offset + 10), (float)i });
+					}
+				}
+			}
 		}
-	}*/
+	}*/ //random spawn system (WIP)
 }
 
 void GameState::render()
 {
 	render_static_map();
 	render_entities();
+	window->draw(hotbar);
+	for(int i = 0; i< 3; i++)
+		window->draw(tool_icons[i]);
+	window->draw(hotbar_selection);
 }
 
 void GameState::pollevent()
@@ -589,15 +827,23 @@ void GameState::pollevent()
 				break;
 			case Keyboard::Num1:
 				player_entity.change_state(3);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num2:
 				player_entity.change_state(2);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(255, 255, 255)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num3:
 				player_entity.change_state(1);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(255, 255, 255)), tool_icons[2].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num4:
 				player_entity.change_state(0);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(255, 255, 255));
 				break;
 			case Keyboard::Space:
 				player_entity.use_tool();
@@ -628,6 +874,10 @@ void GameState::pollevent()
 				if (new_state > 3) new_state = 3;
 				else if (new_state < 0) new_state = 0;
 				player_entity.change_state(new_state);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
+				if(new_state!=3)
+					tool_icons[(2 - player_entity.state)].setColor(Color(255, 255, 255));
 			}
 		}
 	}
