@@ -161,48 +161,87 @@ path_tile* Enemy::aStar(Vector2i target)
 		is_legal = legal_direction(Vector2f((target.x * 16 + 8), (target.y * 16 + 8)) - getRelativePos(), dx[i], dy[i]);
 	}
 	if (!is_legal) {
+		bool done = 1;
+		Vector2i my_hitbox = { 1, 1 };
 		float delta_x, delta_y, mn = 1e9, g_temp;
 		Vector2i new_pos;
+		short move_num;
 		short hitbox_count = 0;
+		float mx_hitbox = 1;
 		Vector2i found_box = { -1, -1 }, found_empty = { -1, -1 };
 		for (int i = 0; i < 4; i++) {
-			new_pos = { target.x + dx[i], target.y + dy[i] };
-			if ((static_map[new_pos.x][new_pos.y].tile_props & 2))
-				hitbox_count++, found_box = { dx[i], dy[i] };
-			else
-				found_empty = { dx[i], dy[i] };
+			mx_hitbox = max(mx_hitbox,
+				max(entity_stats.animations[state][i].hitbox_rect.x * entity_stats.scale_const, entity_stats.animations[state][i].hitbox_rect.y * entity_stats.scale_const));
 		}
-		switch (hitbox_count) {
-		case 2:
-			if ((static_map[target.x - found_box.x][target.y - found_box.y].tile_props & 2)) {
-				new_pos = { target.x - found_box.y, target.y - found_box.x };
-				delta_x = abs(new_pos.x - path_start.x),
-					delta_y = abs(new_pos.y - path_start.y);
-				mn = sqrtf(delta_y * delta_y + delta_x * delta_x);
-				mntile = new_pos - path_delta;
-				new_pos = { target.x + found_box.y, target.y + found_box.x };
-				delta_x = abs(new_pos.x - path_start.x),
-					delta_y = abs(new_pos.y - path_start.y);
-				g_temp = sqrtf(delta_y * delta_y + delta_x * delta_x);
-				if (g_temp < mn)
-					mntile = new_pos - path_delta;    //to convert actual tile to astar tile
-			}
+		mx_hitbox = roundf(mx_hitbox / 16.f);
+		for (int k = roundf(mx_hitbox / 2.f); k <= mx_hitbox; k++) {
+			hitbox_count = 0;
+			found_box = { -1, -1 }, found_empty = { -1, -1 };
+			mn = 1e9;
 
-			else {
-				if ((static_map[target.x + found_box.y][target.y + found_box.x].tile_props & 2)) {
-					mntile = Vector2i( target.x - found_box.y - found_box.x, target.y - found_box.y - found_box.x ) - path_delta;
-					break;
+			for (int i = 0; i < 4; i++) {
+				move_num = 0;
+				if (-dy[i] < 0) {
+					move_num = 0;
 				}
-				mntile = Vector2i( target.x + found_box.y - found_box.x , target.y - found_box.y + found_box.x ) - path_delta;
-			}
+				else if (-dx[i] > 0) {
+					move_num = 1;
+				}
+				else if (-dx[i] < 0) {
+					move_num = 2;
+				}
+				else if (-dy[i] > 0) {
+					move_num = 3;
+				}
+				my_hitbox = Vector2i(k * dx[i], k * dy[i]);
 
-			break;
-		case 3:
-			mntile = found_empty - path_delta;
-			break;
-		default:
-			mntile = mid - found_box;
-			break;
+				new_pos = target + my_hitbox;
+				if (legal_direction(Vector2f((new_pos.x * 16 + 8), (new_pos.y * 16 + 8)) - getRelativePos(), -dx[i], -dy[i]))
+					found_empty = my_hitbox;
+				else
+					hitbox_count++, found_box = my_hitbox;
+			}
+			bool done = 1;
+			switch (hitbox_count) {
+			case 2:
+				if (!legal_direction(Vector2f(((target.x - found_box.x) * 16 + 8), ((target.y - found_box.y) * 16 + 8)) - getRelativePos(), -found_box.x, -found_box.y)) {
+					new_pos = { target.x - found_box.y, target.y - found_box.x };
+					delta_x = abs(new_pos.x - path_start.x),
+						delta_y = abs(new_pos.y - path_start.y);
+					mn = sqrtf(delta_y * delta_y + delta_x * delta_x);
+					mntile = new_pos - path_delta;
+					new_pos = { target.x + found_box.y, target.y + found_box.x };
+					delta_x = abs(new_pos.x - path_start.x),
+						delta_y = abs(new_pos.y - path_start.y);
+					g_temp = sqrtf(delta_y * delta_y + delta_x * delta_x);
+					if (g_temp < mn)
+						mntile = new_pos - path_delta;    //to convert actual tile to astar tile
+				}
+
+				else {
+					if (!legal_direction(Vector2f(((target.x + found_box.y) * 16 + 8), ((target.y + found_box.x) * 16 + 8)) - getRelativePos(), -found_box.y, -found_box.x)) {
+						mntile = Vector2i(target.x - found_box.y - found_box.x, target.y - found_box.y - found_box.x) - path_delta;
+						break;
+					}
+					mntile = Vector2i(target.x + found_box.y - found_box.x, target.y - found_box.y + found_box.x) - path_delta;
+				}
+
+				break;
+			case 3:
+				mntile = (target + found_empty) - path_delta;
+				break;
+
+			case 4:
+				done = 0;
+			case 1:
+				mntile = (target - found_box) - path_delta;
+				break;
+			}
+			if (done)
+				break;
+		}
+		if (!done) {
+			return nullptr;
 		}
 	}
 	tabor_el_3e4 pathes;
@@ -322,6 +361,8 @@ void Enemy::stateMachine()
 			pathFinding(player_entity, mp);
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
+			theta = atan2f(delta_sign.y, delta_sign.x) * 180 / PI;
+			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			if (target_tile.x != -1.f) {
 				action_state = 1;
 				motion_delay = 2;
@@ -339,6 +380,9 @@ void Enemy::stateMachine()
 		if (enemy_tile != prev_target_tile) {
 			pathFinding(player_entity, mp);
 			target_tile = pathFollow(mp);
+			delta_sign = target_tile - getRelativePos();
+			theta = atan2f(delta_sign.y, delta_sign.x) * 180 / PI;
+			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		}
 		prev_target_tile = enemy_tile;
 
@@ -349,6 +393,8 @@ void Enemy::stateMachine()
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
 			delta_pos = delta_sign;
+			theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
+			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		}
 
 		if (target_tile.x == -1.f) {
@@ -356,8 +402,6 @@ void Enemy::stateMachine()
 			action_state = 0;
 			break;
 		}
-		theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
-		curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		will_move = 1;
 
 		if (!checker) {
@@ -368,6 +412,9 @@ void Enemy::stateMachine()
 			mp = aStar(last_seen);
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
+			delta_pos = delta_sign;
+			theta = atan2f(delta_sign.y, delta_sign.x) * 180 / PI;
+			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			action_state = 2;
 			break;
 		}
@@ -383,13 +430,11 @@ void Enemy::stateMachine()
 			target_tile = pathFollow(mp);
 			delta_sign = target_tile - getRelativePos();
 			delta_pos = delta_sign;
+			theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
+			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		}
 		if (target_tile.x == -1.f) {
 			will_move = 0;
-		}
-		else {
-			theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
-			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		}
 
 		if (!will_move) {
@@ -522,7 +567,7 @@ void Enemy::update()
 
 	if (will_move) {
 		short dir[2] = { 45, -45 };
-		bool legal_x = legal_tile({ curr_movement.x, 0 }), legal_y = legal_tile({ 0, curr_movement.y });
+		bool legal_x = legal_direction({ curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)), legal_y = legal_direction({ 0, curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
 		if (legal_x)
 			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
@@ -536,7 +581,10 @@ void Enemy::update()
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
 		}
-		direction({ round(curr_movement.x), round(curr_movement.y) });
+		if (!legal_x && !legal_y)
+			move(dt * move_speed * curr_movement);
+		else
+			direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 	}
 	Mawgood();
 }
