@@ -1,7 +1,7 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr,float& map_x, float& map_y, int& size_x, int& size_y,float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Texture** tile_textures,Vector3i tile_info)
-	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map),player_entity(*player), x_offset(x_offset), y_offset(y_offset), disable_dynamic_obj(disable_dynamic_obj)
+Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Texture** tile_textures, Vector3i tile_info)
+	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map), player_entity(*player), x_offset(x_offset), y_offset(y_offset), disable_dynamic_obj(disable_dynamic_obj)
 {
 	this->size_x = size_x, this->size_y = size_y;
 
@@ -10,18 +10,20 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
-	if (entity_name != "none") {
+
+	if (entity_name == "item") {
+		this->tile_textures = tile_textures;
+		entity_sprite.setTexture(*this->tile_textures[tile_info.z]);
+		entity_sprite.setTextureRect(IntRect(tile_info.x * 16, tile_info.y * 16, 16, 16));
+		entity_sprite.setOrigin(8, 8);
+	}
+	else {
 		initial_textures("game/entities/" + entity_name);
 		entity_sprite.setTexture(*textures[state]);
 		health = entity_stats.max_health, damage = entity_stats.base_damage;
+		srand(time(0));
 	}
-	if (tile_textures != nullptr) {
-		this->tile_textures = tile_textures;
-		entity_sprite.setTexture(*this->tile_textures[tile_info.z]);
-		entity_sprite.setTextureRect(IntRect(tile_info.x * 16,tile_info.y * 16, 16, 16));
-		entity_sprite.setOrigin(8,8); 
-	}
-	srand(time(0));
+
 }
 
 Entity::~Entity()
@@ -38,12 +40,6 @@ void Entity::change_state(int new_state)
 {
 	if (!active_action)
 		state = new_state;
-}
-
-void Entity::knockback()
-{
-	knockback_v = 5.0;
-
 }
 
 Vector2f Entity::getPosition()
@@ -70,7 +66,7 @@ void Entity::setScale(float new_scale_const)
 
 void Entity::move(Vector2f movement)
 {
-	if (!active_action) {
+	if (!active_action&&daye5<=0) {
 		pos += movement;
 	}
 }
@@ -112,7 +108,7 @@ bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 
 void Entity::direction(Vector2f direction)
 {
-	if (!active_action) {
+	if (!active_action&&daye5<=0) {
 		if (direction.y < 0) {
 			//back
 			current_move = 0;

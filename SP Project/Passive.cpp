@@ -113,8 +113,8 @@ void Passive::update()
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
 	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
 		if (mamotish<=0) {
-			cout << "Moot ya motwa7esh\n";
-			a7mar(original, raya7);
+			//cout << "Moot ya motwa7esh\n";
+			a7mar(original, daye5);
 			action_state = 1;
 			switch_delay = 0;
 			motion_delay = 2;
@@ -122,8 +122,8 @@ void Passive::update()
 		}
 	}
 	if (mamotish)mamotish -= dt;
-	if (raya7 <= 0)entity_sprite.setColor(Color(original));
-	else raya7 -= dt;
+	if (daye5 <= 0)entity_sprite.setColor(Color(original));
+	else daye5 -= dt;
 	///////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
