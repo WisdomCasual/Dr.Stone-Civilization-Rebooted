@@ -244,7 +244,7 @@ private:
 	float map_x = 0, map_y = 0;
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0;
 	Vector2u prev_win = { 0, 0 };
-	Sprite tile;
+	Sprite tile, hotbar, hotbar_selection, tool_icons[3];
 	short item_drops[5], item_drops_count = -1;
 
 
