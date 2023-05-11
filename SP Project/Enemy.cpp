@@ -507,9 +507,12 @@ void Enemy::update()
 			//cout << "Ay\n";
 			player_entity.current_frame = 0;
 			player_entity.a7mar(player_entity.og_player_color, player_entity.daye5, player_entity.entity_sprite);
-			player_entity.mamotish = 2;
+			player_entity.mamotish = 0.6;
+			player_entity.knockback(curr_movement,150);
+			hit_cooldown = 0.8;
 		}
 	}
+	hit_cooldown -= dt*(hit_cooldown>0);
 	//////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
@@ -520,7 +523,7 @@ void Enemy::update()
 
 
 
-	if (will_move) {
+	if (will_move&&hit_cooldown<=0) {
 		short dir[2] = { 45, -45 };
 		bool legal_x = legal_tile({ curr_movement.x, 0 }), legal_y = legal_tile({ 0, curr_movement.y });
 		if (legal_x)

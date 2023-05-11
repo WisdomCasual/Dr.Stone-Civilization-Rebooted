@@ -11,40 +11,39 @@ void Player::move_cam(float x_movement, float y_movement)
 	x_offset = -map_x / 16, y_offset = -map_y / 16;
 }
 
-void Player::player_movement()
+void Player::player_movement(float x_movement,float y_movement,float velocity)
 {
-	if (!active_action) {
-		float x_movement = delta_movement().x * entity_stats.base_movement_speed * dt, y_movement = delta_movement().y * entity_stats.base_movement_speed * dt;
-		Vector2f dir = { 0,0 };
-		if (legal_tile({ x_movement, 0 })) {
-			dir.x = delta_movement().x;
-			if ((entity_sprite.getPosition().x + x_movement * scale >= 150 * scale || delta_movement().x > 0) && (entity_sprite.getPosition().x + x_movement * scale < win_x - 150 * scale || delta_movement().x <= 0))
-				move({ x_movement * scale,  0 });
-			else if ((-map_x + x_movement >= 0 || delta_movement().x > 0) && (-map_x * scale + win_x <= (size_x - 1) * 16 * scale || delta_movement().x < 0))
-				move_cam(x_movement, 0);
-			else if (entity_sprite.getPosition().x + x_movement * scale >= 0 && entity_sprite.getPosition().x + x_movement * scale < win_x - 5)
-				move({ x_movement * scale,  0 });
-		}
-
-		if (legal_tile({ 0, y_movement })) {
-			dir.y = delta_movement().y;
-			if ((entity_sprite.getPosition().y + y_movement * scale >= 100 * scale || delta_movement().y > 0) && (entity_sprite.getPosition().y + y_movement * scale < win_y - 100 * scale || delta_movement().y <= 0))
-				move({ 0, y_movement * scale });
-
-			else if ((-map_y + y_movement >= 0 || delta_movement().y > 0) && (-map_y * scale + win_y <= (size_y - 1) * 16 * scale || delta_movement().y < 0))
-				move_cam(0, y_movement);
-
-			else if (entity_sprite.getPosition().y + y_movement * scale >= 0 && entity_sprite.getPosition().y + y_movement * scale < win_y - 5)
-				move({ 0, y_movement * scale });
-		}
-
-		direction(dir);
+	Vector2f v_direction = { x_movement,y_movement };
+	x_movement *= velocity*dt, y_movement *=  velocity*dt;
+	Vector2f dir = { 0,0 };
+	if (legal_tile({ x_movement, 0 })) {
+		dir.x = v_direction.x;
+		if ((entity_sprite.getPosition().x + x_movement * scale >= 150 * scale || v_direction.x > 0) && (entity_sprite.getPosition().x + x_movement * scale < win_x - 150 * scale || v_direction.x <= 0))
+			move({ x_movement * scale,  0 });
+		else if ((-map_x + x_movement >= 0 || v_direction.x > 0) && (-map_x * scale + win_x <= (size_x - 1) * 16 * scale || v_direction.x < 0))
+			move_cam(x_movement, 0);
+		else if (entity_sprite.getPosition().x + x_movement * scale >= 0 && entity_sprite.getPosition().x + x_movement * scale < win_x - 5)
+			move({ x_movement * scale,  0 });
 	}
+
+	if (legal_tile({ 0, y_movement })) {
+		dir.y = v_direction.y;
+		if ((entity_sprite.getPosition().y + y_movement * scale >= 100 * scale || v_direction.y > 0) && (entity_sprite.getPosition().y + y_movement * scale < win_y - 100 * scale || v_direction.y <= 0))
+			move({ 0, y_movement * scale });
+
+		else if ((-map_y + y_movement >= 0 || v_direction.y > 0) && (-map_y * scale + win_y <= (size_y - 1) * 16 * scale || v_direction.y < 0))
+			move_cam(0, y_movement);
+
+		else if (entity_sprite.getPosition().y + y_movement * scale >= 0 && entity_sprite.getPosition().y + y_movement * scale < win_y - 5)
+			move({ 0, y_movement * scale });
+	}
+
+	direction(dir);
 }
 
-void Player::knockback() {
-
-
+void Player::knockback(Vector2f direction,float v) {
+	knockback_direction = direction;
+	knockback_v = v;
 }
 
 void Player::a7mar(Color& original, float& delay, Sprite& Entity)
@@ -213,10 +212,8 @@ void Player::bigbang(Vector2i destroy_tile, bool destroy = 0)
 void Player::move(Vector2f movement)
 {
 
-	if (!active_action&&daye5<=0) {
-		entity_sprite.move(movement);
-		pos += movement;
-	}
+	entity_sprite.move(movement);
+	pos += movement;
 }
 
 void Player::update()
@@ -261,10 +258,16 @@ void Player::update()
 		//cout << "here\n";
 		//cout << daye5 << endl;
 		entity_sprite.setColor(Color(og_player_color));
+		knockback_v = 0;
 	}
 	else if (daye5 > 0) {
 		//cout << stun << endl;
 		daye5 -= dt;
+		player_movement(knockback_direction.x, knockback_direction.y, knockback_v);
+		//cout << knockback_v <<'\t'<<knockback_direction.x<<'\t'<<knockback_direction.y << endl;
+		knockback_v -= dt*400;
+		if (knockback_v < 0)knockback_v = 0;
+		//cout << knockback_v << endl;
 	}
 	if (mamotish > 0)mamotish -= dt;
 	//////////////////////////////////////////////////////
@@ -272,7 +275,8 @@ void Player::update()
 
 	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
-	player_movement();
+	if(!active_action&&daye5<=0)
+		player_movement(delta_movement().x, delta_movement().y,entity_stats.base_movement_speed);
 }
 
 void Player::pollevent()
