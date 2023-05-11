@@ -258,17 +258,19 @@ void MapBuilderState::draw_tools()
 		if (selected_tile != picked_tile.previous_drawn_tile) {
 			picked_tile.previous_drawn_tile = selected_tile;
 			picked_tile.previous_erased_tile = { -1, -1 };
-			if (!undid_changes.empty())
-				undid_changes.clear();
+			if (!undid_changes.Fare8())
+				undid_changes.shenra_tensi();
 
 			if (picked_tile.select_done) {
 				if (!drawn_selection) {
 					//store changed area info
-					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
+					changes.Ed5ol(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
+					changes.Wara()->tiles = new Tile[picked_tile.wdth * picked_tile.hght];
 
 					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth && i2 < size_x; i1++, i2++)
 						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght && j2 < size_y; j1++, j2++) {
-							changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes	
+							changes.Wara()->tiles[changes.Wara()->size] = tiles[i2][j2]; //<--store tiles before changes	
+							changes.Wara()->size++;
 							tiles[i2][j2].layer[layer] = { i1, j1, picked_tile.tex_id};
 						}
 					drawn_selection = 1;
@@ -278,19 +280,22 @@ void MapBuilderState::draw_tools()
 
 				if (!drawn_map_selection) {
 					//store changed area info
-					changes.push_back(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + wdth, selected_tile.y + hght } });
+					changes.Ed5ol(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + wdth, selected_tile.y + hght } });
+					changes.Wara()->tiles = new Tile[wdth * hght];
 
 					for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x && i1 < size_x; i1++, i2++)
 						for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_x; j1++, j2++) {
 
-								changes.back().tiles.push_back(tiles[i2][j2]); //<--store tiles before changes
-								if (Keyboard::isKeyPressed(Keyboard::LAlt))
-									tiles[i2][j2] = tiles[i1][j1];
-								else {
-									map<char, Vector3i>::iterator new_tile = tiles[i1][j1].layer.find(picked_tile.global_layer);
-									if (new_tile != tiles[i1][j1].layer.end())
-										tiles[i2][j2].layer[layer] = new_tile->second;
-								}
+							changes.Wara()->tiles[changes.Wara()->size] = tiles[i2][j2]; //<--store tiles before changes	
+							changes.Wara()->size++;
+
+							if (Keyboard::isKeyPressed(Keyboard::LAlt))
+								tiles[i2][j2] = tiles[i1][j1];
+							else {
+								map<char, Vector3i>::iterator new_tile = tiles[i1][j1].layer.find(picked_tile.global_layer);
+								if (new_tile != tiles[i1][j1].layer.end())
+									tiles[i2][j2].layer[layer] = new_tile->second;
+							}
 						}
 					drawn_map_selection = 1;
 				}
@@ -322,12 +327,15 @@ void MapBuilderState::draw_tools()
 					*dep = slope * (*indep - base) + c;
 
 					//store changed area info
-					changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
+					changes.Ed5ol(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
+					changes.Wara()->tiles = new Tile[brush_size * brush_size];
 
 					if (!(Keyboard::isKeyPressed(Keyboard::LAlt) && brush_size > 1)) {
 						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++)
 							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
-								changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+
+								changes.Wara()->tiles[changes.Wara()->size] = tiles[i][j]; //<--store tiles before changes	
+								changes.Wara()->size++;
 
 								tiles[i][j].layer[layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
 							}
@@ -336,7 +344,9 @@ void MapBuilderState::draw_tools()
 						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++) {
 							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
 								rand_spray = rand() % spread_chances[spread_chance];
-									changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+								changes.Wara()->tiles[changes.Wara()->size] = tiles[i][j]; //<--store tiles before changes	
+								changes.Wara()->size++;
+
 								if (!rand_spray) {
 									tiles[i][j].layer[layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
 								}
@@ -357,8 +367,8 @@ void MapBuilderState::erase_tools()
 		if (selected_tile != picked_tile.previous_erased_tile) {
 			picked_tile.previous_erased_tile = selected_tile;
 			picked_tile.previous_drawn_tile = { -1, -1 };
-			if (!undid_changes.empty())
-				undid_changes.clear();
+			if (!undid_changes.Fare8())
+				undid_changes.shenra_tensi();
 			if (!click) {
 				click = 1;
 				line_start = selected_tile;
@@ -386,13 +396,15 @@ void MapBuilderState::erase_tools()
 
 				if (picked_tile.select_done) {
 					//store changed area info
-					changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + picked_tile.wdth, point_on_line.y + picked_tile.hght } });
+					changes.Ed5ol(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + picked_tile.wdth, point_on_line.y + picked_tile.hght } });
+					changes.Wara()->tiles = new Tile[picked_tile.wdth * picked_tile.hght];
 
 					for (int i = point_on_line.x; i < point_on_line.x + picked_tile.wdth; i++)
 						for (int j = point_on_line.y; j < point_on_line.y + picked_tile.hght; j++) {
 
-							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
-
+							changes.Wara()->tiles[changes.Wara()->size] = tiles[i][j]; //<--store tiles before changes	
+							changes.Wara()->size++;
+							
 							if (Keyboard::isKeyPressed(Keyboard::LAlt))
 									tiles[i][j].layer.clear();
 							else
@@ -401,12 +413,13 @@ void MapBuilderState::erase_tools()
 				}
 				else {
 					//store changed area info
-					changes.push_back(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
+					changes.Ed5ol(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
+					changes.Wara()->tiles = new Tile[brush_size * brush_size];
 
 					for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++)
 						for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
-
-							changes.back().tiles.push_back(tiles[i][j]); //<--store tiles before changes
+							changes.Wara()->tiles[changes.Wara()->size] = tiles[i][j]; //<--store tiles before changes	
+							changes.Wara()->size++;
 
 							if (Keyboard::isKeyPressed(Keyboard::LAlt))
 									tiles[i][j].layer.clear();
@@ -496,20 +509,23 @@ void MapBuilderState::undo()
 	else
 		y_pressed = 0;
 
-	if (changes.size() > 25)
+	while (changes.size > 25)
 		changes.pop_front();
+
 	if (ctrl_pressed && y_pressed) {
 		if (!redone) {
 			redone = 1;
-			if (!undid_changes.empty()) {
-				changes.push_back(change{ { undid_changes.back().start.x , undid_changes.back().start.y }, { undid_changes.back().end.x, undid_changes.back().end.y } });
-				for (int i = undid_changes.back().start.x, c = 0; i < undid_changes.back().end.x && i < size_x; i++)
-					for (int j = undid_changes.back().start.y; j < undid_changes.back().end.y && j < size_y; j++) {\
-						changes.back().tiles.push_back(tiles[i][j]);
-						tiles[i][j] = undid_changes.back().tiles[c];
+			if (!undid_changes.Fare8()) {
+				changes.Ed5ol(change{ { undid_changes.Wara()->start.x , undid_changes.Wara()->start.y }, { undid_changes.Wara()->end.x, undid_changes.Wara()->end.y } });
+				changes.Wara()->tiles = new Tile[undid_changes.Wara()->size];
+				for (int i = undid_changes.Wara()->start.x, c = 0; i < undid_changes.Wara()->end.x && i < size_x; i++)
+					for (int j = undid_changes.Wara()->start.y; j < undid_changes.Wara()->end.y && j < size_y; j++) {
+						changes.Wara()->tiles[changes.Wara()->size] = tiles[i][j];
+						changes.Wara()->size++;
+						tiles[i][j] = undid_changes.Wara()->tiles[c];
 						c++;
 					}
-				undid_changes.pop_back();
+				undid_changes.Astika();
 			}
 		}
 	}
@@ -520,15 +536,18 @@ void MapBuilderState::undo()
 		if (!undid) {
 			undid = 1; 
 			picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-			if (!changes.empty()) {
-				undid_changes.push_back(change{ { changes.back().start.x , changes.back().start.y }, { changes.back().end.x, changes.back().end.y } });
-				for (int i = changes.back().start.x, c = 0; i < changes.back().end.x && i < size_x; i++)
-					for (int j = changes.back().start.y; j < changes.back().end.y && j < size_y; j++) {
-						undid_changes.back().tiles.push_back(tiles[i][j]);
-						tiles[i][j] = changes.back().tiles[c];
+			if (!changes.Fare8()) {
+				undid_changes.Ed5ol(change{ { changes.Wara()->start.x , changes.Wara()->start.y }, { changes.Wara()->end.x, changes.Wara()->end.y } });
+				undid_changes.Wara()->tiles = new Tile[changes.Wara()->size];
+
+				for (int i = changes.Wara()->start.x, c = 0; i < changes.Wara()->end.x && i < size_x; i++)
+					for (int j = changes.Wara()->start.y; j < changes.Wara()->end.y && j < size_y; j++) {
+						undid_changes.Wara()->tiles[undid_changes.Wara()->size] = tiles[i][j];
+						undid_changes.Wara()->size++;
+					    tiles[i][j] = changes.Wara()->tiles[c];
 						c++;
 					}
-				changes.pop_back();
+				changes.Astika();
 			}
 		}
 	}
