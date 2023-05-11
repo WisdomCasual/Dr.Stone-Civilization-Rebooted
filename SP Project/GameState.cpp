@@ -489,6 +489,13 @@ void GameState::update()
 		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
 	}
 
+	if (player_entity.health < 100 && heal_delay >= 5) {
+		heal_delay = 0;
+		player_entity.health += 10;
+	}
+	else
+		heal_delay+=dt;
+
 	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health / 10.0) * 100, 590, 100));
 
 	if (enemies.vis == nullptr) {
