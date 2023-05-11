@@ -375,6 +375,7 @@ void Enemy::stateMachine()
 	case 1: {
 		//Chase state
 		move_speed = entity_stats.base_movement_speed;
+		animation_delay = 1 / entity_stats.base_animation_speed;
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
 		Edrab();
 		if (enemy_tile != prev_target_tile) {
@@ -424,6 +425,7 @@ void Enemy::stateMachine()
 	case 2: {
 		//Last seen state
 		move_speed = entity_stats.base_movement_speed;
+		animation_delay = 1 / entity_stats.base_animation_speed;
 		Vector2f delta_pos = target_tile - getRelativePos();
 		Vector2f compar = { roundf(delta_pos.x), roundf(delta_pos.y) };
 		if ((compar.x == 0 || (delta_pos.x < 0) != (delta_sign.x < 0)) && (compar.y == 0 || (delta_pos.y < 0) != (delta_sign.y < 0))) {
@@ -458,6 +460,7 @@ void Enemy::stateMachine()
 		}
 		if (motion_delay >= 4) {
 			move_speed = entity_stats.base_movement_speed / 2;
+			animation_delay = 1 / (entity_stats.base_animation_speed/2);
 			motion_delay = 0;
 			theta = (rand() % 8) * 45;
 			will_move = rand() % 4;

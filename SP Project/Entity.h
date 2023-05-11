@@ -18,7 +18,7 @@ struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations = nullptr;
 	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no = 0;
-	float scale_const = 1;
+	float scale_const = 1, base_animation_speed = 16.6667f;
 	~entity() {
 
 		if (animations != nullptr) {
