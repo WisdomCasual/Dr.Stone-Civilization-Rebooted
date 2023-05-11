@@ -445,6 +445,11 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos)
 		tool_icons[i].setOrigin(tool_icons[i].getLocalBounds().width / 2, tool_icons[i].getLocalBounds().height / 2);
 		tool_icons[i].setColor(Color(130, 130, 130));
 	}
+	health_indicator.setTexture(*textures[5]);
+
+	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health / 10.0) * 100, 590, 100));
+	health_indicator.setOrigin(health_indicator.getLocalBounds().width, health_indicator.getLocalBounds().height / 2);
+
 	initial_stats();
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
 	load_entities(player_pos.y);	
@@ -473,12 +478,16 @@ void GameState::update()
 		hotbar.setScale(scale * 0.1, scale * 0.1);
 		hotbar.setPosition(win_x/2, win_y - 20 * scale);
 		hotbar_selection.setScale(scale * 0.1, scale * 0.1);
+		health_indicator.setPosition(win_x - 20 * scale , 20 * scale);
+		health_indicator.setScale(scale * 0.15, scale * 0.15);
 		for (int i = 0; i < 3; i++) {
 			tool_icons[i].setPosition(win_x / 2 + 3*scale, win_y - 20 * scale);
 			tool_icons[i].setScale(scale * 0.1, scale * 0.1);
 		}
 		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
 	}
+
+	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health / 10.0) * 100, 590, 100));
 
 	if (enemies.vis == nullptr) {
 		enemies.vis = new short* [enemies.find_size_x];
@@ -517,6 +526,7 @@ void GameState::update()
 		player_entity.update();
 	}
 	else {
+		health_indicator.setTextureRect(IntRect(0, 0, 590, 100));
 		states->insert({ DialogueID,new DialogueState(death_message,{win_x / 2,win_y / 2},scale / 2,2) });
 		no_update++;
 		if (no_update>=2) {
@@ -563,6 +573,7 @@ void GameState::render()
 	for(int i = 0; i< 3; i++)
 		window->draw(tool_icons[i]);
 	window->draw(hotbar_selection);
+	window->draw(health_indicator);
 }
 
 void GameState::pollevent()
