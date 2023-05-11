@@ -11,16 +11,17 @@ private:
 
 	//private functions
 	void move_cam(float, float);
-	void player_movement();
+	void player_movement(float,float,float);
 
 	//Private variables
 	bool malosh_lazma = 1;
+	Vector2f knockback_direction = { -1.f,-1.f };
 public:
 	Vector2i tool_used_on = { -1,-1 }; //x, y
 
 	~Player();
 
-	void knockback();
+	void knockback(Vector2f,float);
 	void a7mar(Color&, float&, Sprite&);
 	void Edrab(int);
 	void setPosition(float, float);

@@ -198,7 +198,7 @@ public:
 	float daye5 = 0;
 	//RectangleShape hashofak;
 	float Lag = 0;
-	float knockback_v;
+	float knockback_v=0,hit_cooldown=0;
 	/////////////////////////////////////////////////
 	//Public functions
 	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr,Texture** tile_textures=nullptr, Vector3i tile_info={0,0,0});
@@ -214,6 +214,7 @@ public:
 	virtual void move(Vector2f);
 	void action(int);
 	void direction(Vector2f);
+	virtual void knockback(Vector2f ,float) {};
 	virtual void a7mar(Color&, float&, Sprite&) {};
 	virtual void setID(short) {};
 	virtual void setVisArray(short***, bool*, short new_find_size_x = 50, short new_find_size_y = 50) {};
