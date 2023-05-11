@@ -124,9 +124,13 @@ void GameState::load_map(string map_name)
 
 void GameState::load_entities(float player_relative_y_pos)
 {
-	enemies.add(default_enemy, { 800, 800 });
 	enemies.add(default_enemy, { 850, 850 });
-	passive.add(default_passive, { 750, 750 });
+	enemies.add(0, wolf, { 750, 750 });
+	enemies.add(0, lion, { 900, 900 });
+	passive.add(default_passive, { 775, 775 });
+	passive.add(2, cow, { 825, 825 });
+	passive.add(2, llama, { 875, 875 });
+	passive.add(2, deer, { 725, 725 });
 
 	//player
 	player_stats.animations = new animation * [5]({});
@@ -189,7 +193,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	wolf_stats.animations[0][11] = { 5, {0, 256, 32, 64}, {22,60}, {16,30} }; //front attack bsnanoh
 
 	cow_stats.animations = new animation * [1];
-	cow_stats.scale_const = 0.7;
+	cow_stats.scale_const = 0.6;
 	cow_stats.base_movement_speed = 80;
 	cow_stats.states_no = 1;
 
