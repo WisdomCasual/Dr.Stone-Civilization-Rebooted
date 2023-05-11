@@ -9,8 +9,15 @@
 #include"Global.h"
 #include"Animation.h"
 
-#define default_enemy 0, wolf_stats, "wolf", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
-#define default_passive 2, cow_stats, "cow", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+#define default_enemy 0, enemy_stats, "character 1", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+#define lion lion_stats, "lion", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+#define wolf wolf_stats, "wolf", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+
+
+#define default_passive 2, passive_stats, "character 3", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+#define cow cow_stats, "cow", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+#define deer deer_stats, "deer", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+#define llama llama_stats, "llama", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
 
 using namespace globalvar;
 
@@ -19,24 +26,16 @@ struct GameState : public State
 private:
 	//variables:
 
+
 	entity player_stats, enemy_stats, passive_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats;
 	Player player_entity;
 
-	
+	base_stats object_stats[30], * destructable_objects = nullptr;
+	Vector3i drop_stats[30];
 
 	Vector2f clicked_on = { -1, -1 };
 
 	render_tile** static_map;
-
-
-	struct base_stats {
-		short health;
-		short* item_drops;
-		short drops_no = 0;
-		short damage = 0;
-		short speed = 0;
-	} object_stats[30], *destructable_objects = nullptr;
-
 
 	struct entities_container {
 		int limit = 1, curr_idx = 0, find_size_x = 50, find_size_y = 50;
@@ -68,7 +67,8 @@ private:
 						break;
 					case 1:
 						//items
-						entities[curr_idx] = new Items(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
+						entities[curr_idx] = new Items(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, tile_textures,tile_info);
+						entities[curr_idx]->setPosition(initial_position.x, initial_position.y);
 						break;
 					case 2:
 						entities[curr_idx] = new Passive(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
@@ -245,6 +245,7 @@ private:
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0;
 	Vector2u prev_win = { 0, 0 };
 	Sprite tile;
+	short item_drops[5], item_drops_count = -1;
 
 
 	//private functions:
@@ -252,6 +253,7 @@ private:
 	void load_map(string);
 	void load_entities(float);
 	void deload_map();
+	void initial_stats();
 	void initial_game(string, Vector2f);
 	void center_cam(Vector2f);
 	void render_static_map();

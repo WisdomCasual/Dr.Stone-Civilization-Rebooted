@@ -8,9 +8,9 @@ public:
     //Public Variables
     int item_ID = 0;
     float time = 0;
-    Vector2f velocity = { (rand() % 40 - 20),(rand() % 40 - 20) };
+    Vector2f velocity = { (float)((rand() % 40 - 20) / 40.0),(float)((rand() % 40 - 20) / 40.0) };
  
-    float dt_v_x = velocity.x / 2.0, dt_v_y = velocity.y / 2.0;
+    float dt_v_x = velocity.x / 1.0, dt_v_y = velocity.y / 1.0;
      ~Items();
     void move();
     void intersect();

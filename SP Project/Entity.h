@@ -18,7 +18,7 @@ struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations = nullptr;
 	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no = 0;
-	float scale_const = 1;
+	float scale_const = 1, base_animation_speed = 16.6667f;
 	~entity() {
 
 		if (animations != nullptr) {
@@ -186,7 +186,7 @@ public:
 	Vector2f pos = { 0, 0 };
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
-	
+
 	bool despawn = 0;
 	short state = 0, action_state = 0, health = 100, damage = 10;
 
