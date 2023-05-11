@@ -15,7 +15,6 @@ private:
 	short find_size_x = 50, find_size_y = 50, id = 1, *** vis = nullptr;
 	bool* astar_done = nullptr;
 	//Combat Variables
-	
 
 public:
 	~Enemy();
