@@ -7,7 +7,7 @@ Items::~Items()
 }
 void Items::move()
 {
-	if (time<=2) {
+	if (time <= 1.0) {
 		float x_movement = velocity.x * dt, y_movement = velocity.y * dt;
 		if (legal_tile({ x_movement, 0 }))
 			 {
@@ -25,12 +25,14 @@ void Items::move()
 }
 
 void Items::intersect(){
-	FloatRect item_hitbox = { entity_sprite.getPosition().x - 8 * entity_stats.scale_const ,entity_sprite.getPosition().y - 8 * entity_stats.scale_const,16 * entity_stats.scale_const,16 * entity_stats.scale_const };
-	if (item_hitbox.intersects(FloatRect(player_entity.getPosition().x - (player_entity.current_hitbox.x * player_entity.entity_stats.scale_const) / 2.0, player_entity.getPosition().y - (player_entity.current_hitbox.y * player_entity.entity_stats.scale_const) / 2.0, player_entity.current_hitbox.x * player_entity.entity_stats.scale_const, player_entity.current_hitbox.y * player_entity.entity_stats.scale_const)))
-	 {
-	  //destroys item
-		 despawn = 1;
-	 }
+	if (time > 1.0) {
+		FloatRect item_hitbox = { getRelativePos().x - 8 * entity_stats.scale_const ,getRelativePos().y - 8 * entity_stats.scale_const,16 * entity_stats.scale_const,16 * entity_stats.scale_const };
+		if (item_hitbox.intersects(FloatRect(player_entity.getRelativePos().x - (player_entity.current_hitbox.x * player_entity.entity_stats.scale_const) / 2.0, player_entity.getRelativePos().y - (player_entity.current_hitbox.y * player_entity.entity_stats.scale_const) / 2.0, player_entity.current_hitbox.x * player_entity.entity_stats.scale_const, player_entity.current_hitbox.y * player_entity.entity_stats.scale_const)))
+		{
+			//destroys item
+			despawn = 1;
+		}
+	}
 }
 
 void Items::update()
@@ -46,6 +48,7 @@ void Items::update()
 		entity_sprite.setScale(scale, scale);
 
 	}
+	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
 
 
      intersect();
