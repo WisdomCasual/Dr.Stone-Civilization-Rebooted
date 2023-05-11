@@ -136,7 +136,7 @@ void Passive::update()
 
 	if (will_move) {
 		short dir[2] = { 45, -45 };
-		bool legal_x = legal_tile({ curr_movement.x, 0 }), legal_y = legal_tile({ 0, curr_movement.y });
+		bool legal_x = legal_direction({ curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)), legal_y = legal_direction({ 0, curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
 		if (legal_x)
 			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
@@ -150,6 +150,9 @@ void Passive::update()
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
 		}
-		direction({ round(curr_movement.x), round(curr_movement.y) });
+		if (!legal_x && !legal_y)
+			move(dt * move_speed * curr_movement);
+		else
+			direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 	}
 }

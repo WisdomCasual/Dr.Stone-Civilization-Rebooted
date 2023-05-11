@@ -14,6 +14,7 @@ struct MapBuilderState : public State
 {
 private:
 	//variables:
+
 	struct Tile {
 		map <char, Vector3i> layer; // [layer] { x cords, y cords, texture sheet id }
 		Vector3i last_vis{ -1,-1,-1 };
@@ -21,13 +22,117 @@ private:
 
 	struct change {
 		Vector2i start = { 0,0 }, end = { 0,0 };
-		vector <Tile> tiles;
+		Tile* tiles = nullptr;
+		int size = 0;
+		~change(){
+			if (tiles != nullptr)
+				delete[] tiles;
+		}
 	};
 
-	bool ctrl_pressed = 0, z_pressed = 0, y_pressed = 0, undid = 0, redone = 0, display_text = 1;
 
-	deque<change> changes;
-	deque<change> undid_changes;
+	struct nod {
+		change itm;
+		struct nod* link, * back_link;
+	};
+	struct special_stack {
+	private:
+		nod* top, * back;
+		
+	public:
+		int size = 0;
+		/* insert function */
+		special_stack() {
+			top = NULL;
+			back = NULL;
+		}
+
+		~special_stack() {
+			shenra_tensi();
+		}
+
+		void Ed5ol(change inputed) {
+			nod* tmp;
+			
+			tmp = new nod;
+
+			tmp->itm = inputed;
+
+			tmp->link = top;
+
+			top = tmp;
+			top->back_link = NULL;
+
+			if (top->link != NULL) {
+
+				top->link->back_link = top;
+
+				if (top->link->link == NULL)
+					back = top->link;
+
+			}
+			size++;
+		}
+
+		/* empty function */
+		bool Fare8() {
+			if (top == NULL)
+				return 1;
+			else return 0;
+		}
+
+		/* delet top function */
+		void pop_front() {
+			if (back != NULL && back->back_link != NULL) {
+				nod* tmp;
+				tmp = back->back_link;
+				delete back;
+
+				back = tmp;
+
+				back->link = NULL;
+
+				size--;
+			}
+			else { delete top;  top = NULL; size = 0; }
+
+		}
+
+		/* clear function */
+		void shenra_tensi() {
+			while (!Fare8())
+				pop_front();
+			size = 0;
+		}
+
+		change* Wara() {
+			return &top->itm;
+		}
+		void Astika() {
+			if (top->link != NULL) {
+				nod* tmp = top->link;
+
+				delete top;
+
+				top = tmp;
+
+				top->back_link = NULL;
+			}
+			else {
+				delete top;
+				top = NULL;
+			}
+			size--;
+		}
+
+		change* front() {
+			if(top->link == NULL)
+				return &top->itm;
+			return &back->itm;
+		}
+	}changes, undid_changes;
+
+	bool ctrl_pressed = 0, z_pressed = 0, y_pressed = 0, undid = 0, redone = 0, display_text = 1;
 
 	string map_name = "default";
 	bool picker = 1;
