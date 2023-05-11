@@ -18,7 +18,7 @@ private:
 
 	//private functions
 	void move_cam(float, float);
-	void player_movement();
+	void player_movement(float,float,float);
 
 	//Private variables
 	bool malosh_lazma = 1;
@@ -30,7 +30,7 @@ public:
 
 	~Player();
 
-	void knockback();
+	void knockback(Vector2f,float);
 	void a7mar(Color&, float&, Sprite&);
 	void Edrab(int);
 	void setObjectStats(base_stats*, base_stats**, short*, short*);
