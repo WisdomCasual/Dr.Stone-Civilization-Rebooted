@@ -834,7 +834,7 @@ void GameState::pollevent()
 					ofs << (int)character_id << '\n';
 					ofs << 1 << '\n';
 					ofs << current_map << '\n';
-					ofs << player_entity.getRelativePos().x << ' ' << player_entity.getRelativePos().x << '\n';
+					ofs << player_entity.getRelativePos().x << ' ' << player_entity.getRelativePos().y << '\n';
 					ofs << player_entity.health << '\n';
 				}
 				ofs.close();
