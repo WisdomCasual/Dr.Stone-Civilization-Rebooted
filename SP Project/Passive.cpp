@@ -119,9 +119,14 @@ void Passive::update()
 			switch_delay = 0;
 			motion_delay = 2;
 			mamotish = 1;
+			health -= player_entity.damage;
 		}
 	}
+	if (health <= 0) {
+		despawn = 1;
+	}
 	if (mamotish)mamotish -= dt;
+	//cout << health << endl;
 	if (daye5 <= 0)entity_sprite.setColor(Color(original));
 	else daye5 -= dt;
 	///////////////////////////////////////////////////////

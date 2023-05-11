@@ -138,7 +138,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.base_movement_speed = 130;
 	player_stats.scale_const = 0.65;
 	player_stats.base_animation_speed = 16.6;
-
+	player_stats.base_damage = 20;
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
 		player_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
@@ -469,11 +469,21 @@ void GameState::update()
 		}
 	}
 	for (int i = 0; i < enemies.curr_idx; i++) {
-		enemies.entities[i]->update();
+		if (!enemies.entities[i]->despawn)
+			enemies.entities[i]->update();
+		else {
+			effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", Color(150, 50, 50, 240), 0, map_x, map_y);
+			enemies.remove(i);
+		}
 	}
 
 	for (int i = 0; i < passive.curr_idx; i++) {
-		passive.entities[i]->update();
+		if (!passive.entities[i]->despawn)
+			passive.entities[i]->update();
+		else {
+			effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y) }, "break_animation", Color(150, 50, 50, 240), 0, map_x, map_y);
+			passive.remove(i);
+		}
 	}
 	
 	if (enemies.astar_done) {
@@ -484,7 +494,25 @@ void GameState::update()
 		enemies.vis = nullptr;
 		enemies.astar_done = 0;
 	}
-	player_entity.update();
+	if (!player_entity.despawn) {
+		no_update = 0;
+		player_entity.update();
+	}
+	else {
+		states->insert({ DialogueID,new DialogueState(death_message,{win_x / 2,win_y / 2},scale / 2,2) });
+		no_update++;
+		if (no_update>=2) {
+			//string file_name = "Saves/Save" + to_string() + ".ini";
+			//remove(file_name.c_str());
+			states->insert(MainMenuST);
+			if (states->find(BackgroundID) == states->end())
+				states->insert(BackgroundST);
+
+			int exceptions[] = { MainMenuID , BackgroundID };
+			game.erase_states(exceptions, 2);
+			return;
+		}
+	}
 
 	for (int i = 0; i < effects.curr_idx; i++) {
 		if (effects.animations[i]->despawn) {
