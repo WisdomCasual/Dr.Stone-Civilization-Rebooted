@@ -186,7 +186,7 @@ public:
 	Vector2f pos = { 0, 0 };
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
-	
+
 	bool despawn = 0;
 	short state = 0, action_state = 0, health = 100, damage = 10;
 

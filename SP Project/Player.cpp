@@ -86,6 +86,14 @@ void Player::Edrab(int Shakl)
 	*/
 }
 
+void Player::setObjectStats(base_stats* object_stats, base_stats** destructable_objects, short* item_drops, short* item_drops_count)
+{
+	this->object_stats = object_stats;
+	this->destructable_objects = destructable_objects;
+	this->item_drops = item_drops;
+	this->item_drops_count = item_drops_count;
+}
+
 void Player::setPosition(float x_pos, float y_pos)
 {
 	pos = { x_pos, y_pos };
@@ -166,7 +174,18 @@ void Player::mine()
 
 		if (static_map[core_location.x][core_location.y].tool_type == state) {
 			tool_used_on = { destroy_location.x * 16 + 8, destroy_location.y * 16 + 8};
-			destroy_object(core_location);
+
+		   (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].health--;
+		   if (!(*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].health) {
+			   //resets stats
+			   (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID] = object_stats[(*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].idx];
+			   //destroys object
+			   *item_drops_count = (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].drops_no;
+			   for (int i = 0; i < *item_drops_count; i++) {
+				   item_drops[i] = (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].item_drops[i];
+			   }
+			   destroy_object(core_location);
+		   }
 		}
 	}
 }
