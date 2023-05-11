@@ -8,6 +8,7 @@
 #include "Passive.h"
 #include"Global.h"
 #include"Animation.h"
+#include"DialogueState.h"
 
 #define default_enemy 0, enemy_stats, "character 1", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
 #define lion lion_stats, "lion", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
@@ -26,6 +27,8 @@ struct GameState : public State
 private:
 	//variables:
 
+	short no_update=0;
+	dialogue death_message[2] = { {"Sneku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
 
 	entity player_stats, enemy_stats, passive_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats;
 	Player player_entity;
@@ -248,7 +251,7 @@ private:
 	float map_x = 0, map_y = 0;
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0;
 	Vector2u prev_win = { 0, 0 };
-	Sprite tile;
+	Sprite tile, hotbar, hotbar_selection, tool_icons[3];
 	short item_drops[5], item_drops_count = -1;
 
 
