@@ -137,6 +137,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.states_no = 4;
 	player_stats.base_movement_speed = 130;
 	player_stats.scale_const = 0.65;
+	player_stats.base_animation_speed = 16.6;
 
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
@@ -163,6 +164,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	lion_stats.animations = new animation * [1];
 	lion_stats.scale_const = 0.7;
 	lion_stats.base_movement_speed = 80;
+	lion_stats.base_animation_speed = 16.6;
 
 	lion_stats.states_no = 1;
 	lion_stats.animations[0] = new animation[4];
@@ -175,6 +177,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	wolf_stats.scale_const = 0.7;
 	wolf_stats.base_movement_speed = 80;
 	wolf_stats.states_no = 1;
+	wolf_stats.base_animation_speed = 16.6;
 
 	wolf_stats.animations[0] = new animation[12];
 	wolf_stats.animations[0][0] = { 4, {160, 128, 32, 64}, {22,60}, {16,30} }; //back
@@ -196,6 +199,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	cow_stats.scale_const = 0.6;
 	cow_stats.base_movement_speed = 80;
 	cow_stats.states_no = 1;
+	cow_stats.base_animation_speed = 16.6;
 
 	cow_stats.animations[0] = new animation[4];
 	cow_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {28,72}, {64,64} }; //back
@@ -207,6 +211,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	deer_stats.scale_const = 0.7;
 	deer_stats.base_movement_speed = 80;
 	deer_stats.states_no = 1;
+	deer_stats.base_animation_speed = 16.6;
 
 	deer_stats.animations[0] = new animation[5];
 	deer_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,48} }; //back
@@ -218,6 +223,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	llama_stats.scale_const = 0.7;
 	llama_stats.base_movement_speed = 80;
 	llama_stats.states_no = 1;
+	llama_stats.base_animation_speed = 16.6;
 
 	llama_stats.animations[0] = new animation[5];
 	llama_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {64,64} }; //back
@@ -230,6 +236,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	enemy_stats.scale_const = 0.4;
 	enemy_stats.states_no = 4;
 	enemy_stats.base_movement_speed = 80;
+	enemy_stats.base_animation_speed = 16.6;
 	for (int i = 0; i < 4; i++) {
 		enemy_stats.animations[i] = new animation[16];
 		enemy_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
@@ -254,6 +261,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats.scale_const = 0.6;
 	passive_stats.states_no = 4;
 	passive_stats.base_movement_speed = 100;
+	passive_stats.base_animation_speed = 16.6;
 	for (int i = 0; i < 4; i++) {
 		passive_stats.animations[i] = new animation[16];
 		passive_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back

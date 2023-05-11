@@ -24,6 +24,7 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 		srand(time(0));
 	}
 
+	animation_delay = 1 / entity_stats.base_animation_speed;
 }
 
 Entity::~Entity()
