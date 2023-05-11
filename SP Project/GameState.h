@@ -269,7 +269,7 @@ private:
 
 public:
 	//constructors/destructors
-	GameState(int, string, Vector2f, string, int);
+	GameState(int, string, Vector2f, string, int, int);
 	~GameState();
 	
 	//public functions:

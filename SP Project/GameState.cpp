@@ -426,11 +426,12 @@ void GameState::render_entities()
 	}
 }
 
-GameState::GameState(int character_id, string current_map, Vector2f player_pos, string character_name, int save_num)
+GameState::GameState(int character_id, string current_map, Vector2f player_pos, string character_name, int save_num, int health)
 	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), items(50)
 {
 	this->character_name = character_name, this->current_map = current_map;
 	this->character_id = character_id, this->save_num = save_num;
+	player_entity.health = health;
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
@@ -834,6 +835,7 @@ void GameState::pollevent()
 					ofs << 1 << '\n';
 					ofs << current_map << '\n';
 					ofs << player_entity.getRelativePos().x << ' ' << player_entity.getRelativePos().x << '\n';
+					ofs << player_entity.health << '\n';
 				}
 				ofs.close();
 			}
