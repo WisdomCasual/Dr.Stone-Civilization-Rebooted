@@ -190,13 +190,13 @@ public:
 	bool despawn = 0;
 	short state = 0, action_state = 0, health = 100, damage = 10;
 
-	//////////////////7agat el darb//////////////////
-	FloatRect MakanElDarb, Entity_Hitbox;
-	float mamotish = 0;
+	//////////////////Combat Stuff//////////////////
+	FloatRect hit_range, Entity_Hitbox;
+	float cooldown = 0;
 	Color original = entity_sprite.getColor();
 	Color og_player_color;
-	float daye5 = 0;
-	//RectangleShape hashofak;
+	float stun = 0;
+	//RectangleShape test;
 	float Lag = 0;
 	float knockback_v=0,hit_cooldown=0;
 	/////////////////////////////////////////////////
@@ -215,7 +215,7 @@ public:
 	void action(int);
 	void direction(Vector2f);
 	virtual void knockback(Vector2f ,float) {};
-	virtual void a7mar(Color&, float&, Sprite&) {};
+	virtual void damaged(Color&, float&, Sprite&) {};
 	virtual void setID(short) {};
 	virtual void setVisArray(short***, bool*, short new_find_size_x = 50, short new_find_size_y = 50) {};
 	virtual void pollevent();
