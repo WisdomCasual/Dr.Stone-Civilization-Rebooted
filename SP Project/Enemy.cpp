@@ -7,14 +7,14 @@ Enemy::~Enemy()
 		delete[] mp;
 }
 
-void Enemy::Mawgood()
+void Enemy::is_there()
 {
-	if (abs(player_entity.getRelativePos().x - getRelativePos().x)<=RangeElWgood&& abs(player_entity.getRelativePos().y - getRelativePos().y) <= RangeElWgood) {
+	if (abs(player_entity.getRelativePos().x - getRelativePos().x)<=checking_range&& abs(player_entity.getRelativePos().y - getRelativePos().y) <= checking_range) {
 		
 	}
 }
 
-void Enemy::a7mar(Color& original,float& delay,Sprite& Entity)
+void Enemy::damaged(Color& original,float& delay,Sprite& Entity)
 {
 	original = Entity.getColor();
 	Entity.setColor(Color(original.r, 155, 155));
@@ -377,7 +377,7 @@ void Enemy::stateMachine()
 		move_speed = entity_stats.base_movement_speed;
 		animation_delay = 1 / entity_stats.base_animation_speed;
 		Vector2i enemy_tile = { int(player_entity.getRelativePos().x / 16), int(player_entity.getRelativePos().y / 16) };
-		Edrab();
+		Hitbox_align();
 		if (enemy_tile != prev_target_tile) {
 			pathFinding(player_entity, mp);
 			target_tile = pathFollow(mp);
@@ -447,7 +447,7 @@ void Enemy::stateMachine()
 			motion_delay += dt;
 		}
 
-		MakanElDarb = { -10,-10,1,1 };
+		hit_range = { -10,-10,1,1 };
 		break;
 	}
 	default:
@@ -472,7 +472,7 @@ void Enemy::stateMachine()
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
 		}
-		MakanElDarb = { -10,-10,1,1 };
+		hit_range = { -10,-10,1,1 };
 		break;
 	}
 }
@@ -489,23 +489,23 @@ void Enemy::setVisArray(short*** new_vis, bool* astar_done_ptr, short new_find_s
 	astar_done = astar_done_ptr;
 }
 
-void Enemy::Edrab()
+void Enemy::Hitbox_align()
 {
 	if (current_move == 0) { //UP
-		MakanElDarb = { getRelativePos().x - 7, getRelativePos().y - 18,15,15 };
+		hit_range = { getRelativePos().x - 7, getRelativePos().y - 18,15,15 };
 	}
 	else if (current_move == 1) { //RIGHT
-		MakanElDarb = { getRelativePos().x+3, getRelativePos().y - 7,15,15 };
+		hit_range = { getRelativePos().x+3, getRelativePos().y - 7,15,15 };
 	}
 	else if (current_move == 2) { //LEFT
-		MakanElDarb = { getRelativePos().x - 18, getRelativePos().y - 7,15,15 };
+		hit_range = { getRelativePos().x - 18, getRelativePos().y - 7,15,15 };
 	}
 	else if (current_move == 3) { //DOWN
-		MakanElDarb = { getRelativePos().x - 7, getRelativePos().y,18,15 };
+		hit_range = { getRelativePos().x - 7, getRelativePos().y,18,15 };
 	}
-	/*hashofak.setFillColor(Color::Magenta);
-	hashofak.setSize({MakanElDarb.width*scale,MakanElDarb.height*scale});
-	hashofak.setPosition((MakanElDarb.left + map_x) * scale, (MakanElDarb.top + map_y) * scale);
+	/*test.setFillColor(Color::Magenta);
+	test.setSize({hit_range.width*scale,hit_range.height*scale});
+	test.setPosition((hit_range.left + map_x) * scale, (hit_range.top + map_y) * scale);
 	*/
 }
 
@@ -537,28 +537,26 @@ void Enemy::update()
 			delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
-	////////////////////Darb El Player////////////////////
+	////////////////////PLayer Combat////////////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
-	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
-	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
-		if (mamotish<=0) {
-			//cout << "Moot ya motwa7esh\n";
-			a7mar(original,daye5,entity_sprite);
-			mamotish = 1;
+	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.hit_range.left << '\t' << player_entity.hit_range.top<<endl;
+	if (player_entity.hit_range.intersects(Entity_Hitbox)) {
+		if (cooldown<=0) {
+			damaged(original,stun,entity_sprite);
+			cooldown = 1;
 			health -= player_entity.damage;
 		}
 	}
 	if (health <= 0) despawn = 1;
-	if(daye5<=0)entity_sprite.setColor(Color(original));
-	else if(daye5>0)daye5 -= dt;
-	if (mamotish>0)mamotish -= dt;
-	//////////////////Darb El Enemy//////////////////////
-	if (MakanElDarb.intersects(player_entity.Entity_Hitbox)) {
-		if (player_entity.mamotish <= 0) {
-			//cout << "Ay\n";
+	if(stun<=0)entity_sprite.setColor(Color(original));
+	else if(stun>0)stun -= dt;
+	if (cooldown>0)cooldown -= dt;
+	//////////////////Enemy Combat//////////////////////
+	if (hit_range.intersects(player_entity.Entity_Hitbox)) {
+		if (player_entity.cooldown <= 0) {
 			player_entity.current_frame = 0;
-			player_entity.a7mar(player_entity.og_player_color, player_entity.daye5, player_entity.entity_sprite);
-			player_entity.mamotish = 0.6;
+			player_entity.damaged(player_entity.og_player_color, player_entity.stun, player_entity.entity_sprite);
+			player_entity.cooldown = 0.6;
 			player_entity.knockback(curr_movement,150);
 			hit_cooldown = 0.8;
 			player_entity.health -= damage;
@@ -600,5 +598,5 @@ void Enemy::update()
 		else
 			direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 	}
-	Mawgood();
+	is_there();
 }

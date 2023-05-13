@@ -21,7 +21,7 @@ private:
 	void player_movement(float,float,float);
 
 	//Private variables
-	bool malosh_lazma = 1;
+	bool fake_constructor = 1;
 	Vector2f knockback_direction = { -1.f,-1.f };
 
 	base_stats* object_stats, **destructable_objects;
@@ -33,8 +33,8 @@ public:
 	~Player();
 
 	void knockback(Vector2f,float);
-	void a7mar(Color&, float&, Sprite&);
-	void Edrab(int);
+	void damaged(Color&, float&, Sprite&);
+	void Hitbox_align(int);
 	void setObjectStats(base_stats*, base_stats**, short*, short*);
 	virtual void setPosition(float, float);
 	void use_tool();
