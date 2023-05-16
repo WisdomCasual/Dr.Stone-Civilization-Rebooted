@@ -144,10 +144,7 @@ void GameState::load_entities(float player_relative_y_pos)
 		player_entity.destruction_power = SHRT_MAX;
 		player_entity.setHealth(SHRT_MAX);
 	}
-	else {
-		player_entity.setDamage(25);
-		player_entity.setHealth(100);
-	}
+	player_entity.setHealth(100);
 
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
