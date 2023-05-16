@@ -71,7 +71,9 @@ MapBuilderState::~MapBuilderState()
 {
 	if (!picker)
 		delete this->tex_picker;
-	
+
+	changes.clear();
+	undid_changes.clear();
 }
 
 void MapBuilderState::grid(int x_win, int y_win)
