@@ -29,6 +29,7 @@ private:
 
 public:
 	Vector2i tool_used_on = { -1,-1 }; //x, y
+	short destruction_power = 1;
 
 	~Player();
 
