@@ -1,0 +1,1 @@
+you can delete save files but DON'T delete this folder
