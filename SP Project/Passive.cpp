@@ -145,18 +145,17 @@ void Passive::update()
 			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
 			move({ 0, dt * move_speed * curr_movement.y });
+		if (!legal_x && !legal_y)
+			move(dt * move_speed * curr_movement);
 		if (!legal_x || !legal_y) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-			for (int i = 0; i < 8 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
+			for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
 				theta += move_offset;
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
 		}
-		if (!legal_x && !legal_y)
-			move(dt * move_speed * curr_movement);
-		else
-			direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
+		direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 	}
 }
