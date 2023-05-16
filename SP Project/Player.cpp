@@ -235,6 +235,18 @@ void Player::move(Vector2f movement)
 	pos += movement;
 }
 
+void Player::setDamage(short new_damage)
+{
+	entity_stats.base_damage = new_damage;
+	damage = new_damage;
+}
+
+void Player::setHealth(short new_health)
+{
+	entity_stats.max_health = new_health;
+	health = new_health;
+}
+
 void Player::update()
 {
 	if (prev_win != window->getSize()) {
