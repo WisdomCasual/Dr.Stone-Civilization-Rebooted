@@ -1,5 +1,10 @@
 #pragma once
-#include<bits\stdc++.h>
+#include<algorithm>
+#include<cmath>
+#include<fstream>
+#include<string>
+#include<map>
+
 
 #include<SFML\System.hpp>
 #include<SFML\Window.hpp>
