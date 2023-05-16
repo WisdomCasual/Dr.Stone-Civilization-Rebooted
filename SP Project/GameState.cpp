@@ -138,7 +138,9 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.base_movement_speed = 130;
 	player_stats.scale_const = 0.65;
 	player_stats.base_animation_speed = 16.6;
-	player_stats.base_damage = 20;
+	player_entity.setDamage(25);
+	player_entity.setHealth(100);
+
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
 		player_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
@@ -389,15 +391,18 @@ void GameState::render_entities()
 {
 	dynamic_rendering.insert({ player_entity.getRelativePos().y, {-1, &player_entity} });
 	for (int i = 0; i < enemies.curr_idx; i++) {
-		dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]}});
+		if(enemies.entities[i] != nullptr)
+			dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]}});
 	}
 
 	for (int i = 0; i < items.curr_idx; i++) {
-		dynamic_rendering.insert({ items.entities[i]->getRelativePos().y, {-1, items.entities[i]} });
+		if (items.entities[i] != nullptr)
+			dynamic_rendering.insert({ items.entities[i]->getRelativePos().y, {-1, items.entities[i]} });
 	}
 
 	for (int i = 0; i < passive.curr_idx; i++) {
-		dynamic_rendering.insert({ passive.entities[i]->getRelativePos().y, {-1, passive.entities[i]} });
+		if (passive.entities[i] != nullptr)
+			dynamic_rendering.insert({ passive.entities[i]->getRelativePos().y, {-1, passive.entities[i]} });
 	}
 
 	for (auto i = dynamic_rendering.lower_bound(-map_y-10); i != dynamic_rendering.end(); ) {
@@ -506,7 +511,7 @@ void GameState::update()
 		}
 	}
 	for (int i = 0; i < enemies.curr_idx; i++) {
-		if (!enemies.entities[i]->despawn)
+ 		if (!enemies.entities[i]->despawn)
 			enemies.entities[i]->update();
 		else {
 			effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", Color(150, 50, 50, 240), 0, map_x, map_y);
