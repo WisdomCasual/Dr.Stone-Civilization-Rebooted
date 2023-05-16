@@ -473,7 +473,7 @@ void Enemy::stateMachine()
 			move_for = 3 + rand() % 2;
 			direction({ 0, 0 });
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-			while (!legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y))) {
+			for (int i = 0; i < 8 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
 				theta += 45;
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
@@ -594,7 +594,7 @@ void Enemy::update()
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-			while (!legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y))) {
+			for (int i = 0; i < 8 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
 				theta += move_offset;
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
