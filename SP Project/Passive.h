@@ -12,7 +12,7 @@ private:
 	
 public:
 	~Passive();
-	void a7mar(Color&, float&);
+	void damaged(Color&, float&);
 	void updatePos();
 	bool legal_direction(Vector2f, short, short);
 	void stateMachine();

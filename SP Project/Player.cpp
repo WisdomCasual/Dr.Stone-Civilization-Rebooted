@@ -46,42 +46,42 @@ void Player::knockback(Vector2f direction,float v) {
 	knockback_v = v;
 }
 
-void Player::a7mar(Color& original, float& delay, Sprite& Entity)
+void Player::damaged(Color& original, float& delay, Sprite& Entity)
 {
 	original = Entity.getColor();
 	Entity.setColor(Color(original.r, 155, 155));
 	delay = 0.4;
 }
 
-void Player::Edrab(int Shakl)
+void Player::Hitbox_align(int animation)
 {
 	if (current_move == 0) { //UP
-		if (Shakl)
-			MakanElDarb = { getRelativePos().x - 30, getRelativePos().y - 35,60,28 };
+		if (animation)
+			hit_range = { getRelativePos().x - 30, getRelativePos().y - 35,60,28 };
 		else
-			MakanElDarb = { getRelativePos().x - 25, getRelativePos().y - 35,60,28 };
+			hit_range = { getRelativePos().x - 25, getRelativePos().y - 35,60,28 };
 	}
 	else if (current_move == 1) { //RIGHT
-		if (Shakl)
-			MakanElDarb = { getRelativePos().x + 10, getRelativePos().y - 25,40,28 };
+		if (animation)
+			hit_range = { getRelativePos().x + 10, getRelativePos().y - 25,40,28 };
 		else
-			MakanElDarb = { getRelativePos().x + 10, getRelativePos().y - 25,40,22 };
+			hit_range = { getRelativePos().x + 10, getRelativePos().y - 25,40,22 };
 	}
 	else if (current_move == 2) { //LEFT
-		if (Shakl)
-			MakanElDarb = { getRelativePos().x - 45, getRelativePos().y - 25,35,27 };
+		if (animation)
+			hit_range = { getRelativePos().x - 45, getRelativePos().y - 25,35,27 };
 		else
-			MakanElDarb = { getRelativePos().x - 45, getRelativePos().y - 25,35,27 };
+			hit_range = { getRelativePos().x - 45, getRelativePos().y - 25,35,27 };
 	}
 	else if (current_move == 3) { //DOWN
-		if (Shakl)
-			MakanElDarb = { getRelativePos().x - 15, getRelativePos().y - 3,48,19 };
+		if (animation)
+			hit_range = { getRelativePos().x - 15, getRelativePos().y - 3,48,19 };
 		else
-			MakanElDarb = { getRelativePos().x - 23, getRelativePos().y-3,55,19 };
+			hit_range = { getRelativePos().x - 23, getRelativePos().y-3,55,19 };
 	}
-	/*hashofak.setFillColor(Color::Magenta);
-	hashofak.setSize({MakanElDarb.width*scale,MakanElDarb.height*scale});
-	hashofak.setPosition((MakanElDarb.left + map_x) * scale, (MakanElDarb.top + map_y) * scale);
+	/*test.setFillColor(Color::Magenta);
+	test.setSize({hit_range.width*scale,hit_range.height*scale});
+	test.setPosition((hit_range.left + map_x) * scale, (hit_range.top + map_y) * scale);
 	*/
 }
 
@@ -101,11 +101,11 @@ void Player::setPosition(float x_pos, float y_pos)
 
 void Player::use_tool()
 {
-	if (Lag >= 0.8&&daye5<=0) {
+	if (Lag >= 0.8&&stun<=0) {
 		if (state == 2) { // sword
-			int ElShakl = rand() % 2;
-			Edrab(ElShakl);
-			action(ElShakl+1);
+			int hit_animation = rand() % 2;
+			Hitbox_align(hit_animation);
+			action(hit_animation+1);
 		}
 		else if (state == 1 || state == 0) { // axe / pickaxe
 			mine();
@@ -262,39 +262,39 @@ void Player::update()
 			delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
-	if (malosh_lazma) {
-		malosh_lazma = 0;
+	if (fake_constructor) {
+		fake_constructor = 0;
 		og_player_color = entity_sprite.getColor();
 	}
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	if (Lag >= 0.4) {
-		MakanElDarb = { -10,-10,1,1 };
+		hit_range = { -10,-10,1,1 };
 	}
 	if (Lag < 0.8)
 		Lag += dt;
 
-	if (daye5 <= 0) {
+	if (stun <= 0) {
 		//cout << "here\n";
-		//cout << daye5 << endl;
+		//cout << stun << endl;
 		entity_sprite.setColor(Color(og_player_color));
 		knockback_v = 0;
 	}
-	else if (daye5 > 0) {
+	else if (stun > 0) {
 		//cout << stun << endl;
-		daye5 -= dt;
+		stun -= dt;
 		player_movement(knockback_direction.x, knockback_direction.y, knockback_v);
 		//cout << knockback_v <<'\t'<<knockback_direction.x<<'\t'<<knockback_direction.y << endl;
 		knockback_v -= dt*400;
 		if (knockback_v < 0)knockback_v = 0;
 		//cout << knockback_v << endl;
 	}
-	if (mamotish > 0)mamotish -= dt;
+	if (cooldown > 0)cooldown -= dt;
 	//////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
-	if(!active_action&&daye5<=0)
+	if(!active_action&&stun<=0)
 		player_movement(delta_movement().x, delta_movement().y,entity_stats.base_movement_speed);
 }
 

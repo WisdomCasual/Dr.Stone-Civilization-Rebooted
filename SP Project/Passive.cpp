@@ -5,7 +5,7 @@ Passive::~Passive()
 
 }
 
-void Passive::a7mar(Color& original, float& delay)
+void Passive::damaged(Color& original, float& delay)
 {
 	original = entity_sprite.getColor();
 	entity_sprite.setColor(Color(original.r, original.g - 100, original.b - 100));
@@ -110,25 +110,24 @@ void Passive::update()
 	/////////////////////HitBox Stuff//////////////////////
 	/////////////WARNING TOUCH AT YOUR OWN RISK////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
-	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.MakanElDarb.left << '\t' << player_entity.MakanElDarb.top<<endl;
-	if (player_entity.MakanElDarb.intersects(Entity_Hitbox)) {
-		if (mamotish<=0) {
-			//cout << "Moot ya motwa7esh\n";
-			a7mar(original, daye5);
+	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.hit_range.left << '\t' << player_entity.hit_range.top<<endl;
+	if (player_entity.hit_range.intersects(Entity_Hitbox)) {
+		if (cooldown<=0) {
+			damaged(original, stun);
 			action_state = 1;
 			switch_delay = 0;
 			motion_delay = 2;
-			mamotish = 1;
+			cooldown = 1;
 			health -= player_entity.damage;
 		}
 	}
 	if (health <= 0) {
 		despawn = 1;
 	}
-	if (mamotish)mamotish -= dt;
+	if (cooldown)cooldown -= dt;
 	//cout << health << endl;
-	if (daye5 <= 0)entity_sprite.setColor(Color(original));
-	else daye5 -= dt;
+	if (stun <= 0)entity_sprite.setColor(Color(original));
+	else stun -= dt;
 	///////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
