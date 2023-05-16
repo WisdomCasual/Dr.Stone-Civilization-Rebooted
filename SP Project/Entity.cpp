@@ -70,7 +70,7 @@ void Entity::setScale(float new_scale_const)
 
 void Entity::move(Vector2f movement)
 {
-	if (!active_action&&daye5<=0) {
+	if (!active_action&&stun<=0) {
 		pos += movement;
 	}
 }
@@ -112,7 +112,7 @@ bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 
 void Entity::direction(Vector2f direction)
 {
-	if (!active_action&&daye5<=0) {
+	if (!active_action&&stun<=0) {
 		if (direction.y < 0) {
 			//back
 			current_move = 0;
@@ -155,6 +155,6 @@ void Entity::pollevent()
 
 void Entity::render()
 {
-	//window->draw(hashofak);
+	//window->draw(test);
 	window->draw(entity_sprite);
 }
