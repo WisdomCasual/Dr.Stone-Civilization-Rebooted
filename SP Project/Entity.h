@@ -84,7 +84,7 @@ struct comparison_array {
 		}
 	};
 
-struct tabor_el_3e4 {
+struct organized_array {
 	private:
 
 
@@ -92,7 +92,7 @@ struct tabor_el_3e4 {
 		comparison_array hp;
 	public:
 
-		tabor_el_3e4() {
+		organized_array() {
 			hp.resize(128);
 		}
 		/* heap algorithm */
@@ -124,21 +124,21 @@ struct tabor_el_3e4 {
 		/* insert function */
 
 
-		void Ed5ol(comparison_tile dist) {
+		void add(comparison_tile dist) {
 			size++;
 			hp.add(dist);
 			sheftup(size - 1);
 		}
 
 		/* empty function */
-		bool Fare8() {
+		bool empty() {
 			if (!size)
 				return 1;
 			else return 0;
 		}
 
 		/* delete top function */
-		void Astika() {
+		void remove() {
 			hp.at[0] = hp.at[size - 1];
 			hp.remove();
 			size--;
@@ -146,14 +146,14 @@ struct tabor_el_3e4 {
 		}
 
 		/* clear function */
-		void shinra_tensi() {
+		void clear() {
 			size = 0;
 		}
 
 
 
 		comparison_tile top() {
-			if (!Fare8()) {
+			if (!empty()) {
 
 				return hp.at[0];
 			}

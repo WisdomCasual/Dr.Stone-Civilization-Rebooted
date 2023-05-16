@@ -115,8 +115,14 @@ bool Enemy::entityFound(Entity& target)
 		Vector2f A = toCartesian(Vector2f(afov.x, afov.y / 2 + atheta)),
 			B = { toCartesian(Vector2f(afov.x, (2 * PI - (afov.y / 2) + atheta))) },
 			p = target.getRelativePos() - getRelativePos();
-		float a1 = 2 * atan2f(magnitude(magnitude(p) * A - magnitude(A) * p), magnitude(magnitude(p) * A + magnitude(A) * p)),
-			a2 = 2 * atan2f(magnitude(magnitude(p) * B - magnitude(B) * p), magnitude(magnitude(p) * B + magnitude(B) * p));
+
+		float divi1 = magnitude(magnitude(p) * A + magnitude(A) * p), divi2 = magnitude(magnitude(p) * B + magnitude(B) * p);
+
+		if (divi1 == 0 || divi2 == 0)
+			return 0;
+
+		float a1 = 2 * atan2f(magnitude(magnitude(p) * A - magnitude(A) * p), divi1),
+			a2 = 2 * atan2f(magnitude(magnitude(p) * B - magnitude(B) * p), divi2);
 		if (a1 + a2 <= afov.y) {
 			return visionLines(target);
 		}
@@ -244,23 +250,23 @@ path_tile* Enemy::aStar(Vector2i target)
 			return nullptr;
 		}
 	}
-	tabor_el_3e4 pathes;
+	organized_array pathes;
 	comparison_tile curr_tile;
 	target = mid;
 	path_start -= path_delta;
 	(*vis)[target.x][target.y] = id;
 	mp[target.y*find_size_x + target.x] = { -1, -1 };
 	if (mntile.x == -1.f) {
-		pathes.Ed5ol({ 0, target.x, target.y });
+		pathes.add({ 0, target.x, target.y });
 	}
 	else {
 		mp[mntile.y * find_size_x + mntile.x] = { target.x, target.y};
 		(*vis)[mntile.x][mntile.y] = id;
-		pathes.Ed5ol({ 0, mntile.x, mntile.y });
+		pathes.add({ 0, mntile.x, mntile.y });
 	}
-	while (!pathes.Fare8()) {
+	while (!pathes.empty()) {
 		curr_tile = pathes.top();
-		pathes.Astika();
+		pathes.remove();
 		curr_tile.cost -= g_val;
 		if (curr_tile.x == path_start.x && curr_tile.y == path_start.y) {
 			found_path = 1;
@@ -287,7 +293,7 @@ path_tile* Enemy::aStar(Vector2i target)
 						g_val = sqrtf(delta_y * delta_y + delta_x * delta_x) + ((*vis)[new_x][new_y] == -1) * 3;
 						(*vis)[new_x][new_y] = id;
 						mp[new_y * find_size_x + new_x] = { curr_tile.x, curr_tile.y };
-						pathes.Ed5ol({ curr_tile.cost + 1 + g_val, new_x, new_y });
+						pathes.add({ curr_tile.cost + 1 + g_val, new_x, new_y });
 				}
 			}
 		}
@@ -309,7 +315,7 @@ path_tile* Enemy::aStar(Vector2i target)
 							g_val = sqrtf(delta_y * delta_y + delta_x * delta_x) + ((*vis)[new_x][new_y] == -1) * 4.2426f;
 							(*vis)[new_x][new_y] = id;
 							mp[new_y * find_size_x + new_x] = { curr_tile.x, curr_tile.y};
-							pathes.Ed5ol({ curr_tile.cost + 1.4142f + g_val, new_x, new_y });
+							pathes.add({ curr_tile.cost + 1.4142f + g_val, new_x, new_y });
 					}
 				}
 			}
@@ -425,7 +431,7 @@ void Enemy::stateMachine()
 	case 2: {
 		//Last seen state
 		move_speed = entity_stats.base_movement_speed;
-		animation_delay = 1 / entity_stats.base_animation_speed;
+		animation_delay =  (entity_stats.base_animation_speed != 0) ? 1 / entity_stats.base_animation_speed : 0.06;
 		Vector2f delta_pos = target_tile - getRelativePos();
 		Vector2f compar = { roundf(delta_pos.x), roundf(delta_pos.y) };
 		if ((compar.x == 0 || (delta_pos.x < 0) != (delta_sign.x < 0)) && (compar.y == 0 || (delta_pos.y < 0) != (delta_sign.y < 0))) {
