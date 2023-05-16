@@ -42,6 +42,8 @@ public:
 	void destroy_object(Vector2i);
 	void bigbang(Vector2i, bool);
 	void move(Vector2f);
+	void setDamage(short);
+	void setHealth(short);
 	void update();
 	void pollevent();
 
