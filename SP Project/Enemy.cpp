@@ -77,15 +77,18 @@ bool Enemy::visionLines(Entity& target)
 			}
 
 			m[k] = delta_y / delta_x;;
-			k++;
+			if(k < 4)
+				k++;
 		}
 	}
 
 	for (int i = 0; i < 5; i++) {
 		if (for_y[i]) {
 			for (float j = initial_pos[i].y; j < target_pos[i].y; j += 16) {
-
-				if (static_map[int((m[i] * (j - initial_pos[i].y) + initial_pos[i].x) / 16)][int((j) / 16)].tile_props & 64) {
+				int targ_x = (m[i] * (j - initial_pos[i].y) + initial_pos[i].x) / 16, targ_y = j / 16;
+				if (targ_x < 0 || targ_x >= size_x || targ_y < 0 || targ_y >= size_y)
+					continue;
+				if (static_map[targ_x][targ_y].tile_props & 64) {
 					hit++;
 					break;
 				}
@@ -93,8 +96,10 @@ bool Enemy::visionLines(Entity& target)
 		}
 		else {
 			for (float j = initial_pos[i].x; j < target_pos[i].x; j += 16) {
-
-				if (static_map[int((j) / 16)][int((m[i] * (j - initial_pos[i].x) + initial_pos[i].y) / 16)].tile_props & 64) {
+				int targ_x = j / 16, targ_y = (m[i] * (j - initial_pos[i].x) + initial_pos[i].y) / 16;
+				if (targ_x < 0 || targ_x >= size_x || targ_y < 0 || targ_y >= size_y)
+					continue;
+				if (static_map[targ_x][targ_y].tile_props & 64) {
 					hit++;
 					break;
 				}
