@@ -139,11 +139,13 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.scale_const = 0.65;
 	player_stats.base_animation_speed = 16.6;
 	player_entity.setDamage(25);
-	if (character_id == 3 && character_name == "Saitama") {
-		player_entity.setDamage(1000);
-		player_entity.destruction_power = 1000;
-	}
 	player_entity.setHealth(100);
+
+	if (character_id == 3 && character_name == "Saitama") {
+		player_entity.setDamage(SHRT_MAX);
+		player_entity.destruction_power = SHRT_MAX;
+		player_entity.setHealth(SHRT_MAX);
+	}
 
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
@@ -459,7 +461,7 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	}
 	health_indicator.setTexture(*textures[5]);
 
-	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health / 10.0) * 100, 590, 100));
+	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health * 10 / player_stats.max_health) * 100, 590, 100));
 	health_indicator.setOrigin(health_indicator.getLocalBounds().width, health_indicator.getLocalBounds().height / 2);
 
 	initial_stats();
@@ -506,7 +508,7 @@ void GameState::update()
 	else
 		heal_delay+=dt;
 
-	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health / 10.0) * 100, 590, 100));
+	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health * 10 / player_stats.max_health) * 100, 590, 100));
 
 	if (enemies.vis == nullptr) {
 		enemies.vis = new short* [enemies.find_size_x];
