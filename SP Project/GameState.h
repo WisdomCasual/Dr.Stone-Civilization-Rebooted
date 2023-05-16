@@ -33,7 +33,6 @@ private:
 	entity player_stats, enemy_stats, passive_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats;
 	Player player_entity;
 
-	bool will_spawn = 0, spawn_type = 0; //0 = enemy, 1 = passive
 	string character_name, current_map;
 	int character_id, save_num;
 
