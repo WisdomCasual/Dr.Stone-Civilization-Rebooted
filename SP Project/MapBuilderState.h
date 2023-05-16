@@ -48,10 +48,10 @@ private:
 		}
 
 		~special_stack() {
-			shenra_tensi();
+			clear();
 		}
 
-		void Ed5ol(change inputed) {
+		void add(change inputed) {
 			nod* tmp;
 			
 			tmp = new nod;
@@ -75,7 +75,7 @@ private:
 		}
 
 		/* empty function */
-		bool Fare8() {
+		bool empty() {
 			if (top == NULL)
 				return 1;
 			else return 0;
@@ -99,16 +99,16 @@ private:
 		}
 
 		/* clear function */
-		void shenra_tensi() {
-			while (!Fare8())
+		void clear() {
+			while (!empty())
 				pop_front();
 			size = 0;
 		}
 
-		change* Wara() {
+		change* atBack() {
 			return &top->itm;
 		}
-		void Astika() {
+		void pop_back() {
 			if (top->link != NULL) {
 				nod* tmp = top->link;
 
