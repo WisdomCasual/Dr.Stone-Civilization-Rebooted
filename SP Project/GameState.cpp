@@ -890,7 +890,7 @@ void GameState::pollevent()
 			}
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved) {
-				int new_state = player_entity.state - event.mouseWheel.delta;
+				int new_state = player_entity.state + event.mouseWheel.delta;
 				if (new_state > 3) new_state = 3;
 				else if (new_state < 0) new_state = 0;
 				player_entity.change_state(new_state);
