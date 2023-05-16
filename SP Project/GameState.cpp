@@ -139,8 +139,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.scale_const = 0.65;
 	player_stats.base_animation_speed = 16.6;
 	player_entity.setDamage(25);
-	if(character_id == 3 && character_name == "Saitama")
-		player_entity.setDamage(100);
+	if (character_id == 3 && character_name == "Saitama") {
+		player_entity.setDamage(1000);
+		player_entity.destruction_power = 1000;
+	}
 	player_entity.setHealth(100);
 
 	for (int i = 0; i <= 3; i++) {
