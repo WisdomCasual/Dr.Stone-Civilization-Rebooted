@@ -33,7 +33,6 @@ struct entity {
 struct comparison_tile {
 		float cost = 0;
 		int x = 0, y = 0;
-		float g_val = 0;
 	};
 
 struct path_tile {
