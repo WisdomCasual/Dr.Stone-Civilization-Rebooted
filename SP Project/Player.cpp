@@ -174,8 +174,8 @@ void Player::mine()
 		if (static_map[core_location.x][core_location.y].tool_type == state) {
 			tool_used_on = { destroy_location.x * 16 + 8, destroy_location.y * 16 + 8};
 
-		   (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].health--;
-		   if (!(*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].health) {
+		   (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].health -= destruction_power;
+		   if ((*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].health < 0) {
 			   //resets stats
 			   (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID] = object_stats[(*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].idx];
 			   //destroys object
