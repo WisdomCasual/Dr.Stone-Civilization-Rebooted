@@ -272,7 +272,6 @@ path_tile* Enemy::aStar(Vector2i target)
 	while (!pathes.empty()) {
 		curr_tile = pathes.top();
 		pathes.remove();
-		g_val = curr_tile.g_val;
 		curr_tile.cost -= g_val;
 		if (curr_tile.x == path_start.x && curr_tile.y == path_start.y) {
 			found_path = 1;
@@ -299,7 +298,7 @@ path_tile* Enemy::aStar(Vector2i target)
 						g_val = sqrtf(delta_y * delta_y + delta_x * delta_x) + ((*vis)[new_x][new_y] == -1) * 3;
 						(*vis)[new_x][new_y] = id;
 						mp[new_y * find_size_x + new_x] = { curr_tile.x, curr_tile.y };
-						pathes.add({ curr_tile.cost + 1 + g_val, new_x, new_y, g_val });
+						pathes.add({ curr_tile.cost + 1 + g_val, new_x, new_y });
 				}
 			}
 		}
@@ -321,7 +320,7 @@ path_tile* Enemy::aStar(Vector2i target)
 							g_val = sqrtf(delta_y * delta_y + delta_x * delta_x) + ((*vis)[new_x][new_y] == -1) * 4.2426f;
 							(*vis)[new_x][new_y] = id;
 							mp[new_y * find_size_x + new_x] = { curr_tile.x, curr_tile.y};
-							pathes.add({ curr_tile.cost + 1.4142f + g_val, new_x, new_y, g_val });
+							pathes.add({ curr_tile.cost + 1.4142f + g_val, new_x, new_y });
 					}
 				}
 			}
