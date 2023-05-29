@@ -176,6 +176,7 @@ private:
 	void erase_tools();
 	void undo();
 	void mouse_cords();
+	void create_mini_map();
 	void save_map();
 	void load_map();
 
