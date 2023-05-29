@@ -352,6 +352,10 @@ void GameState::initial_game(string current_map, Vector2f player_pos)
 {
 	load_map(current_map);
 	center_cam(player_pos);
+	minimap_tex.loadFromFile("Maps/" + current_map + "_minimap.png");
+	minimap.setTexture(minimap_tex);
+	minimap.setTextureRect(IntRect(0, 0, 96, 96));
+	minimap.setOrigin(minimap.getLocalBounds().width / 2, minimap.getLocalBounds().height / 2);
 }
 
 void GameState::center_cam(Vector2f player_pos)
@@ -439,9 +443,27 @@ void GameState::render_entities()
 	}
 }
 
+void GameState::update_minimap()
+{
+	int minimap_player_pos_x = player_entity.getRelativePos().x / 8 , minimap_player_pos_y = player_entity.getRelativePos().y / 8;
+	int minimap_x = minimap_player_pos_x - 48, minimap_y = minimap_player_pos_y - 48;
+	minimap_x = (minimap_x < 0) ? 0 : (minimap_x > size_x * 2 - 98) ? size_x * 2 - 98 : minimap_x;
+	minimap_y = (minimap_y < 0) ? 0 : (minimap_y > size_y * 2 - 98) ? size_y * 2 - 98 : minimap_y;
+	minimap.setTextureRect(IntRect(minimap_x, minimap_y, 96, 96));
+	player_pointer.setPosition(win_x - 52 * scale + (minimap_player_pos_x - minimap_x - 48) * 0.8 * scale, win_y - 52 * scale + (minimap_player_pos_y - minimap_y - 48) * 0.8 * scale);
+}
+
+void GameState::render_minimap()
+{
+	window->draw(minimap);
+	window->draw(minimap_frame);
+	window->draw(player_pointer);
+}
+
 GameState::GameState(int character_id, string current_map, Vector2f player_pos, string character_name, int save_num, int health)
 	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), items(50)
 {
+	window->setMouseCursorVisible(false);
 	this->character_name = character_name, this->current_map = current_map;
 	this->character_id = character_id, this->save_num = save_num;
 	player_entity.health = health;
@@ -457,6 +479,9 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	tool_icons[0].setTexture(*textures[2]);
 	tool_icons[1].setTexture(*textures[3]);
 	tool_icons[2].setTexture(*textures[4]);
+	minimap_frame.setTexture(*textures[6]);
+	minimap_frame.setOrigin(minimap_frame.getLocalBounds().width / 2, minimap_frame.getLocalBounds().height / 2);
+	player_pointer.setFillColor(Color::Red);
 	for (int i = 0; i < 3; i++) {
 		tool_icons[i].setOrigin(tool_icons[i].getLocalBounds().width / 2, tool_icons[i].getLocalBounds().height / 2);
 		tool_icons[i].setColor(Color(130, 130, 130));
@@ -483,6 +508,8 @@ GameState::~GameState()
 
 void GameState::update()
 {
+	window->setMouseCursorVisible(false);
+
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
@@ -501,6 +528,12 @@ void GameState::update()
 			tool_icons[i].setScale(scale * 0.1, scale * 0.1);
 		}
 		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+		minimap_frame.setPosition(win_x - 52 * scale, win_y - 52 * scale);
+		minimap_frame.setScale(scale * 0.96, scale * 0.96);
+		minimap.setPosition(win_x - 52 * scale, win_y - 52 * scale);
+		minimap.setScale(scale * 0.8, scale * 0.8);
+		player_pointer.setRadius(1.5 * scale);
+		player_pointer.setOrigin(0.75 * scale, 0.75 * scale);
 	}
 
 	if (player_entity.health < 100 && heal_delay >= 5) {
@@ -511,6 +544,8 @@ void GameState::update()
 		heal_delay+=dt;
 
 	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health * 10 / player_stats.max_health) * 100, 590, 100));
+
+	update_minimap();
 
 	if (enemies.vis == nullptr) {
 		enemies.vis = new short* [enemies.find_size_x];
@@ -596,6 +631,7 @@ void GameState::render()
 		window->draw(tool_icons[i]);
 	window->draw(hotbar_selection);
 	window->draw(health_indicator);
+	render_minimap();
 }
 
 void GameState::pollevent()
@@ -691,3 +727,4 @@ void GameState::pollevent()
 		}
 	}
 }
+

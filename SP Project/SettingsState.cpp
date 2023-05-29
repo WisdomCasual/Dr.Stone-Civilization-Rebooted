@@ -339,7 +339,6 @@ void SettingsState::render_checkbox(int i)
 
 SettingsState::SettingsState()
 {
-
 	// initialize the texture file
 	initial_textures("settings");
 
@@ -398,6 +397,7 @@ SettingsState::~SettingsState()
 
 void SettingsState::update()
 {
+	window->setMouseCursorVisible(true);
 
 	//get real time mouse position and store it in a variable
 
