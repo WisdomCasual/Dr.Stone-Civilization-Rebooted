@@ -70,6 +70,8 @@ PauseState::~PauseState()
 
 void PauseState::update()
 {
+	window->setMouseCursorVisible(true);
+
 	mouse_pos = Mouse::getPosition(*window);
 
 	if (prev_win != window->getSize()) {

@@ -42,6 +42,8 @@ void MainMenuState::render_buttons()
 
 MainMenuState::MainMenuState()
 {
+	window->setMouseCursorVisible(true);
+
 	initial_textures("mainmenu");
 
 	buttontex.setTexture(*textures[0]);

@@ -250,7 +250,9 @@ private:
 	float map_x = 0, map_y = 0;
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0;
 	Vector2u prev_win = { 0, 0 };
-	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[3];
+	Texture minimap_tex;
+	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[3], minimap, minimap_frame;
+	CircleShape player_pointer;
 	short item_drops[5], item_drops_count = -1;
 
 
@@ -264,6 +266,8 @@ private:
 	void center_cam(Vector2f);
 	void render_static_map();
 	void render_entities();
+	void update_minimap();
+	void render_minimap();
 
 
 public:
