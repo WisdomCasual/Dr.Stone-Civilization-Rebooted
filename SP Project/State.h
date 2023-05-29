@@ -4,7 +4,7 @@
 #include<fstream>
 #include<string>
 #include<map>
-
+#include<iostream> // <- for troubleshooting
 
 #include<SFML\System.hpp>
 #include<SFML\Window.hpp>
