@@ -335,17 +335,6 @@ void GameState::initial_stats()
 	object_stats[2].idx = 2;
 	object_stats[2].drops_no = 1;
 	object_stats[2].item_drops[0] = 1;
-
-
-
-
-
-	//////////////// item drops /////////////////
-
-	/////// wood ///////
-	drop_stats[0] = {13, 5, 3};
-	/////// stone ///////
-	drop_stats[1] = { 1, 13, 3 };
 }
 
 void GameState::initial_game(string current_map, Vector2f player_pos)
@@ -701,7 +690,7 @@ void GameState::pollevent()
 					if (item_drops_count != -1) {
 						Vector3i temp;
 						for (int i = 0; i < item_drops_count; i++) {
-							items.add(1, cow_stats, "item", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity, { (float)player_entity.tool_used_on.x , (float)player_entity.tool_used_on.y }, tile_sheets, drop_stats[item_drops[i]]);
+							items.add(1, cow_stats, "item", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity, { (float)player_entity.tool_used_on.x , (float)player_entity.tool_used_on.y }, item_drops[i]);
 						}
 						item_drops_count = -1;
 					}
