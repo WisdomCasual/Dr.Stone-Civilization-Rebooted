@@ -1,5 +1,35 @@
 #include "Passive.h"
 
+void Passive::player_collision_check()
+{
+	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
+
+	FloatRect entity_hitbox = FloatRect(getRelativePos().x - current_hitbox.x / 2, getRelativePos().y - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
+
+	player_hitbox.left += player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
+
+	if (entity_hitbox.intersects(player_hitbox))
+		player_entity.movement.x = 0;
+
+	player_hitbox.left -= player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
+	player_hitbox.top += player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
+
+	if (entity_hitbox.intersects(player_hitbox))
+		player_entity.movement.y = 0;
+}
+
+bool Passive::collide_with_player(Vector2f movement)
+{
+	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x / 2, player_entity.current_hitbox.y / 2);
+
+	FloatRect entity_hitbox = FloatRect(getRelativePos().x + movement.x * move_speed * dt - current_hitbox.x / 2, getRelativePos().y + movement.y * move_speed * dt - current_hitbox.y / 2, current_hitbox.x / 2, current_hitbox.y / 2);
+
+	if (entity_hitbox.intersects(player_hitbox))
+		return true;
+	else
+		return false;
+}
+
 Passive::~Passive()
 {
 
@@ -32,7 +62,7 @@ bool Passive::legal_direction(Vector2f tile_pos, short dx, short dy)
 	else if (dy > 0) {
 		move_num = 3;
 	}
-	return legal_tile(tile_pos, entity_stats.animations[state][move_num].hitbox_rect);
+	return legal_tile(tile_pos, entity_stats.animations[state][move_num].hitbox_rect) && !collide_with_player(Vector2f(dx, dy));
 }
 
 void Passive::stateMachine()
@@ -47,7 +77,7 @@ void Passive::stateMachine()
 			will_move = 1;
 			direction({ 0, 0 });
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-			while (!legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y))) {
+			for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
 				theta += 45;
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
@@ -71,7 +101,7 @@ void Passive::stateMachine()
 			move_for = 3 + rand() % 2;
 			direction({ 0, 0 });
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-			while (!legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y))) {
+			for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
 				theta += 45;
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
@@ -136,7 +166,7 @@ void Passive::update()
 	updatePos();
 	stateMachine();
 
-
+	player_collision_check();
 
 	if (will_move) {
 		short dir[2] = { 45, -45 };

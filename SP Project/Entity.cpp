@@ -108,7 +108,7 @@ bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 	return true;
 }
 
-void Entity::direction(Vector2f direction)
+void Entity::direction(Vector2f direction, bool moving)
 {
 	if (!active_action&&stun<=0) {
 		if (direction.y < 0) {
@@ -136,13 +136,17 @@ void Entity::direction(Vector2f direction)
 			return;
 		}
 
-		if (delay > animation_delay) {
-			delay = 0;
-			current_frame++;
-			current_frame %= entity_stats.animations[state][current_move].frames;
+		if (moving) {
+			if (delay > animation_delay) {
+				delay = 0;
+				current_frame++;
+				current_frame %= entity_stats.animations[state][current_move].frames;
+			}
+			else
+				delay += dt;
 		}
 		else
-			delay += dt;
+			current_frame = 0;
 	}
 }
 

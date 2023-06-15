@@ -192,6 +192,7 @@ public:
 
 	//////////////////Combat Stuff//////////////////
 	FloatRect hit_range, Entity_Hitbox;
+	Vector2f movement = { 0,0 };
 	float cooldown = 0;
 	Color original = entity_sprite.getColor();
 	Color og_player_color;
@@ -213,7 +214,7 @@ public:
 	bool legal_tile(Vector2f, Vector2f curr_hitbox = { -1, -1 });
 	virtual void move(Vector2f);
 	void action(int);
-	void direction(Vector2f);
+	void direction(Vector2f, bool moving = true);
 	virtual void knockback(Vector2f ,float) {};
 	virtual void damaged(Color&, float&, Sprite&) {};
 	virtual void setID(short) {};

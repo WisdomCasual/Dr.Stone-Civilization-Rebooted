@@ -536,6 +536,8 @@ void GameState::update()
 		player_pointer.setOrigin(0.75 * scale, 0.75 * scale);
 	}
 
+	player_entity.movement = delta_movement();
+
 	if (player_entity.health < 100 && heal_delay >= 5) {
 		heal_delay = 0;
 		player_entity.health += 10;
