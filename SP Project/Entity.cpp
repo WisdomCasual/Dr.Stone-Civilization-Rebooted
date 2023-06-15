@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Texture** tile_textures, Vector3i tile_info)
+Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, int item_id)
 	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map), player_entity(*player), x_offset(x_offset), y_offset(y_offset), disable_dynamic_obj(disable_dynamic_obj)
 {
 	this->size_x = size_x, this->size_y = size_y;
@@ -13,9 +13,9 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 	else scale = win_y / 304.5;
 
 	if (entity_name == "item") {
-		this->tile_textures = tile_textures;
-		entity_sprite.setTexture(*this->tile_textures[tile_info.z]);
-		entity_sprite.setTextureRect(IntRect(tile_info.x * 16, tile_info.y * 16, 16, 16));
+		itemTex.loadFromFile("textures/game/item drops.png");
+		entity_sprite.setTexture(itemTex);
+		entity_sprite.setTextureRect(IntRect(item_id * 16, 0, 16, 16));
 		entity_sprite.setOrigin(8, 8);
 	}
 	else {
