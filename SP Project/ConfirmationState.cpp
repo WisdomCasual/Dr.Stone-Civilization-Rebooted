@@ -80,6 +80,7 @@ ConfirmationState::~ConfirmationState()
 
 void ConfirmationState::update()
 {	
+	window->setMouseCursorVisible(true);
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
 	if (prev_win != window->getSize()) {
