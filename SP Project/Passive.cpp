@@ -4,7 +4,7 @@ void Passive::player_collision_check()
 {
 	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
 
-	FloatRect entity_hitbox = FloatRect(getRelativePos().x - current_hitbox.x / 2, getRelativePos().y - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
+	entity_hitbox = FloatRect(getRelativePos().x - current_hitbox.x / 2, getRelativePos().y - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
 
 	player_hitbox.left += player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
 
@@ -96,14 +96,16 @@ void Passive::stateMachine()
 		if (motion_delay >= 4) {
 			move_speed = entity_stats.base_movement_speed / 2;
 			motion_delay = 0;
-			theta = (rand() % 8) * 45;
 			will_move = rand() % 4;
 			move_for = 3 + rand() % 2;
-			direction({ 0, 0 });
-			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-			for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
-				theta += 45;
+			if (will_move) {
+				theta = (rand() % 8) * 45;
+				direction({ 0, 0 });
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+				for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
+					theta += 45;
+					curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+				}
 			}
 		}
 		break;

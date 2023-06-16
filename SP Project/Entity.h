@@ -187,6 +187,8 @@ public:
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
 
+	FloatRect entity_hitbox;
+
 	bool despawn = 0;
 	short state = 0, action_state = 0, health = 100, damage = 10;
 

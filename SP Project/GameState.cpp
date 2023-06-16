@@ -617,12 +617,14 @@ void GameState::render()
 {
 	render_static_map();
 	render_entities();
-	window->draw(hotbar);
-	for(int i = 0; i< 3; i++)
-		window->draw(tool_icons[i]);
-	window->draw(hotbar_selection);
-	window->draw(health_indicator);
-	render_minimap();
+	if(states->rbegin()->first == GameID) {
+		window->draw(hotbar);
+		for (int i = 0; i < 3; i++)
+			window->draw(tool_icons[i]);
+		window->draw(hotbar_selection);
+		window->draw(health_indicator);
+		render_minimap();
+	}
 }
 
 void GameState::pollevent()
