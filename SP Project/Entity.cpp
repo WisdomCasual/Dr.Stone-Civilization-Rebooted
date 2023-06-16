@@ -159,4 +159,12 @@ void Entity::render()
 {
 	//window->draw(test);
 	window->draw(entity_sprite);
+
+	//draws entity hitboxes for passive and hostile entities:
+	
+	//RectangleShape hitbox_debug;
+	//hitbox_debug.setSize({ entity_hitbox.width * scale, entity_hitbox.height * scale });
+	//hitbox_debug.setPosition({ entity_hitbox.left * scale + map_x * scale, entity_hitbox.top * scale + map_y * scale });
+	//hitbox_debug.setFillColor(Color(255,0,0,150));
+	//window->draw(hitbox_debug);
 }
