@@ -617,7 +617,7 @@ void GameState::render()
 {
 	render_static_map();
 	render_entities();
-	if(states->rbegin()->first == GameID) {
+	if(states->rbegin()->first == GameID || states->rbegin()->first == InventoryID) {
 		window->draw(hotbar);
 		for (int i = 0; i < 3; i++)
 			window->draw(tool_icons[i]);
@@ -682,6 +682,9 @@ void GameState::pollevent()
 				player_entity.change_state(0);
 				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(255, 255, 255));
+				break;
+			case Keyboard::E:
+				states->insert(InventoryST);
 				break;
 			case Keyboard::Space:
 				player_entity.use_tool();

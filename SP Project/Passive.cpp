@@ -177,8 +177,8 @@ void Passive::update()
 			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
 			move({ 0, dt * move_speed * curr_movement.y });
-		if (!legal_x && !legal_y)
-			move(dt * move_speed * curr_movement);
+		//if (!legal_x && !legal_y)
+		//	move(dt * move_speed * curr_movement);
 		if (!legal_x || !legal_y) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;
