@@ -105,6 +105,9 @@
     <ClCompile Include="Passive.cpp">
       <Filter>cpps\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="InventoryState.cpp">
+      <Filter>cpps\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="Passive.h">
       <Filter>Header Files\Entity Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="InventoryState.h">
+      <Filter>Header Files\State Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

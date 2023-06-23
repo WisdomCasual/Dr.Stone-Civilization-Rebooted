@@ -14,6 +14,7 @@
 #include"TestGroundState.h"
 #include"DialogueState.h"
 #include"GameState.h"
+#include"InventoryState.h"
 #include"Global.h"
 using namespace globalvar;
 
