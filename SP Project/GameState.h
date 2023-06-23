@@ -113,9 +113,9 @@ private:
 			}
 		}
 
-		void add(IntRect frame, int frame_count, Vector2i position, string animation_name, Color texture_color, bool loop, float& map_x, float& map_y) {
+		void add(IntRect frame, int frame_count, Vector2i position, string animation_name, float animation_scale, Color texture_color, bool loop, float& map_x, float& map_y) {
 			if (curr_idx < limit) {
-				animations[curr_idx] = new Animation(frame, frame_count, position, animation_name, texture_color, loop, map_x, map_y);
+				animations[curr_idx] = new Animation(frame, frame_count, position, animation_name, animation_scale, texture_color, loop, map_x, map_y);
 				curr_idx++;
 			}
 		} //types: 0 = enemy, 1 = item, 2 = passive
