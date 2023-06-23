@@ -14,7 +14,7 @@ private:
 	Vector2i pos;
 	int frame_count, current_frame = 0;
 	float &map_x, &map_y;
-	float delay = 0, prev_scale = 0;
+	float delay = 0, prev_scale = 0, animation_scale = 0;
 	bool loop;
 
 
@@ -23,7 +23,7 @@ public:
 	bool despawn = 0;
 
 	//constructors / destructors
-	Animation(IntRect, int, Vector2i, string, Color, bool, float&, float&);
+	Animation(IntRect, int, Vector2i, string, float, Color, bool, float&, float&);
 	~Animation();
 
 	//functions
