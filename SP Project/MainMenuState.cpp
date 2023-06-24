@@ -4,11 +4,10 @@
 void MainMenuState::fade_in()
 {
 	if (transparency < 255) {
-		if (transparency + 1500 * dt > 255)
+		if (transparency + 800 * dt > 255)
 			transparency = 255;
 		else
-			transparency += 1500 * dt;
-
+			transparency += 800 * dt;
 		buttontex.setColor(Color(255, 255, 255, transparency));
 		logo.setColor(Color(255, 255, 255, transparency));
 	}

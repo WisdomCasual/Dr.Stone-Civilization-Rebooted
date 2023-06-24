@@ -19,7 +19,7 @@ InventoryState::InventoryState()
 	tint.setSize({ 1920, 1080 });
 	tint.setFillColor(Color(0, 0, 0, 0));
 
-	velocity = 1000;
+	velocity = 1500;
 }
 
 InventoryState::~InventoryState()
@@ -74,7 +74,7 @@ void InventoryState::update()
 			panel_pos = panel.getLocalBounds().width / 2 + 12;
 		else
 			panel_pos += velocity * dt;
-		velocity -= 500 * dt;
+		velocity -= 1000 * dt;
 		panel.setPosition(panel_pos * scale * 1.5, y);
 		tissue.setPosition(panel_pos * scale * 1.5, y);
 		if (darkness < 154) {
