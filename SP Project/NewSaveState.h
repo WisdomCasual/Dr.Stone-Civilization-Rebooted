@@ -16,15 +16,14 @@ private:
 	RectangleShape tint;
 	TextBox txt_box;
 	Sprite tissue, back_arrow, panel;
-	bool arrow_pressed = 0, destruct = 0;
-	float scale = 1, win_x=0, win_y=0, x=1, y=1;
+	bool arrow_pressed = 0;
+	float scale = 1, win_x = 0, win_y = 0, x = 1, y = 1, transparency = 0, darkness = 0;
 	Vector2f mouse_pos = { 0,0 }, clicked_on = { -1, -1 };
 	Vector2u prev_win = { 0, 0 };
 	int save_no;
 
 	//button
 	bool confirmed=0;
-	Color button_color;
 	Text button_text;
 	Sprite buttontex;
 	bool button_pressed = 0;
@@ -38,11 +37,13 @@ private:
 
 	//character selection
 	Sprite characters;
-	Color char_color,og_color;
 	char selected = 0;
-	bool pressed = 0;
+	bool pressed = 0, back = 0;
 
 	//private functions
+	void fade_in();
+	bool fade_out();
+
 	void update_arrow();
 
 	void update_buttons();

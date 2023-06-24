@@ -1,6 +1,54 @@
 #include "NewSaveState.h"
 
 
+void NewSaveState::fade_in()
+{
+	if (transparency < 255) {
+		if (transparency + 1500 * dt > 255)
+			transparency = 255;
+		else
+			transparency += 1500 * dt;
+
+		panel.setColor(Color(255, 255, 255, transparency));
+		tissue.setColor(Color(255, 255, 255, transparency));
+		back_arrow.setColor(Color(255, 255, 255, transparency));
+		txt_box.setColor(Color(255, 255, 255, transparency));
+
+		if (darkness < 154) {
+			if (darkness + 154 * dt * 6 > 154)
+				darkness = 154;
+			else
+				darkness += 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+	}
+}
+
+bool NewSaveState::fade_out()
+{
+	if (transparency > 0) {
+		if (transparency - 1500 * dt < 0)
+			transparency = 0;
+		else
+			transparency -= 1500 * dt;
+
+		panel.setColor(Color(255, 255, 255, transparency));
+		tissue.setColor(Color(255, 255, 255, transparency));
+		back_arrow.setColor(Color(255, 255, 255, transparency));
+		txt_box.setColor(Color(255, 255, 255, transparency));
+
+		if (darkness > 0) {
+			if (darkness - 154 * dt * 6 < 0)
+				darkness = 0;
+			else
+				darkness -= 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+		return false;
+	}
+	else
+		return true;
+}
 
 void NewSaveState::update_arrow()
 {
@@ -19,16 +67,7 @@ void NewSaveState::update_arrow()
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-				// if arrow is pressed and released you should go back to saves state
-				states->insert(SavesST);
-				states->at(SavesID)->update();
-				// ??
-				if (states->find(BackgroundID) == states->end())
-					states->insert(BackgroundST);
-
-				int exceptions[] = { SavesID , BackgroundID };
-				game.erase_states(exceptions, 2);
-				destruct = 1;
+				back = true;
 				return;
 			}
 		}
@@ -49,7 +88,7 @@ void NewSaveState::update_buttons()
 	// check that the text box is not empty and a specific character is selected
 	
 	if (!txt_box.empty() && selected) {
-		buttontex.setColor(button_color);
+		buttontex.setColor(Color(255, 255, 255, transparency));
 		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))confirm.pressed = 1;
@@ -67,7 +106,7 @@ void NewSaveState::update_buttons()
 	}
 	else {
 		// make the button a little bit dim when nothing is selected or the text box is empty(as a sign that you're missing something to confirm)
-		buttontex.setColor(Color(button_color.r - 100, button_color.g - 100, button_color.b - 100));
+		buttontex.setColor(Color(155, 155, 155, transparency));
 	}
 }
 
@@ -81,16 +120,15 @@ void NewSaveState::render_buttons()
 	FloatRect bounds = button_text.getLocalBounds();
 	button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
 	button_text.setPosition(x + confirm.x * scale / 3.0, (confirm.pressed) ? y + confirm.y * scale / 3.0 + 2 * scale / 1.0 : y + confirm.y * scale / 3.0 - 2 * scale / 1.0);
-	if (confirm.hover)button_text.setFillColor(Color::White);
+	if (confirm.hover)button_text.setFillColor(Color(255, 255, 255, transparency));
 	else if (txt_box.empty() || !selected)
-		button_text.setFillColor(Color(120, 120, 120));
+		button_text.setFillColor(Color(120, 120, 120, transparency));
 	else
-		button_text.setFillColor(Color(200, 200, 200));
+		button_text.setFillColor(Color(200, 200, 200, transparency));
 
 	window->draw(buttontex);
 	window->draw(button_text);
 }
-
 
 void NewSaveState::update_characters()
 {
@@ -122,11 +160,11 @@ void NewSaveState::render_characters()
 		characters.setPosition(x - 60 * scale + 60 * scale * i, y + 20 * scale);
 		if (i + 1 == selected)
 		{
-			characters.setColor({ og_color.r,og_color.g,og_color.b });
+			characters.setColor(Color( 255, 255, 255, transparency));
 		}
 		else
 		{
-			characters.setColor({ char_color.r,char_color.g,char_color.b });
+			characters.setColor(Color( 135 , 135, 135, transparency));
 		}
 		window->draw(characters);
 	}
@@ -186,7 +224,6 @@ NewSaveState::NewSaveState(int save_no)
 	buttontex.setTexture(*textures[4]);
 	buttontex.setTextureRect(IntRect(0, 0, 108, 49));
 	buttontex.setOrigin(108 / 2, 49 / 2);
-	button_color = buttontex.getColor();
 
 	button_text.setFont(font);
 	button_text.setCharacterSize(50);
@@ -194,18 +231,13 @@ NewSaveState::NewSaveState(int save_no)
 
 	//characters
 	characters.setTexture(*textures[3]);
-	og_color = characters.getColor();
-	char_color = characters.getColor();
-	char_color.r -= 120;
-	char_color.g -= 120;
-	char_color.b -= 120;
 
 	// setting all the characters colors to a dimmer one because all characters are unselected initiall
 
 	for (int i = 0; i < 3; i++) {
 		characters.setTextureRect({ i * 64,0,64,64 });
 		characters.setOrigin(32, 32);
-		characters.setColor({ char_color.r,char_color.g,char_color.b });
+		characters.setColor(Color( 135, 135, 135 ));
 	}
 }
 
@@ -239,24 +271,38 @@ void NewSaveState::update()
 		characters.setScale(1.2 * scale, 1.2 * scale);
 	}
 	tissue.setPosition(x, y);
+
 	update_buttons();
-	if (confirmed) {
+
+	update_arrow();
+
+	if (back) {
+		if (fade_out()) {
+			back = false;
+			delete states->at(NewSaveID);
+			states->erase(NewSaveID);
+			return;
+		}
+	}
+	else if (confirmed) {
 		//button functionality
 		add_save();
-		states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800},test_str , save_no, 100)});
+		states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800},test_str , save_no, 100) });
 		states->at(GameID)->update();
 
 		// exceptions arrays were explained in the settings state
 
-		int exceptions[] = {GameID};
+		int exceptions[] = { GameID };
 		game.erase_states(exceptions, 1);
 
 		confirmed = 0;
 		return;
 	}
-	update_arrow();
-	if (destruct)
-		return;
+	else
+		fade_in();
+
+
+
 	txt_box.update();
 	
 	update_characters();
@@ -270,7 +316,7 @@ void NewSaveState::render()
 	txt_box.drawTextBox(window);
 	window->draw(back_arrow);
 	render_buttons();
-	text.setFillColor(Color::Black);
+	text.setFillColor(Color(0, 0, 0, transparency));
 	draw_text("Choose name and", x, y - 112 * scale, 26 * scale);
 	draw_text("character", x, y - 112 * scale+ (20 * scale), 26 * scale);
 	render_characters();
@@ -287,17 +333,7 @@ void NewSaveState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(SavesST);
-				states->at(SavesID)->update();
-
-				if (states->find(BackgroundID) == states->end())
-					states->insert(BackgroundST);
-				{
-					int exceptions[] = { SavesID , BackgroundID };
-					game.erase_states(exceptions, 2);
-					return; 
-				}
-				break;
+				back = true; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:

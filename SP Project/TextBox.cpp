@@ -22,6 +22,12 @@ void TextBox::setTexture(Texture& box_texture)
 	box.setPosition(position);
 }
 
+void TextBox::setColor(Color color)
+{
+	box.setColor(color);
+	transparency = color.a;
+}
+
 void TextBox::setFont(Font font)
 {
 	inputted_text.setFont(font);
@@ -132,7 +138,7 @@ void TextBox::initializeTextBox(string& targ_string, Texture& texture, const str
 	this->submit_bool = submit_bool;
 	target_string = &targ_string;
 	placeholder_text.setFont(font);
-	placeholder_text.setFillColor(Color(177, 146, 114, 255));
+	placeholder_text.setFillColor(Color(177, 146, 114));
 	setMode(mode);
 	setScale(scale);
 	setPlaceholderText(placeholder);
@@ -190,12 +196,12 @@ void TextBox::update()
 	inputted_text.setOrigin(inputted_text.getLocalBounds().left + inputted_text.getLocalBounds().width / 2.0, bound_y);
 	setPosition(position);
 	if (selected)
-		inputted_text.setFillColor(Color::Blue);
+		inputted_text.setFillColor(Color(0, 0, 255, transparency));
 	else if(isActive)
-		inputted_text.setFillColor(Color::White);
+		inputted_text.setFillColor(Color(255, 255, 255, transparency));
 	else
-		inputted_text.setFillColor(Color(200, 200, 200, 255));
-
+		inputted_text.setFillColor(Color(200, 200, 200, transparency));
+	placeholder_text.setFillColor(Color(177, 146, 114, transparency));
 	string output_string;
 	if (cursor && isActive) {
 		output_string = *display_string + ((cursor) ? "|" : "");

@@ -211,8 +211,9 @@ void DialogueState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(PauseST); return; break;
-				break;
+				states->insert(PauseST);
+				states->at(PauseID)->update();
+				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:

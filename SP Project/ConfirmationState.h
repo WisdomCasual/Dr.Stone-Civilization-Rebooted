@@ -10,7 +10,7 @@ struct ConfirmationState : public State
 	private:
 		//variables:
 		int x = 0, y = 0, lines = 0;
-		float win_x = 0, win_y = 0, scale = 1;
+		float win_x = 0, win_y = 0, scale = 1, transparency = 0, darkness = 0;
 		bool yes = 0, no = 0, &function;
 		Vector2f mouse_pos = { 0,0 };
 		Vector2u prev_win = { 0,0 };
@@ -29,6 +29,8 @@ struct ConfirmationState : public State
 		} buttons[2] = { { "NO",-45,90, no }, { "YES",45,90, yes } };
 
 		//private functions;
+		void fade_in();
+		bool fade_out();
 		void update_buttons();
 		void render_buttons();
 		void render_strings();

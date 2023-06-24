@@ -20,7 +20,7 @@ private:
 	};
 
 	Text del;
-    float scale = 1;
+    float scale = 1, transparency = 0, darkness = 0;
 	save saves[3] = { {-130,0,1}, {0,0,2}, {130,0,3} };
 	Vector2f clicked_on = { -1, -1 };
 
@@ -31,10 +31,12 @@ private:
 	float x_win = 0, y_win = 0;
 	float x = 0, y = 0;
 	float pos_x = 0, pos_y = 0, dis = 0;
-	bool arrow_pressed = 0, destruct = 0, del_save = 0;
+	bool arrow_pressed = 0, destruct = 0, del_save = 0, back = 0;
 	int del_save_no = 0;
 
 	//private functions:
+	void fade_in();
+	bool fade_out();
 	void initial_saves();
 	void update_saves();
 	void update_arrow();
