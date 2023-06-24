@@ -52,14 +52,14 @@ void InventoryState::update()
 	if (close) {
 		if (panel_pos > -panel.getLocalBounds().width / 2) {
 			panel_pos -= velocity * dt;
-			velocity += 1000 * dt;
+			velocity += 1500 * dt;
 			panel.setPosition(panel_pos * scale * 1.5, y);
 			tissue.setPosition(panel_pos * scale * 1.5, y);
 			if (darkness > 0) {
-				if (darkness - 154 * dt * 4 < 0)
+				if (darkness - 154 * dt * 6 < 0)
 					darkness = 0;
 				else
-					darkness -= 154 * dt * 4;
+					darkness -= 154 * dt * 6;
 				tint.setFillColor(Color(0, 0, 0, darkness));
 			}
 		}

@@ -12,7 +12,7 @@ private:
 	string* target_string = nullptr;
 	int character_limit = 25;
 	Vector2f position = { 0, 0 };
-	float scale = 1, bound_y = 0, delay = 0, box_x_bound = 0, text_x_bound = 0;
+	float scale = 1, bound_y = 0, delay = 0, box_x_bound = 0, text_x_bound = 0, transparency = 255;
 	string input_string = "", placeholder = "", clipboard = "", pw_string = "", *display_string = &input_string;
 	bool isActive = 0, selected = 0, cursor = 0, mode = 0, *submit_bool = nullptr;
 	Text inputted_text, placeholder_text;
@@ -27,6 +27,8 @@ public:
 	void setTargetString(string& target_string);
 
 	void setTexture(Texture& box_texture);
+
+	void setColor(Color color);
 
 	void setFont(Font font);
 

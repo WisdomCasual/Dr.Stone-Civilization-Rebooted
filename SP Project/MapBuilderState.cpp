@@ -618,7 +618,9 @@ void MapBuilderState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(PauseST); return; break;
+				states->insert(PauseST);
+				states->at(PauseID)->update();
+				return; break;
 			case Keyboard::Space:
 				x = 0, y = 0; break;
 			case Keyboard::F1:

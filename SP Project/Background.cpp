@@ -21,10 +21,6 @@ void Background::pollevent()
 
 void Background::update()
 {
-}
-
-void Background::render()
-{
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / bg_x > win_y / bg_y) {
 		scale = win_x / bg_x;
@@ -36,5 +32,9 @@ void Background::render()
 		bg.setScale(scale, scale);
 		bg.setPosition({ -(bg_x * scale - win_x) / 2 , 0 });
 	}
+}
+
+void Background::render()
+{
 	window->draw(bg);
 }

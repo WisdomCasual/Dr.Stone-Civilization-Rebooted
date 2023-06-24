@@ -577,13 +577,17 @@ void GameState::update()
 	else {
 		health_indicator.setTextureRect(IntRect(0, 0, 590, 100));
 		states->insert({ DialogueID,new DialogueState(death_message,{win_x / 2,win_y / 2},scale / 2,2) });
+		states->at(DialogueID)->update();
 		no_update++;
 		if (no_update>=2) {
 			string file_name = "Saves/Save" + to_string(save_num + 1) + ".ini";
 			remove(file_name.c_str());
 			states->insert(MainMenuST);
-			if (states->find(BackgroundID) == states->end())
+			states->at(MainMenuID)->update();
+			if (states->find(BackgroundID) == states->end()) {
 				states->insert(BackgroundST);
+				states->at(BackgroundID)->update();
+			}
 
 			int exceptions[] = { MainMenuID , BackgroundID };
 			game.erase_states(exceptions, 2);
@@ -637,8 +641,9 @@ void GameState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(PauseST); return; break;
-				break;
+				states->insert(PauseST);
+				states->at(PauseID)->update(); 
+				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F6:
@@ -685,6 +690,7 @@ void GameState::pollevent()
 				break;
 			case Keyboard::E:
 				states->insert(InventoryST);
+				states->at(InventoryID)->update();
 				break;
 			case Keyboard::Space:
 				player_entity.use_tool();

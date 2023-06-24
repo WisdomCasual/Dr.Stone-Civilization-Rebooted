@@ -29,13 +29,14 @@ private:
 	Text button_text;
 	TextBox txt_box;
 	string input_password;
-	Color button_color;
 	float x = 0, y = 0;
-	float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
-	bool button_pressed = 0, arrow_pressed = 0, destruct = 0, wrong_password = 0;
+	float win_x = 0, win_y = 0, scale = 1, previous_scale = 1, transparency = 0, darkness = 0;
+	bool button_pressed = 0, arrow_pressed = 0, destruct = 0, wrong_password = 0, back = false, proceed = false;
 
 
 	//private functions:
+	void fade_in();
+	bool fade_out();
 	void update_arrow();
 	void update_buttons();
 	void render_buttons();
