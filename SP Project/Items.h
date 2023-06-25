@@ -6,7 +6,6 @@ struct Items:
     using::Entity::Entity;
 public:
     //Public Variables
-    int item_ID = 0;
     float time = 0;
     Vector2f velocity = { (float)((rand() % 40 - 20) / 40.0),(float)((rand() % 40 - 20) / 40.0) };
  

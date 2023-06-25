@@ -187,6 +187,9 @@ public:
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
 
+	//for item drops
+	int item_ID = 0;
+
 	FloatRect entity_hitbox;
 
 	bool despawn = 0;

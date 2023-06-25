@@ -75,6 +75,8 @@ namespace globalvar {
 	inline int notification_lines = 1;
 	inline float notification_delay = 0;
 
+    inline string item_names[50] = {"Wood", "Stone"};
+
 	inline const int dx[4] = { 1, -1, 0, 0 };
 	inline const int dy[4] = { 0, 0, 1, -1};
 
@@ -112,4 +114,105 @@ namespace globalvar {
 	inline Vector2f toCartesian(const Vector2f V) {
 		return Vector2f(V.x * cos(V.y), V.x * sin(V.y));
 	} //magnitude, direction
+
+
+    struct nod {
+        int itm;
+        struct nod* link = NULL, * back_link = NULL;
+    };
+
+    struct in_order {
+    private:
+        nod* last;
+
+    public:
+        int size = 0;
+        nod* first;
+        /* insert function */
+        in_order() {
+            first = NULL;
+            last = NULL;
+        }
+
+        ~in_order() {
+            clear();
+        }
+
+        void add(int inputed) {
+
+            nod* tmp = new nod;
+
+            tmp->itm = inputed;
+
+            tmp->link = NULL;
+
+            if (first == NULL)
+                first = tmp;
+            else if (last == NULL)
+                tmp->back_link = first, first->link = tmp, last = tmp;
+            else
+                tmp->back_link = last, last->link = tmp, last = tmp;
+
+            size++;
+
+        }
+
+        /*Clear function*/
+        void clear() {
+            while (!empty())
+                erase(first->itm);
+
+        }
+
+        /* empty function */
+        bool empty() {
+            if (first == NULL)
+                return 1;
+            else return 0;
+        }
+
+        /* erase */
+        bool erase(int element) {
+            bool found = 0;
+
+            nod* node = first;
+
+            if (element == first->itm) {
+                first = first->link;
+                if (first != NULL)
+                    first->back_link = NULL;
+                delete node;
+                size--;
+                return 1;
+
+            }
+            else if (element == last->itm) {
+                node = last;
+                last = last->back_link;
+                last->link = NULL;
+                size--;
+                delete node;
+                return 1;
+            }
+
+            for (; node != NULL; node = node->link) {
+                if (node->itm == element) {
+                    found = 1;
+                    if (node->link != NULL)
+                        node->link->back_link = node->back_link;
+                    if (node->back_link != NULL)
+                        node->back_link->link = node->link;
+                    size--;
+                    delete node;
+                    break;
+                }
+            }
+
+            if (size == 1) {
+                first->link = NULL, first->back_link = NULL, last = NULL;
+            }
+            return found;
+        }
+    };
+
 }
