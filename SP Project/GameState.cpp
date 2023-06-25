@@ -628,7 +628,7 @@ void GameState::render()
 {
 	render_static_map();
 	render_entities();
-	if(states->rbegin()->first == GameID || states->rbegin()->first == InventoryID) {
+	if(states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID) {
 		window->draw(hotbar);
 		for (int i = 0; i < 3; i++)
 			window->draw(tool_icons[i]);
