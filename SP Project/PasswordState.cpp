@@ -1,5 +1,55 @@
 #include "PasswordState.h"
 
+
+void PasswordState::fade_in()
+{
+	if (transparency < 255) {
+		if (transparency + 1500 * dt > 255)
+			transparency = 255;
+		else
+			transparency += 1500 * dt;
+
+		bg.setColor(Color(255, 255, 255, transparency));
+		tissue.setColor(Color(255, 255, 255, transparency));
+		back_arrow.setColor(Color(255, 255, 255, transparency));
+		txt_box.setColor(Color(255, 255, 255, transparency));
+
+		if (darkness < 154) {
+			if (darkness + 154 * dt * 6 > 154)
+				darkness = 154;
+			else
+				darkness += 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+	}
+}
+
+bool PasswordState::fade_out()
+{
+	if (transparency > 0) {
+		if (transparency - 1500 * dt < 0)
+			transparency = 0;
+		else
+			transparency -= 1500 * dt;
+
+		bg.setColor(Color(255, 255, 255, transparency));
+		tissue.setColor(Color(255, 255, 255, transparency));
+		back_arrow.setColor(Color(255, 255, 255, transparency));
+		txt_box.setColor(Color(255, 255, 255, transparency));
+
+		if (darkness > 0) {
+			if (darkness - 154 * dt * 6 < 0)
+				darkness = 0;
+			else
+				darkness -= 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+		return false;
+	}
+	else
+		return true;
+}
+
 void PasswordState::update_arrow()
 {
 
@@ -17,11 +67,7 @@ void PasswordState::update_arrow()
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-				
-				//functionality of back button
-
-				states->erase(PasswordID);
-				destruct = 1;
+				back = true;
 				return;
 			}
 		}
@@ -39,10 +85,10 @@ void PasswordState::update_buttons()
 	if (!txt_box.empty()) {
 		if (wrong_password)
 			// if the password is wrong the and clicked on the button turns a bit red
-			buttontex.setColor(Color(button_color.r, button_color.g - 100, button_color.b - 100));
+			buttontex.setColor(Color(255, 155, 155, transparency));
 		else
 			// set the button color to it's original color
-			buttontex.setColor(button_color);
+			buttontex.setColor(Color(255, 255, 255, transparency));
 		buttontex.setPosition(x + confirm.x * scale / 3.5, y + confirm.y * scale / 3.5);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))confirm.pressed = 1;
@@ -60,7 +106,7 @@ void PasswordState::update_buttons()
 	}
 	else {
 		// when nothing is typed the button's color to a dim color
-		buttontex.setColor(Color(button_color.r - 100, button_color.g - 100, button_color.b - 100));
+		buttontex.setColor(Color(155, 155, 155, transparency));
 		wrong_password = 0;
 	}
 }
@@ -76,13 +122,13 @@ void PasswordState::render_buttons()
 	button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
 	button_text.setPosition(x + confirm.x * scale / 3.5, (confirm.pressed) ? y + confirm.y * scale / 3.5 + 2 * scale / 3.5 : y + confirm.y * scale / 3.5 - 2 * scale / 3.5);
 	if (confirm.hover && wrong_password) button_text.setFillColor(Color(235, 205, 205));
-	else if (confirm.hover) button_text.setFillColor(Color::White);
+	else if (confirm.hover) button_text.setFillColor(Color(255, 255, 255, transparency));
 	else if (txt_box.empty())
-		button_text.setFillColor(Color(120, 120, 120));
+		button_text.setFillColor(Color(120, 120, 120, transparency));
 	else if (wrong_password)
-		button_text.setFillColor(Color(200, 170, 170));
+		button_text.setFillColor(Color(200, 170, 170, transparency));
 	else
-		button_text.setFillColor(Color(200, 200, 200));
+		button_text.setFillColor(Color(200, 200, 200, transparency));
 
 	window->draw(buttontex);
 	window->draw(button_text);
@@ -90,6 +136,7 @@ void PasswordState::render_buttons()
 
 PasswordState::PasswordState()
 {
+
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	x = win_x / 2, y = win_y / 2;
 	if (win_x / 150.0 < win_y / 150.0) scale = win_x / 150.0;
@@ -114,7 +161,6 @@ PasswordState::PasswordState()
 	buttontex.setTexture(*textures[3]);
 	buttontex.setTextureRect(IntRect(0, 0, 108, 49));
 	buttontex.setOrigin(108 / 2, 49 / 2);
-	button_color = buttontex.getColor();
 
 	button_text.setFont(font);
 	button_text.setCharacterSize(50);
@@ -164,8 +210,25 @@ void PasswordState::update()
 
 	update_buttons();
 
-	if (destruct)
-		return;
+	if (back) {
+		if (fade_out()) {
+			back = false;
+			states->erase(PasswordID);
+			return;
+		}
+	}
+	else if (proceed) {
+		if (fade_out()) {
+			proceed = false;
+			states->insert({ WorldMapID, new WorldMapState(1, 0) });
+			states->at(WorldMapID)->update();
+			states->erase(SettingsID);
+			states->erase(PasswordID);
+			return;
+		}
+	}
+	else
+		fade_in();
 
 	txt_box.update();
 
@@ -176,12 +239,7 @@ void PasswordState::update()
 			
 			// when the password is confirmed we remove the settings state and the password state and add the worldmap state
 			// which we can access map builder state from
-			
-			states->insert(WorldMapST_admin);
-			states->at(WorldMapID)->update();
-			states->erase(SettingsID);
-			states->erase(PasswordID);
-			return;
+			proceed = true;
 		}
 		else
 			wrong_password = 1;
@@ -213,7 +271,7 @@ void PasswordState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->erase(PasswordID); return; break;
+				back = true; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:

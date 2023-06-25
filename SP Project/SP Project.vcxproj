@@ -149,6 +149,7 @@
     <ClCompile Include="DialogueState.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="InventoryState.cpp" />
     <ClCompile Include="Items.cpp" />
     <ClCompile Include="NewMapState.cpp" />
     <ClCompile Include="NewSaveState.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="InventoryState.h" />
     <ClInclude Include="Items.h" />
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="MapBuilderState.h" />

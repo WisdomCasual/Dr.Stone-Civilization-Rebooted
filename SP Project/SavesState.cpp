@@ -1,5 +1,55 @@
 #include "SavesState.h"
 
+void SavesState::fade_in()
+{
+	if (transparency < 255) {
+		if (transparency + 1500 * dt > 255)
+			transparency = 255;
+		else
+			transparency += 1500 * dt;
+
+		savesBG.setColor(Color(255, 255, 255, transparency));
+		save_bg.setColor(Color(255, 255, 255, transparency));
+		arrow.setColor(Color(255, 255, 255, transparency));
+		charactertex.setColor(Color(255, 255, 255, transparency));
+
+
+		if (darkness < 154) {
+			if (darkness + 154 * dt * 6 > 154)
+				darkness = 154;
+			else
+				darkness += 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+	}
+}
+
+bool SavesState::fade_out()
+{
+	if (transparency > 0) {
+		if (transparency - 1500 * dt < 0)
+			transparency = 0;
+		else
+			transparency -= 1500 * dt;
+
+		savesBG.setColor(Color(255, 255, 255, transparency));
+		save_bg.setColor(Color(255, 255, 255, transparency));
+		arrow.setColor(Color(255, 255, 255, transparency));
+		charactertex.setColor(Color(255, 255, 255, transparency));
+
+		if (darkness > 0) {
+			if (darkness - 154 * dt * 6 < 0)
+				darkness = 0;
+			else
+				darkness -= 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+		return false;
+	}
+	else
+		return true;
+}
+
 void SavesState::update_saves()
 {
 	del.setOrigin(del.getLocalBounds().width / 2.0, del.getLocalBounds().top + del.getLocalBounds().height / 2.0);
@@ -46,7 +96,7 @@ void SavesState::update_saves()
 					//delete save //////////////////
 					del_save_no = i + 1;
 					string strings_array[] = { "Are you sure that you", "want to delete", '"' + saves[i].name + '"'};
-					states->insert({ 14, new ConfirmationState(strings_array,3, del_save) });
+					states->insert({ ConfirmationID, new ConfirmationState(strings_array, 3, del_save) });
 					states->at(ConfirmationID)->update();
 					saves[i].del_hover = 0;
 				}
@@ -64,7 +114,7 @@ void SavesState::update_saves()
 void SavesState::render_saves()
 {
 	window->draw(savesBG);
-	text.setFillColor(Color::Black);
+	text.setFillColor(Color(0, 0, 0, transparency));
 	draw_text("Choose Save File", x, y - 120 * scale, 20 * scale);
 
 	del.setCharacterSize(16.69 * scale);
@@ -79,9 +129,9 @@ void SavesState::render_saves()
 		save_bg.setPosition(x + saves[i].x * scale, y + saves[i].y * scale);
 
 		if (saves[i].del_hover)
-			del.setFillColor(Color::Red);
+			del.setFillColor(Color(255, 0, 0, transparency));
 		else 
-			del.setFillColor(Color(164, 0, 0));
+			del.setFillColor(Color(164, 0, 0, transparency));
 
 		if (saves[i].del_pressed)
 			del.setScale(0.95,0.95);
@@ -92,16 +142,16 @@ void SavesState::render_saves()
 		window->draw(save_bg);
 		
 		if (saves[i].empty) {
-			text.setFillColor(Color::Black);
+			text.setFillColor(Color(0, 0, 0, transparency));
 			draw_text("Empty Save", x + saves[i].x * scale, y + saves[i].y * scale, 18 * scale);
 		}
 		else {
-			text.setFillColor(Color::Black);
+			text.setFillColor(Color(0, 0, 0, transparency));
 			draw_text(saves[i].name, x + saves[i].x * scale, y - 70 * scale, 18 * scale);
 			draw_text("Re-Civilization Level:", x + saves[i].x * scale, y + 12 * scale, 12 * scale);
 			draw_text("Progress", x + saves[i].x * scale, y + 65 * scale, 14 * scale);
 			draw_text(to_string(saves[i].progress) + "%", x + saves[i].x * scale, y + 78 * scale, 14 * scale);
-			text.setFillColor(Color(170, 170, 170));
+			text.setFillColor(Color(170, 170, 170, transparency));
 			//draw_text(window, "Electirc", pos_x, pos_y + dis * 1.3, 50 * scale);
 			//draw_text(window, "Generator", pos_x, pos_y + dis * 2, 50 * scale);
 
@@ -120,7 +170,6 @@ void SavesState::render_saves()
 
 SavesState::SavesState()
 {
-
 	//loads "saves" textures
 	initial_textures("saves");
 
@@ -132,7 +181,6 @@ SavesState::SavesState()
 	//////////////
 
 	tint.setSize({ 1920, 1080 });
-	tint.setFillColor(Color(0, 0, 0, 154));
 
 	savesBG.setTexture(*textures[1]);
 	savesBG.setOrigin(savesBG.getGlobalBounds().width / 2, savesBG.getGlobalBounds().height / 2);
@@ -170,16 +218,7 @@ void SavesState::update_arrow()
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-
-				states->insert(MainMenuST);
-				states->at(MainMenuID)->update();
-
-				if (states->find(BackgroundID) == states->end())
-					states->insert(BackgroundST);
-
-				int exceptions[] = { MainMenuID , BackgroundID };
-				game.erase_states(exceptions, 2);
-				return;
+				back = true;
 			}
 		}
 		
@@ -240,6 +279,26 @@ void SavesState::update()
 		del_save = 0;
 	}
 
+	if (back) {
+		if (fade_out()) {
+			back = false;
+
+			states->insert(MainMenuST);
+			states->at(MainMenuID)->update();
+
+			if (states->find(BackgroundID) == states->end()) {
+				states->insert(BackgroundST);
+				states->at(BackgroundID)->update();
+			}
+
+			int exceptions[] = { MainMenuID , BackgroundID };
+			game.erase_states(exceptions, 2);
+			return;
+		}
+	}
+	else
+		fade_in();
+
 	update_saves();
 	if (destruct)
 		return;
@@ -266,16 +325,7 @@ void SavesState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(MainMenuST);
-				states->at(MainMenuID)->update();
-
-				if (states->find(BackgroundID) == states->end())
-					states->insert(BackgroundST);
-				{
-				int exceptions[] = { MainMenuID , BackgroundID };
-				game.erase_states(exceptions, 2);
-				return;
-				}
+				back = true;
 				break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;

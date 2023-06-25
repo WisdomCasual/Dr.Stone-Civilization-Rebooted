@@ -37,7 +37,6 @@ private:
 	int character_id, save_num;
 
 	base_stats object_stats[30], * destructable_objects = nullptr;
-	Vector3i drop_stats[30];
 
 	Vector2f clicked_on = { -1, -1 };
 
@@ -63,7 +62,7 @@ private:
 			}
 		}
 
-		void add(short type, entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }, Texture** tile_textures =nullptr, Vector3i tile_info={0,0,0}) {
+		void add(short type, entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }, int drop_id = 0) {
 			if (curr_idx < limit) {
 				switch (type) {
 					case 0:
@@ -73,7 +72,7 @@ private:
 						break;
 					case 1:
 						//items
-						entities[curr_idx] = new Items(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, tile_textures,tile_info);
+						entities[curr_idx] = new Items(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, drop_id);
 						entities[curr_idx]->setPosition(initial_position.x, initial_position.y);
 						break;
 					case 2:
@@ -89,7 +88,7 @@ private:
 			delete entities[idx];
 			entities[idx] = nullptr;
 			curr_idx--;
-			entities[idx] = entities[curr_idx];
+			entities[idx] = entities[curr_idx]; 
 			entities[curr_idx] = nullptr;
 		}
 
@@ -115,9 +114,9 @@ private:
 			}
 		}
 
-		void add(IntRect frame, int frame_count, Vector2i position, string animation_name, Color texture_color, bool loop, float& map_x, float& map_y) {
+		void add(IntRect frame, int frame_count, Vector2i position, string animation_name, float animation_scale, Color texture_color, bool loop, float& map_x, float& map_y) {
 			if (curr_idx < limit) {
-				animations[curr_idx] = new Animation(frame, frame_count, position, animation_name, texture_color, loop, map_x, map_y);
+				animations[curr_idx] = new Animation(frame, frame_count, position, animation_name, animation_scale, texture_color, loop, map_x, map_y);
 				curr_idx++;
 			}
 		} //types: 0 = enemy, 1 = item, 2 = passive
@@ -251,7 +250,9 @@ private:
 	float map_x = 0, map_y = 0;
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0;
 	Vector2u prev_win = { 0, 0 };
-	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[3];
+	Texture minimap_tex;
+	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[3], minimap, minimap_frame;
+	CircleShape player_pointer;
 	short item_drops[5], item_drops_count = -1;
 
 
@@ -265,6 +266,8 @@ private:
 	void center_cam(Vector2f);
 	void render_static_map();
 	void render_entities();
+	void update_minimap();
+	void render_minimap();
 
 
 public:

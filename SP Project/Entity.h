@@ -172,7 +172,7 @@ public:
 	entity& entity_stats ;
 	Entity& player_entity ;
 	Sprite entity_sprite;
-	Texture** tile_textures = nullptr;
+	Texture itemTex;
 	render_tile**& static_map;
 	float delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
@@ -188,11 +188,14 @@ public:
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
 
+	FloatRect entity_hitbox;
+
 	bool despawn = 0;
 	short state = 0, action_state = 0, health = 100, damage = 10;
 
 	//////////////////Combat Stuff//////////////////
 	FloatRect hit_range, Entity_Hitbox;
+	Vector2f movement = { 0,0 };
 	float cooldown = 0;
 	Color original = entity_sprite.getColor();
 	Color og_player_color;
@@ -202,7 +205,7 @@ public:
 	float knockback_v=0,hit_cooldown=0;
 	/////////////////////////////////////////////////
 	//Public functions
-	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr,Texture** tile_textures=nullptr, Vector3i tile_info={0,0,0});
+	Entity(entity&, string, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr, int item_id = 0);
 	virtual ~Entity();
 
 	Vector2f getPosition();
@@ -214,7 +217,7 @@ public:
 	bool legal_tile(Vector2f, Vector2f curr_hitbox = { -1, -1 });
 	virtual void move(Vector2f);
 	void action(int);
-	void direction(Vector2f);
+	void direction(Vector2f, bool moving = true);
 	virtual void knockback(Vector2f ,float) {};
 	virtual void damaged(Color&, float&, Sprite&) {};
 	virtual void setID(short) {};

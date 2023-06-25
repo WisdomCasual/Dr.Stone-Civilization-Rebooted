@@ -1,6 +1,53 @@
 #include "WorldMapState.h"
 
 
+void WorldMapState::fade_in()
+{
+	if (transparency < 255) {
+		if (transparency + 1500 * dt > 255)
+			transparency = 255;
+		else
+			transparency += 1500 * dt;
+
+		worldmap.setColor(Color(255, 255, 255, transparency));
+		namebox.setColor(Color(255, 255, 255, transparency));
+		pin.setColor(Color(255, 255, 255, transparency));
+
+		if (tint_fade && darkness < 154) {
+			if (darkness + 154 * dt * 6 > 154)
+				darkness = 154;
+			else
+				darkness += 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+	}
+}
+
+bool WorldMapState::fade_out()
+{
+	if (transparency > 0) {
+		if (transparency - 1500 * dt < 0)
+			transparency = 0;
+		else
+			transparency -= 1500 * dt;
+
+		worldmap.setColor(Color(255, 255, 255, transparency));
+		namebox.setColor(Color(255, 255, 255, transparency));
+		pin.setColor(Color(255, 255, 255, transparency));
+
+		if (darkness > 0) {
+			if (darkness - 154 * dt * 6 < 0)
+				darkness = 0;
+			else
+				darkness -= 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+		return false;
+	}
+	else
+		return true;
+}
+
 void WorldMapState::update_pins()
 {
 	pin.setScale(scale * 3.1, scale * 3.1);
@@ -29,6 +76,7 @@ void WorldMapState::update_pins()
 					//choose map in MapBuilder
 					save_maps();
 					states->insert({ MapBuilderID, new MapBuilderState(pn->first, pn->second.x_size, pn->second.y_size) });
+					states->at(MapBuilderID)->update();
 
 					int exceptions[] = { MapBuilderID };
 					game.erase_states(exceptions, 1);
@@ -75,6 +123,7 @@ void WorldMapState::render_pins()
 		
 		window->draw(pin);
 		window->draw(namebox);
+		text.setFillColor(Color(0, 0, 0, transparency));
 		draw_text(pn.first, x + pn.second.x * scale, y + (pn.second.y - 90) * scale, pn.second.text_size);
 	}
 
@@ -96,8 +145,9 @@ void WorldMapState::save_maps()
 	ofs.close();
 }
 
-WorldMapState::WorldMapState(bool admin)
+WorldMapState::WorldMapState(bool admin, bool tint_fade)
 {
+	this->tint_fade = tint_fade;
 	this->admin = admin;
 
 	initial_textures("worldmap");
@@ -145,6 +195,8 @@ void WorldMapState::update()
 		pin.setScale(scale * 3.1, scale * 3.1);
 		namebox.setScale(scale*1.5, scale*1.5);
 	}
+
+	fade_in();
 
 	update_pins();
 
@@ -195,13 +247,15 @@ void WorldMapState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(PauseST); return; break;
+				states->insert(PauseST);
+				states->at(PauseID)->update();
+				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F5:
 			{
 				string strings_array[] = { "Are you sure that you", "want to revert to ", "the last saved world map?", "" , "Any changes will be lost" };
-				states->insert({ 14, new ConfirmationState(strings_array,5, loadmap) });
+				states->insert({ ConfirmationID, new ConfirmationState(strings_array,5, loadmap) });
 				states->at(ConfirmationID)->update();
 			} break;
 			case Keyboard::F6:

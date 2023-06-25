@@ -36,7 +36,9 @@ void Game::initial_states()
 {
 	//sets intial states 
 	states.insert(BackgroundST);
+	states.at(BackgroundID)->update();
 	states.insert(MainMenuST);
+	states.at(MainMenuID)->update();
 }
 
 void Game::initial_icon()
@@ -76,8 +78,8 @@ void Game::erase_states(int exceptions[], int size = 0)
 			delete st->second;
 	}
 	states = temp;
-	for (auto& state : states)
-		state.second->update();
+	//for (auto& state : states)
+	//	state.second->update();
 }
 
 void Game::exit_prompt()

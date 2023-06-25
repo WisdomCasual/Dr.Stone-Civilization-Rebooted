@@ -1,6 +1,60 @@
 #include "NewMapState.h"
 #define sliderconst 100.0
 
+
+void NewMapState::fade_in()
+{
+	if (transparency < 255) {
+		if (transparency + 1500 * dt > 255)
+			transparency = 255;
+		else
+			transparency += 1500 * dt;
+
+		tissue.setColor(Color(255, 255, 255, transparency));
+		bg.setColor(Color(255, 255, 255, transparency));
+		back_arrow.setColor(Color(255, 255, 255, transparency));
+		tip.setColor(Color(255, 255, 255, transparency));
+		txt_box.setColor(Color(255, 255, 255, transparency));
+		slider_text.setFillColor(Color(0, 0, 0, transparency));
+
+		if (darkness < 154) {
+			if (darkness + 154 * dt * 6 > 154)
+				darkness = 154;
+			else
+				darkness += 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+	}
+}
+
+bool NewMapState::fade_out()
+{
+	if (transparency > 0) {
+		if (transparency - 1500 * dt < 0)
+			transparency = 0;
+		else
+			transparency -= 1500 * dt;
+
+		tissue.setColor(Color(255, 255, 255, transparency));
+		bg.setColor(Color(255, 255, 255, transparency));
+		back_arrow.setColor(Color(255, 255, 255, transparency));
+		tip.setColor(Color(255, 255, 255, transparency));
+		txt_box.setColor(Color(255, 255, 255, transparency));
+		slider_text.setFillColor(Color(0, 0, 0, transparency));
+
+		if (darkness > 0) {
+			if (darkness - 154 * dt * 6 < 0)
+				darkness = 0;
+			else
+				darkness -= 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+		return false;
+	}
+	else
+		return true;
+}
+
 void NewMapState::update_arrow()
 {
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
@@ -15,10 +69,7 @@ void NewMapState::update_arrow()
 		else {
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-				states->erase(NewMapID);
-				pins.erase("");
-				destruct = 1;
-				return;
+				back = true;
 			}
 		}
 	}
@@ -128,7 +179,7 @@ void NewMapState::render_slider(int target)
 void NewMapState::update_buttons()
 {
 	if(!txt_box.empty()) {
-		buttontex.setColor(button_color);
+		buttontex.setColor(Color(255, 255, 255, transparency));
 		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))confirm.pressed = 1;
@@ -145,7 +196,7 @@ void NewMapState::update_buttons()
 		}
 	}
 	else {
-		buttontex.setColor(Color(button_color.r - 100, button_color.g - 100, button_color.b - 100));
+		buttontex.setColor(Color(155, 155, 155, transparency));
 	}
 }
 
@@ -159,11 +210,11 @@ void NewMapState::render_buttons()
 		FloatRect bounds = button_text.getLocalBounds();
 		button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
 		button_text.setPosition(x + confirm.x * scale / 3.0, (confirm.pressed) ? y + confirm.y * scale / 3.0 + 2 * scale / 3.0 : y + confirm.y * scale / 3.0 - 2 * scale / 3.0);
-		if (confirm.hover)button_text.setFillColor(Color::White);
+		if (confirm.hover)button_text.setFillColor(Color(255, 255, 255, transparency));
 		else if (txt_box.empty())
-			button_text.setFillColor(Color(120, 120, 120));
+			button_text.setFillColor(Color(120, 120, 120, transparency));
 		else
-			button_text.setFillColor(Color(200, 200, 200));
+			button_text.setFillColor(Color(200, 200, 200, transparency));
 		
 		window->draw(buttontex);
 		window->draw(button_text);
@@ -206,14 +257,9 @@ NewMapState::NewMapState()
 	slider_text.setCharacterSize(50);
 	slider_text.setFillColor(Color::Black);
 
-	slider_text.setFont(font);
-	slider_text.setCharacterSize(50);
-	slider_text.setFillColor(Color::Black);
-
 	buttontex.setTexture(*textures[3]);
 	buttontex.setTextureRect(IntRect(0, 0, 108, 49));
 	buttontex.setOrigin(108 / 2, 49 / 2);
-	button_color = buttontex.getColor();
 
 	button_text.setFont(font);
 	button_text.setCharacterSize(50);
@@ -265,20 +311,30 @@ void NewMapState::update()
 
 	update_buttons();
 
-	if (destruct)
-		return;
-
 	txt_box.update();
 
 	for (int i = 0; i < 2; i++)
 		update_slider(sliders, i);
 
-	if (confirmed) {
-		pins.insert({ map_name, {pins.at("").x,pins.at("").y ,x_size, y_size}});
+	if (back) {
 		pins.erase("");
-		states->erase(NewMapID);
-		return;
+		if (fade_out()) {
+			delete states->at(NewMapID);
+			states->erase(NewMapID);
+			return;
+		}
 	}
+	else if (confirmed) {
+		if (fade_out()) {
+			pins.insert({ map_name, {pins.at("").x,pins.at("").y ,x_size, y_size} });
+			pins.erase("");
+			delete states->at(NewMapID);
+			states->erase(NewMapID);
+			return;
+		}
+	}
+	else
+		fade_in();
 }
 
 

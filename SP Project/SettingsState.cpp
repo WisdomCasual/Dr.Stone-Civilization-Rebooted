@@ -2,6 +2,71 @@
 // length of slider (mostly used to give the size for the hollow slider)
 #define sliderconst 135.0
 
+
+void SettingsState::fade_in()
+{
+	if (transparency < 255) {
+		if (transparency + 1500 * dt > 255)
+			transparency = 255;
+		else
+			transparency += 1500 * dt;
+
+		back_arrow.setColor(Color(255, 255, 255, transparency));
+		tip.setColor(Color(255, 255, 255, transparency));
+		slider_text.setFillColor(Color(0, 0, 0, transparency));
+		checkbox.setColor(Color(255, 255, 255, transparency));
+		checkmark.setColor(Color(255, 255, 255, transparency));
+		if (dev_button_active)
+			devbutton.setColor(Color(255, 255, 255, transparency));
+
+
+		if (bg_fade) {
+			panel.setColor(Color(255, 255, 255, transparency));
+			tissue.setColor(Color(255, 255, 255, transparency));
+			if (darkness < 154) {
+				if (darkness + 154 * dt * 6 > 154)
+					darkness = 154;
+				else
+					darkness += 154 * dt * 6;
+				tint.setFillColor(Color(0, 0, 0, darkness));
+			}
+		}
+	}
+}
+
+bool SettingsState::fade_out()
+{
+	if (transparency > 0) {
+		if (transparency - 1500 * dt < 0)
+			transparency = 0;
+		else
+			transparency -= 1500 * dt;
+
+		back_arrow.setColor(Color(255, 255, 255, transparency));
+		tip.setColor(Color(255, 255, 255, transparency));
+		slider_text.setFillColor(Color(0, 0, 0, transparency));
+		checkbox.setColor(Color(255, 255, 255, transparency));
+		checkmark.setColor(Color(255, 255, 255, transparency));
+		if (dev_button_active)
+			devbutton.setColor(Color(255, 255, 255, transparency));
+
+		if (bg_fade) {
+			panel.setColor(Color(255, 255, 255, transparency));
+			tissue.setColor(Color(255, 255, 255, transparency));
+			if (darkness > 0) {
+				if (darkness - 154 * dt * 6 < 0)
+					darkness = 0;
+				else
+					darkness -= 154 * dt * 6;
+				tint.setFillColor(Color(0, 0, 0, darkness));
+			}
+		}
+		return false;
+	}
+	else
+		return true;
+}
+
 void SettingsState::update_arrow()
 {
 	// here we save the new settings in the config file
@@ -23,28 +88,11 @@ void SettingsState::update_arrow()
 				game.windowbounds = resolutions[resolution];
 				game.framelimit = framelimits[framelimit];
 				//deletes the current window and draws a new window 
-				game.update_window();
 
-				//check for the previous state to go back to it
+				if(framelimit != prev_framelimit || resolution != prev_resolution)
+					game.update_window();
 
-				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
-					states->insert(MainMenuST);
-				}
-				else {
-					states->insert(PauseST);
-				}
-
-				/*
-				arrays by the name "exceptions" mean that whenever a specific state is removed we erase all unwanted states
-				including the state we were in itself, so when we exit the settings state in our example here we want to delete
-				all the states except the states that we can access the settings from, those exceptions are the elements
-				of the array below. (Since this is somewhat a huge explaination it'll only be included here)
-				*/
-
-				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID, NotificationID };
-				game.erase_states(exceptions, 7);
-				destruct = 1;
-
+				exit = true;
 			}
 		}
 	}
@@ -79,24 +127,23 @@ void SettingsState::dev_button()
 			if (button_pressed) {
 				// pushing the password state 
 				button_pressed = 0;
+				devtext.setFillColor(Color(200, 200, 200, transparency));
 
 				states->insert(PasswordST);
 				states->at(PasswordID)->update();
 				int exceptions[] = { SettingsID , BackgroundID, PasswordID };
 				game.erase_states(exceptions, 3);
 
-
-				destruct = 1;
 				return;
 			}
 			devbutton.setTextureRect(IntRect(0, 0, 45, 49));
 			devtext.setPosition(x + 35 * scale, y + 34.6 * scale);
 		}
-		devtext.setFillColor(Color::White);
+		devtext.setFillColor(Color(255, 255, 255, transparency));
 	}
 	else {
 		button_pressed = 0;
-		devtext.setFillColor(Color(200, 200, 200));
+		devtext.setFillColor(Color(200, 200, 200, transparency));
 	}
 }
 
@@ -182,7 +229,7 @@ void SettingsState::render_slider(int target)
 
 	color = tip.getColor();
 	if (sliders[target].disabled)
-		tip.setColor(Color(color.r-100, color.g-100, color.b-100));
+		tip.setColor(Color(color.r-100, color.g-100, color.b-100, transparency));
 	
 	// here we just draw and position every part of the slider
 
@@ -241,7 +288,7 @@ void SettingsState::settings_intializer()
 	//initialize resolution data
 	for (int i = 0; i < resnum; i++) {
 		if (game.windowbounds == resolutions[i]) {
-			resolution = i;
+			resolution = prev_resolution = i;
 			break;
 		}
 	}
@@ -260,7 +307,7 @@ void SettingsState::settings_intializer()
 	//initialize framelimit data
 	for (int i = 0; i < framelimnum; i++) {
 		if (game.framelimit == framelimits[i]) {
-			framelimit = i;
+			framelimit = prev_framelimit = i;
 			break;
 		}
 	}
@@ -337,8 +384,9 @@ void SettingsState::render_checkbox(int i)
 	draw_text(checkboxes[i].name, x + (checkboxes[i].x + 40) * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale, 5.5 * scale);
 }
 
-SettingsState::SettingsState()
+SettingsState::SettingsState(bool bg_fade)
 {
+	this->bg_fade = bg_fade;
 
 	// initialize the texture file
 	initial_textures("settings");
@@ -373,7 +421,7 @@ SettingsState::SettingsState()
 
 	slider_text.setFont(font);
 	slider_text.setCharacterSize(50);
-	slider_text.setFillColor(Color::Black);
+	slider_text.setFillColor(Color(0, 0, 0));
 
 	tip.setTexture(*textures[0]);
 
@@ -398,6 +446,7 @@ SettingsState::~SettingsState()
 
 void SettingsState::update()
 {
+	window->setMouseCursorVisible(true);
 
 	//get real time mouse position and store it in a variable
 
@@ -449,11 +498,29 @@ void SettingsState::update()
 	if (dev_button_active)
 		dev_button();
 
+	if (exit) {
+		if (fade_out()) {
+			exit = false;
+			if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
+				// if escape is pressed while not being in the map builder or game state or world map the main menu state is pushed
+				// any other place the pause state is pushed
+				states->insert(MainMenuST);
+				states->at(MainMenuID)->update();
+			}
+			else {
+				states->insert({ PauseID, new PauseState(false) });
+				states->at(PauseID)->update();
+			}
+			int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID, NotificationID };
+			game.erase_states(exceptions, 7);
+			return;
+		}
+	}
+	else
+		fade_in();
+
 
 	update_arrow();
-
-	if (destruct)
-		return;
 }
 
 void SettingsState::render()
@@ -470,7 +537,7 @@ void SettingsState::render()
 	}
 
 	window->draw(back_arrow);
-	text.setFillColor(Color::Black);
+	text.setFillColor(Color(0, 0, 0, transparency));
 	draw_text("Settings", x, y - 35 * scale, 6.5 * scale);
 
 	// for loops to render the sliders and checkboxex
@@ -491,19 +558,7 @@ void SettingsState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				if (states->find(MapBuilderID) == states->end() && states->find(GameID) == states->end() && states->find(WorldMapID) == states->end()) {
-					// if escape is pressed while not being in the map builder or game state or world map the main menu state is pushed
-					// any other place the pause state is pushed
-					states->insert(MainMenuST);
-				}
-				else {
-					states->insert(PauseST);
-				}
-				{
-				int exceptions[] = { MainMenuID, BackgroundID, PauseID, MapBuilderID, GameID, WorldMapID, NotificationID };
-				game.erase_states(exceptions, 7);
-				return;
-				}
+				exit = true;
 				break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;

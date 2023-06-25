@@ -1,6 +1,36 @@
 #include "Enemy.h"
 
 
+void Enemy::player_collision_check()
+{
+	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
+
+	entity_hitbox = FloatRect(getRelativePos().x - current_hitbox.x / 2, getRelativePos().y - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
+
+	player_hitbox.left += player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
+
+	if (entity_hitbox.intersects(player_hitbox))
+		player_entity.movement.x = 0;
+
+	player_hitbox.left -= player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
+	player_hitbox.top += player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
+
+	if (entity_hitbox.intersects(player_hitbox))
+		player_entity.movement.y = 0;
+}
+
+bool Enemy::collide_with_player(Vector2f movement)
+{
+	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
+
+	FloatRect entity_hitbox = FloatRect(getRelativePos().x + movement.x * move_speed * dt - current_hitbox.x / 2, getRelativePos().y + movement.y * move_speed * dt - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
+
+	if (entity_hitbox.intersects(player_hitbox))
+		return true;
+	else
+		return false;
+}
+
 Enemy::~Enemy()
 {
 	if (mp != nullptr)
@@ -487,14 +517,16 @@ void Enemy::stateMachine()
 			move_speed = entity_stats.base_movement_speed / 2;
 			animation_delay = 1 / (entity_stats.base_animation_speed/2);
 			motion_delay = 0;
-			theta = (rand() % 8) * 45;
 			will_move = rand() % 4;
 			move_for = 3 + rand() % 2;
-			direction({ 0, 0 });
-			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-			for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
-				theta += 45;
+			if (will_move) {
+				theta = (rand() % 8) * 45;
+				direction({ 0, 0 });
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+				for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
+					theta += 45;
+					curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+				}
 			}
 		}
 		hit_range = { -10,-10,1,1 };
@@ -561,7 +593,9 @@ void Enemy::update()
 		else
 			delay += dt;
 	}
-	/////////////////////HitBox Stuff//////////////////////
+
+	player_collision_check();
+
 	////////////////////PLayer Combat////////////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.hit_range.left << '\t' << player_entity.hit_range.top<<endl;
@@ -577,7 +611,7 @@ void Enemy::update()
 	else if(stun>0)stun -= dt;
 	if (cooldown>0)cooldown -= dt;
 	//////////////////Enemy Combat//////////////////////
-	if (hit_range.intersects(player_entity.Entity_Hitbox)) {
+	if (hit_range.intersects(player_entity.Entity_Hitbox) || entity_sprite.getGlobalBounds().intersects(FloatRect(player_entity.getPosition().x - player_entity.current_hitbox.x * scale / 2, player_entity.getPosition().y - player_entity.current_hitbox.y * scale / 2, player_entity.current_hitbox.x * scale, player_entity.current_hitbox.y * scale))) {
 		if (player_entity.cooldown <= 0) {
 			player_entity.current_frame = 0;
 			player_entity.damaged(player_entity.og_player_color, player_entity.stun, player_entity.entity_sprite);
@@ -600,32 +634,22 @@ void Enemy::update()
 	updatePos();
 	stateMachine();
 
-
-
-	if (will_move&&hit_cooldown<=0) {
+	if (will_move && hit_cooldown<=0) {
 		short dir[2] = { 45, -45 };
-		bool legal_x = legal_direction({ curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)), legal_y = legal_direction({ 0, curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
-		if (legal_x || action_state != 0)
-			move({ dt * move_speed * curr_movement.x, 0 });
-		if (legal_y || action_state != 0)
-			move({ 0, dt * move_speed * curr_movement.y});
-		if (!legal_x && !legal_y && action_state != 0) {
-			if (action_state == 1) {
-				prev_target_tile = {-1, -1};
-			}
-			else {
-				if (mp != nullptr) {
-					delete[] mp;
-				}
-				mp = aStar(last_seen);
-				target_tile = pathFollow(mp);
-				delta_sign = target_tile - getRelativePos();
-				theta = atan2f(delta_sign.y, delta_sign.x) * 180 / PI;
-				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
-			}
-		}
-		direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
+		bool legal_x = legal_direction({ curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)),
+			legal_y = legal_direction({ 0, curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
+		bool moved = false;
 
+		if (legal_x && !collide_with_player({ curr_movement.x, 0 }) || action_state != 0){
+			move({ dt * move_speed * curr_movement.x, 0 });
+			moved = true;
+		}
+		if (legal_y && !collide_with_player({ 0, curr_movement.y }) || action_state != 0){
+			move({ 0, dt * move_speed * curr_movement.y });
+			moved = true;
+		}
+
+		direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 		if ((!legal_x || !legal_y) && action_state == 0) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;

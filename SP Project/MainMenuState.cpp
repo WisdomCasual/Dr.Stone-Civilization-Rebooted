@@ -1,6 +1,35 @@
 #include "MainMenuState.h"
 
 
+void MainMenuState::fade_in()
+{
+	if (transparency < 255) {
+		if (transparency + 800 * dt > 255)
+			transparency = 255;
+		else
+			transparency += 800 * dt;
+		buttontex.setColor(Color(255, 255, 255, transparency));
+		logo.setColor(Color(255, 255, 255, transparency));
+	}
+}
+
+bool MainMenuState::fade_out()
+{
+	if (transparency > 0) {
+		if (transparency - 1500 * dt < 0)
+			transparency = 0;
+		else
+			transparency -= 1500 * dt;
+
+		buttontex.setColor(Color(255, 255, 255, transparency));
+		logo.setColor(Color(255, 255, 255, transparency));
+
+		return false;
+	}
+	else
+		return true;
+}
+
 void MainMenuState::update_buttons()
 {
 	for (auto& button : buttons) {
@@ -33,8 +62,8 @@ void MainMenuState::render_buttons()
 		FloatRect bounds=text.getLocalBounds();
 		text.setOrigin(bounds.width / 2.0, bounds.top+bounds.height / 2.0);
 		text.setPosition(x + button.x * scale, (button.pressed) ? y + button.y * scale + 2 * scale : y + button.y * scale - 2 * scale);
-		if (button.hover)text.setFillColor(Color::White);
-		else text.setFillColor(Color::Color(226,211,195));
+		if (button.hover)text.setFillColor(Color(255, 255, 255, transparency));
+		else text.setFillColor(Color(226,211,195, transparency));
 		window->draw(buttontex);
 		window->draw(text);
 	}
@@ -42,6 +71,8 @@ void MainMenuState::render_buttons()
 
 MainMenuState::MainMenuState()
 {
+	window->setMouseCursorVisible(true);
+
 	initial_textures("mainmenu");
 
 	buttontex.setTexture(*textures[0]);
@@ -81,35 +112,47 @@ void MainMenuState::update()
 
 
 	update_buttons();
+
 	if (exit) {
-		exit = 0; 
+		exit = 0;
 		game.exit_prompt();
 		return;
 	}
 	else if (play) {
-		play = 0;
-		states->insert(SavesST);
+		if(fade_out()){
+			play = 0;
+			states->insert(SavesST);
+			states->at(SavesID)->update();
 
-		if (states->find(BackgroundID) != states->end())
-			states->insert(BackgroundST);
+			if (states->find(BackgroundID) != states->end()) {
+				states->insert(BackgroundST);
+				states->at(BackgroundID)->update();
+			}
 
 
-		int exceptions[] = { SavesID , BackgroundID };
-		game.erase_states(exceptions, 2);
-		return;
+			int exceptions[] = { SavesID , BackgroundID };
+			game.erase_states(exceptions, 2);
+			return;
+		}
 	}
-	else if (settings) { 
-		settings = 0;
-		states->insert(SettingsST);
+	else if (settings) {
+		if(fade_out()){
+			settings = 0;
+			states->insert(SettingsST);
+			states->at(SettingsID)->update();
 
-		if (states->find(BackgroundID) != states->end())
-			states->insert(BackgroundST);
+			if (states->find(BackgroundID) != states->end()) {
+				states->insert(BackgroundST);
+				states->at(BackgroundID)->update();
+			}
 
-
-		int exceptions[] = { SettingsID , BackgroundID };
-		game.erase_states(exceptions, 2);
-		return;
+			int exceptions[] = { SettingsID , BackgroundID };
+			game.erase_states(exceptions, 2);
+			return;
+		}
 	}
+	else
+		fade_in();
 }
 
 void MainMenuState::render()

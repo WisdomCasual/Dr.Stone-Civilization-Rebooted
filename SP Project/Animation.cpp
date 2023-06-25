@@ -1,10 +1,11 @@
 #include "Animation.h"
 
-Animation::Animation(IntRect frame, int frame_count, Vector2i position, string animation_name, Color texture_color, bool loop, float& map_x, float& map_y)
+Animation::Animation(IntRect frame, int frame_count, Vector2i position, string animation_name, float animation_scale, Color texture_color, bool loop, float& map_x, float& map_y)
 	: map_x(map_x), map_y(map_y)
 {
 	this->frame = frame;
 	this->frame_count = frame_count;
+	this->animation_scale = animation_scale;
 	this->loop = loop;
 	pos = position;
 
@@ -24,7 +25,7 @@ void Animation::update(float scale)
 {
 	if (prev_scale != scale) {
 		prev_scale = scale;
-		animation_sprite.setScale(scale * 0.6, scale * 0.6);
+		animation_sprite.setScale(scale * animation_scale, scale * animation_scale);
 	}
 	
 	if (delay >= 0.01) {
