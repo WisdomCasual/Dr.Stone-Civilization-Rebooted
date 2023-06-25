@@ -47,7 +47,7 @@ void InventoryState::render_items()
 	}
 }
 
-InventoryState::InventoryState(in_order* inventory_order, short* inventory_count)
+InventoryState::InventoryState(in_order* inventory_order, unsigned short* inventory_count)
 {
 	this->inventory_count = inventory_count;
 	this->inventory_order = inventory_order;
