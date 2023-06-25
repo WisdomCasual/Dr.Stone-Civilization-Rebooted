@@ -87,6 +87,7 @@ private:
 
 		void remove(int idx) {
 			delete entities[idx];
+			entities[idx] = nullptr;
 			curr_idx--;
 			entities[idx] = entities[curr_idx]; 
 			entities[curr_idx] = nullptr;
