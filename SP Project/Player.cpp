@@ -11,13 +11,13 @@ void Player::move_cam(float x_movement, float y_movement)
 	x_offset = -map_x / 16, y_offset = -map_y / 16;
 }
 
-void Player::player_movement(float x_movement,float y_movement,float velocity)
+void Player::player_movement(float x_movement,float y_movement,float velocity, bool no_direction_change)
 {
 	Vector2f v_direction = { x_movement,y_movement };
-	x_movement *= velocity*dt, y_movement *=  velocity*dt;
-	Vector2f dir = { 0,0 };
-	if (legal_tile({ x_movement, 0 })) {
-		dir.x = v_direction.x;
+	x_movement *= velocity * dt, y_movement *=  velocity * dt;
+	bool moving = false;
+	if (x_movement && legal_tile({ x_movement, 0 })) {
+		moving = true;
 		if ((entity_sprite.getPosition().x + x_movement * scale >= 150 * scale || v_direction.x > 0) && (entity_sprite.getPosition().x + x_movement * scale < win_x - 150 * scale || v_direction.x <= 0))
 			move({ x_movement * scale,  0 });
 		else if ((-map_x + x_movement >= 0 || v_direction.x > 0) && (-map_x * scale + win_x <= (size_x - 1) * 16 * scale || v_direction.x < 0))
@@ -26,8 +26,8 @@ void Player::player_movement(float x_movement,float y_movement,float velocity)
 			move({ x_movement * scale,  0 });
 	}
 
-	if (legal_tile({ 0, y_movement })) {
-		dir.y = v_direction.y;
+	if (y_movement && legal_tile({ 0, y_movement })) {
+		moving = true;
 		if ((entity_sprite.getPosition().y + y_movement * scale >= 100 * scale || v_direction.y > 0) && (entity_sprite.getPosition().y + y_movement * scale < win_y - 100 * scale || v_direction.y <= 0))
 			move({ 0, y_movement * scale });
 
@@ -38,7 +38,8 @@ void Player::player_movement(float x_movement,float y_movement,float velocity)
 			move({ 0, y_movement * scale });
 	}
 
-	direction(dir);
+	if(!no_direction_change)
+		direction(v_direction, moving);
 }
 
 void Player::knockback(Vector2f direction,float v) {
@@ -230,7 +231,6 @@ void Player::bigbang(Vector2i destroy_tile, bool destroy = 0)
 
 void Player::move(Vector2f movement)
 {
-
 	entity_sprite.move(movement);
 	pos += movement;
 }
@@ -294,7 +294,7 @@ void Player::update()
 	else if (stun > 0) {
 		//cout << stun << endl;
 		stun -= dt;
-		player_movement(knockback_direction.x, knockback_direction.y, knockback_v);
+		player_movement(knockback_direction.x, knockback_direction.y, knockback_v, true);
 		//cout << knockback_v <<'\t'<<knockback_direction.x<<'\t'<<knockback_direction.y << endl;
 		knockback_v -= dt*400;
 		if (knockback_v < 0)knockback_v = 0;
@@ -307,7 +307,7 @@ void Player::update()
 	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
 	if(!active_action&&stun<=0)
-		player_movement(delta_movement().x, delta_movement().y,entity_stats.base_movement_speed);
+		player_movement(movement.x, movement.y, entity_stats.base_movement_speed);
 }
 
 void Player::pollevent()

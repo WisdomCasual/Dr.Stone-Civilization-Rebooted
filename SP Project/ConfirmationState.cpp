@@ -1,5 +1,53 @@
 #include "ConfirmationState.h"
 
+
+void ConfirmationState::fade_in()
+{
+	if (transparency < 255) {
+		if (transparency + 1500 * dt > 255)
+			transparency = 255;
+		else
+			transparency += 1500 * dt;
+
+		BG.setColor(Color(255, 255, 255, transparency));
+		tex_bg.setColor(Color(255, 255, 255, transparency));
+		buttontex.setColor(Color(255, 255, 255, transparency));
+
+		if (darkness < 154) {
+			if (darkness + 154 * dt * 6 > 154)
+				darkness = 154;
+			else
+				darkness += 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+	}
+}
+
+bool ConfirmationState::fade_out()
+{
+	if (transparency > 0) {
+		if (transparency - 1500 * dt < 0)
+			transparency = 0;
+		else
+			transparency -= 1500 * dt;
+
+		BG.setColor(Color(255, 255, 255, transparency));
+		tex_bg.setColor(Color(255, 255, 255, transparency));
+		buttontex.setColor(Color(255, 255, 255, transparency));
+
+		if (darkness > 0) {
+			if (darkness - 154 * dt * 6 < 0)
+				darkness = 0;
+			else
+				darkness -= 154 * dt * 6;
+			tint.setFillColor(Color(0, 0, 0, darkness));
+		}
+		return false;
+	}
+	else
+		return true;
+}
+
 void ConfirmationState::update_buttons()
 {
 	for (int i = 0; i < 2; i++) {
@@ -31,10 +79,10 @@ void ConfirmationState::render_buttons()
 		FloatRect bounds = button_text.getLocalBounds();
 		button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
 		button_text.setPosition(x + buttons[i].x * scale, (buttons[i].pressed) ? y + buttons[i].y * scale + 2 * scale : y + buttons[i].y * scale - 2 * scale);
-		if (buttons[i].hover) 
-			button_text.setFillColor(Color::White);
+		if (buttons[i].hover)
+			button_text.setFillColor(Color(255, 255, 255, transparency));
 		else
-			button_text.setFillColor(Color(200, 200, 200));
+			button_text.setFillColor(Color(200, 200, 200, transparency));
 
 		window->draw(buttontex);
 		window->draw(button_text);
@@ -44,7 +92,7 @@ void ConfirmationState::render_buttons()
 void ConfirmationState::render_strings()
 {
 	float i = (lines / 2.0 - 2) * -1, dis = (92 / lines) * scale * 1.3;
-	text.setFillColor(Color::Black);
+	text.setFillColor(Color(0, 0, 0, transparency));
 	for (int j = 0; j < lines - 3; j++, i++) {
 		draw_text(text_strings[j], x, y + i * dis, (5 + 115 / lines) * scale);
 	}
@@ -77,9 +125,9 @@ ConfirmationState::~ConfirmationState()
 
 }
 
-
 void ConfirmationState::update()
 {	
+	window->setMouseCursorVisible(true);
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
 	if (prev_win != window->getSize()) {
@@ -100,18 +148,24 @@ void ConfirmationState::update()
 		tex_bg.setScale(scale * 1.3, scale * 1.3);
 	}
 
-	if (no){
+	if (no) {
+		if(fade_out()){
 		no = 0;
 		delete states->at(ConfirmationID);
 		states->erase(ConfirmationID);
 		return;
+		}
 	}
-	else if (yes){
-		function = 1, yes = 1;
-		delete states->at(ConfirmationID);
-		states->erase(ConfirmationID);
-		return;
+	else if (yes) {
+		if (fade_out()) {
+			function = 1, yes = 0;
+			delete states->at(ConfirmationID);
+			states->erase(ConfirmationID);
+			return;
+		}
 	}
+	else
+		fade_in();
 	update_buttons();
 }
 
@@ -131,9 +185,7 @@ void ConfirmationState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				delete states->at(ConfirmationID);
-				states->erase(ConfirmationID);
-				return; break;
+				no = true; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:

@@ -33,15 +33,70 @@ void PauseState::render_buttons()
 		FloatRect bounds = button_text.getLocalBounds();
 		button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
 		button_text.setPosition(x + button.x * scale * 0.33, (button.pressed) ? y + button.y * scale * 0.33 + 2 * scale * 0.33 : y + button.y * scale * 0.33 - 2 * scale * 0.33);
-		if (button.hover)button_text.setFillColor(Color::White);
-		else button_text.setFillColor(Color::Color(226, 211, 195));
+		if (button.hover)button_text.setFillColor(Color(255, 255, 255, transparency));
+		else button_text.setFillColor(Color(226, 211, 195, transparency));
 		window->draw(buttontex);
 		window->draw(button_text);
 	}
 }
 
-PauseState::PauseState()
+void PauseState::fade_in()
 {
+	if (transparency < 255) {
+		if (transparency + 1500 * dt > 255)
+			transparency = 255;
+		else
+			transparency += 1500 * dt;
+
+		buttontex.setColor(Color(255, 255, 255, transparency));
+
+		if (bg_fade_in) {
+			panel.setColor(Color(255, 255, 255, transparency));
+			tissue.setColor(Color(255, 255, 255, transparency));
+
+			if (darkness < 154) {
+				if (darkness + 154 * dt * 6 > 154)
+					darkness = 154;
+				else
+					darkness += 154 * dt * 6;
+				tint.setFillColor(Color(0, 0, 0, darkness));
+			}
+		}
+	}
+}
+
+bool PauseState::fade_out(bool bg_fade_out)
+{
+	if (transparency > 0) {
+		if (transparency - 1500 * dt < 0)
+			transparency = 0;
+		else
+			transparency -= 1500 * dt;
+
+		buttontex.setColor(Color(255, 255, 255, transparency));
+
+		if (bg_fade_out) {
+			panel.setColor(Color(255, 255, 255, transparency));
+			tissue.setColor(Color(255, 255, 255, transparency));
+
+			if (darkness > 0) {
+				if (darkness - 154 * dt * 6 < 0)
+					darkness = 0;
+				else
+					darkness -= 154 * dt * 6;
+				tint.setFillColor(Color(0, 0, 0, darkness));
+			}
+		}
+		return false;
+	}
+	else
+		return true;
+}
+
+PauseState::PauseState(bool bg_fade_in)
+{
+	this->bg_fade_in = bg_fade_in;
+
 	initial_textures("pause");
 
 	panel.setTexture(*textures[3]);
@@ -70,6 +125,8 @@ PauseState::~PauseState()
 
 void PauseState::update()
 {
+	window->setMouseCursorVisible(true);
+
 	mouse_pos = Mouse::getPosition(*window);
 
 	if (prev_win != window->getSize()) {
@@ -94,33 +151,42 @@ void PauseState::update()
 	update_buttons();
 
 	if (resume) {
-		resume = 0;
-
-		delete states->at(PauseID);
-		states->erase(PauseID);
-		return;
+		if (fade_out()) {
+			resume = 0;
+			delete states->at(PauseID);
+			states->erase(PauseID);
+			return;
+		}
 	}
 	else if (settings) {
-		settings = 0;
+		if (fade_out(false)) {
+			settings = 0;
 
-		states->insert(SettingsST);
+			states->insert({ SettingsID, new SettingsState(false) });
+			states->at(SettingsID)->update();
 
-		int exceptions[] = { SettingsID, BackgroundID, MapBuilderID, GameID, WorldMapID, NotificationID };
-		game.erase_states(exceptions, 6);
-		return;
+			int exceptions[] = { SettingsID, BackgroundID, MapBuilderID, GameID, WorldMapID, NotificationID };
+			game.erase_states(exceptions, 6);
+			return;
+		}
 	}
 	else if (exit) {
 		exit = 0; 
 
 		states->insert(MainMenuST);
+		states->at(MainMenuID)->update();
 
-		if (states->find(BackgroundID) == states->end())
+		if (states->find(BackgroundID) == states->end()) {
 			states->insert(BackgroundST);
+			states->at(BackgroundID)->update();
+		}
 
 		int exceptions[] = { MainMenuID , BackgroundID};
 		game.erase_states(exceptions, 2);
 		return;
 	}
+	else
+		fade_in();
 }
 
 void PauseState::pollevent()
@@ -158,6 +224,6 @@ void PauseState::render()
 	window->draw(tissue);
 	render_buttons();
 
-	text.setFillColor(Color::Black);
+	text.setFillColor(Color(0, 0, 0, transparency));
 	draw_text("Paused", x, y - 35 * scale, 6.5 * scale);
 }

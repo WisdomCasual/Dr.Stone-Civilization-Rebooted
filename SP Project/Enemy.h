@@ -14,7 +14,10 @@ private:
 	path_tile* mp = nullptr;
 	short find_size_x = 50, find_size_y = 50, id = 1, *** vis = nullptr;
 	bool* astar_done = nullptr;
-	//Combat Variables
+
+	//private functions
+	void player_collision_check();
+	bool collide_with_player(Vector2f);
 
 public:
 	~Enemy();

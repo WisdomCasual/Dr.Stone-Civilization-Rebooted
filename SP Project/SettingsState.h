@@ -32,15 +32,15 @@ private:
     Text devtext, slider_text;
     RectangleShape tint;
     float x = 0, y = 0;
-    float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
-    bool button_pressed = 0, arrow_pressed = 0, dev_button_active = 1, destruct = 0;
+    float win_x = 0, win_y = 0, scale = 1, previous_scale = 1, transparency = 0, darkness = 0;
+    bool button_pressed = 0, arrow_pressed = 0, dev_button_active = 1, exit = 0, bg_fade = 1;
     Vector2f mouse_pos = { 0,0 };	
     Vector2u prev_win = { 0, 0 };
     Sprite tip;
     Color color;
     int save_framelimit = 120, save_volume = 100, save_music = 100;
 
-    short int resolution = resnum, framelimit = framelimnum, game_volume = 100, music_volume = 100;
+    short int resolution = resnum, framelimit = framelimnum, game_volume = 100, music_volume = 100, prev_resolution = resnum, prev_framelimit = framelimnum;
     VideoMode resolutions[resnum + 1] = { {800, 600}, {1280, 720}, {1280, 800}, {1366, 768}, {1920, 1080}, {1920, 1200}, {2560, 1440}, {2560, 1600}, {3840, 2160}, {3840, 2400} };
     short int framelimits[framelimnum + 1] = { 30, 60, 90, 120, 144, 165 }; //<-- last slot reserved for custom paramaters ^
     string resolutions_text[resnum + 1];
@@ -75,6 +75,8 @@ private:
 
 
     //private functions:
+    void fade_in();
+    bool fade_out();
     void update_arrow();
     void dev_button();
     void update_slider(slider_info*, int);
@@ -85,7 +87,7 @@ private:
 
 public:
     //constructors / destructors
-    SettingsState();
+    SettingsState(bool bg_fade = true);
 
     ~SettingsState();
 

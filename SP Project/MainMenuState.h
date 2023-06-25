@@ -13,7 +13,7 @@ struct MainMenuState :public State
 {
 private:
 	//variables
-	float scale = 0;	
+	float scale = 0, transparency = 0;	
 	int x=0, y=0;
 	Sprite buttontex,logo;
 	Text text;
@@ -30,6 +30,8 @@ private:
 	bool play = 0, settings = 0, exit = 0;
 
 	//private functions
+	void fade_in();
+	bool fade_out();
 	void update_buttons();
 	void render_buttons();
 public:
