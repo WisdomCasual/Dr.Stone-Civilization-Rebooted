@@ -268,6 +268,7 @@ private:
 	void center_cam(Vector2f);
 	void render_static_map();
 	void render_entities();
+	void check_in_inventory(int);
 	void update_minimap();
 	void render_minimap();
 

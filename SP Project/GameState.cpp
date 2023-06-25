@@ -439,7 +439,7 @@ void GameState::update_minimap()
 	minimap_x = (minimap_x < 0) ? 0 : (minimap_x > size_x * 2 - 98) ? size_x * 2 - 98 : minimap_x;
 	minimap_y = (minimap_y < 0) ? 0 : (minimap_y > size_y * 2 - 98) ? size_y * 2 - 98 : minimap_y;
 	minimap.setTextureRect(IntRect(minimap_x, minimap_y, 96, 96));
-	player_pointer.setPosition(win_x - 52 * scale + (minimap_player_pos_x - minimap_x - 48) * 0.8 * scale, win_y - 52 * scale + (minimap_player_pos_y - minimap_y - 48) * 0.8 * scale);
+	player_pointer.setPosition(win_x - 52 * scale + (minimap_player_pos_x - minimap_x - 48) * 0.8 * scale, 52 * scale + (minimap_player_pos_y - minimap_y - 48) * 0.8 * scale);
 }
 
 void GameState::render_minimap()
@@ -447,6 +447,13 @@ void GameState::render_minimap()
 	window->draw(minimap);
 	window->draw(minimap_frame);
 	window->draw(player_pointer);
+}
+
+void GameState::check_in_inventory(int item_id)
+{
+	if (!inventory_count[item_id]) {
+		inventory_order.erase(item_id);
+	}
 }
 
 GameState::GameState(int character_id, string current_map, Vector2f player_pos, string character_name, int save_num, int health)
@@ -478,7 +485,7 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	health_indicator.setTexture(*textures[5]);
 
 	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health * 10 / player_stats.max_health) * 100, 590, 100));
-	health_indicator.setOrigin(health_indicator.getLocalBounds().width, health_indicator.getLocalBounds().height / 2);
+	health_indicator.setOrigin(0, health_indicator.getLocalBounds().height / 2);
 
 	initial_stats();
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
@@ -510,21 +517,20 @@ void GameState::update()
 		hotbar.setScale(scale * 0.1, scale * 0.1);
 		hotbar.setPosition(win_x/2, win_y - 20 * scale);
 		hotbar_selection.setScale(scale * 0.1, scale * 0.1);
-		health_indicator.setPosition(win_x - 20 * scale , 20 * scale);
+		health_indicator.setPosition(20 * scale , 20 * scale);
 		health_indicator.setScale(scale * 0.15, scale * 0.15);
 		for (int i = 0; i < 3; i++) {
 			tool_icons[i].setPosition(win_x / 2 + 3*scale, win_y - 20 * scale);
 			tool_icons[i].setScale(scale * 0.1, scale * 0.1);
 		}
 		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
-		minimap_frame.setPosition(win_x - 52 * scale, win_y - 52 * scale);
+		minimap_frame.setPosition(win_x - 52 * scale,52 * scale);
 		minimap_frame.setScale(scale * 0.96, scale * 0.96);
-		minimap.setPosition(win_x - 52 * scale, win_y - 52 * scale);
+		minimap.setPosition(win_x - 52 * scale, 52 * scale);
 		minimap.setScale(scale * 0.8, scale * 0.8);
 		player_pointer.setRadius(1.5 * scale);
 		player_pointer.setOrigin(0.75 * scale, 0.75 * scale);
 	}
-
 	player_entity.movement = delta_movement();
 
 	if (player_entity.health < 100 && heal_delay >= 5) {
