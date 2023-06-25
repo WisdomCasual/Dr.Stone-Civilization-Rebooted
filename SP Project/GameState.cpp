@@ -486,6 +486,11 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	initial_game(current_map, player_pos);
 	player_entity.setObjectStats(object_stats, &destructable_objects, item_drops, &item_drops_count);
 
+	inventory_order.add(0);
+	inventory_count[0] = 9999;
+
+	inventory_order.add(1);
+	inventory_count[1] = 6969;
 }
 
 GameState::~GameState()
