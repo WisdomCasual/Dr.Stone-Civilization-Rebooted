@@ -34,7 +34,7 @@ private:
 		float midscale = 1;
 		bool presssed = 0;
 
-	}sliders[2] = { {-64, 0, 255, 2, &x_size, "X", 0}, {-64, 15, 255, 4, &y_size, "Y", 0} };
+	}sliders[2] = { {-64, 0, 511, 2, &x_size, "X", 0}, {-64, 15, 511, 4, &y_size, "Y", 0} };
 
 	bool confirmed = 0;
 
