@@ -17,6 +17,7 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 		entity_sprite.setTexture(itemTex);
 		entity_sprite.setTextureRect(IntRect(item_id * 16, 0, 16, 16));
 		entity_sprite.setOrigin(8, 8);
+		this->item_ID = item_id;
 	}
 	else {
 		initial_textures("game/entities/" + entity_name);

@@ -1,8 +1,57 @@
 #include "InventoryState.h"
 
 
-InventoryState::InventoryState()
+void InventoryState::render_items()
 {
+	nod* it = iteration_start;
+
+	if (inventory_order->empty()) {
+		draw_text("Empty", panel.getPosition().x, panel.getPosition().y + 30 * scale, 50 * scale);
+	}
+	else{
+		if (inventory_order->size < 10) {
+			for (int i = -(inventory_order->size - 1) / 2.0 * 75 + 30; it != NULL && i < 750; i += 75) {
+
+				item.setPosition(panel.getPosition().x - 130 * scale, (panel.getPosition().y + i) * scale);
+				item.setTextureRect(IntRect(it->itm * 16, 0, 16, 16));
+				window->draw(item);
+
+				draw_text(item_names[it->itm], panel.getPosition().x, (panel.getPosition().y + i) * scale, 45 * scale);
+				draw_text("x" + to_string(inventory_count[it->itm]), panel.getPosition().x + 130 * scale, (panel.getPosition().y + i) * scale, 45 * scale);
+
+				it = it->link;
+			}
+		}
+		else {
+			if (item_offset) {
+				item.setPosition(panel.getPosition().x - 130 * scale, (205 + scroll_offset) * scale);
+				item.setTextureRect(IntRect(it->itm * 16, 0, 16, 16));
+				window->draw(item);
+
+				draw_text(item_names[it->itm], panel.getPosition().x, (205 + scroll_offset) * scale, 45 * scale);
+				draw_text("x" + to_string(inventory_count[it->itm]), panel.getPosition().x + 130 * scale, (205 + scroll_offset) * scale, 45 * scale);
+			}
+
+			for (int i = 0; it != NULL && i < 750; i += 75) {
+
+				item.setPosition(panel.getPosition().x - 130 * scale, (280 + i + scroll_offset) * scale);
+				item.setTextureRect(IntRect(it->itm * 16, 0, 16, 16));
+				window->draw(item);
+
+				draw_text(item_names[it->itm], panel.getPosition().x, (280 + i + scroll_offset) * scale, 45 * scale);
+				draw_text("x" + to_string(inventory_count[it->itm]), panel.getPosition().x + 130 * scale, (280 + i + scroll_offset) * scale, 45 * scale);
+
+				it = it->link;
+			}
+		}
+	}
+}
+
+InventoryState::InventoryState(in_order* inventory_order, short* inventory_count)
+{
+	this->inventory_count = inventory_count;
+	this->inventory_order = inventory_order;
+
 	initial_textures("inventory");
 
 
@@ -20,6 +69,8 @@ InventoryState::InventoryState()
 	tint.setFillColor(Color(0, 0, 0, 0));
 
 	velocity = 1500;
+
+	iteration_start = inventory_order->first;
 }
 
 InventoryState::~InventoryState()
@@ -48,6 +99,7 @@ void InventoryState::update()
 		tissue.setPosition(panel_pos * scale * 1.5, y);
 		tissue.setScale(scale * 1.5, scale * 1.5);
 
+		item.setScale(scale * 3, scale * 3);
 	}
 	if (close) {
 		if (panel_pos > -panel.getLocalBounds().width / 2) {
@@ -111,7 +163,30 @@ void InventoryState::pollevent()
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved) {
 
+				if (inventory_order->size > 9) {
+					scroll_offset += 20 * event.mouseWheel.delta;
 
+					if (!item_offset && scroll_offset > 0)
+						scroll_offset = 0;
+					else if (inventory_order->size - item_offset < 10 && scroll_offset < 0)
+						scroll_offset = 0;
+					else {
+						if (scroll_offset > 0) {
+							while (item_offset && scroll_offset > 0) {
+								iteration_start = iteration_start->back_link;
+								scroll_offset -= 60;
+								item_offset--;
+							}
+						}
+						else if (scroll_offset <= -60) {
+							while (inventory_order->size - item_offset >= 10 && scroll_offset <= -60) {
+								iteration_start = iteration_start->link;
+								scroll_offset += 60;
+								item_offset++;
+							}
+						}
+					}
+				}
 			}
 			break;
 		}
@@ -124,6 +199,7 @@ void InventoryState::render()
 	window->draw(tissue);
 
 	////////////
+	render_items();
 
 	window->draw(panel);
 

@@ -485,6 +485,7 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	load_entities(player_pos.y);	
 	initial_game(current_map, player_pos);
 	player_entity.setObjectStats(object_stats, &destructable_objects, item_drops, &item_drops_count);
+
 }
 
 GameState::~GameState()
@@ -606,6 +607,11 @@ void GameState::update()
 
 	for (int i = 0; i < items.curr_idx; i++) {
 		if (items.entities[i]->despawn) {
+
+			if (!inventory_count[items.entities[i]->item_ID])
+				inventory_order.add(items.entities[i]->item_ID);
+			inventory_count[items.entities[i]->item_ID]++;
+
 			items.remove(i);
 			i--;
 			// add item to player_inventory
@@ -689,7 +695,7 @@ void GameState::pollevent()
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(255, 255, 255));
 				break;
 			case Keyboard::E:
-				states->insert(InventoryST);
+				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count)});
 				states->at(InventoryID)->update();
 				break;
 			case Keyboard::Space:

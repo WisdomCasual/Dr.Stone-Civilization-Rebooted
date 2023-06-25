@@ -9,6 +9,7 @@
 #include"Global.h"
 #include"Animation.h"
 #include"DialogueState.h"
+#include "InventoryState.h"
 
 #define default_enemy 0, enemy_stats, "character 1", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
 #define lion lion_stats, "lion", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
@@ -253,7 +254,8 @@ private:
 	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[3], minimap, minimap_frame;
 	CircleShape player_pointer;
 	short item_drops[5], item_drops_count = -1;
-
+	in_order inventory_order;
+	short inventory_count[50]{};
 
 	//private functions:
 	void search_front(int, int, int, Vector3i***, bool***, int);
