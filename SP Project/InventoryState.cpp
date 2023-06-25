@@ -12,12 +12,12 @@ void InventoryState::render_items()
 		if (inventory_order->size < 10) {
 			for (int i = -(inventory_order->size - 1) / 2.0 * 75 + 30; it != NULL && i < 750; i += 75) {
 
-				item.setPosition(panel.getPosition().x - 130 * scale, (panel.getPosition().y + i) * scale);
+				item.setPosition(panel.getPosition().x - 130 * scale, panel.getPosition().y + i * scale);
 				item.setTextureRect(IntRect(it->itm * 16, 0, 16, 16));
 				window->draw(item);
 
-				draw_text(item_names[it->itm], panel.getPosition().x, (panel.getPosition().y + i) * scale, 45 * scale);
-				draw_text("x" + to_string(inventory_count[it->itm]), panel.getPosition().x + 130 * scale, (panel.getPosition().y + i) * scale, 45 * scale);
+				draw_text(item_names[it->itm], panel.getPosition().x, panel.getPosition().y + i * scale, 45 * scale);
+				draw_text("x" + to_string(inventory_count[it->itm]), panel.getPosition().x + 130 * scale, panel.getPosition().y + i * scale, 45 * scale);
 
 				it = it->link;
 			}
