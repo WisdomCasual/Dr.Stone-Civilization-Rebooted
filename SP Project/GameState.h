@@ -256,7 +256,7 @@ private:
 	CircleShape player_pointer;
 	short item_drops[5], item_drops_count = -1;
 	in_order inventory_order;
-	short inventory_count[50]{};
+	unsigned short inventory_count[50]{};
 
 	//private functions:
 	void search_front(int, int, int, Vector3i***, bool***, int);
