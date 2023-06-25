@@ -153,6 +153,13 @@ void InventoryState::pollevent()
 			case Keyboard::E:
 				velocity = 700;
 				close = true; break;
+			case Keyboard::Z:
+				inventory_count[0] = 0;
+				if (!inventory_count[0]) {
+					inventory_order->erase(0);
+					iteration_start = inventory_order->first;
+				}
+				break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:
