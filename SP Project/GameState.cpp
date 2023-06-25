@@ -340,7 +340,7 @@ void GameState::initial_stats()
 
 
 
-	//////////////// item drops /////////////////
+	///////////////// item drops //////////////////
 
 	/////// wood ///////
 	drop_stats[0] = {13, 5, 3};

@@ -272,6 +272,7 @@ path_tile* Enemy::aStar(Vector2i target)
 	while (!pathes.empty()) {
 		curr_tile = pathes.top();
 		pathes.remove();
+		g_val = curr_tile.g_val;
 		curr_tile.cost -= g_val;
 		if (curr_tile.x == path_start.x && curr_tile.y == path_start.y) {
 			found_path = 1;
@@ -298,7 +299,7 @@ path_tile* Enemy::aStar(Vector2i target)
 						g_val = sqrtf(delta_y * delta_y + delta_x * delta_x) + ((*vis)[new_x][new_y] == -1) * 3;
 						(*vis)[new_x][new_y] = id;
 						mp[new_y * find_size_x + new_x] = { curr_tile.x, curr_tile.y };
-						pathes.add({ curr_tile.cost + 1 + g_val, new_x, new_y });
+						pathes.add({ curr_tile.cost + 1 + g_val, new_x, new_y, g_val });
 				}
 			}
 		}
@@ -320,7 +321,7 @@ path_tile* Enemy::aStar(Vector2i target)
 							g_val = sqrtf(delta_y * delta_y + delta_x * delta_x) + ((*vis)[new_x][new_y] == -1) * 4.2426f;
 							(*vis)[new_x][new_y] = id;
 							mp[new_y * find_size_x + new_x] = { curr_tile.x, curr_tile.y};
-							pathes.add({ curr_tile.cost + 1.4142f + g_val, new_x, new_y });
+							pathes.add({ curr_tile.cost + 1.4142f + g_val, new_x, new_y, g_val });
 					}
 				}
 			}
@@ -353,7 +354,12 @@ Vector2f Enemy::pathFollow(path_tile*& mp)
 	if (mp == nullptr) {
 		return { -1.f, -1.f };
 	}
-	path_tile temp = mp[find_size_x * (int(getRelativePos().y / 16) - path_delta.y) + (int(getRelativePos().x / 16) - path_delta.x)]; //convert to astar path
+
+	path_tile temp = mp[(int)find_size_x * (int(getRelativePos().y / 16) - path_delta.y) + (int(getRelativePos().x / 16) - path_delta.x)]; //convert to astar path
+	if (temp.x == 0 && temp.y == 0) {
+		return { -1.f, -2.f };
+	}
+
 	if (temp.x == -1) {
 		return { -1.f, -1.f };
 	}
@@ -406,6 +412,14 @@ void Enemy::stateMachine()
 			delta_sign = target_tile - getRelativePos();
 			delta_pos = delta_sign;
 			theta = atan2f(delta_pos.y, delta_pos.x) * 180 / PI;
+			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+		}
+
+		if (target_tile.y == -2.f) {
+			pathFinding(player_entity, mp);
+			target_tile = pathFollow(mp);
+			delta_sign = target_tile - getRelativePos();
+			theta = atan2f(delta_sign.y, delta_sign.x) * 180 / PI;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 		}
 
@@ -591,12 +605,27 @@ void Enemy::update()
 	if (will_move&&hit_cooldown<=0) {
 		short dir[2] = { 45, -45 };
 		bool legal_x = legal_direction({ curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)), legal_y = legal_direction({ 0, curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
-		if (legal_x)
+		if (legal_x || action_state != 0)
 			move({ dt * move_speed * curr_movement.x, 0 });
-		if (legal_y)
+		if (legal_y || action_state != 0)
 			move({ 0, dt * move_speed * curr_movement.y});
-		if (!legal_x && !legal_y)
-			move(dt * move_speed * curr_movement);
+		if (!legal_x && !legal_y && action_state != 0) {
+			if (action_state == 1) {
+				prev_target_tile = {-1, -1};
+			}
+			else {
+				if (mp != nullptr) {
+					delete[] mp;
+				}
+				mp = aStar(last_seen);
+				target_tile = pathFollow(mp);
+				delta_sign = target_tile - getRelativePos();
+				theta = atan2f(delta_sign.y, delta_sign.x) * 180 / PI;
+				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+			}
+		}
+		direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
+
 		if ((!legal_x || !legal_y) && action_state == 0) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;
@@ -606,7 +635,6 @@ void Enemy::update()
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			}
 		}
-		direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 	}
 	is_there();
 }
