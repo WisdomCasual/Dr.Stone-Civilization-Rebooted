@@ -485,12 +485,6 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	load_entities(player_pos.y);	
 	initial_game(current_map, player_pos);
 	player_entity.setObjectStats(object_stats, &destructable_objects, item_drops, &item_drops_count);
-
-	inventory_order.add(0);
-	inventory_count[0] = 9999;
-
-	inventory_order.add(1);
-	inventory_count[1] = 6969;
 }
 
 GameState::~GameState()
@@ -613,13 +607,15 @@ void GameState::update()
 	for (int i = 0; i < items.curr_idx; i++) {
 		if (items.entities[i]->despawn) {
 
+            // add item to player_inventory
 			if (!inventory_count[items.entities[i]->item_ID])
 				inventory_order.add(items.entities[i]->item_ID);
 			inventory_count[items.entities[i]->item_ID]++;
 
+			// despawn item
 			items.remove(i);
 			i--;
-			// add item to player_inventory
+			
 		}
 		else {
 			items.entities[i]->update();
