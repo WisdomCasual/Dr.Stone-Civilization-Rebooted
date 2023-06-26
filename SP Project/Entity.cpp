@@ -158,10 +158,10 @@ void Entity::pollevent()
 {
 }
 
-void Entity::render()
+void Entity::render(Shader* shader)
 {
 	//window->draw(test);
-	window->draw(entity_sprite);
+	window->draw(entity_sprite, shader);
 
 	//draws entity hitboxes for passive and hostile entities:
 	

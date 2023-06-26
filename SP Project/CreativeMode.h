@@ -28,7 +28,7 @@ private:
 	int curr_tex_set = 0, saved_delay = 0;
 	float scale = 1.15;
 	bool selecting = 0;
-	State::sheet_properties* tile_props;
+	sheet_properties* tile_props;
 	short sheets_no = 0; 
 	short& active_highlight;
 	bool &hitbox, &destroyable, &view_layers, &blocked, &opaque;
@@ -54,7 +54,7 @@ private:
 
 public:
 	//constructors/destructors
-	CreativeMode(Texture**, int, State::tex_tile&, State::sheet_properties[], short, short&, bool&, bool&, bool&, bool&, bool&, Color&);
+	CreativeMode(Texture**, int, State::tex_tile&, sheet_properties[], short, short&, bool&, bool&, bool&, bool&, bool&, Color&);
 	~CreativeMode();
 
 	//public functions:

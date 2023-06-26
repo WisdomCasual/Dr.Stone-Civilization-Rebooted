@@ -366,13 +366,13 @@ void GameState::render_static_map()
 				tile.setTexture(*tile_sheets[map_tile->z]);
 				tile.setTextureRect(IntRect(map_tile->x * 16, map_tile->y * 16, 16, 16));
 				tile.setPosition(map_x * scale + (16 * scale * i), map_y * scale + (16 * scale * j));
-				window->draw(tile);
+				window->draw(tile, &shader);
 			}
 		}
 
 	//render effects
 	for (int i = 0; i < effects.curr_idx; i++) {
-		effects.animations[i]->render();
+		effects.animations[i]->render(&shader);
 	}
 
 }
@@ -409,14 +409,14 @@ void GameState::render_entities()
 					tile.setTexture(*tile_sheets[dynamic_map.at[i->second.tile].at[j].tile.z]);
 					tile.setTextureRect(IntRect(dynamic_map.at[i->second.tile].at[j].tile.x * 16, dynamic_map.at[i->second.tile].at[j].tile.y * 16, 16, 16));
 					tile.setPosition(map_x * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.x), map_y * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.y));
-					window->draw(tile);
+					window->draw(tile, &shader);
 				}
 			}
 			i++;
 		}
 		else {
 			if (i->second.entity != nullptr) {
-				i->second.entity->render();
+				i->second.entity->render(&shader);
 				i->second.entity = nullptr;
 			}
 			i = dynamic_rendering.erase(i);
@@ -495,6 +495,11 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
+
+	if (!shader.loadFromFile("vertex_shader.vert", "fragment_shader.frag")) {
+		cout << "Couldn't load shaders\n";
+	}
+
 	initial_tile_sheets("game/tiles");
 	initial_textures("game");
 	hotbar.setTexture(*textures[0]);
@@ -566,6 +571,8 @@ void GameState::update()
 		minimap.setScale(scale * 0.8, scale * 0.8);
 		player_pointer.setRadius(1.5 * scale);
 		player_pointer.setOrigin(0.75 * scale, 0.75 * scale);
+
+		shader.setUniform("ratio", win_x / win_y);
 	}
 
 	//entity spawning                *******FIX RANDOM DAMAGE WITH ENEMY SPAWNING*****
@@ -677,6 +684,9 @@ void GameState::update()
 
 void GameState::render()
 {
+	shader.setUniform("lightPos", player_entity->getPosition());
+	shader.setUniform("light_level", Glsl::Vec4(0.1, 0.1, 0.2, 1.0));
+
 	render_static_map();
 	render_entities();
 	if(states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID) {

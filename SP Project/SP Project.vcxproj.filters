@@ -183,4 +183,8 @@
       <Filter>Header Files\State Headers</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="fragment_shader.frag" />
+    <None Include="vertex_shader.vert" />
+  </ItemGroup>
 </Project>

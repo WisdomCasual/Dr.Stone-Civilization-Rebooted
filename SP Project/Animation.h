@@ -28,5 +28,5 @@ public:
 
 	//functions
 	void update(float);
-	void render();
+	void render(Shader*);
 };
