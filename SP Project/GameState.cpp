@@ -124,13 +124,6 @@ void GameState::load_map(string map_name)
 
 void GameState::load_entities(float player_relative_y_pos)
 {
-	enemies.add(default_enemy, { 850, 850 });
-	enemies.add(0, wolf, { 750, 750 });
-	enemies.add(0, lion, { 900, 900 });
-	passive.add(default_passive, { 775, 775 });
-	passive.add(2, cow, { 825, 825 });
-	passive.add(2, llama, { 875, 875 });
-	passive.add(2, deer, { 725, 725 });
 
 	//player
 	player_stats.animations = new animation * [5]({});
@@ -138,16 +131,14 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.base_movement_speed = 130;
 	player_stats.scale_const = 0.65;
 	player_stats.base_animation_speed = 16.6;
+	player_stats.textures_count = 4;
+	player_stats.textures = new Texture*[player_stats.textures_count];
 
-	if (character_id == 3 && character_name == "Saitama") {
-		player_entity.setDamage(SHRT_MAX);
-		player_entity.destruction_power = SHRT_MAX;
-		player_entity.setHealth(SHRT_MAX);
+	for (int i = 0; i < player_stats.textures_count; i++) {
+		player_stats.textures[i] = new Texture;
+		player_stats.textures[i]->loadFromFile("textures/game/entities/character " + to_string(character_id) + "/" + to_string(i) + ".png");
 	}
-	else {
-		player_entity.setHealth(100);
-		player_entity.setDamage(25);
-	}
+
 
 	for (int i = 0; i <= 3; i++) {
 		player_stats.animations[i] = new animation[16];
@@ -168,13 +159,17 @@ void GameState::load_entities(float player_relative_y_pos)
 		player_stats.animations[i][6] = { 5, {0, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
 		player_stats.animations[i][7] = { 5, {0, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
-	player_entity.change_state(3);
 
 	//animals
 	lion_stats.animations = new animation * [1];
 	lion_stats.scale_const = 0.7;
 	lion_stats.base_movement_speed = 80;
 	lion_stats.base_animation_speed = 16.6;
+	lion_stats.textures_count = 1;
+	lion_stats.textures = new Texture * [lion_stats.textures_count];
+	lion_stats.textures[0] = new Texture;
+
+	lion_stats.textures[0]->loadFromFile("textures/game/entities/lion/lion.png");
 
 	lion_stats.states_no = 1;
 	lion_stats.animations[0] = new animation[4];
@@ -188,6 +183,12 @@ void GameState::load_entities(float player_relative_y_pos)
 	wolf_stats.base_movement_speed = 80;
 	wolf_stats.states_no = 1;
 	wolf_stats.base_animation_speed = 16.6;
+	wolf_stats.textures_count = 1;
+	wolf_stats.textures = new Texture * [wolf_stats.textures_count];
+	wolf_stats.textures[0] = new Texture;
+
+
+	wolf_stats.textures[0]->loadFromFile("textures/game/entities/wolf/wolf.png");
 
 	wolf_stats.animations[0] = new animation[12];
 	wolf_stats.animations[0][0] = { 4, {160, 128, 32, 64}, {22,60}, {16,30} }; //back
@@ -210,6 +211,12 @@ void GameState::load_entities(float player_relative_y_pos)
 	cow_stats.base_movement_speed = 80;
 	cow_stats.states_no = 1;
 	cow_stats.base_animation_speed = 16.6;
+	cow_stats.textures_count = 1;
+	cow_stats.textures = new Texture * [cow_stats.textures_count];
+	cow_stats.textures[0] = new Texture;
+
+
+	cow_stats.textures[0]->loadFromFile("textures/game/entities/cow/cow.png");
 
 	cow_stats.animations[0] = new animation[4];
 	cow_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {28,72}, {64,64} }; //back
@@ -222,6 +229,11 @@ void GameState::load_entities(float player_relative_y_pos)
 	deer_stats.base_movement_speed = 80;
 	deer_stats.states_no = 1;
 	deer_stats.base_animation_speed = 16.6;
+	deer_stats.textures_count = 1;
+	deer_stats.textures = new Texture * [deer_stats.textures_count];
+	deer_stats.textures[0] = new Texture;
+
+	deer_stats.textures[0]->loadFromFile("textures/game/entities/deer/deer.png");
 
 	deer_stats.animations[0] = new animation[5];
 	deer_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,48} }; //back
@@ -234,6 +246,11 @@ void GameState::load_entities(float player_relative_y_pos)
 	llama_stats.base_movement_speed = 80;
 	llama_stats.states_no = 1;
 	llama_stats.base_animation_speed = 16.6;
+	llama_stats.textures_count = 1;
+	llama_stats.textures = new Texture * [llama_stats.textures_count];
+	llama_stats.textures[0] = new Texture;
+
+	llama_stats.textures[0]->loadFromFile("textures/game/entities/llama/llama.png");
 
 	llama_stats.animations[0] = new animation[5];
 	llama_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {64,64} }; //back
@@ -241,56 +258,28 @@ void GameState::load_entities(float player_relative_y_pos)
 	llama_stats.animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {64,82} }; //left
 	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
-	//TO BE REMOVED
-	enemy_stats.animations = new animation * [4];
-	enemy_stats.scale_const = 0.4;
-	enemy_stats.states_no = 4;
-	enemy_stats.base_movement_speed = 80;
-	enemy_stats.base_animation_speed = 16.6;
-	for (int i = 0; i < 4; i++) {
-		enemy_stats.animations[i] = new animation[16];
-		enemy_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
-		enemy_stats.animations[i][1] = { 9, {0, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
-		enemy_stats.animations[i][2] = { 9, {0, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
-		enemy_stats.animations[i][3] = { 9, {0, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
-	}
-	for (int i = 1; i <= 3; i++) {
-		enemy_stats.animations[2][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
-		enemy_stats.animations[2][1 + i * 4] = { 6, {0, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
-		enemy_stats.animations[2][2 + i * 4] = { 6, {0, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
-		enemy_stats.animations[2][3 + i * 4] = { 6, {0, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
-	}
-	for (int i = 0; i <= 1; i++) {
-		enemy_stats.animations[i][4] = { 5, {0, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
-		enemy_stats.animations[i][5] = { 5, {0, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
-		enemy_stats.animations[i][6] = { 5, {0, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
-		enemy_stats.animations[i][7] = { 5, {0, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
-	}
+	item_stats.textures_count = 1;
+	item_stats.textures = new Texture * [item_stats.textures_count];
+	item_stats.textures[0] = new Texture;
 
-	passive_stats.animations = new animation * [4];
-	passive_stats.scale_const = 0.6;
-	passive_stats.states_no = 4;
-	passive_stats.base_movement_speed = 100;
-	passive_stats.base_animation_speed = 16.6;
-	for (int i = 0; i < 4; i++) {
-		passive_stats.animations[i] = new animation[16];
-		passive_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
-		passive_stats.animations[i][1] = { 9, {0, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
-		passive_stats.animations[i][2] = { 9, {0, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
-		passive_stats.animations[i][3] = { 9, {0, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
+	item_stats.textures[0]->loadFromFile("textures/game/item drops.png");
+
+	player_entity = new Player(player_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj);
+	enemies.add(0, wolf, { 750, 750 });
+	enemies.add(0, lion, { 900, 900 });
+	passive.add(2, cow, { 825, 825 });
+	passive.add(2, llama, { 875, 875 });
+	passive.add(2, deer, { 725, 725 });
+	if (character_id == 3 && character_name == "Saitama") {
+		player_entity->setDamage(SHRT_MAX);
+		player_entity->destruction_power = SHRT_MAX;
+		player_entity->setHealth(SHRT_MAX);
 	}
-	for (int i = 1; i <= 3; i++) {
-		passive_stats.animations[2][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
-		passive_stats.animations[2][1 + i * 4] = { 6, {0, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
-		passive_stats.animations[2][2 + i * 4] = { 6, {0, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
-		passive_stats.animations[2][3 + i * 4] = { 6, {0, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
+	else {
+		player_entity->setHealth(100);
+		player_entity->setDamage(25);
 	}
-	for (int i = 0; i <= 1; i++) {
-		passive_stats.animations[i][4] = { 5, {0, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
-		passive_stats.animations[i][5] = { 5, {0, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
-		passive_stats.animations[i][6] = { 5, {0, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
-		passive_stats.animations[i][7] = { 5, {0, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
-	}
+	player_entity->change_state(3);
 
 }
 
@@ -364,7 +353,7 @@ void GameState::center_cam(Vector2f player_pos)
 
 	x_offset = -map_x / 16, y_offset = -map_y / 16;
 
-	player_entity.setPosition((player_pos.x + map_x) * scale, (player_pos.y + map_y) * scale);
+	player_entity->setPosition((player_pos.x + map_x) * scale, (player_pos.y + map_y) * scale);
 }
 
 void GameState::render_static_map()
@@ -390,23 +379,23 @@ void GameState::render_static_map()
 
 void GameState::render_entities()
 {
-	dynamic_rendering.insert({ player_entity.getRelativePos().y, {-1, &player_entity} });
+	dynamic_rendering.insert({ player_entity->getRelativePos().y, {-1, player_entity} });
 	for (int i = 0; i < enemies.curr_idx; i++) {
-		if(enemies.entities[i] != nullptr)
+		if(enemies.entities[i] != nullptr && enemies.entities[i]->getRelativePos().y >= -map_y - 160 && enemies.entities[i]->getRelativePos().y <= -map_y + 160 + win_y / scale)
 			dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]}});
 	}
 
 	for (int i = 0; i < items.curr_idx; i++) {
-		if (items.entities[i] != nullptr)
+		if (items.entities[i] != nullptr && items.entities[i]->getRelativePos().y >= -map_y - 160 && items.entities[i]->getRelativePos().y <= -map_y + 160 + win_y / scale)
 			dynamic_rendering.insert({ items.entities[i]->getRelativePos().y, {-1, items.entities[i]} });
 	}
 
 	for (int i = 0; i < passive.curr_idx; i++) {
-		if (passive.entities[i] != nullptr)
+		if (passive.entities[i] != nullptr && passive.entities[i]->getRelativePos().y >= -map_y - 160 && passive.entities[i]->getRelativePos().y <= -map_y + 160 + win_y / scale)
 			dynamic_rendering.insert({ passive.entities[i]->getRelativePos().y, {-1, passive.entities[i]} });
 	}
 
-	for (auto i = dynamic_rendering.lower_bound(-map_y-10); i != dynamic_rendering.end(); ) {
+	for (auto i = dynamic_rendering.lower_bound(-map_y-160); i != dynamic_rendering.end() && i->first <= -map_y + 160 + win_y/scale; ) {
 		//if (i->first > map_y + win_y / scale + 10)
 		//	break;
 		if (i->second.tile != -1) {
@@ -426,7 +415,10 @@ void GameState::render_entities()
 			i++;
 		}
 		else {
-			i->second.entity->render();
+			if (i->second.entity != nullptr) {
+				i->second.entity->render();
+				i->second.entity = nullptr;
+			}
 			i = dynamic_rendering.erase(i);
 		}
 	}
@@ -434,7 +426,7 @@ void GameState::render_entities()
 
 void GameState::update_minimap()
 {
-	int minimap_player_pos_x = player_entity.getRelativePos().x / 8 , minimap_player_pos_y = player_entity.getRelativePos().y / 8;
+	int minimap_player_pos_x = player_entity->getRelativePos().x / 8 , minimap_player_pos_y = player_entity->getRelativePos().y / 8;
 	int minimap_x = minimap_player_pos_x - 48, minimap_y = minimap_player_pos_y - 48;
 	minimap_x = (minimap_x < 0) ? 0 : (minimap_x > size_x * 2 - 98) ? size_x * 2 - 98 : minimap_x;
 	minimap_y = (minimap_y < 0) ? 0 : (minimap_y > size_y * 2 - 98) ? size_y * 2 - 98 : minimap_y;
@@ -449,13 +441,50 @@ void GameState::render_minimap()
 	window->draw(player_pointer);
 }
 
+void GameState::entity_spawning()
+{
+	//cout << "not my lucky day\n";
+	screen_length = win_x / (16 * scale), screen_height = win_y / (16*scale);
+	short spawn_rect_x = screen_length + spawn_dist, spawn_rect_y = screen_height + spawn_dist;
+	spawn_total = rand() % (spawn_rect_x * 2 + spawn_rect_y * 2);
+	if (spawn_total > 2 * spawn_rect_x + spawn_rect_y) {
+		spawn_x = 0, spawn_y = 2 * spawn_rect_y - (spawn_total - 2*spawn_rect_x);
+	}
+	else if (spawn_total > spawn_rect_x + spawn_rect_y) {
+		spawn_x = 2 * spawn_rect_x - (spawn_total - spawn_rect_y), spawn_y = spawn_rect_y;
+	}
+	else if (spawn_total > spawn_rect_x) {
+		spawn_x = spawn_rect_x, spawn_y = spawn_total - spawn_rect_x;
+	}
+	else {
+		spawn_x = spawn_total, spawn_y = 0;
+	}
+
+	spawn_x += x_offset - spawn_dist, spawn_y += y_offset - spawn_dist;
+
+	bool valid_spawn = 1;
+
+	for (int i = -1; i < 2; i++) {
+		for (int j = -1; j < 2; j++) {
+			if (spawn_x + i < 0 || spawn_x >= size_x || spawn_y < 0 || spawn_y >= size_y || static_map[spawn_x + i][spawn_y + j].tile_props & 2) {
+				valid_spawn = 0;
+				break;
+			}
+		}
+	}
+
+	if (valid_spawn) {
+		//cout << "ONE PUUUUUUUNCH\n";
+		enemies.add(0 ,cow, { 16.f * spawn_x, 16.f * spawn_y });
+	}
+}
+
 GameState::GameState(int character_id, string current_map, Vector2f player_pos, string character_name, int save_num, int health)
-	: player_entity(player_stats, "character " + to_string(character_id), static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj), items(50)
+	: items(50)
 {
 	window->setMouseCursorVisible(false);
 	this->character_name = character_name, this->current_map = current_map;
 	this->character_id = character_id, this->save_num = save_num;
-	player_entity.health = health;
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
@@ -475,16 +504,17 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 		tool_icons[i].setOrigin(tool_icons[i].getLocalBounds().width / 2, tool_icons[i].getLocalBounds().height / 2);
 		tool_icons[i].setColor(Color(130, 130, 130));
 	}
-	health_indicator.setTexture(*textures[5]);
-
-	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health * 10 / player_stats.max_health) * 100, 590, 100));
-	health_indicator.setOrigin(health_indicator.getLocalBounds().width, health_indicator.getLocalBounds().height / 2);
 
 	initial_stats();
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
 	load_entities(player_pos.y);	
+	player_entity->health = health;
 	initial_game(current_map, player_pos);
-	player_entity.setObjectStats(object_stats, &destructable_objects, item_drops, &item_drops_count);
+	player_entity->setObjectStats(object_stats, &destructable_objects, item_drops, &item_drops_count);
+	health_indicator.setTexture(*textures[5]);
+
+	health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
+	health_indicator.setOrigin(health_indicator.getLocalBounds().width, health_indicator.getLocalBounds().height / 2);
 
 }
 
@@ -494,10 +524,14 @@ GameState::~GameState()
 
 	if (destructable_objects != nullptr)
 		delete destructable_objects;
+
+	if (player_entity != nullptr)
+		delete player_entity;
 }
 
 void GameState::update()
 {
+
 	window->setMouseCursorVisible(false);
 
 	if (prev_win != window->getSize()) {
@@ -507,7 +541,7 @@ void GameState::update()
 		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 		else scale = win_y / 304.5;
 		/////////////////////
-		center_cam(player_entity.getRelativePos());
+		center_cam(player_entity->getRelativePos());
 		hotbar.setScale(scale * 0.1, scale * 0.1);
 		hotbar.setPosition(win_x/2, win_y - 20 * scale);
 		hotbar_selection.setScale(scale * 0.1, scale * 0.1);
@@ -517,7 +551,7 @@ void GameState::update()
 			tool_icons[i].setPosition(win_x / 2 + 3*scale, win_y - 20 * scale);
 			tool_icons[i].setScale(scale * 0.1, scale * 0.1);
 		}
-		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
 		minimap_frame.setPosition(win_x - 52 * scale, win_y - 52 * scale);
 		minimap_frame.setScale(scale * 0.96, scale * 0.96);
 		minimap.setPosition(win_x - 52 * scale, win_y - 52 * scale);
@@ -526,16 +560,24 @@ void GameState::update()
 		player_pointer.setOrigin(0.75 * scale, 0.75 * scale);
 	}
 
-	player_entity.movement = delta_movement();
+	//entity spawning                *******FIX RANDOM DAMAGE WITH ENEMY SPAWNING*****
+	spawn_cd += dt;
+	if (spawn_cd >= def_spawn_cd) {
+		spawn_cd = 0;
+		if (!(rand() % 3))
+			entity_spawning();
+	}
 
-	if (player_entity.health < 100 && heal_delay >= 5) {
+	player_entity->movement = delta_movement();
+
+	if (player_entity->health < 100 && heal_delay >= 5) {
 		heal_delay = 0;
-		player_entity.health += 10;
+		player_entity->health += 10;
 	}
 	else
 		heal_delay+=dt;
 
-	health_indicator.setTextureRect(IntRect(0, ceil(player_entity.health * 10 / player_stats.max_health) * 100, 590, 100));
+	health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
 
 	update_minimap();
 
@@ -550,7 +592,7 @@ void GameState::update()
 			enemies.entities[i]->update();
 		else {
 			effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
-			enemies.remove(i);
+			enemies.rem_ove(i);
 		}
 	}
 
@@ -559,7 +601,7 @@ void GameState::update()
 			passive.entities[i]->update();
 		else {
 			effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
-			passive.remove(i);
+			passive.rem_ove(i);
 		}
 	}
 	
@@ -571,9 +613,9 @@ void GameState::update()
 		enemies.vis = nullptr;
 		enemies.astar_done = 0;
 	}
-	if (!player_entity.despawn) {
+	if (!player_entity->despawn) {
 		no_update = 0;
-		player_entity.update();
+		player_entity->update();
 	}
 	else {
 		health_indicator.setTextureRect(IntRect(0, 0, 590, 100));
@@ -612,7 +654,7 @@ void GameState::update()
 				inventory_order.add(items.entities[i]->item_ID);
 			inventory_count[items.entities[i]->item_ID]++;
 
-			items.remove(i);
+			items.rem_ove(i);
 			i--;
 			// add item to player_inventory
 		}
@@ -621,6 +663,7 @@ void GameState::update()
 		}
 		
 	}
+	
 }
 
 void GameState::render()
@@ -663,8 +706,8 @@ void GameState::pollevent()
 					ofs << (int)character_id << '\n';
 					ofs << 1 << '\n';
 					ofs << current_map << '\n';
-					ofs << player_entity.getRelativePos().x << ' ' << player_entity.getRelativePos().y << '\n';
-					ofs << player_entity.health << '\n';
+					ofs << player_entity->getRelativePos().x << ' ' << player_entity->getRelativePos().y << '\n';
+					ofs << player_entity->health << '\n';
 				}
 				ofs.close();
 			}
@@ -675,23 +718,23 @@ void GameState::pollevent()
 				game.update_window();
 				break;
 			case Keyboard::Num1:
-				player_entity.change_state(3);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				player_entity->change_state(3);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num2:
-				player_entity.change_state(2);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				player_entity->change_state(2);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
 				tool_icons[0].setColor(Color(255, 255, 255)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num3:
-				player_entity.change_state(1);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				player_entity->change_state(1);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(255, 255, 255)), tool_icons[2].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num4:
-				player_entity.change_state(0);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				player_entity->change_state(0);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(255, 255, 255));
 				break;
 			case Keyboard::E:
@@ -699,19 +742,19 @@ void GameState::pollevent()
 				states->at(InventoryID)->update();
 				break;
 			case Keyboard::Space:
-				player_entity.use_tool();
-				if (player_entity.tool_used_on.x > -1) {
-					Vector3i tile_info = static_map[player_entity.tool_used_on.x/16][player_entity.tool_used_on.y / 16].layers[static_map[player_entity.tool_used_on.x / 16][player_entity.tool_used_on.y / 16].size - 1];
+				player_entity->use_tool();
+				if (player_entity->tool_used_on.x > -1) {
+					Vector3i tile_info = static_map[player_entity->tool_used_on.x/16][player_entity->tool_used_on.y / 16].layers[static_map[player_entity->tool_used_on.x / 16][player_entity->tool_used_on.y / 16].size - 1];
 					Color tile_color = tile_sheets_img[tile_info.z].getPixel(tile_info.x * 16 + 8, tile_info.y * 16 + 6);
-					effects.add({ 0,0,100,100 }, 24, { player_entity.tool_used_on.x , player_entity.tool_used_on.y }, "break_animation", 0.6, tile_color, 0, map_x, map_y);
+					effects.add({ 0,0,100,100 }, 24, { player_entity->tool_used_on.x , player_entity->tool_used_on.y }, "break_animation", 0.6, tile_color, 0, map_x, map_y);
 					if (item_drops_count != -1) {
 						Vector3i temp;
 						for (int i = 0; i < item_drops_count; i++) {
-							items.add(1, cow_stats, "item", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity, { (float)player_entity.tool_used_on.x , (float)player_entity.tool_used_on.y }, item_drops[i]);
+							items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity, { (float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y }, item_drops[i]);
 						}
 						item_drops_count = -1;
 					}
-					player_entity.tool_used_on.x = -1;
+					player_entity->tool_used_on.x = -1;
 				}
 				break;
 			}
@@ -723,14 +766,14 @@ void GameState::pollevent()
 			}
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved) {
-				int new_state = player_entity.state + event.mouseWheel.delta;
+				int new_state = player_entity->state + event.mouseWheel.delta;
 				if (new_state > 3) new_state = 3;
 				else if (new_state < 0) new_state = 0;
-				player_entity.change_state(new_state);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity.state) * 248 * scale * 0.1, win_y - 20 * scale);
+				player_entity->change_state(new_state);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
 				if(new_state!=3)
-					tool_icons[(2 - player_entity.state)].setColor(Color(255, 255, 255));
+					tool_icons[(2 - player_entity->state)].setColor(Color(255, 255, 255));
 			}
 		}
 	}

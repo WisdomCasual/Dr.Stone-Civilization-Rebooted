@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, int item_id)
+Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, int item_id)
 	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map), player_entity(*player), x_offset(x_offset), y_offset(y_offset), disable_dynamic_obj(disable_dynamic_obj)
 {
 	this->size_x = size_x, this->size_y = size_y;
@@ -11,19 +11,21 @@ Entity::Entity(entity& entity_stats, string entity_name, render_tile**& static_m
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
-
-	if (entity_name == "item") {
-		itemTex.loadFromFile("textures/game/item drops.png");
-		entity_sprite.setTexture(itemTex);
+	//cout << "here1\n";
+	if (!has_legs) {
+		entity_sprite.setTexture(*entity_stats.textures[state]);
 		entity_sprite.setTextureRect(IntRect(item_id * 16, 0, 16, 16));
 		entity_sprite.setOrigin(8, 8);
+		current_hitbox = { 16, 16 };
 		this->item_ID = item_id;
 	}
 	else {
-		initial_textures("game/entities/" + entity_name);
-		entity_sprite.setTexture(*textures[state]);
+		//cout << "here2\n";
+		//initial_textures("game/entities/" + entity_name);
+		//cout << "here3\n";
+		entity_sprite.setTexture(*entity_stats.textures[state]);
 		health = entity_stats.max_health, damage = entity_stats.base_damage;
-		srand(time(0));
+		//srand(time(0));
 	}
 
 	animation_delay = 1 / entity_stats.base_animation_speed;
