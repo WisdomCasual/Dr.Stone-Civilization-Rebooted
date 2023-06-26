@@ -523,9 +523,6 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	initial_game(current_map, player_pos);
 	player_entity->setObjectStats(object_stats, &destructable_objects, item_drops, &item_drops_count);
 	health_indicator.setTexture(*textures[5]);
-
-	health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
-	health_indicator.setOrigin(health_indicator.getLocalBounds().width, health_indicator.getLocalBounds().height / 2);
 	player_entity->setObjectStats(object_stats, &destructable_objects, item_drops, &item_drops_count);
 }
 
