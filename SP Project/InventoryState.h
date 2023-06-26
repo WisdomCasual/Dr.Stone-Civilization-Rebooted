@@ -13,7 +13,7 @@ private:
     float x = 0, y = 0;
     float win_x = 0, win_y = 0, scale = 1, previous_scale = 1;
     in_order* inventory_order;
-    short* inventory_count;
+    unsigned short* inventory_count;
     Vector2u prev_win = { 0, 0 };
     float panel_pos = 0, velocity = 0, darkness = 0;
     bool close = false;
@@ -25,7 +25,7 @@ private:
 
 public:
     //constructors / destructors
-    InventoryState(in_order*, short*);
+    InventoryState(in_order*, unsigned short*);
     ~InventoryState();
 
     void update();

@@ -179,8 +179,8 @@ namespace globalvar {
 
             if (element == first->itm) {
                 first = first->link;
-                if (first != NULL)
-                    first->back_link = NULL;
+                //if (first != NULL)
+                //    first->back_link = NULL;
                 delete node;
                 size--;
                 return 1;
