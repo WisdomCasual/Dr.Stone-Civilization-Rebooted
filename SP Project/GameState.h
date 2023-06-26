@@ -11,15 +11,13 @@
 #include"DialogueState.h"
 #include "InventoryState.h"
 
-#define default_enemy 0, enemy_stats, "character 1", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
-#define lion lion_stats, "lion", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
-#define wolf wolf_stats, "wolf", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+#define lion lion_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
+#define wolf wolf_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
+//eneimies = 0, items = 1, passive = 2
 
-
-#define default_passive 2, passive_stats, "character 3", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
-#define cow cow_stats, "cow", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
-#define deer deer_stats, "deer", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
-#define llama llama_stats, "llama", static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, &player_entity
+#define cow cow_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
+#define deer deer_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
+#define llama llama_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
 
 using namespace globalvar;
 
@@ -31,11 +29,19 @@ private:
 	short no_update=0;
 	dialogue death_message[2] = { {"Sneku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
 
-	entity player_stats, enemy_stats, passive_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats;
-	Player player_entity;
+	entity player_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats, item_stats;
+	Player* player_entity = nullptr;
 
 	string character_name, current_map;
 	int character_id, save_num;
+
+	/////enemy spawning variables/////
+	float spawn_cd = 0;
+	short spawn_type = 0, left_bound, right_bound, up_bound, down_bound, screen_length, screen_height, spawn_x, spawn_y, spawn_total;         // if %2 = 1 then enemy, else then passive
+	const float def_spawn_cd = 5.0;
+	const short spawn_dist = 7;
+
+
 
 	base_stats object_stats[30], * destructable_objects = nullptr;
 
@@ -63,21 +69,21 @@ private:
 			}
 		}
 
-		void add(short type, entity& entity_stats, string entity_name, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }, int drop_id = 0) {
+		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }, int drop_id = 0) {
 			if (curr_idx < limit) {
 				switch (type) {
 					case 0:
-						entities[curr_idx] = new Enemy(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
+						entities[curr_idx] = new Enemy(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
 						entities[curr_idx]->setVisArray(&vis, &astar_done, find_size_x, find_size_y);
 						entities[curr_idx]->setID(curr_idx + 1);
 						break;
 					case 1:
 						//items
-						entities[curr_idx] = new Items(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, drop_id);
+						entities[curr_idx] = new Items(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, drop_id);
 						entities[curr_idx]->setPosition(initial_position.x, initial_position.y);
 						break;
 					case 2:
-						entities[curr_idx] = new Passive(entity_stats, entity_name, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
+						entities[curr_idx] = new Passive(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player);
 						break;
 				}
 				entities[curr_idx]->setPosition(initial_position.x, initial_position.y);
@@ -85,7 +91,7 @@ private:
 			}
 		} //types: 0 = enemy, 1 = item, 2 = passive
 
-		void remove(int idx) {
+		void rem_ove(int idx) {
 			delete entities[idx];
 			entities[idx] = nullptr;
 			curr_idx--;
@@ -270,6 +276,7 @@ private:
 	void render_entities();
 	void update_minimap();
 	void render_minimap();
+	void entity_spawning();
 
 
 public:

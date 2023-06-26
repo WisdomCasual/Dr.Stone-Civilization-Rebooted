@@ -259,7 +259,7 @@ void Player::update()
 	}
 	if (state != prev_state) {
 		prev_state = state;
-		entity_sprite.setTexture(*textures[state]);
+		entity_sprite.setTexture(*entity_stats.textures[state]);
 	}
 
 	if (active_action) {

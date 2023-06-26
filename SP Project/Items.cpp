@@ -9,11 +9,11 @@ void Items::move()
 {
 	if (time <= 1.0) {
 		float x_movement = velocity.x * dt, y_movement = velocity.y * dt;
-		if (legal_tile({ x_movement, 0 }))
+		if (legal_tile({ x_movement, 0 }, current_hitbox))
 			 {
 			pos.x += velocity.x;
 		}
-		if (legal_tile({ 0, y_movement })) {
+		if (legal_tile({ 0, y_movement }, current_hitbox)) {
 			pos.y += velocity.y;
 		}
 
