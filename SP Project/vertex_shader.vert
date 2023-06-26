@@ -1,4 +1,6 @@
-varying out vec2 vert_pos;
+#version 410 compatibility
+
+out vec4 vert_pos;
 
 void main()
 {
