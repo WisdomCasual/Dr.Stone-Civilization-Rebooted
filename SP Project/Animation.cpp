@@ -45,8 +45,8 @@ void Animation::update(float scale)
 		delay += dt;
 }
 
-void Animation::render()
+void Animation::render(Shader* shader)
 {
 	animation_sprite.setPosition((pos.x + map_x) * prev_scale, (pos.y + map_y) * prev_scale);
-	window->draw(animation_sprite);
+	window->draw(animation_sprite, shader);
 }

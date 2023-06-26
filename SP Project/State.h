@@ -17,6 +17,16 @@ using namespace std;
 using namespace sf;
 
 inline Event text_event;
+
+struct tile_properties {
+	short props = 0; // (AND &) destructable: 1, hitbox: 2, blocked: 4, back/front: 8, front core: 16, destruction core: 32, opaque: 64, , destruction core link: 128
+	short object_type = -1, tool_type = -1; //type of object & required tool (if desruction core) 
+};
+struct sheet_properties {
+	short x_size = 0, y_size = 0; // size of sprite sheet (in tile count)
+	tile_properties** properties; // 2d array
+};
+
 struct State
 {
 private:
@@ -28,14 +38,6 @@ public:
 
 
 	//public variables:
-	struct tile_properties {
-		short props = 0; // (AND &) destructable: 1, hitbox: 2, blocked: 4, back/front: 8, front core: 16, destruction core: 32, opaque: 64, , destruction core link: 128
-		short object_type = -1, tool_type = -1; //type of object & required tool (if desruction core) 
-	};
-	struct sheet_properties {
-		short x_size = 0, y_size = 0; // size of sprite sheet (in tile count)
-		tile_properties** properties; // 2d array
-	};
 	short sheets_no = 0;
 	Texture** textures = nullptr, **tile_sheets = nullptr; //<-- current loaded Textures
 	int textures_no = 0, tile_sheets_no = 0;

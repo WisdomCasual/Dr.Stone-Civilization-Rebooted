@@ -179,7 +179,7 @@ void CreativeMode::highlight()
 		}
 }
 
-CreativeMode::CreativeMode(Texture** textures, int textures_no, State::tex_tile& picked_tile, State::sheet_properties tile_props[], short sheets_no, short& active_highlight, bool& hitbox, bool& destroyable, bool& opaque, bool& view_layers, bool& blocked, Color& highlight_color)
+CreativeMode::CreativeMode(Texture** textures, int textures_no, State::tex_tile& picked_tile, sheet_properties tile_props[], short sheets_no, short& active_highlight, bool& hitbox, bool& destroyable, bool& opaque, bool& view_layers, bool& blocked, Color& highlight_color)
 	: hitbox(hitbox), destroyable(destroyable), view_layers(view_layers), blocked(blocked),  opaque(opaque), active_highlight(active_highlight), highlight_color(highlight_color)
 {
 	sidewindow = new RenderWindow(videomode, "Texture Picker", Style::Titlebar | Style::Close);
