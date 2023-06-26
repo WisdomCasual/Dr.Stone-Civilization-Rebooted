@@ -262,7 +262,7 @@ private:
 	CircleShape player_pointer;
 	short item_drops[5], item_drops_count = -1;
 	in_order inventory_order;
-	short inventory_count[50]{};
+	unsigned short inventory_count[50]{};
 
 	//private functions:
 	void search_front(int, int, int, Vector3i***, bool***, int);
@@ -274,6 +274,7 @@ private:
 	void center_cam(Vector2f);
 	void render_static_map();
 	void render_entities();
+	void check_in_inventory(int);
 	void update_minimap();
 	void render_minimap();
 	void entity_spawning();

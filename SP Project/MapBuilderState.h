@@ -159,7 +159,7 @@ private:
 	int line_length = 1, c = 0, base = 0, *dep = nullptr, *indep = nullptr, dx, dy;
 	Vector2u prev_win = { 0, 0 };
 	Text info, layer_info;
-	Tile tiles[260][260];    //the level map
+	Tile tiles[520][520];    //the level map
 	RectangleShape hover_rect, highlight_rect, select_rect;
 	Color highlight_color;
 	int wdth = 0, hght = 0, start_x = 0, start_y = 0;
