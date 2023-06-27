@@ -257,6 +257,7 @@ void SavesState::initial_saves()
 			saves[i].player_pos = player_pos;
 			ifs >> health;
 			saves[i].health = health;
+			ifs >> game_time;
 		}
 		ifs.close();
 	}

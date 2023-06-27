@@ -265,11 +265,11 @@ void GameState::load_entities(float player_relative_y_pos)
 	item_stats.textures[0]->loadFromFile("textures/game/item drops.png");
 
 	player_entity = new Player(player_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj);
-	enemies.add(0, wolf, { 750, 750 });
-	enemies.add(0, lion, { 900, 900 });
-	passive.add(2, cow, { 825, 825 });
-	passive.add(2, llama, { 875, 875 });
-	passive.add(2, deer, { 725, 725 });
+	enemies.add(wolf(0), {750, 750});
+	enemies.add(lion(0), {900, 900});
+	passive.add(cow(2), {825, 825});
+	passive.add(llama(2), {875, 875});
+	passive.add(deer(2), {725, 725});
 	if (character_id == 3 && character_name == "Saitama") {
 		player_entity->setDamage(SHRT_MAX);
 		player_entity->destruction_power = SHRT_MAX;
@@ -382,29 +382,29 @@ void GameState::render_entities()
 	dynamic_rendering.insert({ player_entity->getRelativePos().y, {-1, player_entity} });
 	for (int i = 0; i < enemies.curr_idx; i++) {
 		if(enemies.entities[i] != nullptr &&
-			enemies.entities[i]->getRelativePos().y >= -map_y - entity_render_distance &&
-			enemies.entities[i]->getRelativePos().y <= -map_y + entity_render_distance + win_y / scale &&
-			enemies.entities[i]->getRelativePos().x >= -map_x - entity_render_distance &&
-			enemies.entities[i]->getRelativePos().x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
+			enemies.entities[i]->pos.y >= -map_y - entity_render_distance &&
+			enemies.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			enemies.entities[i]->pos.x >= -map_x - entity_render_distance &&
+			enemies.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
 			dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]}});
 	}
 
 	for (int i = 0; i < items.curr_idx; i++) {
 		if (items.entities[i] != nullptr &&
-			items.entities[i]->getRelativePos().y >= -map_y - entity_render_distance &&
-			items.entities[i]->getRelativePos().y <= -map_y + entity_render_distance + win_y / scale &&
-			items.entities[i]->getRelativePos().x >= -map_x - entity_render_distance &&
-			items.entities[i]->getRelativePos().x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
+			items.entities[i]->pos.y >= -map_y - entity_render_distance &&
+			items.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			items.entities[i]->pos.x >= -map_x - entity_render_distance &&
+			items.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
 			dynamic_rendering.insert({ items.entities[i]->getRelativePos().y, {-1, items.entities[i]} });
 	}
 
 	for (int i = 0; i < passive.curr_idx; i++) {
 		if (passive.entities[i] != nullptr &&
-			passive.entities[i]->getRelativePos().y >= -map_y - entity_render_distance &&
-			passive.entities[i]->getRelativePos().y <= -map_y + entity_render_distance + win_y / scale &&
-			passive.entities[i]->getRelativePos().x >= -map_x - entity_render_distance &&
-			passive.entities[i]->getRelativePos().x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
-			dynamic_rendering.insert({ passive.entities[i]->getRelativePos().y, {-1, passive.entities[i]} });
+			passive.entities[i]->pos.y >= -map_y - entity_render_distance &&
+			passive.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			passive.entities[i]->pos.x >= -map_x - entity_render_distance &&
+			passive.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
+			dynamic_rendering.insert({ passive.entities[i]->pos.y, {-1, passive.entities[i]} });
 	}
 	//int debug_ctr = 0;
 	//cout << "total entities/objects: " << dynamic_rendering.size() << '\n';
@@ -495,9 +495,19 @@ void GameState::entity_spawning()
 
 	if (valid_spawn) {
 		//cout << "ONE PUUUUUUUNCH\n";
-		enemies.add(0 ,cow, { 16.f * spawn_x, 16.f * spawn_y });
+		enemies.add(cow(0), {16.f * spawn_x, 16.f * spawn_y});
 	}
 }
+
+bool GameState::entity_in_range(Vector2f cords, short offset)
+{
+	return(cords.y >= -map_y - entity_render_distance &&
+		cords.y <= -map_y + entity_render_distance + win_y / scale &&
+		cords.x >= -map_x - entity_render_distance &&
+		cords.x <= -map_x + entity_render_distance + win_x / scale);
+}
+
+
 
 void GameState::check_in_inventory(int item_id)
 {
@@ -506,7 +516,7 @@ void GameState::check_in_inventory(int item_id)
 	}
 }
 
-GameState::GameState(int character_id, string current_map, Vector2f player_pos, string character_name, int save_num, int health)
+GameState::GameState(int character_id, string current_map, Vector2f player_pos, string character_name, int save_num, int health, double curr_game_time)
 	: items(50)
 {
 	window->setMouseCursorVisible(false);
@@ -515,11 +525,11 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
-
 	if (!shader.loadFromFile("VertexShader.shader", "FragmentShader.shader")) {
 		cout << "Couldn't load shaders\n";
 	}
 
+	game_time = curr_game_time;
 	initial_tile_sheets("game/tiles");
 	initial_textures("game");
 	hotbar.setTexture(*textures[0]);
@@ -683,6 +693,7 @@ void GameState::update()
 	}
 
 	for (int i = 0; i < items.curr_idx; i++) {
+
 		if (items.entities[i]->despawn) {
 
             // add item to player_inventory
@@ -695,11 +706,12 @@ void GameState::update()
 			
 		}
 		else {
-			items.entities[i]->update();
+			if(entity_in_range(items.entities[i]->pos, entity_update_distance))
+				items.entities[i]->update();
 		}
 		
 	}
-	
+	game_time += dt;
 }
 
 void GameState::render()
@@ -747,6 +759,7 @@ void GameState::pollevent()
 					ofs << current_map << '\n';
 					ofs << player_entity->getRelativePos().x << ' ' << player_entity->getRelativePos().y << '\n';
 					ofs << player_entity->health << '\n';
+					ofs << game_time << '\n';
 				}
 				ofs.close();
 			}
@@ -789,7 +802,7 @@ void GameState::pollevent()
 					if (item_drops_count != -1) {
 						Vector3i temp;
 						for (int i = 0; i < item_drops_count; i++) {
-							items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity, { (float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y }, item_drops[i]);
+							items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity, { (float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y }, 1, 60.0, item_drops[i]);
 						}
 						item_drops_count = -1;
 					}

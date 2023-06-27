@@ -1,11 +1,11 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, int item_id)
-	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map), player_entity(*player), x_offset(x_offset), y_offset(y_offset), disable_dynamic_obj(disable_dynamic_obj)
+Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, bool persistant, double time_to_despawn, int item_id)
+	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map), player_entity(*player), x_offset(x_offset), y_offset(y_offset), disable_dynamic_obj(disable_dynamic_obj), time_to_despawn(time_to_despawn), persistant(persistant)
 {
 	this->size_x = size_x, this->size_y = size_y;
 
-
+	despawn_timer = game_time;
 	tile_props = tile_props_ptr;
 
 	win_x = window->getSize().x, win_y = window->getSize().y;
@@ -17,6 +17,7 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 		entity_sprite.setTextureRect(IntRect(item_id * 16, 0, 16, 16));
 		entity_sprite.setOrigin(8, 8);
 		current_hitbox = { 16, 16 };
+		despawn_timer = game_time;
 		this->item_ID = item_id;
 	}
 	else {

@@ -67,7 +67,8 @@ namespace globalvar {
 
 	inline int fps = 0, frame_count = 0, frame_sum = 0;
 	inline bool fps_active = 0, fullscreen = 0, vsync = 0, exit_game = 0;
-	inline float delay = 0;
+    inline float delay = 0;
+    inline double game_time = 0;
 
 	inline Font font;
 	inline Text fps_text, text;

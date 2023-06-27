@@ -1,4 +1,4 @@
-#version 330 core
+#version 330 compatibility
 
 in vec4 vert_pos;
 
