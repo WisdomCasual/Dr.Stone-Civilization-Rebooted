@@ -50,9 +50,12 @@ void Items::update()
 	}
 	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
 
-
-     intersect();
-	 move();
+	
+    intersect();
+	move();
+	if (game_time - despawn_timer > time_to_despawn) {
+		despawn = 1;
+	}
 }
 
 void Items::pollevent()

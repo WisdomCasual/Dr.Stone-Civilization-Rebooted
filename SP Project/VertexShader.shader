@@ -1,4 +1,4 @@
-#version 330 core
+#version 330 compatibility
 
 layout(location = 0) in vec4 position;
 out vec4 vert_pos;

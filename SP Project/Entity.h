@@ -201,7 +201,9 @@ public:
 
 	FloatRect entity_hitbox;
 
-	bool despawn = 0;
+	bool despawn = 0, persistant = 0;
+	double despawn_timer = game_time;
+	const double time_to_despawn;
 	short state = 0, action_state = 0, health = 100, damage = 10;
 
 	//////////////////Combat Stuff//////////////////
@@ -216,7 +218,7 @@ public:
 	float knockback_v=0,hit_cooldown=0;
 	/////////////////////////////////////////////////
 	//Public functions
-	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr, int item_id = 0);
+	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr, bool persistant = 0, double time_to_despawn = 5.0, int item_id = 0);
 	virtual ~Entity();
 
 	Vector2f getPosition();
