@@ -29,6 +29,7 @@ private:
 	short no_update=0;
 	dialogue death_message[2] = { {"Sneku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
 
+	Shader shader;
 	entity player_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats, item_stats;
 	Player* player_entity = nullptr;
 
