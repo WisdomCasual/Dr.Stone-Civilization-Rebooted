@@ -381,25 +381,44 @@ void GameState::render_entities()
 {
 	dynamic_rendering.insert({ player_entity->getRelativePos().y, {-1, player_entity} });
 	for (int i = 0; i < enemies.curr_idx; i++) {
-		if(enemies.entities[i] != nullptr && enemies.entities[i]->getRelativePos().y >= -map_y - 160 && enemies.entities[i]->getRelativePos().y <= -map_y + 160 + win_y / scale)
+		if(enemies.entities[i] != nullptr &&
+			enemies.entities[i]->getRelativePos().y >= -map_y - entity_render_distance &&
+			enemies.entities[i]->getRelativePos().y <= -map_y + entity_render_distance + win_y / scale &&
+			enemies.entities[i]->getRelativePos().x >= -map_x - entity_render_distance &&
+			enemies.entities[i]->getRelativePos().x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
 			dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]}});
 	}
 
 	for (int i = 0; i < items.curr_idx; i++) {
-		if (items.entities[i] != nullptr && items.entities[i]->getRelativePos().y >= -map_y - 160 && items.entities[i]->getRelativePos().y <= -map_y + 160 + win_y / scale)
+		if (items.entities[i] != nullptr &&
+			items.entities[i]->getRelativePos().y >= -map_y - entity_render_distance &&
+			items.entities[i]->getRelativePos().y <= -map_y + entity_render_distance + win_y / scale &&
+			items.entities[i]->getRelativePos().x >= -map_x - entity_render_distance &&
+			items.entities[i]->getRelativePos().x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
 			dynamic_rendering.insert({ items.entities[i]->getRelativePos().y, {-1, items.entities[i]} });
 	}
 
 	for (int i = 0; i < passive.curr_idx; i++) {
-		if (passive.entities[i] != nullptr && passive.entities[i]->getRelativePos().y >= -map_y - 160 && passive.entities[i]->getRelativePos().y <= -map_y + 160 + win_y / scale)
+		if (passive.entities[i] != nullptr &&
+			passive.entities[i]->getRelativePos().y >= -map_y - entity_render_distance &&
+			passive.entities[i]->getRelativePos().y <= -map_y + entity_render_distance + win_y / scale &&
+			passive.entities[i]->getRelativePos().x >= -map_x - entity_render_distance &&
+			passive.entities[i]->getRelativePos().x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
 			dynamic_rendering.insert({ passive.entities[i]->getRelativePos().y, {-1, passive.entities[i]} });
 	}
-
-	for (auto i = dynamic_rendering.lower_bound(-map_y-160); i != dynamic_rendering.end() && i->first <= -map_y + 160 + win_y/scale; ) {
-		//if (i->first > map_y + win_y / scale + 10)
-		//	break;
+	//int debug_ctr = 0;
+	//cout << "total entities/objects: " << dynamic_rendering.size() << '\n';
+	for (auto i = dynamic_rendering.lower_bound(-map_y - max(entity_render_distance, object_render_distance));
+		i != dynamic_rendering.end() && i->first <= -map_y + max(short(obj_up_offset + object_render_distance), entity_render_distance) + win_y / scale; ) {
+		
 		if (i->second.tile != -1) {
-			
+			if (dynamic_map.at[i->second.tile].at[0].position.x*16 < -map_x - obj_right_offest - object_render_distance ||
+				dynamic_map.at[i->second.tile].at[0].position.x*16 > -map_x + obj_left_offset + object_render_distance + win_x / scale ||
+				i->first < -map_y - object_render_distance - obj_down_offset || i->first > -map_y + object_render_distance + obj_up_offset + win_y/scale) {
+				i++;
+				continue;
+			}
+			//debug_ctr++;
 			for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
 				if(i->second.tile == disable_dynamic_obj){
 					i = dynamic_rendering.erase(i);
@@ -422,6 +441,7 @@ void GameState::render_entities()
 			i = dynamic_rendering.erase(i);
 		}
 	}
+	//cout << "total rendering: " << debug_ctr << '\n';
 }
 
 void GameState::update_minimap()

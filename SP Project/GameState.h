@@ -39,7 +39,8 @@ private:
 	float spawn_cd = 0;
 	short spawn_type = 0, left_bound, right_bound, up_bound, down_bound, screen_length, screen_height, spawn_x, spawn_y, spawn_total;         // if %2 = 1 then enemy, else then passive
 	const float def_spawn_cd = 5.0;
-	const short spawn_dist = 7;
+	const short spawn_dist = 7, entity_render_distance = 5 * 16, object_render_distance = 3 * 16, entity_update_distance = 15 * 16,
+				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
 
 
 
