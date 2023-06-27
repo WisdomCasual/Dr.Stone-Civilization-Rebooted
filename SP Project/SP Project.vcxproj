@@ -195,6 +195,10 @@
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="WorldMapState.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="FragmentShader.shader" />
+    <None Include="VertexShader.shader" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
