@@ -218,7 +218,7 @@ public:
 	float knockback_v=0,hit_cooldown=0;
 	/////////////////////////////////////////////////
 	//Public functions
-	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr, bool persistant = 0, double time_to_despawn = 5.0, int item_id = 0);
+	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr, bool persistant = 0, double time_to_despawn = 10.0, int item_id = 0);
 	virtual ~Entity();
 
 	Vector2f getPosition();

@@ -40,7 +40,7 @@ Enemy::~Enemy()
 void Enemy::is_there()
 {
 	if (abs(player_entity.getRelativePos().x - getRelativePos().x)<=checking_range&& abs(player_entity.getRelativePos().y - getRelativePos().y) <= checking_range) {
-		
+		//besisa
 	}
 }
 
@@ -661,4 +661,9 @@ void Enemy::update()
 		}
 	}
 	is_there();
+	if (game_time - despawn_timer > time_to_despawn) {
+		despawn = !persistant;
+		return;
+	}
+	despawn_timer = game_time;
 }
