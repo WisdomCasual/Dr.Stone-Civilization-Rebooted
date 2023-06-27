@@ -190,4 +190,10 @@ void Passive::update()
 			}
 		}
 	}
+
+	if (game_time - despawn_timer > time_to_despawn) {
+		despawn = !persistant;
+		return;
+	}
+	despawn_timer = game_time;
 }

@@ -265,15 +265,16 @@ void GameState::load_entities(float player_relative_y_pos)
 	item_stats.textures[0]->loadFromFile("textures/game/item drops.png");
 
 	player_entity = new Player(player_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj);
-	enemies.add(wolf(0), {750, 750});
-	enemies.add(lion(0), {900, 900});
-	passive.add(cow(2), {825, 825});
-	passive.add(llama(2), {875, 875});
-	passive.add(deer(2), {725, 725});
+	enemies.add(wolf(0), {750, 750}, 1);
+	enemies.add(lion(0), {900, 900}, 1);
+	passive.add(cow(2), {825, 825}, 1);
+	passive.add(llama(2), {875, 875}, 1);
+	passive.add(deer(2), {725, 725}, 1);
 	if (character_id == 3 && character_name == "Saitama") {
 		player_entity->setDamage(SHRT_MAX);
 		player_entity->destruction_power = SHRT_MAX;
 		player_entity->setHealth(SHRT_MAX);
+		player_entity->set_movement_speed(269);
 	}
 	else {
 		player_entity->setHealth(100);
@@ -495,7 +496,7 @@ void GameState::entity_spawning()
 
 	if (valid_spawn) {
 		//cout << "ONE PUUUUUUUNCH\n";
-		enemies.add(cow(0), {16.f * spawn_x, 16.f * spawn_y});
+		enemies.add(wolf(0), {16.f * spawn_x, 16.f * spawn_y});
 	}
 }
 
@@ -633,8 +634,10 @@ void GameState::update()
 		}
 	}
 	for (int i = 0; i < enemies.curr_idx; i++) {
- 		if (!enemies.entities[i]->despawn)
-			enemies.entities[i]->update();
+		if (!enemies.entities[i]->despawn) {
+			if (enemies.entities[i]->action_state != 0 || entity_in_range(enemies.entities[i]->pos, entity_update_distance))
+				enemies.entities[i]->update();
+		}
 		else {
 			effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 			enemies.rem_ove(i);
@@ -642,8 +645,10 @@ void GameState::update()
 	}
 
 	for (int i = 0; i < passive.curr_idx; i++) {
-		if (!passive.entities[i]->despawn)
-			passive.entities[i]->update();
+		if (!passive.entities[i]->despawn) {
+			if (passive.entities[i]->action_state != 0 || entity_in_range(passive.entities[i]->pos, entity_update_distance))
+				passive.entities[i]->update();
+		}
 		else {
 			effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 			passive.rem_ove(i);
@@ -802,7 +807,7 @@ void GameState::pollevent()
 					if (item_drops_count != -1) {
 						Vector3i temp;
 						for (int i = 0; i < item_drops_count; i++) {
-							items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity, { (float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y }, 1, 60.0, item_drops[i]);
+							items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity, { (float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y }, 0, 300.0, item_drops[i]);
 						}
 						item_drops_count = -1;
 					}
