@@ -1,6 +1,8 @@
-#version 410 compatibility
+#version 330 core
 
 in vec4 vert_pos;
+
+layout(location = 0) out vec4 FragColor;
 
 uniform sampler2D texture;
 uniform vec2 lightPos;
@@ -27,6 +29,6 @@ void main()
 
 	float color_intensity = 1 - sqrt(vecLength);
 
-	gl_FragColor = gl_Color * pixel * (clamp(light_level + vec4(color_intensity, color_intensity, color_intensity, 1), 0, 1));
+	FragColor = gl_Color * pixel * (clamp(light_level + vec4(color_intensity, color_intensity, color_intensity, 1), 0, 1));
 
 }
