@@ -496,7 +496,7 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
 	else scale = win_y / 304.5;
 
-	if (!shader.loadFromFile("vertex_shader.vert", "fragment_shader.frag")) {
+	if (!shader.loadFromFile("VertexShader.shader", "FragmentShader.shader")) {
 		cout << "Couldn't load shaders\n";
 	}
 

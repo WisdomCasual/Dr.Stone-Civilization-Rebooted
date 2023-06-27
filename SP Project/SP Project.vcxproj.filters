@@ -28,6 +28,9 @@
     <Filter Include="cpps\Entities">
       <UniqueIdentifier>{b5c66f81-ea30-46bb-9deb-24fa2dca342d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cpps\Shaders">
+      <UniqueIdentifier>{90b736a2-5ff4-4c91-8b4d-277011f9418e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -184,7 +187,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment_shader.frag" />
-    <None Include="vertex_shader.vert" />
+    <None Include="FragmentShader.shader">
+      <Filter>cpps\Shaders</Filter>
+    </None>
+    <None Include="VertexShader.shader">
+      <Filter>cpps\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
