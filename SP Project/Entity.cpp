@@ -24,6 +24,8 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 		//cout << "here2\n";
 		//initial_textures("game/entities/" + entity_name);
 		//cout << "here3\n";
+		if(!entity_stats.is_player)
+			current_hitbox = entity_stats.animations[state][current_move].hitbox_rect;
 		entity_sprite.setTexture(*entity_stats.textures[state]);
 		health = entity_stats.max_health, damage = entity_stats.base_damage;
 		//srand(time(0));

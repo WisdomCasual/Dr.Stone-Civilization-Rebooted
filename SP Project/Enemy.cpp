@@ -593,7 +593,6 @@ void Enemy::update()
 		else
 			delay += dt;
 	}
-
 	player_collision_check();
 
 	////////////////////PLayer Combat////////////////////

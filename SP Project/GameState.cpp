@@ -126,6 +126,7 @@ void GameState::load_entities(float player_relative_y_pos)
 {
 
 	//player
+	player_stats.is_player = 1;
 	player_stats.animations = new animation * [5]({});
 	player_stats.states_no = 4;
 	player_stats.base_movement_speed = 130;
@@ -133,6 +134,8 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.base_animation_speed = 16.6;
 	player_stats.textures_count = 4;
 	player_stats.textures = new Texture*[player_stats.textures_count];
+	player_stats.base_damage = 25;
+	player_stats.max_health = 100;
 
 	for (int i = 0; i < player_stats.textures_count; i++) {
 		player_stats.textures[i] = new Texture;
@@ -282,6 +285,12 @@ void GameState::load_entities(float player_relative_y_pos)
 	item_stats.textures[0]->loadFromFile("textures/game/item drops.png");
 
 	player_entity = new Player(player_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj);
+	if (character_id == 3 && character_name == "Saitama") {
+		player_entity->setDamage(SHRT_MAX/2);
+		player_entity->destruction_power = SHRT_MAX/2;
+		player_entity->set_movement_speed(269);
+		player_stats.max_health = SHRT_MAX / 2;
+	}
 	enemies.add(wolf(0), {750, 750}, 1);
 	enemies.add(lion(0), {900, 900}, 1);
 	passive.add(cow(2), {825, 825}, 1);
@@ -289,16 +298,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive.add(deer(2), {725, 725}, 1);
 	dialogue test[3] = { {"NPC", "hi there"}, {"NPC", "hello there"}, {"NPC", "welcome, traveller!"} } ;
 	NPCs.add(default_npc, {700, 700}, npc_details(1, 10, 0), 3, test);
-	if (character_id == 3 && character_name == "Saitama") {
-		player_entity->setDamage(SHRT_MAX);
-		player_entity->destruction_power = SHRT_MAX;
-		player_entity->setHealth(SHRT_MAX);
-		player_entity->set_movement_speed(269);
-	}
-	else {
-		player_entity->setHealth(100);
-		player_entity->setDamage(25);
-	}
+
 	player_entity->change_state(3);
 
 }
@@ -525,6 +525,7 @@ void GameState::entity_spawning()
 	if (valid_spawn) {
 		//cout << "ONE PUUUUUUUNCH\n";
 		enemies.add(wolf(0), {16.f * spawn_x, 16.f * spawn_y});
+		enemies.entities[enemies.curr_idx - 1]->update();
 	}
 }
 
@@ -578,8 +579,8 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 
 	initial_stats();
 	load_maps(); //loads all maps ( pins[name]  { world map location x, world map location y, size x, size, y })
-	load_entities(player_pos.y);	
-	player_entity->health = health;
+	load_entities(player_pos.y);
+	player_entity->health = (health == -1) ? player_stats.max_health : health;
 	health_indicator.setTexture(*textures[5]);
 
 	health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
@@ -644,7 +645,7 @@ void GameState::update()
 
 	player_entity->movement = delta_movement();
 
-	if (player_entity->health < 100 && heal_delay >= 5) {
+	if (player_entity->health < player_stats.max_health && heal_delay >= 5) {
 		heal_delay = 0;
 		player_entity->health += 10;
 	}

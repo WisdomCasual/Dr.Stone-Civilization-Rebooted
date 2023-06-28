@@ -20,6 +20,8 @@ struct entity {
 	Texture** textures = nullptr;
 	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no = 0, textures_count = 0;
 	float scale_const = 1, base_animation_speed = 16.6667f;
+
+	bool is_player = 0;
 	~entity() {
 		
 
