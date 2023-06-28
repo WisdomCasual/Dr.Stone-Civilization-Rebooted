@@ -201,7 +201,7 @@ public:
 
 	FloatRect entity_hitbox;
 
-	bool despawn = 0, persistant = 0;
+	bool despawn = 0, persistant = 0, interact = 0;
 	double despawn_timer = game_time;
 	const double time_to_despawn;
 	short state = 0, action_state = 0, health = 100, damage = 10;
