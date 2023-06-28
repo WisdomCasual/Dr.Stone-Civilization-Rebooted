@@ -93,7 +93,7 @@ private:
 					case 3:
 						entities[curr_idx] = new NPC(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, persistant, time_to_despawn);
 						entities[curr_idx]->set_type(npc_type);
-						if(type == 0)
+						if(npc_type == 0)
 							entities[curr_idx]->set_dialogue(dialogues, dialogue_num);
 						break;
 				}
