@@ -258,6 +258,23 @@ void GameState::load_entities(float player_relative_y_pos)
 	llama_stats.animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {64,82} }; //left
 	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
+	NPC_stats.animations = new animation * [1];
+	NPC_stats.scale_const = 0.7;
+	NPC_stats.base_movement_speed = 80;
+	NPC_stats.states_no = 1;
+	NPC_stats.base_animation_speed = 16.6;
+	NPC_stats.textures_count = 1;
+	NPC_stats.textures = new Texture * [deer_stats.textures_count];
+	NPC_stats.textures[0] = new Texture;
+
+	NPC_stats.textures[0]->loadFromFile("textures/game/entities/deer/deer.png");
+
+	NPC_stats.animations[0] = new animation[5];
+	NPC_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,48} }; //back
+	NPC_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,84} }; //right
+	NPC_stats.animations[0][2] = { 4, {0, 1 * 96,64, 96}, {63,14}, {32,84} }; //left
+	NPC_stats.animations[0][3] = { 4, {0, 3 * 96, 64, 96}, {22,75}, {32,59} }; //front
+
 	item_stats.textures_count = 1;
 	item_stats.textures = new Texture * [item_stats.textures_count];
 	item_stats.textures[0] = new Texture;
@@ -270,6 +287,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive.add(cow(2), {825, 825}, 1);
 	passive.add(llama(2), {875, 875}, 1);
 	passive.add(deer(2), {725, 725}, 1);
+	NPCs.add(default_npc, { 700, 700 }, 1);
 	if (character_id == 3 && character_name == "Saitama") {
 		player_entity->setDamage(SHRT_MAX);
 		player_entity->destruction_power = SHRT_MAX;
@@ -406,6 +424,15 @@ void GameState::render_entities()
 			passive.entities[i]->pos.x >= -map_x - entity_render_distance &&
 			passive.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
 			dynamic_rendering.insert({ passive.entities[i]->pos.y, {-1, passive.entities[i]} });
+	}
+
+	for (int i = 0; i < NPCs.curr_idx; i++) {
+		if (NPCs.entities[i] != nullptr &&
+			NPCs.entities[i]->pos.y >= -map_y - entity_render_distance &&
+			NPCs.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			NPCs.entities[i]->pos.x >= -map_x - entity_render_distance &&
+			NPCs.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
+			dynamic_rendering.insert({ NPCs.entities[i]->pos.y, {-1, NPCs.entities[i]} });
 	}
 	//int debug_ctr = 0;
 	//cout << "total entities/objects: " << dynamic_rendering.size() << '\n';
@@ -654,6 +681,17 @@ void GameState::update()
 			passive.rem_ove(i);
 		}
 	}
+
+	for (int i = 0; i < NPCs.curr_idx; i++) {
+		if (!NPCs.entities[i]->despawn) {
+			if (NPCs.entities[i]->action_state != 0 || entity_in_range(NPCs.entities[i]->pos, entity_update_distance))
+				NPCs.entities[i]->update();
+		}
+		else {
+			effects.add({ 400,0,100,100 }, 20, { int(NPCs.entities[i]->getRelativePos().x) , int(NPCs.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+			NPCs.rem_ove(i);
+		}
+	}
 	
 	if (enemies.astar_done) {
 		for (int i = 0; i < enemies.find_size_x; i++) {
@@ -697,6 +735,7 @@ void GameState::update()
 			effects.animations[i]->update(scale);
 	}
 
+	player_entity->interact = 0;
 	for (int i = 0; i < items.curr_idx; i++) {
 
 		if (items.entities[i]->despawn) {
@@ -797,6 +836,9 @@ void GameState::pollevent()
 			case Keyboard::E:
 				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count)});
 				states->at(InventoryID)->update();
+				break;
+			case Keyboard::F:
+				player_entity->interact = 1;
 				break;
 			case Keyboard::Space:
 				player_entity->use_tool();

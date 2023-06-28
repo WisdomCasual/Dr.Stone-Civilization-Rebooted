@@ -6,6 +6,7 @@
 #include"Player.h"
 #include"Items.h"
 #include "Passive.h"
+#include "NPC.h"
 #include"Global.h"
 #include"Animation.h"
 #include"DialogueState.h"
@@ -13,11 +14,13 @@
 
 #define lion(type) type, lion_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
 #define wolf(type) type, wolf_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
-//eneimies = 0, items = 1, passive = 2
+//eneimies = 0, items = 1, passive = 2, NPC = 3
 
 #define cow(type) type, cow_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
 #define deer(type) type, deer_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
 #define llama(type) type, llama_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
+
+#define default_npc 3, NPC_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
 
 using namespace globalvar;
 
@@ -30,7 +33,7 @@ private:
 	dialogue death_message[2] = { {"Sneku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
 
 	Shader shader;
-	entity player_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats, item_stats;
+	entity player_stats, lion_stats, wolf_stats, cow_stats, deer_stats, llama_stats, item_stats, NPC_stats;
 	Player* player_entity = nullptr;
 
 	string character_name, current_map;
@@ -86,12 +89,15 @@ private:
 					case 2:
 						entities[curr_idx] = new Passive(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, persistant, time_to_despawn);
 						break;
+					case 3:
+						entities[curr_idx] = new NPC(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, persistant, time_to_despawn);
+						break;
 				}
 				entities[curr_idx]->setPosition(initial_position.x, initial_position.y);
 				entities[curr_idx]->update();
 				curr_idx++;
 			}
-		} //types: 0 = enemy, 1 = item, 2 = passive
+		} //types: 0 = enemy, 1 = item, 2 = passive, 3 = NPC
 
 		void rem_ove(int idx) {
 			delete entities[idx];
@@ -101,7 +107,7 @@ private:
 			entities[curr_idx] = nullptr;
 		}
 
-	} enemies, items, passive;
+	} enemies, items, passive, NPCs;
 
 	struct animations_container {
 		int limit = 1, curr_idx = 0, find_size_x = 50, find_size_y = 50;

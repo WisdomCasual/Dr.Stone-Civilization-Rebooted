@@ -154,6 +154,7 @@
     <ClCompile Include="NewMapState.cpp" />
     <ClCompile Include="NewSaveState.cpp" />
     <ClCompile Include="NotificationState.cpp" />
+    <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Passive.cpp" />
     <ClCompile Include="PasswordState.cpp" />
     <ClCompile Include="PauseState.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="NewMapState.h" />
     <ClInclude Include="NewSaveState.h" />
     <ClInclude Include="NotificationState.h" />
+    <ClInclude Include="NPC.h" />
     <ClInclude Include="Passive.h" />
     <ClInclude Include="PasswordState.h" />
     <ClInclude Include="PauseState.h" />

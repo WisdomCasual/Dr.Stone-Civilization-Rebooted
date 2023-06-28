@@ -636,8 +636,8 @@ void Enemy::update()
 
 	if (will_move && hit_cooldown<=0) {
 		short dir[2] = { 45, -45 };
-		bool legal_x = legal_direction({ curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)),
-			legal_y = legal_direction({ 0, curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
+		bool legal_x = legal_direction({ dt * move_speed * curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)),
+			legal_y = legal_direction({ 0, dt * move_speed * curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
 		bool moved = false;
 
 		if (legal_x && !collide_with_player({ curr_movement.x, 0 }) || action_state != 0){
