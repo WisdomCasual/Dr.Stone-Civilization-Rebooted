@@ -287,7 +287,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive.add(cow(2), {825, 825}, 1);
 	passive.add(llama(2), {875, 875}, 1);
 	passive.add(deer(2), {725, 725}, 1);
-	dialogue* test{ new dialogue[3] { {"NPC", "hi there"}, {"NPC", "hello there"}, {"NPC", "welcome, traveller!"} } };
+	dialogue test[3] = { {"NPC", "hi there"}, {"NPC", "hello there"}, {"NPC", "welcome, traveller!"} } ;
 	NPCs.add(default_npc, {700, 700}, npc_details(1, 10, 0), 3, test);
 	if (character_id == 3 && character_name == "Saitama") {
 		player_entity->setDamage(SHRT_MAX);

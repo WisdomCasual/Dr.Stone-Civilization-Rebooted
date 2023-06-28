@@ -1,4 +1,5 @@
 #include "NPC.h"
+#include "DIALOGUESTATE.H"
 
 void NPC::player_collision_check()
 {
@@ -32,7 +33,8 @@ bool NPC::collide_with_player(Vector2f movement)
 
 NPC::~NPC()
 {
-
+	if (npc_dialogues != nullptr)
+		delete[] npc_dialogues;
 }
 
 void NPC::updatePos()
@@ -63,7 +65,7 @@ void NPC::set_type(short type)
 	npc_type = type;
 }
 
-void NPC::set_dialogue(dialogue*& dialogues, short n)
+void NPC::set_dialogue(dialogue* dialogues, short n)
 {
 	dialogues_num = n;
 	if (npc_dialogues != nullptr)
@@ -71,11 +73,26 @@ void NPC::set_dialogue(dialogue*& dialogues, short n)
 	npc_dialogues = new dialogue[n];
 	for (int i = 0; i < n; i++)
 		npc_dialogues[i] = dialogues[i];
-	delete[] dialogues;
+	//cout << "DONE";
+}
+
+void NPC::start_dialogue(dialogue* curr_dialogue, short n)
+{
+	this->curr_dialogue = curr_dialogue;
+	curr_dialogue_num = n;
+
+	Vector2f dialogue_dir = (player_entity.getRelativePos() - getRelativePos()) / magnitude(player_entity.getRelativePos() - getRelativePos());
+	direction(Vector2f(roundf(dialogue_dir.x) , roundf(dialogue_dir.y)));
+	in_dialogue = 1;
 }
 
 void NPC::update()
 {
+	if (in_dialogue) {
+		states->insert({ DialogueID,new DialogueState(curr_dialogue,{win_x / 2,win_y / 2},scale / 2, curr_dialogue_num) });
+		states->at(DialogueID)->update();
+		in_dialogue = 0;
+	}
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
@@ -112,9 +129,8 @@ void NPC::update()
 		player_entity.interact = 0;
 		switch (npc_type) {
 			default: {
-				//single_dialogue[0] = npc_dialogues[rand() % dialogues_num];         crashes for now
-				//states->insert({ DialogueID,new DialogueState(single_dialogue,{win_x / 2,win_y / 2},scale / 2, 1) });
-				//states->at(DialogueID)->update();
+				single_dialogue[0] = npc_dialogues[rand() % dialogues_num];
+				start_dialogue(single_dialogue, 1);
 			}
 		}
 	}
