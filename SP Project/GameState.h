@@ -20,6 +20,7 @@
 #define deer(type) type, deer_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
 #define llama(type) type, llama_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
 
+#define npc_details(persistant, despawn_time, type) persistant, despawn_time, type, 0
 #define default_npc 3, NPC_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
 
 using namespace globalvar;
@@ -74,7 +75,7 @@ private:
 			}
 		}
 
-		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, int drop_id = 0) {
+		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, int drop_id = 0, short npc_type = 0, short dialogue_num = 0, dialogue* dialogues = nullptr) {
 			if (curr_idx < limit) {
 				switch (type) {
 					case 0:
@@ -91,6 +92,9 @@ private:
 						break;
 					case 3:
 						entities[curr_idx] = new NPC(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, persistant, time_to_despawn);
+						entities[curr_idx]->set_type(npc_type);
+						if(type == 0)
+							entities[curr_idx]->set_dialogue(dialogues, dialogue_num);
 						break;
 				}
 				entities[curr_idx]->setPosition(initial_position.x, initial_position.y);

@@ -237,6 +237,8 @@ public:
 	virtual void setVisArray(short***, bool*, short new_find_size_x = 50, short new_find_size_y = 50) {};
 	virtual void update() = 0;
 	virtual void pollevent();
+	void set_type(short) {};
+	void set_dialogue(dialogue*&, short) {};
 	void render(Shader*);
 
 };
