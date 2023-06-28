@@ -65,7 +65,6 @@ void TextBox::text_poll(Event event)
 				isActive = 1;
 			else {
 				isActive = 0;
-				submit();
 			}
 			selected = 0;
 		}
