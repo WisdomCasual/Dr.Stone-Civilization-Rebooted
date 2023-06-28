@@ -53,8 +53,8 @@ void Items::update()
 	
     intersect();
 	move();
-	if (game_time - despawn_timer > time_to_despawn) {
-		despawn = !persistant;
+	if (game_time - despawn_timer > time_to_despawn && !persistant) {
+		despawn = 1;
 	}
 }
 
