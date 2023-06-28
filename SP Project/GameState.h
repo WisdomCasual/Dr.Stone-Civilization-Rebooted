@@ -98,7 +98,7 @@ private:
 						break;
 				}
 				entities[curr_idx]->setPosition(initial_position.x, initial_position.y);
-				entities[curr_idx]->update();
+				//entities[curr_idx]->update();
 				curr_idx++;
 			}
 		} //types: 0 = enemy, 1 = item, 2 = passive, 3 = NPC

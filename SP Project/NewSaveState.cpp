@@ -182,7 +182,7 @@ void NewSaveState::add_save()
 		ofs << 0 << '\n';
 		ofs << "Sheraton" << '\n';
 		ofs << 800 << ' ' << 800 << '\n';
-		ofs << 100 << '\n';
+		ofs << -1 << '\n';
 		ofs << 0.0 << '\n';
 	}
 	ofs.close();
@@ -288,7 +288,7 @@ void NewSaveState::update()
 	else if (confirmed) {
 		//button functionality
 		add_save();
-		states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800},test_str , save_no, 100, 0.0) });
+		states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800},test_str , save_no, -1, 0.0) });
 		states->at(GameID)->update();
 
 		// exceptions arrays were explained in the settings state

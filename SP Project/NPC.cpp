@@ -81,16 +81,62 @@ void NPC::start_dialogue(dialogue* curr_dialogue, short n)
 	this->curr_dialogue = curr_dialogue;
 	curr_dialogue_num = n;
 
-	Vector2f dialogue_dir = (player_entity.getRelativePos() - getRelativePos()) / magnitude(player_entity.getRelativePos() - getRelativePos());
-	direction(Vector2f(roundf(dialogue_dir.x) , roundf(dialogue_dir.y)));
+	Vector2f dialogue_dir = (player_entity.getRelativePos() - getRelativePos()) / magnitude(player_entity.getRelativePos() - getRelativePos()), prev_hitbox = current_hitbox;
+	if (legal_direction(getRelativePos(), roundf(dialogue_dir.x), roundf(dialogue_dir.y))) {
+		direction(Vector2f(roundf(dialogue_dir.x), roundf(dialogue_dir.y)));
+	}
+	else {
+		current_hitbox = prev_hitbox;
+	}
 	in_dialogue = 1;
+}
+
+void NPC::type_behaviour()
+{
+	switch (npc_type) {
+		default: {
+			if (static_map[int(getRelativePos().x / 16.0)][int(getRelativePos().y / 16.0)].tile_props & 3840) {
+
+				if (targ_tile.x != -1) {
+					Vector2f delta_pos = targ_tile - getRelativePos();
+					Vector2f compar = { roundf(delta_pos.x), roundf(delta_pos.y) };
+					if ((compar.x == 0 || (delta_pos.x < 0) != (delta_sign.x < 0)) && (compar.y == 0 || (delta_pos.y < 0) != (delta_sign.y < 0))) {
+						targ_tile = { -1, -1 };
+					}
+				}
+
+
+				if (targ_tile.x == -1) {
+					short curr_tile_x = short(getRelativePos().x / 16), curr_tile_y = short(getRelativePos().y / 16), new_tile_x, new_tile_y;
+					for (int i = 0; i < 4; i++) {
+						new_tile_x = curr_tile_x + dx[i], new_tile_y = curr_tile_y + dy[i];
+						if (new_tile_x < size_x && new_tile_x >= 0 && new_tile_y < size_y && new_tile_y >= 0) {
+							if (static_map[new_tile_x][new_tile_y].tile_props & 3840 && new_tile_x != prev_tile_x && new_tile_y != new_tile_y) {
+								prev_tile_x = curr_tile_x, prev_tile_y = curr_tile_y;
+								targ_tile = { float(new_tile_x), float(new_tile_y) };
+								delta_sign = targ_tile - getRelativePos();
+								theta = atan2f(delta_sign.y, delta_sign.x) * 180 / PI;
+								curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+								will_move = 1;
+								break;
+							}
+						}
+					}
+				}
+			}
+			break;
+		}
+	}
 }
 
 void NPC::update()
 {
+
 	if (in_dialogue) {
 		states->insert({ DialogueID,new DialogueState(curr_dialogue,{win_x / 2,win_y / 2},scale / 2, curr_dialogue_num) });
 		states->at(DialogueID)->update();
+		if(will_move)
+			direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 		in_dialogue = 0;
 	}
 	if (prev_win != window->getSize()) {
@@ -123,9 +169,9 @@ void NPC::update()
 	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin); ///////////////
 	updatePos();
-
+	type_behaviour();
 	player_collision_check();
-	if (player_entity.interact && magnitude(player_entity.getRelativePos() - getRelativePos()) <= 32) {
+	if (player_entity.interact && magnitude(player_entity.getRelativePos() - getRelativePos()) <= 48) {
 		player_entity.interact = 0;
 		switch (npc_type) {
 			default: {

@@ -50,6 +50,8 @@ public:
 	
 	void setSubmitBool(bool* submit_bool);
 
+	void save_text();
+
 	void submit();
 
 	void update();

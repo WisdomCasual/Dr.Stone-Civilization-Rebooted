@@ -65,6 +65,7 @@ void TextBox::text_poll(Event event)
 				isActive = 1;
 			else {
 				isActive = 0;
+				save_text();
 			}
 			selected = 0;
 		}
@@ -168,7 +169,7 @@ void TextBox::setSubmitBool(bool* submit_bool)
 	this->submit_bool = submit_bool;
 }
 
-void TextBox::submit()
+void TextBox::save_text()
 {
 	if (mode) {
 		for (int i = 0; i < input_string.size(); i++) {
@@ -178,6 +179,11 @@ void TextBox::submit()
 	}
 	else
 		*target_string = input_string;
+}
+
+void TextBox::submit()
+{
+	save_text();
 	if (submit_bool != nullptr)
 		*submit_bool = 1;
 }
