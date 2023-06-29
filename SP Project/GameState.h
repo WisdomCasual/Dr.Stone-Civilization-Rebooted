@@ -164,7 +164,8 @@ private:
 	struct dynamic_objects {
 
 		int size = 1, curr_idx = 0, layer = 0;
-		float destruction_time = 0, time = 0;
+		float* destruction_time = nullptr,* time = nullptr;
+		Vector2i core_location;
 		entity_object* at; //dynamic array of objects
 
 		dynamic_objects() {
@@ -267,7 +268,6 @@ private:
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
 	Vector2i destroy_object_location = { -1, -1 };
-	short disable_dynamic_obj = -1;
 	float map_x = 0, map_y = 0;
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0;
 	Vector2u prev_win = { 0, 0 };
