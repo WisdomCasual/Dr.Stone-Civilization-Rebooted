@@ -64,36 +64,43 @@ void GameState::load_map(string map_name)
 					ifs >> layr >> tle.x >> tle.y >> tle.z;
 
 					layer_prop = tile_props[tle.z].properties[tle.x][tle.y].props;
-
-					if (layer_prop & 32) {
-						static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
-						static_map[i][j].object_ID = destructable_count;
-						temp_destructable[destructable_count] = tile_props[tle.z].properties[tle.x][tle.y].object_type;
-						destructable_count++;
+					if ((tle.x >= 11 && tle.x <= 14) && tle.y == 12 && tle.z == 3) {
+						static_map[i][j].tile_props |= (256 << (tle.x - 11));
 					}
-					if (layer_prop & 16) { // front core
-						update_minimap_tile(Vector2i(i * 2, j * 2), tle);
-						dynamic_objects objct;
-						objct.add({ Vector2f(i, j), tle });
-						objct.layer = layr;
-						dynamic_map.add(objct);
-						dynamic_rendering.insert({ float((j + 1) * 16), {short(dynamic_map.curr_idx - 1), nullptr} });
-						static_map[i][j].dynamic_idx = dynamic_map.curr_idx - 1;
-						//add ptr to set
-
-						//add to dynamic tiles
+					else if (tle.x == 15 && tle.y == 12 && tle.z == 3) {
+						static_map[i][j].tile_props |= 4096;
 					}
-					else if ((layer_prop & 8)) { //front
-						temp_front[layr][i][j] = { tle.x + 1, tle.y, tle.z };
-					}
-					else {   // back
-						temp_layers[count] = tle;
-						count++;
-						if (layer_prop & 1)
+					else {
+						if (layer_prop & 32) {
+							static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
+							static_map[i][j].object_ID = destructable_count;
+							temp_destructable[destructable_count] = tile_props[tle.z].properties[tle.x][tle.y].object_type;
+							destructable_count++;
+						}
+						if (layer_prop & 16) { // front core
 							update_minimap_tile(Vector2i(i * 2, j * 2), tle);
-					}
+							dynamic_objects objct;
+							objct.add({ Vector2f(i, j), tle });
+							objct.layer = layr;
+							dynamic_map.add(objct);
+							dynamic_rendering.insert({ float((j + 1) * 16), {short(dynamic_map.curr_idx - 1), nullptr} });
+							static_map[i][j].dynamic_idx = dynamic_map.curr_idx - 1;
+							//add ptr to set
 
-					static_map[i][j].tile_props |= layer_prop;
+							//add to dynamic tiles
+						}
+						else if ((layer_prop & 8)) { //front
+							temp_front[layr][i][j] = { tle.x + 1, tle.y, tle.z };
+						}
+						else {   // back
+							temp_layers[count] = tle;
+							count++;
+							if (layer_prop & 1)
+								update_minimap_tile(Vector2i(i * 2, j * 2), tle);
+						}
+
+						static_map[i][j].tile_props |= layer_prop;
+					}
 				}
 
 				static_map[i][j].size = count;
