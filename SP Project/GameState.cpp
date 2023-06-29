@@ -395,30 +395,34 @@ void GameState::destroyANDrestore_objects(Vector2i target_tile, bool destroy)
 			for (int j = 1; j < 4; j++) {
 					Vector2i check_area{ target_tile.x + dx[i], target_tile.y + dy[j] };
 				if(destroy){
-					if (static_map[check_area.x][check_area.y].tile_props & 16)
-						disable_dynamic_obj = static_map[check_area.x][check_area.y].dynamic_idx;
+					if (static_map[check_area.x][check_area.y].tile_props & 16) {
+						for (int j = 0; j < dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].curr_idx; j++) {
+							Uint8 pixels[16];
+							for (int k = 0; k < 2; k++)
+								for (int l = 0; l < 2; l++) {
+									pixels[(k + 2 * l) * 4] = base_minimap.getPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l).r; // red
+									pixels[(k + 2 * l) * 4 + 1] = base_minimap.getPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l).g; // green
+									pixels[(k + 2 * l) * 4 + 2] = base_minimap.getPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l).b; // blue
+									pixels[(k + 2 * l) * 4 + 3] = base_minimap.getPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l).a; // alpha
+									minimap_img.setPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l, Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
+								}
+							minimap_tex.update(pixels, 2, 2, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2);
+						}
+						dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].core_location = target_tile;
+						static_map[target_tile.x][target_tile.y].destruction_time = game_time;
+						dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].destruction_time = &static_map[target_tile.x][target_tile.y].destruction_time;
+						dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].time = &static_map[target_tile.x][target_tile.y].time;
+						dynamic_update_minimap = 2;
+					}
 					else if (static_map[check_area.x][check_area.y].tile_props & 32) {
 						if (!dx[i] && !dy[j])
 							bigbang(check_area, 1);
 					}
 					else if (static_map[check_area.x][check_area.y].tile_props & 1)
 						bigbang(check_area, 1);
-					else
-						continue;
-
-					if (dy[j] == -1) {
-						if (static_map[check_area.x][check_area.y - 1].tile_props & 16)
-							disable_dynamic_obj = static_map[check_area.x][check_area.y - 1].dynamic_idx;
-						else if (static_map[check_area.x][check_area.y - 1].tile_props & 32) {
-							if (!dx[i] && !dy[j])
-								bigbang(check_area, 1);
-						}
-						else if (static_map[check_area.x][check_area.y - 1].tile_props & 1)
-							bigbang(check_area, 1);
-					}
 				}
 				else {
-					if (static_map[check_area.x][check_area.y].disable_top)
+					if (static_map[check_area.x][check_area.y].destruction_time)
 						bigbang(check_area, 0);
 				}
 			}
@@ -428,9 +432,10 @@ void GameState::bigbang(Vector2i target_tile, bool destroy)
 {
 	short last = static_map[target_tile.x][target_tile.y].size - 1;
 	Vector3i last_tile = static_map[target_tile.x][target_tile.y].layers[last];
-	static_map[target_tile.x][target_tile.y].disable_top = destroy;
 	static_map[target_tile.x][target_tile.y].tile_props ^= tile_props[last_tile.z].properties[last_tile.x][last_tile.y].props;
 	if (destroy) {
+		static_map[target_tile.x][target_tile.y].destruction_time = game_time;
+
 		Uint8 pixels[16];
 		for (int k = 0; k < 2; k++)
 			for (int l = 0; l < 2; l++) {
@@ -442,8 +447,10 @@ void GameState::bigbang(Vector2i target_tile, bool destroy)
 			}
 		minimap_tex.update(pixels, 2, 2, target_tile.x * 2, target_tile.y * 2);
 	}
-	else
+	else {
+		static_map[target_tile.x][target_tile.y].destruction_time = 0;
 		update_minimap_tile(Vector2i(target_tile * 2), last_tile);
+	}
 }
 
 void GameState::render_static_map()
@@ -459,14 +466,21 @@ void GameState::render_static_map()
 				tile.setPosition(map_x * scale + (16 * scale * i), map_y * scale + (16 * scale * j));
 				window->draw(tile, &shader);
 			}
-			if (!static_map[i][j].disable_top) {
-				if(dynamic_update_minimap)
+			if (!static_map[i][j].destruction_time) {
+				if (dynamic_update_minimap)
 					update_minimap_tile(Vector2i(i * 2, j * 2), *tile_end);
 				tile.setTexture(*tile_sheets[tile_end->z]);
 				tile.setTextureRect(IntRect(tile_end->x * 16, tile_end->y * 16, 16, 16));
 				tile.setPosition(map_x * scale + (16 * scale * i), map_y * scale + (16 * scale * j));
 				window->draw(tile, &shader);
 			}
+			else if (tile_props[tile_end->z].properties[tile_end->x][tile_end->y].props & 32 && game_time - static_map[i][j].destruction_time > 300 && game_time - static_map[i][j].time > 5) {
+				destroyANDrestore_objects(Vector2i(i, j), 0);
+				static_map[i][j].destruction_time = 0;
+				static_map[i][j].time = 0;
+			}
+			else
+				static_map[i][j].time = game_time;
 		}
 
 	//render effects
@@ -527,24 +541,6 @@ void GameState::render_entities()
 				continue;
 			}
 			//debug_ctr++;
-			if(i->second.tile == disable_dynamic_obj){
-				for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
-					Uint8 pixels[16];
-					for (int k = 0; k < 2; k++)
-						for (int l = 0; l < 2; l++) {
-							pixels[(k + 2 * l) * 4]     = base_minimap.getPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l).r; // red
-							pixels[(k + 2 * l) * 4 + 1] = base_minimap.getPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l).g; // green
-							pixels[(k + 2 * l) * 4 + 2] = base_minimap.getPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l).b; // blue
-							pixels[(k + 2 * l) * 4 + 3] = base_minimap.getPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l).a; // alpha
-							minimap_img.setPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l, Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
-						}
-					minimap_tex.update(pixels, 2, 2, dynamic_map.at[i->second.tile].at[j].position.x * 2, dynamic_map.at[i->second.tile].at[j].position.y * 2);
-				}
-				dynamic_map.at[i->second.tile].destruction_time = game_time;
-				disable_dynamic_obj = -1;
-				dynamic_update_minimap = 2;
-				continue;
-			}
 			if(!dynamic_map.at[i->second.tile].destruction_time){
 				for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
 					tile.setTexture(*tile_sheets[dynamic_map.at[i->second.tile].at[j].tile.z]);
@@ -555,13 +551,15 @@ void GameState::render_entities()
 						update_minimap_tile(Vector2i(dynamic_map.at[i->second.tile].at[j].position.x * 2, dynamic_map.at[i->second.tile].at[j].position.y * 2), dynamic_map.at[i->second.tile].at[j].tile);
 				}
 			}
-			else if (game_time - dynamic_map.at[i->second.tile].destruction_time >2 && game_time - dynamic_map.at[i->second.tile].time > 1) {
-				destroyANDrestore_objects(Vector2i((int)dynamic_map.at[i->second.tile].at[0].position.x, (int)dynamic_map.at[i->second.tile].at[0].position.y), 0);
+			else if (game_time - *dynamic_map.at[i->second.tile].destruction_time > 300 && game_time - *dynamic_map.at[i->second.tile].time > 5) {
+				destroyANDrestore_objects(dynamic_map.at[i->second.tile].core_location, 0);
 				dynamic_map.at[i->second.tile].destruction_time = 0;
+				dynamic_map.at[i->second.tile].time = 0;
+				dynamic_update_minimap = 2;
 			}
 			else
 			{
-				dynamic_map.at[i->second.tile].time = game_time;
+				*dynamic_map.at[i->second.tile].time = game_time;
 			}
 
 			i++;
@@ -1037,4 +1035,3 @@ void GameState::pollevent()
 		}
 	}
 }
-
