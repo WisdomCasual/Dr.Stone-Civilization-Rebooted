@@ -12,16 +12,16 @@
 #include"DialogueState.h"
 #include "InventoryState.h"
 
-#define lion(type) type, lion_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
-#define wolf(type) type, wolf_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
+#define lion(type) type, lion_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
+#define wolf(type) type, wolf_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
 //eneimies = 0, items = 1, passive = 2, NPC = 3
 
-#define cow(type) type, cow_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
-#define deer(type) type, deer_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
-#define llama(type) type, llama_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
+#define cow(type) type, cow_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
+#define deer(type) type, deer_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
+#define llama(type) type, llama_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
 
 #define npc_details(persistant, despawn_time, type) persistant, despawn_time, type, 0
-#define default_npc 3, NPC_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity
+#define default_npc 3, NPC_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
 
 using namespace globalvar;
 
@@ -75,23 +75,23 @@ private:
 			}
 		}
 
-		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, short& disable_dynamic_obj, Entity* player, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, int drop_id = 0, short npc_type = 0, short dialogue_num = 0, dialogue* dialogues = nullptr) {
+		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, int drop_id = 0, short npc_type = 0, short dialogue_num = 0, dialogue* dialogues = nullptr) {
 			if (curr_idx < limit) {
 				switch (type) {
 					case 0:
-						entities[curr_idx] = new Enemy(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, persistant, time_to_despawn);
+						entities[curr_idx] = new Enemy(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn);
 						entities[curr_idx]->setVisArray(&vis, &astar_done, find_size_x, find_size_y);
 						entities[curr_idx]->setID(curr_idx + 1);
 						break;
 					case 1:
 						//items
-						entities[curr_idx] = new Items(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, persistant, time_to_despawn, drop_id);
+						entities[curr_idx] = new Items(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn, drop_id);
 						break;
 					case 2:
-						entities[curr_idx] = new Passive(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, persistant, time_to_despawn);
+						entities[curr_idx] = new Passive(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn);
 						break;
 					case 3:
-						entities[curr_idx] = new NPC(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player, persistant, time_to_despawn);
+						entities[curr_idx] = new NPC(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn);
 						entities[curr_idx]->set_type(npc_type);
 						if(npc_type == 0)
 							entities[curr_idx]->set_dialogue(dialogues, dialogue_num);
@@ -164,6 +164,7 @@ private:
 	struct dynamic_objects {
 
 		int size = 1, curr_idx = 0, layer = 0;
+		float destruction_time = 0, time = 0;
 		entity_object* at; //dynamic array of objects
 
 		dynamic_objects() {
@@ -265,11 +266,14 @@ private:
 	int size_x = 0, size_y = 0;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
+	Vector2i destroy_object_location = { -1, -1 };
 	short disable_dynamic_obj = -1;
 	float map_x = 0, map_y = 0;
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0;
 	Vector2u prev_win = { 0, 0 };
 	Texture minimap_tex;
+	Image base_minimap, minimap_img;
+	short dynamic_update_minimap = 0;
 	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[3], minimap, minimap_frame;
 	CircleShape player_pointer;
 	short item_drops[5], item_drops_count = -1;
@@ -284,6 +288,8 @@ private:
 	void initial_stats();
 	void initial_game(string, Vector2f);
 	void center_cam(Vector2f);
+	void destroyANDrestore_objects(Vector2i, bool);
+	void bigbang(Vector2i, bool destroy = 0);
 	void render_static_map();
 	void render_entities();
 	void check_in_inventory(int);
@@ -300,6 +306,7 @@ public:
 	~GameState();
 	
 	//public functions:
+	void update_minimap_tile(Vector2i, Vector3i);
 	void update();
 	void render();
 	void pollevent();

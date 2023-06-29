@@ -3,6 +3,7 @@
 
 void GameState::search_front(int x, int y, int layr, Vector3i*** temp_front, bool*** vis, int idx)
 {
+	update_minimap_tile(Vector2i(x * 2, y * 2), temp_front[layr][x][y]);
 	vis[layr][x][y] = 1;
 	for (int i = 0; i < 4; i++) {
 		int new_x = x + dx[i], new_y = y + dy[i];
@@ -42,18 +43,18 @@ void GameState::load_map(string map_name)
 		ifs >> size_x >> size_y;
 
 		for (int i = 0; i < 4; i++) {
-			temp_front[i] = new Vector3i* [size_x];
+			temp_front[i] = new Vector3i * [size_x];
 			vis[i] = new bool* [size_x];
 		}
-		
-		static_map = new render_tile* [size_x];
+
+		static_map = new render_tile * [size_x];
 
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < 4; j++) {
 				temp_front[j][i] = new Vector3i[size_y]({});
 				vis[j][i] = new bool[size_y]({});
 			}
-			
+
 			static_map[i] = new render_tile[size_y];
 
 			for (int j = 0; j < size_y; j++) {
@@ -63,37 +64,36 @@ void GameState::load_map(string map_name)
 					ifs >> layr >> tle.x >> tle.y >> tle.z;
 
 					layer_prop = tile_props[tle.z].properties[tle.x][tle.y].props;
-					if ((tle.x >= 11 && tle.x <= 14) && tle.y == 12 && tle.z == 3) {
-						static_map[i][j].tile_props |= (256 << (tle.x - 11));
-					}
-					else {
-						if (layer_prop & 32) {
-							static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
-							static_map[i][j].object_ID = destructable_count;
-							temp_destructable[destructable_count] = tile_props[tle.z].properties[tle.x][tle.y].object_type;
-							destructable_count++;
-						}
-						if (layer_prop & 16) { // front core
-							dynamic_objects objct;
-							objct.add({ Vector2f(i, j), tle });
-							objct.layer = layr;
-							dynamic_map.add(objct);
-							dynamic_rendering.insert({ float((j + 1) * 16), {short(dynamic_map.curr_idx - 1), nullptr} });
-							static_map[i][j].dynamic_idx = dynamic_map.curr_idx - 1;
-							//add ptr to set
 
-							//add to dynamic tiles
-						}
-						else if ((layer_prop & 8)) { //front
-							temp_front[layr][i][j] = { tle.x + 1, tle.y, tle.z };
-						}
-						else {   // back
-							temp_layers[count] = tle;
-							count++;
-						}
-
-						static_map[i][j].tile_props |= layer_prop;
+					if (layer_prop & 32) {
+						static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
+						static_map[i][j].object_ID = destructable_count;
+						temp_destructable[destructable_count] = tile_props[tle.z].properties[tle.x][tle.y].object_type;
+						destructable_count++;
 					}
+					if (layer_prop & 16) { // front core
+						update_minimap_tile(Vector2i(i * 2, j * 2), tle);
+						dynamic_objects objct;
+						objct.add({ Vector2f(i, j), tle });
+						objct.layer = layr;
+						dynamic_map.add(objct);
+						dynamic_rendering.insert({ float((j + 1) * 16), {short(dynamic_map.curr_idx - 1), nullptr} });
+						static_map[i][j].dynamic_idx = dynamic_map.curr_idx - 1;
+						//add ptr to set
+
+						//add to dynamic tiles
+					}
+					else if ((layer_prop & 8)) { //front
+						temp_front[layr][i][j] = { tle.x + 1, tle.y, tle.z };
+					}
+					else {   // back
+						temp_layers[count] = tle;
+						count++;
+						if (layer_prop & 1)
+							update_minimap_tile(Vector2i(i * 2, j * 2), tle);
+					}
+
+					static_map[i][j].tile_props |= layer_prop;
 				}
 
 				static_map[i][j].size = count;
@@ -288,7 +288,7 @@ void GameState::load_entities(float player_relative_y_pos)
 
 	item_stats.textures[0]->loadFromFile("textures/game/item drops.png");
 
-	player_entity = new Player(player_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj);
+	player_entity = new Player(player_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location);
 	if (character_id == 3 && character_name == "Saitama") {
 		player_entity->setDamage(SHRT_MAX/2);
 		player_entity->destruction_power = SHRT_MAX/2;
@@ -352,9 +352,11 @@ void GameState::initial_stats()
 
 void GameState::initial_game(string current_map, Vector2f player_pos)
 {
+	base_minimap.loadFromFile("Maps/" + current_map + "_minimap.png");
+	minimap_tex.loadFromFile("Maps/" + current_map + "_minimap.png");
+	minimap_img.loadFromFile("Maps/" + current_map + "_minimap.png");
 	load_map(current_map);
 	center_cam(player_pos);
-	minimap_tex.loadFromFile("Maps/" + current_map + "_minimap.png");
 	minimap.setTexture(minimap_tex);
 	minimap.setTextureRect(IntRect(0, 0, 96, 96));
 	minimap.setOrigin(minimap.getLocalBounds().width / 2, minimap.getLocalBounds().height / 2);
@@ -380,15 +382,81 @@ void GameState::center_cam(Vector2f player_pos)
 	player_entity->setPosition((player_pos.x + map_x) * scale, (player_pos.y + map_y) * scale);
 }
 
+void GameState::destroyANDrestore_objects(Vector2i target_tile, bool destroy)
+{
+		for (int i = 0; i < 3; i++)
+			for (int j = 1; j < 4; j++) {
+					Vector2i check_area{ target_tile.x + dx[i], target_tile.y + dy[j] };
+				if(destroy){
+					if (static_map[check_area.x][check_area.y].tile_props & 16)
+						disable_dynamic_obj = static_map[check_area.x][check_area.y].dynamic_idx;
+					else if (static_map[check_area.x][check_area.y].tile_props & 32) {
+						if (!dx[i] && !dy[j])
+							bigbang(check_area, 1);
+					}
+					else if (static_map[check_area.x][check_area.y].tile_props & 1)
+						bigbang(check_area, 1);
+					else
+						continue;
+
+					if (dy[j] == -1) {
+						if (static_map[check_area.x][check_area.y - 1].tile_props & 16)
+							disable_dynamic_obj = static_map[check_area.x][check_area.y - 1].dynamic_idx;
+						else if (static_map[check_area.x][check_area.y - 1].tile_props & 32) {
+							if (!dx[i] && !dy[j])
+								bigbang(check_area, 1);
+						}
+						else if (static_map[check_area.x][check_area.y - 1].tile_props & 1)
+							bigbang(check_area, 1);
+					}
+				}
+				else {
+					if (static_map[check_area.x][check_area.y].disable_top)
+						bigbang(check_area, 0);
+				}
+			}
+}
+
+void GameState::bigbang(Vector2i target_tile, bool destroy)
+{
+	short last = static_map[target_tile.x][target_tile.y].size - 1;
+	Vector3i last_tile = static_map[target_tile.x][target_tile.y].layers[last];
+	static_map[target_tile.x][target_tile.y].disable_top = destroy;
+	static_map[target_tile.x][target_tile.y].tile_props ^= tile_props[last_tile.z].properties[last_tile.x][last_tile.y].props;
+	if (destroy) {
+		Uint8 pixels[16];
+		for (int k = 0; k < 2; k++)
+			for (int l = 0; l < 2; l++) {
+				pixels[(k + 2 * l) * 4] = base_minimap.getPixel(target_tile.x * 2 + k, target_tile.y * 2 + l).r; // red
+				pixels[(k + 2 * l) * 4 + 1] = base_minimap.getPixel(target_tile.x * 2 + k, target_tile.y * 2 + l).g; // green
+				pixels[(k + 2 * l) * 4 + 2] = base_minimap.getPixel(target_tile.x * 2 + k, target_tile.y * 2 + l).b; // blue
+				pixels[(k + 2 * l) * 4 + 3] = base_minimap.getPixel(target_tile.x * 2 + k, target_tile.y * 2 + l).a; // alpha
+				minimap_img.setPixel(target_tile.x * 2 + k, target_tile.y * 2 + l, Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
+			}
+		minimap_tex.update(pixels, 2, 2, target_tile.x * 2, target_tile.y * 2);
+	}
+	else
+		update_minimap_tile(Vector2i(target_tile * 2), last_tile);
+}
+
 void GameState::render_static_map()
 {
 	tile.setScale(scale, scale);
 	for (int i = (x_offset > 0) ? x_offset : 0; i < (win_x + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
 		for (int j = (y_offset > 0) ? y_offset : 0; j < (win_y + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
-			auto tile_end = static_map[i][j].layers + static_map[i][j].size - static_map[i][j].disable_top;
+			auto tile_end = static_map[i][j].layers + static_map[i][j].size - 1;
+
 			for (auto map_tile = static_map[i][j].layers; map_tile != tile_end; map_tile++) {
 				tile.setTexture(*tile_sheets[map_tile->z]);
 				tile.setTextureRect(IntRect(map_tile->x * 16, map_tile->y * 16, 16, 16));
+				tile.setPosition(map_x * scale + (16 * scale * i), map_y * scale + (16 * scale * j));
+				window->draw(tile, &shader);
+			}
+			if (!static_map[i][j].disable_top) {
+				if(dynamic_update_minimap)
+					update_minimap_tile(Vector2i(i * 2, j * 2), *tile_end);
+				tile.setTexture(*tile_sheets[tile_end->z]);
+				tile.setTextureRect(IntRect(tile_end->x * 16, tile_end->y * 16, 16, 16));
 				tile.setPosition(map_x * scale + (16 * scale * i), map_y * scale + (16 * scale * j));
 				window->draw(tile, &shader);
 			}
@@ -452,18 +520,43 @@ void GameState::render_entities()
 				continue;
 			}
 			//debug_ctr++;
-			for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
-				if(i->second.tile == disable_dynamic_obj){
-					i = dynamic_rendering.erase(i);
-					disable_dynamic_obj = -1;
+			if(i->second.tile == disable_dynamic_obj){
+				for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
+					Uint8 pixels[16];
+					for (int k = 0; k < 2; k++)
+						for (int l = 0; l < 2; l++) {
+							pixels[(k + 2 * l) * 4]     = base_minimap.getPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l).r; // red
+							pixels[(k + 2 * l) * 4 + 1] = base_minimap.getPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l).g; // green
+							pixels[(k + 2 * l) * 4 + 2] = base_minimap.getPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l).b; // blue
+							pixels[(k + 2 * l) * 4 + 3] = base_minimap.getPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l).a; // alpha
+							minimap_img.setPixel(dynamic_map.at[i->second.tile].at[j].position.x * 2 + k, dynamic_map.at[i->second.tile].at[j].position.y * 2 + l, Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
+						}
+					minimap_tex.update(pixels, 2, 2, dynamic_map.at[i->second.tile].at[j].position.x * 2, dynamic_map.at[i->second.tile].at[j].position.y * 2);
 				}
-				else {
+				dynamic_map.at[i->second.tile].destruction_time = game_time;
+				disable_dynamic_obj = -1;
+				dynamic_update_minimap = 2;
+				continue;
+			}
+			if(!dynamic_map.at[i->second.tile].destruction_time){
+				for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
 					tile.setTexture(*tile_sheets[dynamic_map.at[i->second.tile].at[j].tile.z]);
 					tile.setTextureRect(IntRect(dynamic_map.at[i->second.tile].at[j].tile.x * 16, dynamic_map.at[i->second.tile].at[j].tile.y * 16, 16, 16));
 					tile.setPosition(map_x * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.x), map_y * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.y));
 					window->draw(tile, &shader);
+					if (dynamic_update_minimap)
+						update_minimap_tile(Vector2i(dynamic_map.at[i->second.tile].at[j].position.x * 2, dynamic_map.at[i->second.tile].at[j].position.y * 2), dynamic_map.at[i->second.tile].at[j].tile);
 				}
 			}
+			else if (game_time - dynamic_map.at[i->second.tile].destruction_time >2 && game_time - dynamic_map.at[i->second.tile].time > 1) {
+				destroyANDrestore_objects(Vector2i((int)dynamic_map.at[i->second.tile].at[0].position.x, (int)dynamic_map.at[i->second.tile].at[0].position.y), 0);
+				dynamic_map.at[i->second.tile].destruction_time = 0;
+			}
+			else
+			{
+				dynamic_map.at[i->second.tile].time = game_time;
+			}
+
 			i++;
 		}
 		else {
@@ -474,6 +567,10 @@ void GameState::render_entities()
 			i = dynamic_rendering.erase(i);
 		}
 	}
+
+	if(dynamic_update_minimap)
+		dynamic_update_minimap--;
+
 	//cout << "total rendering: " << debug_ctr << '\n';
 }
 
@@ -541,16 +638,37 @@ bool GameState::entity_in_range(Vector2f cords, short offset)
 		cords.x <= -map_x + entity_render_distance + win_x / scale);
 }
 
-void GameState::block_interactions_list(Vector2i interaction_tile)
+void GameState::update_minimap_tile(Vector2i position, Vector3i tile)
 {
-	/*use instructions: 
-	if(interactoin_tile == Vector2i(tile cords)
-		action here
-	*/
+	Uint8 pixels[16];
+	int old_alpha = 0, tile_alpha = 0, sum_alpha = 0;
+	Color tile_color;
+	for (int k = 0; k < 2; k++)
+		for (int l = 0; l < 2; l++) {
+			pixels[(k + 2 * l) * 4]     = minimap_img.getPixel(position.x + k, position.y + l).r; // red
+			pixels[(k + 2 * l) * 4 + 1] = minimap_img.getPixel(position.x + k, position.y + l).g; // green
+			pixels[(k + 2 * l) * 4 + 2] = minimap_img.getPixel(position.x + k, position.y + l).b; // blue
+			pixels[(k + 2 * l) * 4 + 3] = minimap_img.getPixel(position.x + k, position.y + l).a; // alpha
 
+			tile_color = tile_sheets_img[tile.z].getPixel(tile.x * 16 + 5 + k * 6, tile.y * 16 + 5 + l * 6);
+			old_alpha = (float)pixels[(k + 2 * l) * 4 + 3] / 255.0, tile_alpha = (float)tile_color.a / 255.0;
+			sum_alpha = 1.0 - (1.0 - tile_alpha) * (1.0 - old_alpha);
+			pixels[(k + 2 * l) * 4 + 3] = sum_alpha * 255;
+			if (sum_alpha) {
+				pixels[(k + 2 * l) * 4]     = tile_color.r * tile_alpha / sum_alpha + pixels[(k + 2 * l) * 4] * old_alpha * (1 - tile_alpha) / sum_alpha;
+				pixels[(k + 2 * l) * 4 + 1] = tile_color.g * tile_alpha / sum_alpha + pixels[(k + 2 * l) * 4 + 1] * old_alpha * (1 - tile_alpha) / sum_alpha;
+				pixels[(k + 2 * l) * 4 + 2] = tile_color.b * tile_alpha / sum_alpha + pixels[(k + 2 * l) * 4 + 2] * old_alpha * (1 - tile_alpha) / sum_alpha;
+			}
+			else {
+				pixels[(k + 2 * l) * 4]     = tile_color.r;
+				pixels[(k + 2 * l) * 4 + 1] = tile_color.g;
+				pixels[(k + 2 * l) * 4 + 2] = tile_color.b;
+				pixels[(k + 2 * l) * 4 + 3] = tile_color.a;
+			}
+			minimap_img.setPixel(position.x + k, position.y + l, Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
+		}
+	minimap_tex.update(pixels, 2, 2, position.x, position.y);
 }
-
-
 
 void GameState::check_in_inventory(int item_id)
 {
@@ -667,6 +785,10 @@ void GameState::update()
 
 	health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
 
+	if (destroy_object_location.x >= 0) {
+		destroyANDrestore_objects(destroy_object_location, 1);
+		destroy_object_location = { -1, -1};
+	}
 	update_minimap();
 
 	if (enemies.vis == nullptr) {
@@ -751,6 +873,7 @@ void GameState::update()
 	}
 
 	player_entity->interact = 0;
+
 	for (int i = 0; i < items.curr_idx; i++) {
 
 		if (items.entities[i]->despawn) {
@@ -869,7 +992,7 @@ void GameState::pollevent()
 					if (item_drops_count != -1) {
 						Vector3i temp;
 						for (int i = 0; i < item_drops_count; i++) {
-							items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, disable_dynamic_obj, player_entity, { (float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y }, 0, 300.0, item_drops[i]);
+							items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, { (float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y }, 0, 300.0, item_drops[i]);
 						}
 						item_drops_count = -1;
 					}

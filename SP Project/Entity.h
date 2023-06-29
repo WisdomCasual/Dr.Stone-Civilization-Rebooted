@@ -187,7 +187,8 @@ public:
 	float delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
 	float& x_offset, & y_offset;
-	short current_move = 3, current_frame = 0, prev_state = -1, &disable_dynamic_obj;
+	short current_move = 3, current_frame = 0, prev_state = -1;
+	Vector2i& destroy_object_location;
 	IntRect current_rect = { 0,0,0,0 };
 	Vector2f current_hitbox = { 0,0 };
 	Vector2u prev_win = { 0, 0 };
@@ -220,7 +221,7 @@ public:
 	float knockback_v=0,hit_cooldown=0;
 	/////////////////////////////////////////////////
 	//Public functions
-	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, short&, Entity* player = nullptr, bool persistant = 0, double time_to_despawn = 10.0, int item_id = 0);
+	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, Vector2i&, Entity* player = nullptr, bool persistant = 0, double time_to_despawn = 10.0, int item_id = 0);
 	virtual ~Entity();
 
 	Vector2f getPosition();
