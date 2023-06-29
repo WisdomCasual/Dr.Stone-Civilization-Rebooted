@@ -7,7 +7,7 @@ using namespace globalvar;
 struct render_tile {
 	Vector3i* layers;
 	short size, tile_props = 0, object_ID = -1, tool_type = -1, dynamic_idx = -1;
-	bool disable_top = 0;
+	float destruction_time = 0, time = 0;
 };
 
 struct animation {
