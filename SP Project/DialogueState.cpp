@@ -165,29 +165,27 @@ void DialogueState::update()
 			reminder_idx = (char_idx < dialogues[dialogue_idx].text.size()) ? char_idx : 0;
 			return;
 		}
-		if (delay >= 0.08) {
-			delay = 0;
+		while (delay >= 0.08) {
+			delay -= 0.08;
 			if (char_idx < dialogues[dialogue_idx].text.size()) {
 				write_text();
 			}
 			else
 				typing = 0, reminder_idx = 0;
 		}
-		else
-			delay += dt;
+		delay += dt;
 	}
 	else {
 		if (add_idx) {
 			output_strings[lines - 1] += ' ';
 			add_idx = 0;
 		}
-		if (delay >= 0.75) {
-			delay = 0;
+		while (delay >= 0.75) {
+			delay -= 0.75;
 			cursor = !cursor;
 			output_strings[lines - 1][output_strings[lines - 1].size() - 1] = (cursor) ? '|' : ' ';
 		}
-		else
-			delay += dt;
+		delay += dt;
 	}
 	box_bounds = box.getGlobalBounds();
 	setPosition(position);

@@ -12,9 +12,9 @@ void Player::move_cam(float x_movement, float y_movement)
 	x_offset = -map_x / 16, y_offset = -map_y / 16;
 }
 
-void Player::player_movement(float x_movement,float y_movement,float velocity, bool no_direction_change)
+void Player::player_movement(float x_movement,float y_movement,float velocity)
 {
-	Vector2f v_direction = { x_movement,y_movement };
+	Vector2f v_direction = { x_movement, y_movement };
 	x_movement *= velocity * dt, y_movement *=  velocity * dt;
 	bool moving = false;
 	if (x_movement && legal_tile({ x_movement, 0 })) {
@@ -39,8 +39,24 @@ void Player::player_movement(float x_movement,float y_movement,float velocity, b
 			move({ 0, y_movement * scale });
 	}
 
-	if(!no_direction_change)
-		direction(v_direction, moving);
+	direction(delta_movement(), moving);
+}
+
+Vector2f Player::delta_movement()
+{
+	// returns direction of movement based on arrow/wasd keys --> {[-1,1],[-1,1]}
+	Vector2f velocity{ 0,0 };
+	if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
+		velocity.x++;
+	if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
+		velocity.x--;
+	if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W))
+		velocity.y--;
+	if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
+		velocity.y++;
+	if (0 != velocity.x && 0 != velocity.y)
+		velocity.x *= 0.707, velocity.y *= 0.707;
+	return velocity;
 }
 
 void Player::knockback(Vector2f direction,float v) {
@@ -274,7 +290,7 @@ void Player::update()
 	else if (stun > 0) {
 		//cout << stun << endl;
 		stun -= dt;
-		player_movement(knockback_direction.x, knockback_direction.y, knockback_v, true);
+		player_movement(knockback_direction.x, knockback_direction.y, knockback_v);
 		//cout << knockback_v <<'\t'<<knockback_direction.x<<'\t'<<knockback_direction.y << endl;
 		knockback_v -= dt*400;
 		if (knockback_v < 0)knockback_v = 0;
