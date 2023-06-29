@@ -242,6 +242,7 @@ public:
 	virtual void pollevent();
 	virtual void set_type(short) {};
 	virtual void set_dialogue(dialogue*, short) {};
+	virtual Vector2i block_interaction() {};
 	void render(Shader*);
 
 };

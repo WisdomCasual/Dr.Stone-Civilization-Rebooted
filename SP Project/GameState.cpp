@@ -93,7 +93,8 @@ void GameState::load_map(string map_name)
 							update_minimap_tile(Vector2i(i * 2, j * 2), tle);
 					}
 
-					static_map[i][j].tile_props |= layer_prop;
+						static_map[i][j].tile_props |= layer_prop;
+					}
 				}
 
 				static_map[i][j].size = count;
@@ -301,7 +302,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive.add(llama(2), {875, 875}, 1);
 	passive.add(deer(2), {725, 725}, 1);
 	dialogue test[3] = { {"NPC", "hi there"}, {"NPC", "hello there"}, {"NPC", "welcome, traveller!"} } ;
-	NPCs.add(default_npc, {700, 700}, npc_details(1, 10, 0), 3, test);
+	NPCs.add(default_npc, { 968, 712}, npc_details(1, 10, 0), 3, test);
 
 	player_entity->change_state(3);
 
@@ -976,6 +977,10 @@ void GameState::pollevent()
 				break;
 			case Keyboard::F:
 				player_entity->interact = 1;
+				Vector2i interaction_block = player_entity->block_interaction();
+				if (interaction_block.x != -1) {
+
+				}
 				break;
 			case Keyboard::Space:
 				player_entity->use_tool();

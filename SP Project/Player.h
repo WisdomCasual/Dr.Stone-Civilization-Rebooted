@@ -43,6 +43,7 @@ public:
 	void move(Vector2f);
 	void setDamage(short);
 	void setHealth(short);
+	Vector2i block_interaction();
 	void update();
 	void pollevent();
 
