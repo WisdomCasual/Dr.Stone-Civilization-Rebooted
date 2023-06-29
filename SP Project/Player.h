@@ -18,7 +18,8 @@ private:
 
 	//private functions
 	void move_cam(float, float);
-	void player_movement(float,float,float, bool no_direction_change = false);
+	void player_movement(float,float,float);
+	Vector2f delta_movement();
 
 	//Private variables
 	bool fake_constructor = 1;
