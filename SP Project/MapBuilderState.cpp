@@ -460,19 +460,21 @@ void MapBuilderState::create_mini_map()
 				for (int l = 0; l < 2; l++) {
 					new_color = Color::Transparent;
 					for (auto layer : tiles[i][j].layer) {
-						Vector3i layer_tile = layer.second;
-						old_color = new_color;
-						tile_color = tile_sheets_img[layer_tile.z].getPixel(layer_tile.x * 16 + 5 + k * 6, layer_tile.y * 16 + 5 + l * 6);
-						old_alpha = (float)old_color.a / 255.0, tile_alpha = (float)tile_color.a / 255.0;
-						sum_alpha = 1.0 - (1.0 - tile_alpha) * (1.0 - old_alpha);
-						new_color.a = sum_alpha * 255;
-						if (sum_alpha) {
-							new_color.r = tile_color.r * tile_alpha / sum_alpha + old_color.r * old_alpha * (1 - tile_alpha) / sum_alpha;
-							new_color.g = tile_color.g * tile_alpha / sum_alpha + old_color.g * old_alpha * (1 - tile_alpha) / sum_alpha;
-							new_color.b = tile_color.b * tile_alpha / sum_alpha + old_color.b * old_alpha * (1 - tile_alpha) / sum_alpha;
+						if (!(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 1)&& !(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 8)) {
+							Vector3i layer_tile = layer.second;
+							old_color = new_color;
+							tile_color = tile_sheets_img[layer_tile.z].getPixel(layer_tile.x * 16 + 5 + k * 6, layer_tile.y * 16 + 5 + l * 6);
+							old_alpha = (float)old_color.a / 255.0, tile_alpha = (float)tile_color.a / 255.0;
+							sum_alpha = 1.0 - (1.0 - tile_alpha) * (1.0 - old_alpha);
+							new_color.a = sum_alpha * 255;
+							if (sum_alpha) {
+								new_color.r = tile_color.r * tile_alpha / sum_alpha + old_color.r * old_alpha * (1 - tile_alpha) / sum_alpha;
+								new_color.g = tile_color.g * tile_alpha / sum_alpha + old_color.g * old_alpha * (1 - tile_alpha) / sum_alpha;
+								new_color.b = tile_color.b * tile_alpha / sum_alpha + old_color.b * old_alpha * (1 - tile_alpha) / sum_alpha;
+							}
+							else
+								new_color = tile_color;
 						}
-						else
-							new_color = tile_color;
 					}
 					mini_map.setPixel(i * 2 + k, j * 2 + l, new_color);
 				}

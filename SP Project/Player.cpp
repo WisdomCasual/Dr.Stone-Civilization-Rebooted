@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "GameState.h"
 
 Player::~Player()
 {
@@ -184,49 +185,10 @@ void Player::mine()
 			   for (int i = 0; i < *item_drops_count; i++) {
 				   item_drops[i] = (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].item_drops[i];
 			   }
-			   destroy_object(core_location);
+			   destroy_object_location = core_location;
 		   }
 		}
 	}
-}
-
-void Player::destroy_object(Vector2i tile_location)
-{
-	for (int i = 0; i < 3; i++)
-		for (int j = 1; j < 4; j++) {
-			Vector2i destroy_area{ tile_location.x + dx[i], tile_location.y + dy[j] };
-
-			if (static_map[destroy_area.x][destroy_area.y].tile_props & 16)
-				disable_dynamic_obj = static_map[destroy_area.x][destroy_area.y].dynamic_idx;
-			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 32) {
-				if (!dx[i] && !dy[j])
-					bigbang(destroy_area, 1);
-			}
-			else if (static_map[destroy_area.x][destroy_area.y].tile_props & 1)
-				bigbang(destroy_area, 1);
-			else 
-				continue;
-
-			if (dy[j] == -1) {
-				if (static_map[destroy_area.x][destroy_area.y - 1].tile_props & 16)
-					disable_dynamic_obj = static_map[destroy_area.x][destroy_area.y - 1].dynamic_idx;
-				else if (static_map[destroy_area.x][destroy_area.y - 1].tile_props & 32) {
-					if (!dx[i] && !dy[j])
-						bigbang(destroy_area, 1);
-				}
-				else if (static_map[destroy_area.x][destroy_area.y - 1].tile_props & 1)
-					bigbang(destroy_area, 1);
-
-			}
-		}
-}
-
-void Player::bigbang(Vector2i destroy_tile, bool destroy = 0)
-{
-	short last = static_map[destroy_tile.x][destroy_tile.y].size - 1;
-	Vector3i last_tile = static_map[destroy_tile.x][destroy_tile.y].layers[last];
-	static_map[destroy_tile.x][destroy_tile.y].disable_top = destroy;
-	static_map[destroy_tile.x][destroy_tile.y].tile_props ^= tile_props[last_tile.z].properties[last_tile.x][last_tile.y].props;
 }
 
 void Player::move(Vector2f movement)
