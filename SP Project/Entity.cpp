@@ -143,13 +143,12 @@ void Entity::direction(Vector2f direction, bool moving)
 		}
 
 		if (moving) {
-			if (delay > animation_delay) {
-				delay = 0;
+			while (delay > animation_delay) {
+				delay -= animation_delay;
 				current_frame++;
 				current_frame %= entity_stats.animations[state][current_move].frames;
 			}
-			else
-				delay += dt;
+			delay += dt;
 		}
 		else
 			current_frame = 0;
