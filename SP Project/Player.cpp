@@ -215,8 +215,10 @@ Vector2i Player::block_interaction()
 		short curr_tile_x = getRelativePos().x / 16.f, curr_tile_y = getRelativePos().y / 16.f, new_tile_x, new_tile_y;
 		for (int i = 0; i < 4; i++) {
 			new_tile_x = curr_tile_x + dx[i], new_tile_y = curr_tile_y + dy[i];
+			//cout << "b";
 			if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {
 				interact = 0;
+				//cout << "a";
 				return Vector2i(new_tile_x, new_tile_y);
 			}
 		}

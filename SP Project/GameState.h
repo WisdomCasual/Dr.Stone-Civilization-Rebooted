@@ -49,6 +49,8 @@ private:
 
 
 
+
+
 	base_stats object_stats[30], * destructable_objects = nullptr;
 
 	Vector2f clicked_on = { -1, -1 };
@@ -177,7 +179,8 @@ private:
 		}
 
 		~dynamic_objects() {
-			delete[] at;
+			if(at != nullptr)
+				delete[] at;
 		}
 
 		void resize(const int size) {
@@ -220,6 +223,10 @@ private:
 		}
 
 		void resize(const int size) {
+			if (at == nullptr) {
+				at = new dynamic_objects[size];
+				return;
+			}
 			dynamic_objects* old_dynamic_array = at;
 			at = new dynamic_objects[size];
 			int copy_size = min(curr_idx, size);
@@ -237,6 +244,10 @@ private:
 		}
 
 		void add(dynamic_objects& new_objct) {
+			if (at == nullptr) {
+				at = new dynamic_objects[1];
+				size = 1;
+			}
 			if (curr_idx >= size) {
 				resize(size * 2);
 			}
@@ -252,6 +263,15 @@ private:
 
 		int arr_size() {
 			return curr_idx;
+		}
+
+		void delete_all() {
+			if (at != nullptr) {
+				delete[] at;
+				at = nullptr;
+			}
+			curr_idx = 0;
+			size = 0;
 		}
 	}dynamic_map;
 
