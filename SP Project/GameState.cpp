@@ -541,6 +541,15 @@ bool GameState::entity_in_range(Vector2f cords, short offset)
 		cords.x <= -map_x + entity_render_distance + win_x / scale);
 }
 
+void GameState::block_interactions_list(Vector2i interaction_tile)
+{
+	/*use instructions: 
+	if(interactoin_tile == Vector2i(tile cords)
+		action here
+	*/
+
+}
+
 
 
 void GameState::check_in_inventory(int item_id)
@@ -845,6 +854,10 @@ void GameState::pollevent()
 				break;
 			case Keyboard::F:
 				player_entity->interact = 1;
+				Vector2i interaction_block = player_entity->block_interaction();
+				if (interaction_block.x != -1) {
+
+				}
 				break;
 			case Keyboard::Space:
 				player_entity->use_tool();
