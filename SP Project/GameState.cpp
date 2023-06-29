@@ -645,6 +645,17 @@ bool GameState::entity_in_range(Vector2f cords, short offset)
 		cords.x <= -map_x + entity_render_distance + win_x / scale);
 }
 
+void GameState::block_interactions_list(Vector2i interaction_tile)
+{
+	//cout << interaction_tile.x << ' ' << interaction_tile.y << '\n';
+	if (interaction_tile.x == 46 && (interaction_tile.y == 25 || interaction_tile.y == 26)) {
+		if(!dynamic_rendering.empty())
+			dynamic_rendering.clear();
+		dynamic_map.delete_all();
+		initial_game("Doz World", { 264, 264 });
+	}
+}
+
 void GameState::update_minimap_tile(Vector2i position, Vector3i tile)
 {
 	Uint8 pixels[16];
@@ -742,7 +753,6 @@ GameState::~GameState()
 
 void GameState::update()
 {
-
 	window->setMouseCursorVisible(false);
 
 	if (prev_win != window->getSize()) {
@@ -986,7 +996,7 @@ void GameState::pollevent()
 				player_entity->interact = 1;
 				Vector2i interaction_block = player_entity->block_interaction();
 				if (interaction_block.x != -1) {
-
+					block_interactions_list(interaction_block);
 				}
 				break;
 			}
