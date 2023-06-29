@@ -852,13 +852,14 @@ void GameState::pollevent()
 				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count)});
 				states->at(InventoryID)->update();
 				break;
-			case Keyboard::F:
+			case Keyboard::F: {
 				player_entity->interact = 1;
 				Vector2i interaction_block = player_entity->block_interaction();
 				if (interaction_block.x != -1) {
 
 				}
 				break;
+			}
 			case Keyboard::Space:
 				player_entity->use_tool();
 				if (player_entity->tool_used_on.x > -1) {
