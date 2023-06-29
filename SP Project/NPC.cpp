@@ -217,6 +217,7 @@ void NPC::update()
 		}
 		else
 			current_hitbox = prev_hitbox;
+		cout << movement.x << ' ' << movement.y << '\n';
 	}
 
 	if (game_time - despawn_timer > time_to_despawn && !persistant) {

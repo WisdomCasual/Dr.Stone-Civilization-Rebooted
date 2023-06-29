@@ -112,7 +112,7 @@
       <Filter>cpps\States</Filter>
     </ClCompile>
     <ClCompile Include="NPC.cpp">
-      <Filter>cpps\Source Files</Filter>
+      <Filter>cpps\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
