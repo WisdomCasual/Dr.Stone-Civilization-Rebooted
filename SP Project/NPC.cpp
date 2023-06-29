@@ -97,7 +97,7 @@ void NPC::type_behaviour()
 		default: {
 			short curr_tile_x = short(getRelativePos().x / 16), curr_tile_y = short(getRelativePos().y / 16), new_tile_x, new_tile_y;
 			if (static_map[curr_tile_x][curr_tile_y].tile_props & 3840) {
-				if (!(dist_x | dist_y)) {
+				if (dist.x == 0.f && dist.y == 0.f) {
 					if (motion_cd <= 0) {
 						if (static_map[curr_tile_x][curr_tile_y].tile_props & 3072) {
 							path_follow(curr_tile_x, curr_tile_y, -curr_movement.x, -curr_movement.y, prev_tile_x, prev_tile_y);
@@ -142,7 +142,7 @@ void NPC::path_follow(short curr_tile_x, short curr_tile_y, short dx, short dy, 
 	}
 	travel_x = new_tile_x + dx * j, travel_y = new_tile_y + dy * j;
 	prev_tile_x = travel_x - 2 * dx, prev_tile_y = travel_y - 2 * dy;
-	dist_x = (travel_x - new_tile_x) * 16, dist_y = (travel_y - new_tile_y) * 16;
+	dist.x = (travel_x - new_tile_x) * 16, dist.y = (travel_y - new_tile_y) * 16;
 	direction(curr_movement);
 	move_speed = entity_stats.base_movement_speed / 2;
 	will_move = 1;
@@ -207,10 +207,10 @@ void NPC::update()
 		}
 	}
 	if (will_move) {
-		Vector2f movement = { (abs(roundf(dt * move_speed * curr_movement.x)) < abs(dist_x)) ? roundf(dt * move_speed * curr_movement.x) : dist_x,
-							(abs(roundf(dt * move_speed * curr_movement.y)) < abs(dist_y)) ? roundf(dt * move_speed * curr_movement.y) : dist_y }, prev_hitbox = current_hitbox;;
+		Vector2f movement = { (abs(dt * move_speed * curr_movement.x) < abs(dist.x)) ? dt * move_speed * curr_movement.x : dist.x,
+							(abs(dt * move_speed * curr_movement.y) < abs(dist.y)) ? dt * move_speed * curr_movement.y : dist.y }, prev_hitbox = current_hitbox;;
 		if (legal_direction((getRelativePos() + movement) / 16.f, roundf(curr_movement.x), roundf(curr_movement.y)) && !collide_with_player(dt * move_speed * curr_movement)) {
-			dist_x -= movement.x, dist_y -= movement.y;
+			dist.x -= movement.x, dist.y -= movement.y;
 			move(movement);
 
 			direction(curr_movement);
