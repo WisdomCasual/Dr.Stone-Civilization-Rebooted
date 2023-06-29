@@ -244,15 +244,14 @@ void Player::update()
 	}
 
 	if (active_action) {
-		if (delay > animation_delay) {
-			delay = 0;
+		while (delay > animation_delay) {
+			delay -= animation_delay;
 			current_frame++;
 			if (current_frame % entity_stats.animations[state][current_move].frames == 0) {
 				current_frame = 0, current_move -= 4 * active_action, active_action = 0;
 			}
 		}
-		else
-			delay += dt;
+		delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
 	if (fake_constructor) {

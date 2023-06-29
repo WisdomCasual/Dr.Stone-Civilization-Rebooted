@@ -28,8 +28,8 @@ void Animation::update(float scale)
 		animation_sprite.setScale(scale * animation_scale, scale * animation_scale);
 	}
 	
-	if (delay >= 0.01) {
-		delay = 0;
+	while (delay >= 0.025) {
+		delay -= 0.025;
 		current_frame++;
 		if (current_frame >= frame_count) {
 			if (loop)
@@ -41,8 +41,7 @@ void Animation::update(float scale)
 		}
 		animation_sprite.setTextureRect(IntRect(frame.left + frame.width * current_frame, frame.top, frame.width, frame.height));
 	}
-	else
-		delay += dt;
+	delay += dt;
 }
 
 void Animation::render(Shader* shader)
