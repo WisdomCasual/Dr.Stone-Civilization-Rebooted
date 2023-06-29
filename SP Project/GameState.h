@@ -297,6 +297,7 @@ private:
 	void render_minimap();
 	void entity_spawning();
 	bool entity_in_range(Vector2f, short offset = 0);
+	void block_interactions_list(Vector2i);
 
 
 public:
