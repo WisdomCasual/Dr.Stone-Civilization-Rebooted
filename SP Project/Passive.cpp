@@ -114,6 +114,11 @@ void Passive::stateMachine()
 
 void Passive::update()
 {
+	if (game_time - despawn_timer > time_to_despawn && !persistant) {
+		despawn = 1;
+		return;
+	}
+	despawn_timer = game_time;
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
@@ -190,9 +195,4 @@ void Passive::update()
 		}
 	}
 
-	if (game_time - despawn_timer > time_to_despawn && !persistant) {
-		despawn = 1;
-		return;
-	}
-	despawn_timer = game_time;
 }

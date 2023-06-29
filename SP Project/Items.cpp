@@ -37,6 +37,10 @@ void Items::intersect(){
 
 void Items::update()
 {
+	if (game_time - despawn_timer > time_to_despawn && !persistant) {
+		despawn = 1;
+		return;
+	}
 	
 	if (prev_win != window->getSize()) {
 
@@ -53,9 +57,6 @@ void Items::update()
 	
     intersect();
 	move();
-	if (game_time - despawn_timer > time_to_despawn && !persistant) {
-		despawn = 1;
-	}
 }
 
 void Items::pollevent()
