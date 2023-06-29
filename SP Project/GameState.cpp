@@ -43,18 +43,18 @@ void GameState::load_map(string map_name)
 		ifs >> size_x >> size_y;
 
 		for (int i = 0; i < 4; i++) {
-			temp_front[i] = new Vector3i* [size_x];
+			temp_front[i] = new Vector3i * [size_x];
 			vis[i] = new bool* [size_x];
 		}
-		
-		static_map = new render_tile* [size_x];
+
+		static_map = new render_tile * [size_x];
 
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < 4; j++) {
 				temp_front[j][i] = new Vector3i[size_y]({});
 				vis[j][i] = new bool[size_y]({});
 			}
-			
+
 			static_map[i] = new render_tile[size_y];
 
 			for (int j = 0; j < size_y; j++) {
@@ -74,27 +74,26 @@ void GameState::load_map(string map_name)
 					if (layer_prop & 16) { // front core
 						update_minimap_tile(Vector2i(i * 2, j * 2), tle);
 						dynamic_objects objct;
-						objct.add({ Vector2f(i, j), tle});
+						objct.add({ Vector2f(i, j), tle });
 						objct.layer = layr;
 						dynamic_map.add(objct);
-						dynamic_rendering.insert({ float((j+1) * 16), {short(dynamic_map.curr_idx - 1), nullptr} });
+						dynamic_rendering.insert({ float((j + 1) * 16), {short(dynamic_map.curr_idx - 1), nullptr} });
 						static_map[i][j].dynamic_idx = dynamic_map.curr_idx - 1;
 						//add ptr to set
 
 						//add to dynamic tiles
 					}
 					else if ((layer_prop & 8)) { //front
-						temp_front[layr][i][j] = { tle.x+1, tle.y, tle.z };
+						temp_front[layr][i][j] = { tle.x + 1, tle.y, tle.z };
 					}
 					else {   // back
 						temp_layers[count] = tle;
 						count++;
-						if(layer_prop & 1)
+						if (layer_prop & 1)
 							update_minimap_tile(Vector2i(i * 2, j * 2), tle);
 					}
 
-						static_map[i][j].tile_props |= layer_prop;
-					}
+					static_map[i][j].tile_props |= layer_prop;
 				}
 
 				static_map[i][j].size = count;
@@ -874,6 +873,7 @@ void GameState::update()
 	}
 
 	player_entity->interact = 0;
+
 	for (int i = 0; i < items.curr_idx; i++) {
 
 		if (items.entities[i]->despawn) {
