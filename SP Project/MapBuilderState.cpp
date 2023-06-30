@@ -286,7 +286,7 @@ void MapBuilderState::draw_tools()
 					changes.atBack()->tiles = new Tile[wdth * hght];
 
 					for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x && i1 < size_x; i1++, i2++)
-						for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_x; j1++, j2++) {
+						for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_y; j1++, j2++) {
 
 							changes.atBack()->tiles[changes.atBack()->size] = tiles[i2][j2]; //<--store tiles before changes	
 							changes.atBack()->size++;
