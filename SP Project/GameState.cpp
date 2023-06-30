@@ -407,15 +407,23 @@ void GameState::center_cam(Vector2f player_pos)
 	map_x = -(player_pos.x - win_x / 2 / scale);
 	map_y = -(player_pos.y - win_y / 2 / scale);
 
-	if (-map_x < 0)
-		map_x = 0;
-	else if (-map_x > size_x * 16 - win_x / scale)
-		map_x = -(size_x * 16 - win_x / scale);
+	if (size_x * 16 * scale > win_x) {
+		if (-map_x < 0)
+			map_x = 0;
+		else if (-map_x > size_x * 16 - win_x / scale)
+			map_x = -(size_x * 16 - win_x / scale);
+	}
+	else
+		map_x = x/ scale - size_x * 8;
 
-	if (-map_y < 0)
-		map_y = 0;
-	else if (-map_y > size_y * 16 - win_y / scale)
-		map_y = -(size_y * 16 - win_y / scale);
+	if (size_y * 16 * scale > win_y) {
+		if (-map_y < 0)
+			map_y = 0;
+		else if (-map_y > size_y * 16 - win_y / scale)
+			map_y = -(size_y * 16 - win_y / scale);
+	}
+	else
+		map_y = y / scale - size_y * 8;
 
 	x_offset = -map_x / 16, y_offset = -map_y / 16;
 
@@ -725,6 +733,7 @@ void GameState::block_interactions_list(Vector2i interaction_tile)
 			initial_game("Doz World", { 264, 264 });
 			DoDayLightCycle = false;
 			DoEntitySpawning = false;
+			EnableMiniMap = false;
 		}
 		//else if (interaction_tile.x == 46 && (interaction_tile.y == 25 || interaction_tile.y == 26)) {
 		//	states->insert(WorldMapST);
@@ -934,7 +943,8 @@ void GameState::update()
 		destroy_object_location = { -1, -1};
 	}
 
-	update_minimap();
+	if (EnableMiniMap)
+		update_minimap();
 
 	DayLightCycle();
 
@@ -1053,7 +1063,8 @@ void GameState::render()
 			window->draw(tool_icons[i]);
 		window->draw(hotbar_selection);
 		window->draw(health_indicator);
-		render_minimap();
+		if(EnableMiniMap)
+			render_minimap();
 	}
 	if (blackining)
 		window->draw(blackscreen);
