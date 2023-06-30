@@ -220,7 +220,8 @@ void PasswordState::update()
 	else if (proceed) {
 		if (fade_out()) {
 			proceed = false;
-			states->insert({ WorldMapID, new WorldMapState(1, 0) });
+			string placeholer;
+			states->insert({ WorldMapID, new WorldMapState(placeholer, 1, 0) });
 			states->at(WorldMapID)->update();
 			states->erase(SettingsID);
 			states->erase(PasswordID);

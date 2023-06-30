@@ -99,6 +99,7 @@ void WorldMapState::update_pins()
 				else {
 					//choosed map in game///////////////////////////////////////////////////
 					change_map = true;
+					selected_map = pn->first;
 				}
 			}
 			else {
@@ -157,7 +158,8 @@ void WorldMapState::save_maps()
 	ofs.close();
 }
 
-WorldMapState::WorldMapState(bool admin, bool tint_fade)
+WorldMapState::WorldMapState(string& selected_map, bool admin, bool tint_fade)
+	:selected_map(selected_map)
 {
 	this->tint_fade = tint_fade;
 	this->admin = admin;
@@ -220,7 +222,11 @@ void WorldMapState::update()
 	 if (change_map) {
 		if (black_out()) {
 			change_map = false;
-
+			states->at(GameID)->update();
+			states->at(GameID)->update();
+			delete states->at(WorldMapID);
+			states->erase(WorldMapID);
+			return;
 		}
 	}
 	else if (back) {

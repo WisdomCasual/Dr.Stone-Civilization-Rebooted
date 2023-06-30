@@ -20,7 +20,7 @@ private:
 	};
 
 	Text del;
-    float scale = 1, transparency = 0, darkness = 0, blackining = 0;
+    float scale = 1, transparency = 0, darkness = 0;
 	save saves[3] = { {-130,0,1}, {0,0,2}, {130,0,3} };
 	Vector2f clicked_on = { -1, -1 };
 

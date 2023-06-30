@@ -17,7 +17,7 @@ private:
 	TextBox txt_box;
 	Sprite tissue, back_arrow, panel;
 	bool arrow_pressed = 0;
-	float scale = 1, win_x = 0, win_y = 0, x = 1, y = 1, transparency = 0, darkness = 0, blackining = 0;
+	float scale = 1, win_x = 0, win_y = 0, x = 1, y = 1, transparency = 0, darkness = 0;
 	Vector2f mouse_pos = { 0,0 }, clicked_on = { -1, -1 };
 	Vector2u prev_win = { 0, 0 };
 	int save_no;

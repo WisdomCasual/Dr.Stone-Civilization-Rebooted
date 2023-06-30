@@ -12,6 +12,19 @@ void GameState::black_in()
 	}
 }
 
+bool GameState::black_out()
+{
+	if (blackining < 255) {
+		if (blackining + 500 * dt > 255)
+			blackining = 255;
+		else
+			blackining += 500 * dt;
+		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		return false;
+	}
+	return true;
+}
+
 void GameState::search_front(int x, int y, int layr, Vector3i*** temp_front, bool*** vis, int idx)
 {
 	update_minimap_tile(Vector2i(x * 2, y * 2), temp_front[layr][x][y]);
@@ -360,8 +373,9 @@ void GameState::deload_map()
 		delete[] static_map;
 	size_x = 0, size_y = 0;
 
-	//if(destructable_objects!= nullptr)
-	//	delete[] destructable_objects;
+	if (!dynamic_rendering.empty())
+		dynamic_rendering.clear();
+	dynamic_map.delete_all();
 }
 
 void GameState::initial_stats()
@@ -428,6 +442,28 @@ void GameState::center_cam(Vector2f player_pos)
 	x_offset = -map_x / 16, y_offset = -map_y / 16;
 
 	player_entity->setPosition((player_pos.x + map_x) * scale, (player_pos.y + map_y) * scale);
+}
+
+void GameState::maps_travel()
+{
+	if (!travel_map.empty()) {
+		if (black_out()) {
+
+			// maybe add time zone changes
+			if (travel_map == "Doz World") {
+				initial_game("Doz World", { 264, 264 });
+				DoDayLightCycle = false;
+				DoEntitySpawning = false;
+				EnableMiniMap = false;
+			}
+
+
+
+			travel_map.clear();
+		}
+	}
+	else
+		black_in();
 }
 
 void GameState::destroyANDrestore_objects(Vector2i target_tile, bool destroy)
@@ -727,18 +763,12 @@ void GameState::block_interactions_list(Vector2i interaction_tile)
 	//cout << interaction_tile.x << ' ' << interaction_tile.y << '\n';
 	if (current_map == "Sheraton") {
 		if (interaction_tile.x == 46 && (interaction_tile.y == 25 || interaction_tile.y == 26)) {
-			if (!dynamic_rendering.empty())
-				dynamic_rendering.clear();
-			dynamic_map.delete_all();
-			initial_game("Doz World", { 264, 264 });
-			DoDayLightCycle = false;
-			DoEntitySpawning = false;
-			EnableMiniMap = false;
+			travel_map = "Doz World";
 		}
-		//else if (interaction_tile.x == 46 && (interaction_tile.y == 25 || interaction_tile.y == 26)) {
-		//	states->insert(WorldMapST);
-		//	states->at(WorldMapID)->update();
-		//}
+		else if (interaction_tile.x == 26 && interaction_tile.y == 19) {
+			states->insert({ 9, new WorldMapState(travel_map) });
+			states->at(WorldMapID)->update();
+		}
 	}
 }
 
@@ -913,8 +943,6 @@ void GameState::update()
 	if (fps_active)
 		fps_text.setString(fps_text.getString() + "\tCoordinates " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
 
-	black_in();
-
 
 	//entity spawning                *******FIX RANDOM DAMAGE WITH ENEMY SPAWNING*****
 	spawn_cd += dt;
@@ -925,6 +953,8 @@ void GameState::update()
 	}
 
 	player_entity->movement = delta_movement();
+
+	maps_travel();
 
 	if (player_entity->combat_tag <= 0 && player_entity->health < player_stats.max_health && heal_delay >= 2) {
 		heal_delay = 0;
