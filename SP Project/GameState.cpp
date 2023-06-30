@@ -902,7 +902,7 @@ void GameState::update()
 	}
 
 	if (fps_active)
-		fps_text.setString(fps_text.getString() + "\tCoordinates: " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
+		fps_text.setString(fps_text.getString() + "\tCoordinates " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
 
 	black_in();
 
