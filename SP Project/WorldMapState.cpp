@@ -258,6 +258,7 @@ void WorldMapState::update()
 		 delete_map = 0;
 		 string file_name = "Maps/" + map_to_delete + ".mp";
 		 remove(file_name.c_str());
+		 remove(("Maps/" + map_to_delete + "_minimap.png").c_str());
 		 pins.erase(map_to_delete);
 	 }
 }
