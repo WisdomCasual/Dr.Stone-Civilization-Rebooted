@@ -730,7 +730,7 @@ void GameState::block_interactions_list(Vector2i interaction_tile)
 			if (!dynamic_rendering.empty())
 				dynamic_rendering.clear();
 			dynamic_map.delete_all();
-			initial_game("test", { 50, 50 });
+			initial_game("Doz World", { 264, 264 });
 			DoDayLightCycle = false;
 			DoEntitySpawning = false;
 			EnableMiniMap = false;
