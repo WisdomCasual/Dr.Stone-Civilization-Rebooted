@@ -30,7 +30,7 @@ struct GameState : public State
 private:
 	//variables:
 
-	short no_update=0;
+	bool no_update=0;
 	dialogue death_message[2] = { {"Sneku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
 
 	Shader shader;
@@ -50,7 +50,7 @@ private:
 
 	base_stats object_stats[30], * destructable_objects = nullptr;
 
-	Vector2f clicked_on = { -1, -1 }, waypoint_position = { -1, -1 }, quest_location = { -1, -1 };
+	Vector2f clicked_on = { -1, -1 }, waypoint_position = { -1, -1 }, quest_location = { -1, -1 }, respawn_point = {800, 800};
 
 	render_tile** static_map;
 

@@ -128,12 +128,8 @@ namespace globalvar {
     };
 
     struct in_order {
-    private:
-        nod* last;
-
-    public:
         int size = 0;
-        nod* first;
+        nod* first, *last;
         /* insert function */
         in_order() {
             first = NULL;
@@ -153,9 +149,7 @@ namespace globalvar {
             tmp->link = NULL;
 
             if (first == NULL)
-                first = tmp;
-            else if (last == NULL)
-                tmp->back_link = first, first->link = tmp, last = tmp;
+                first = last = tmp;
             else
                 tmp->back_link = last, last->link = tmp, last = tmp;
 
@@ -184,13 +178,14 @@ namespace globalvar {
             nod* node = first;
 
             if (element == first->itm) {
+                if (first->link != NULL)
+                    first->link->back_link = NULL;
+                else
+                    last = NULL;
                 first = first->link;
-                //if (first != NULL)
-                //    first->back_link = NULL;
                 delete node;
                 size--;
                 return 1;
-
             }
             else if (element == last->itm) {
                 node = last;
