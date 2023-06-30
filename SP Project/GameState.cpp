@@ -1030,23 +1030,36 @@ void GameState::update()
 		player_entity->update();
 	}
 	else {
-		health_indicator.setTextureRect(IntRect(0, 0, 590, 100));
-		states->insert({ DialogueID,new DialogueState(death_message,{win_x / 2,win_y / 2},scale / 2,2) });
-		states->at(DialogueID)->update();
-		no_update++;
-		if (no_update>=2) {
-			string file_name = "Saves/Save" + to_string(save_num + 1) + ".ini";
-			remove(file_name.c_str());
-			states->insert(MainMenuST);
-			states->at(MainMenuID)->update();
-			if (states->find(BackgroundID) == states->end()) {
-				states->insert(BackgroundST);
-				states->at(BackgroundID)->update();
-			}
+		if (!no_update) {
+			health_indicator.setTextureRect(IntRect(0, 0, 590, 100));
+			//CHANGE MESSAGE TO RESPAWN
+			states->insert({ DialogueID,new DialogueState(death_message,{win_x / 2,win_y / 2},scale / 2,2) });
+			states->at(DialogueID)->update();
+			no_update = 1;
+		}
+		else {
+			no_update = 0;
+			player_entity->health = player_stats.max_health;
+			player_entity->despawn = false;
+			player_entity->stun = 0;
+			player_entity->change_state(3);
+			hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+			tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
+			if (player_entity->state != 3)
+				tool_icons[(2 - player_entity->state)].setColor(Color(255, 255, 255));
+			player_entity->direction({ 0, 1 });
 
-			int exceptions[] = { MainMenuID , BackgroundID };
-			game.erase_states(exceptions, 2);
-			return;
+			nod* it = inventory_order.first;
+
+			while (it != NULL) {
+				items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, { (float)player_entity->getRelativePos().x , (float)player_entity->getRelativePos().y }, 0, 300.0, it->itm);
+				items.entities[items.curr_idx - 1]->health = inventory_count[it->itm];
+				inventory_count[it->itm] = 0;
+				it = it->link;
+			}
+			inventory_order.clear();
+
+			center_cam(respawn_point);
 		}
 	}
 
@@ -1072,7 +1085,7 @@ void GameState::update()
             // add item to player_inventory
 			if (!inventory_count[items.entities[i]->item_ID])
 				inventory_order.add(items.entities[i]->item_ID);
-			inventory_count[items.entities[i]->item_ID]++;
+			inventory_count[items.entities[i]->item_ID]+= items.entities[i]->health;
 			// despawn item
 			items.rem_ove(i);
 			i--;
@@ -1087,7 +1100,7 @@ void GameState::render()
 {
 	render_static_map();
 	render_entities();
-	if(states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID) {
+	if(states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID || states->rbegin()->first == DialogueID) {
 		window->draw(hotbar);
 		for (int i = 0; i < 3; i++)
 			window->draw(tool_icons[i]);
