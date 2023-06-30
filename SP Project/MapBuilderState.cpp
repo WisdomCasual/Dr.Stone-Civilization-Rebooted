@@ -460,7 +460,7 @@ void MapBuilderState::create_mini_map()
 				for (int l = 0; l < 2; l++) {
 					new_color = Color::Transparent;
 					for (auto layer : tiles[i][j].layer) {
-						if (!(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 1) && !(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 8) && !((layer.second.x >= 11 && layer.second.x <= 15) && layer.second.y == 12 && layer.second.z == 3)) {
+						if (!(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 1) && !(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 8) && !((layer.second.x >= 11 && layer.second.x <= 15) && layer.second.y == 12 && layer.second.z == 3) && !( layer.second.y >= 16 && layer.second.z == 3)) {
 							Vector3i layer_tile = layer.second;
 							old_color = new_color;
 							tile_color = tile_sheets_img[layer_tile.z].getPixel(layer_tile.x * 16 + 5 + k * 6, layer_tile.y * 16 + 5 + l * 6);

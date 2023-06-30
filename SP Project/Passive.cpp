@@ -16,6 +16,18 @@ void Passive::player_collision_check()
 
 	if (entity_hitbox.intersects(player_hitbox))
 		player_entity.movement.y = 0;
+
+	player_hitbox.top -= player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
+	player_hitbox.left += player_entity.knockback_direction.x * player_entity.knockback_v * dt;
+
+	if (entity_hitbox.intersects(player_hitbox))
+		player_entity.knockback_direction.x = 0;
+
+	player_hitbox.left -= player_entity.knockback_direction.x * player_entity.knockback_v * dt;
+	player_hitbox.top += player_entity.knockback_direction.y * player_entity.knockback_v * dt;
+
+	if (entity_hitbox.intersects(player_hitbox))
+		player_entity.knockback_direction.y = 0;
 }
 
 bool Passive::collide_with_player(Vector2f movement)

@@ -23,7 +23,6 @@ private:
 
 	//Private variables
 	bool fake_constructor = 1;
-	Vector2f knockback_direction = { -1.f,-1.f };
 
 	base_stats* object_stats, **destructable_objects;
 	short *item_drops, * item_drops_count;
