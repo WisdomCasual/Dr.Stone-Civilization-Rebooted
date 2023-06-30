@@ -878,6 +878,11 @@ void GameState::update()
 		shader.setUniform("ratio", win_x / win_y);
 	}
 
+	if (fps_active)
+		fps_text.setString(fps_text.getString() + "\tCoordinates: " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
+
+
+
 	//entity spawning                *******FIX RANDOM DAMAGE WITH ENEMY SPAWNING*****
 	spawn_cd += dt;
 	if (spawn_cd >= def_spawn_cd) {
