@@ -54,10 +54,10 @@ bool NewSaveState::black_out()
 {
 	if (blackining < 255) {
 		blacking_out = true;
-		if (blackining + 750 * dt > 255)
+		if (blackining + 500 * dt > 255)
 			blackining = 255;
 		else
-			blackining += 750 * dt;
+			blackining += 500 * dt;
 		blackscreen.setFillColor(Color(0, 0, 0, blackining));
 		return false;
 	}
