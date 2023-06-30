@@ -14,7 +14,7 @@ layout(location = 0) out vec4 FragColor;
 uniform sampler2D texture;
 
 uniform int lightsCount;
-uniform light lights[4];
+uniform light lights[20];
 uniform float ratio;
 
 //Ambient light
