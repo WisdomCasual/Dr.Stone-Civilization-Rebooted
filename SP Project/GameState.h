@@ -50,7 +50,7 @@ private:
 
 	base_stats object_stats[30], * destructable_objects = nullptr;
 
-	Vector2f clicked_on = { -1, -1 };
+	Vector2f clicked_on = { -1, -1 }, waypoint_position = { -1, -1 }, quest_location = { -1, -1 };
 
 	render_tile** static_map;
 
@@ -299,7 +299,7 @@ private:
 	Image base_minimap, minimap_img;
 	short dynamic_update_minimap = 0;
 	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[3], minimap, minimap_frame;
-	CircleShape player_pointer;
+	CircleShape player_pointer, waypoint_pointer, quest_pointer;
 	short item_drops[5], item_drops_count = -1;
 	in_order inventory_order;
 	unsigned short inventory_count[50]{};

@@ -1,4 +1,5 @@
 #include "GameState.h"
+#include "MiniMapState.h"
 
 
 void GameState::search_front(int x, int y, int layr, Vector3i*** temp_front, bool*** vis, int idx)
@@ -622,12 +623,31 @@ void GameState::update_minimap()
 	minimap_y = (minimap_y < 0) ? 0 : (minimap_y > size_y * 2 - 98) ? size_y * 2 - 98 : minimap_y;
 	minimap.setTextureRect(IntRect(minimap_x, minimap_y, 96, 96));
 	player_pointer.setPosition(win_x - 52 * scale + (minimap_player_pos_x - minimap_x - 48) * 0.8 * scale, 52 * scale + (minimap_player_pos_y - minimap_y - 48) * 0.8 * scale);
+
+	if (waypoint_position.x > -1) {
+		int waypoint_minimap_pos_x = clamp<int>((int)waypoint_position.x - minimap_x - 48, -48, 48);
+		int waypoint_minimap_pos_y = clamp<int>((int)waypoint_position.y - minimap_y - 48, -48, 48);
+		waypoint_pointer.setPosition(win_x - 52 * scale + waypoint_minimap_pos_x * 0.8 * scale, 52 * scale + waypoint_minimap_pos_y * 0.8 * scale);
+	}
+
+	if (quest_location.x > -1) {
+		int quest_minimap_pos_x = clamp<int> (quest_location.x / 8 - minimap_x - 48, -48, 48);
+		int quest_minimap_pos_y = clamp<int> (quest_location.y / 8 - minimap_y - 48, -48, 48);
+		quest_pointer.setPosition(win_x - 52 * scale + quest_minimap_pos_x * 0.8 * scale, 52 * scale + quest_minimap_pos_y * 0.8 * scale);
+	}
 }
 
 void GameState::render_minimap()
 {
 	window->draw(minimap);
 	window->draw(minimap_frame);
+
+	if(quest_location.x > -1)
+		window->draw(quest_pointer);
+
+	if (waypoint_position.x > -1)
+		window->draw(waypoint_pointer);
+
 	window->draw(player_pointer);
 }
 
@@ -784,7 +804,11 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	tool_icons[2].setTexture(*textures[4]);
 	minimap_frame.setTexture(*textures[6]);
 	minimap_frame.setOrigin(minimap_frame.getLocalBounds().width / 2, minimap_frame.getLocalBounds().height / 2);
-	player_pointer.setFillColor(Color::Red);
+
+	player_pointer.setFillColor(Color(255, 0, 0, 255));
+	waypoint_pointer.setFillColor(Color(0, 0, 255, 255));
+	quest_pointer.setFillColor(Color(255, 200, 0, 255));
+
 	for (int i = 0; i < 3; i++) {
 		tool_icons[i].setOrigin(tool_icons[i].getLocalBounds().width / 2, tool_icons[i].getLocalBounds().height / 2);
 		tool_icons[i].setColor(Color(130, 130, 130));
@@ -841,8 +865,15 @@ void GameState::update()
 		minimap_frame.setScale(scale * 0.96, scale * 0.96);
 		minimap.setPosition(win_x - 52 * scale, 52 * scale);
 		minimap.setScale(scale * 0.8, scale * 0.8);
+
 		player_pointer.setRadius(1.5 * scale);
 		player_pointer.setOrigin(0.75 * scale, 0.75 * scale);
+
+		waypoint_pointer.setRadius(1.5 * scale);
+		waypoint_pointer.setOrigin(0.75 * scale, 0.75 * scale);
+
+		quest_pointer.setRadius(1.5 * scale);
+		quest_pointer.setOrigin(0.75 * scale, 0.75 * scale);
 
 		shader.setUniform("ratio", win_x / win_y);
 	}
@@ -1055,6 +1086,10 @@ void GameState::pollevent()
 			case Keyboard::E:
 				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count)});
 				states->at(InventoryID)->update();
+				break;
+			case Keyboard::M:
+				states->insert({ MiniMapID, new MiniMapState(minimap_tex, player_entity->getRelativePos(), waypoint_position, quest_location) });
+				states->at(MiniMapID)->update();
 				break;
 			case Keyboard::F: {
 				player_entity->interact = 1;
