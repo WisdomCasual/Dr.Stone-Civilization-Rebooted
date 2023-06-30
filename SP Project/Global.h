@@ -29,30 +29,33 @@
 #define InventoryID 7
 #define InventoryST { 7, new InventoryState }
 
-#define WorldMapID 8
-#define WorldMapST { 8, new WorldMapState }
-#define WorldMapST_admin { 8, new WorldMapState(1) }
+#define MiniMapID 8
+#define MiniMapST { 8, new MiniMapState }
 
-#define NewMapID 9
-#define NewMapST { 9, new NewMapState}
+#define WorldMapID 9
+#define WorldMapST { 9, new WorldMapState }
+#define WorldMapST_admin { 9, new WorldMapState(1) }
 
-#define NotificationID 10
-#define NotificationST { 10, new NotificationState }
+#define NewMapID 10
+#define NewMapST { 10, new NewMapState}
 
-#define DialogueID 11
-#define DialogueST { 11, new DialogueState}
+#define NotificationID 11
+#define NotificationST { 11, new NotificationState }
 
-#define PauseID 12
-#define PauseST { 12, new PauseState }
+#define DialogueID 12
+#define DialogueST { 12, new DialogueState}
 
-#define SettingsID 13
-#define SettingsST { 13, new SettingsState }
+#define PauseID 13
+#define PauseST { 13, new PauseState }
 
-#define PasswordID 14
-#define PasswordST { 14, new PasswordState }
+#define SettingsID 14
+#define SettingsST { 14, new SettingsState }
 
-#define ConfirmationID 15
-#define ConfirmationST { 15, new ConfirmationState }
+#define PasswordID 15
+#define PasswordST { 15, new PasswordState }
+
+#define ConfirmationID 16
+#define ConfirmationST { 16, new ConfirmationState }
 
 #define TestGroundID 50
 #define TestGroundST { 50, new TestGroundState }
