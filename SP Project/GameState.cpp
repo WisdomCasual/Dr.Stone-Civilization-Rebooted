@@ -895,13 +895,16 @@ void GameState::update()
 
 	player_entity->movement = delta_movement();
 
-	if (player_entity->health < player_stats.max_health && heal_delay >= 5) {
+	if (player_entity->combat_tag <= 0 && player_entity->health < player_stats.max_health && heal_delay >= 2) {
 		heal_delay = 0;
 		player_entity->health += 10;
 	}
-	else
-		heal_delay+=dt;
-
+	else {
+		if(player_entity->combat_tag > 0)
+			player_entity->combat_tag -= dt;
+		else
+			heal_delay += dt;
+	}
 	health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
 
 	if (destroy_object_location.x >= 0) {

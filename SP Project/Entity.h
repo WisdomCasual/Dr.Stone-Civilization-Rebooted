@@ -199,6 +199,9 @@ public:
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
 
+	float combat_tag = 0.f;
+	float combat_status_time = 5.0f;
+
 	//for item drops
 	int item_ID = 0;
 

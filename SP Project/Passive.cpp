@@ -162,6 +162,7 @@ void Passive::update()
 	if (player_entity.hit_range.intersects(Entity_Hitbox)) {
 		if (cooldown<=0) {
 			damaged(original, stun);
+			player_entity.combat_tag = combat_status_time;
 			action_state = 1;
 			switch_delay = 0;
 			motion_delay = 2;

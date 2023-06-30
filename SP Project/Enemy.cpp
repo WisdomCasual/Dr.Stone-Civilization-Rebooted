@@ -618,6 +618,7 @@ void Enemy::update()
 		if (cooldown<=0) {
 			damaged(original,stun,entity_sprite);
 			cooldown = 1;
+			player_entity.combat_tag = combat_status_time;
 			health -= player_entity.damage;
 		}
 	}
@@ -631,6 +632,7 @@ void Enemy::update()
 			player_entity.current_frame = 0;
 			player_entity.damaged(player_entity.og_player_color, player_entity.stun, player_entity.entity_sprite);
 			player_entity.cooldown = 0.6;
+			player_entity.combat_tag = combat_status_time;
 			player_entity.knockback(curr_movement,150);
 			hit_cooldown = 0.8;
 			player_entity.health -= damage;
