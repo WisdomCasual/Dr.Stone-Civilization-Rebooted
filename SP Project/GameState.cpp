@@ -70,6 +70,24 @@ void GameState::load_map(string map_name)
 					else if (tle.x == 15 && tle.y == 12 && tle.z == 3) {
 						static_map[i][j].tile_props |= 4096;
 					}
+					else if (tle.y >= 16 && tle.z == 3) {
+						float intensity;
+						if (tle.x % 3) intensity = 0.7f;
+						else if (tle.x % 3) intensity = 0.5f;
+						else if (tle.x % 3) intensity = 0.3f;
+						if (tle.y == 16) {
+							if (tle.x < 3)
+								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), intensity) });
+							else if (tle.x < 6)
+								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 0.5), intensity) });
+							else if (tle.x < 9)
+								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 0.5, 0.5), intensity) });
+							else if (tle.x < 12)
+								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 0.5, 1), intensity) });
+							else if (tle.x < 12)
+								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 1, 0.5), intensity) });
+						}
+					}
 					else {
 						if (layer_prop & 32) {
 							static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
@@ -651,7 +669,37 @@ void GameState::block_interactions_list(Vector2i interaction_tile)
 			dynamic_rendering.clear();
 		dynamic_map.delete_all();
 		initial_game("Doz World", { 264, 264 });
+		DoDayLightCycle = false;
 	}
+}
+
+void GameState::DayLightCycle()
+{
+	int count = 0;
+	for (auto i = light_sources.lower_bound(-map_y - 160); i != light_sources.end() && i->first <= -map_y + win_y / scale + 160; i++) {
+		if (i->second.position.x > -map_x - 160 && i->second.position.x < -map_x + win_x + 160) {
+			shader.setUniform("lights[" + to_string(count) + "].position", (i->second.position + Vector2f(map_x, map_y)) * scale);
+			shader.setUniform("lights[" + to_string(count) + "].color", i->second.color);
+			shader.setUniform("lights[" + to_string(count) + "].intensity", i->second.intensity);
+			count++;
+		}
+	}
+	light_level += day_increment * dt;
+	if (!night && light_level < 0.1) {
+		night = true;
+		light_level = 0.1;
+		day_increment = -day_increment;
+	}
+	else if (night && light_level > 1) {
+		night = false;
+		light_level = 1;
+		day_increment = -day_increment;
+	}
+	if(DoDayLightCycle)
+		shader.setUniform("ambient_light", Glsl::Vec4(light_level, light_level, (light_level + 0.2 < 1 ? light_level + 0.2 : 1), 1.0));
+	else
+		shader.setUniform("ambient_light", Glsl::Vec4(constant_light_level, constant_light_level, constant_light_level + 0.1, 1.0));
+	shader.setUniform("lightsCount", count);
 }
 
 void GameState::update_minimap_tile(Vector2i position, Vector3i tile)
@@ -804,7 +852,10 @@ void GameState::update()
 		destroyANDrestore_objects(destroy_object_location, 1);
 		destroy_object_location = { -1, -1};
 	}
+
 	update_minimap();
+
+	DayLightCycle();
 
 	if (enemies.vis == nullptr) {
 		enemies.vis = new short* [enemies.find_size_x];
@@ -913,9 +964,6 @@ void GameState::update()
 
 void GameState::render()
 {
-	shader.setUniform("lightPos", player_entity->getPosition());
-	shader.setUniform("light_level", Glsl::Vec4(0.1, 0.1, 0.2, 1.0));
-
 	render_static_map();
 	render_entities();
 	if(states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID) {

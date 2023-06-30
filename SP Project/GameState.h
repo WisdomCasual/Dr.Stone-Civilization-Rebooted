@@ -48,9 +48,6 @@ private:
 				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
 
 
-
-
-
 	base_stats object_stats[30], * destructable_objects = nullptr;
 
 	Vector2f clicked_on = { -1, -1 };
@@ -280,9 +277,16 @@ private:
 		short tile = -1; Entity* entity = nullptr;
 	};
 
+	struct light {
+		Vector2f position = { 0,0 };
+		Vector3f color = { 1,1,1 };
+		float intensity = 0.5;
+	};
+
 	multimap<float, pointr> dynamic_rendering;
-
-
+	multimap<float, light> light_sources;
+	float light_level = 0.1, constant_light_level = 0.3, day_increment = 0.01;
+	bool night = 1, DoDayLightCycle = 1;
 
 	int size_x = 0, size_y = 0;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
@@ -318,6 +322,7 @@ private:
 	void entity_spawning();
 	bool entity_in_range(Vector2f, short offset = 0);
 	void block_interactions_list(Vector2i);
+	void DayLightCycle();
 
 
 public:
