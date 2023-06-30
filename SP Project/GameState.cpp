@@ -24,6 +24,8 @@ void GameState::load_map(string map_name)
 	if (!(ifs >> line))
 		return;
 
+	light_sources.clear();
+
 	short mpsize = 0, count = 0;
 	Vector3i tle;
 	short layr;
@@ -73,9 +75,9 @@ void GameState::load_map(string map_name)
 					}
 					else if (tle.y >= 16 && tle.z == 3) {
 						float intensity;
-						if (tle.x % 3) intensity = 0.7f;
-						else if (tle.x % 3) intensity = 0.5f;
-						else if (tle.x % 3) intensity = 0.3f;
+						if (!(tle.x % 3)) intensity = 0.7f;
+						else if (!(tle.x % 2)) intensity = 0.3f;
+						else intensity = 0.5f;
 						if (tle.y == 16) {
 							if (tle.x < 3)
 								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), intensity) });
@@ -85,7 +87,7 @@ void GameState::load_map(string map_name)
 								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 0.5, 0.5), intensity) });
 							else if (tle.x < 12)
 								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 0.5, 1), intensity) });
-							else if (tle.x < 12)
+							else if (tle.x < 15)
 								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 1, 0.5), intensity) });
 						}
 					}
