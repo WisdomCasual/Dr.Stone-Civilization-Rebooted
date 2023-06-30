@@ -34,7 +34,7 @@
 
 #define WorldMapID 9
 #define WorldMapST { 9, new WorldMapState }
-#define WorldMapST_admin { 9, new WorldMapState(1) }
+#define WorldMapST_admin { 9, new WorldMapState("", 1) }
 
 #define NewMapID 10
 #define NewMapST { 10, new NewMapState}
@@ -83,6 +83,8 @@ namespace globalvar {
 
 	inline const int dx[4] = { 1, -1, 0, 0 };
 	inline const int dy[4] = { 0, 0, 1, -1};
+
+    inline float blackining = 0;
 
 	struct dialogue {
 		string speaker, text;

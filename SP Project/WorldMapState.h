@@ -37,12 +37,13 @@ struct WorldMapState : public State
 		RectangleShape tint, blackscreen;
 		bool blacking_out = 0, change_map = 0;
 		float x = 0, y = 0;
-		float win_x = 0, win_y = 0, scale = 1, previous_scale = 1, transparency = 0, darkness = 0, blackining = 0;
+		float win_x = 0, win_y = 0, scale = 1, previous_scale = 1, transparency = 0, darkness = 0;
 		bool admin = 0, new_map = 0, map_added = 0, del = 0, move = 0, selected = 0, destruct = 0, loadmap = 0, delete_map = 0, tint_fade = 1, back = 0;
 		string moving, map_to_delete;
 		Sprite worldmap, namebox, pin;
 		Vector2f mouse_pos = { 0,0 }, clicked_on = { -1, -1 };
 		Vector2u prev_win = { 0, 0 };
+		string& selected_map;
 
 		//private functions
 		void fade_in();
@@ -56,7 +57,7 @@ struct WorldMapState : public State
 		//public functions;
 
 		//constructors/destructors
-		WorldMapState( bool admin = false, bool tint_fade = true );
+		WorldMapState(string& selected_map, bool admin = false, bool tint_fade = true );
 		~WorldMapState();
 
 

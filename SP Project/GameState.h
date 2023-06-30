@@ -293,7 +293,7 @@ private:
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
 	Vector2i destroy_object_location = { -1, -1 };
 	float map_x = 0, map_y = 0;
-	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0, blackining = 255;
+	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0;
 	RectangleShape blackscreen;
 	Vector2u prev_win = { 0, 0 };
 	Texture minimap_tex;
@@ -301,12 +301,14 @@ private:
 	short dynamic_update_minimap = 0;
 	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[3], minimap, minimap_frame;
 	CircleShape player_pointer, waypoint_pointer, quest_pointer;
+	string travel_map;
 	short item_drops[5], item_drops_count = -1;
 	in_order inventory_order;
 	unsigned short inventory_count[50]{};
 
 	//private functions:
 	void black_in();
+	bool black_out();
 	void search_front(int, int, int, Vector3i***, bool***, int);
 	void load_map(string);
 	void load_entities(float);
@@ -314,6 +316,7 @@ private:
 	void initial_stats();
 	void initial_game(string, Vector2f);
 	void center_cam(Vector2f);
+	void maps_travel();
 	void destroyANDrestore_objects(Vector2i, bool);
 	void bigbang(Vector2i, bool destroy = 0);
 	void render_static_map();
