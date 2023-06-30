@@ -512,12 +512,15 @@ void GameState::render_entities()
 {
 	dynamic_rendering.insert({ player_entity->getRelativePos().y, {-1, player_entity} });
 	for (int i = 0; i < enemies.curr_idx; i++) {
-		if(enemies.entities[i] != nullptr &&
+		if (enemies.entities[i] != nullptr &&
 			enemies.entities[i]->pos.y >= -map_y - entity_render_distance &&
 			enemies.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
 			enemies.entities[i]->pos.x >= -map_x - entity_render_distance &&
-			enemies.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
-			dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]}});
+			enemies.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			if (enemies.entities[i]->despawn)
+				continue;
+			dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]} });
+		}
 	}
 
 	for (int i = 0; i < items.curr_idx; i++) {
@@ -525,8 +528,11 @@ void GameState::render_entities()
 			items.entities[i]->pos.y >= -map_y - entity_render_distance &&
 			items.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
 			items.entities[i]->pos.x >= -map_x - entity_render_distance &&
-			items.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
+			items.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			if (items.entities[i]->despawn)
+				continue;
 			dynamic_rendering.insert({ items.entities[i]->getRelativePos().y, {-1, items.entities[i]} });
+		}
 	}
 
 	for (int i = 0; i < passive.curr_idx; i++) {
@@ -534,8 +540,11 @@ void GameState::render_entities()
 			passive.entities[i]->pos.y >= -map_y - entity_render_distance &&
 			passive.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
 			passive.entities[i]->pos.x >= -map_x - entity_render_distance &&
-			passive.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
+			passive.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			if (passive.entities[i]->despawn)
+				continue;
 			dynamic_rendering.insert({ passive.entities[i]->pos.y, {-1, passive.entities[i]} });
+		}
 	}
 
 	for (int i = 0; i < NPCs.curr_idx; i++) {
@@ -543,13 +552,16 @@ void GameState::render_entities()
 			NPCs.entities[i]->pos.y >= -map_y - entity_render_distance &&
 			NPCs.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
 			NPCs.entities[i]->pos.x >= -map_x - entity_render_distance &&
-			NPCs.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale)          //end of condition
+			NPCs.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			if (NPCs.entities[i]->despawn)
+				continue;
 			dynamic_rendering.insert({ NPCs.entities[i]->pos.y, {-1, NPCs.entities[i]} });
+		}
 	}
 	//int debug_ctr = 0;
 	//cout << "total entities/objects: " << dynamic_rendering.size() << '\n';
-	for (auto i = dynamic_rendering.lower_bound(-map_y - max(entity_render_distance, object_render_distance));
-		i != dynamic_rendering.end() && i->first <= -map_y + max(short(obj_up_offset + object_render_distance), entity_render_distance) + win_y / scale; ) {
+	for (auto i = dynamic_rendering.lower_bound(-map_y - min(entity_render_distance, object_render_distance) - 32.f);
+		i != dynamic_rendering.end() && i->first <= -map_y + max(short(obj_up_offset + object_render_distance), entity_render_distance) + 32.f + win_y / scale; ) {
 		
 		if (i->second.tile != -1) {
 			if (dynamic_map.at[i->second.tile].at[0].position.x*16 < -map_x - obj_right_offest - object_render_distance ||
@@ -584,6 +596,10 @@ void GameState::render_entities()
 		}
 		else {
 			if (i->second.entity != nullptr) {
+				if (i->second.entity->despawn) {
+					i = dynamic_rendering.erase(i);
+					return;
+				}
 				i->second.entity->render(&shader);
 				i->second.entity = nullptr;
 			}
@@ -650,6 +666,7 @@ void GameState::entity_spawning()
 		//cout << "ONE PUUUUUUUNCH\n";
 		enemies.add(wolf(0), {16.f * spawn_x, 16.f * spawn_y});
 		enemies.entities[enemies.curr_idx - 1]->update();
+		//cout <<enemies.entities[enemies.curr_idx - 1]->getRelativePos().x <<' ' << enemies.entities[enemies.curr_idx - 1]->getRelativePos().y << '\n';
 	}
 }
 
@@ -868,7 +885,7 @@ void GameState::update()
 			if (enemies.entities[i]->action_state != 0 || entity_in_range(enemies.entities[i]->pos, entity_update_distance))
 				enemies.entities[i]->update();
 		}
-		else {
+		if(enemies.entities[i]->despawn) {
 			effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 			enemies.rem_ove(i);
 		}
@@ -879,7 +896,7 @@ void GameState::update()
 			if (passive.entities[i]->action_state != 0 || entity_in_range(passive.entities[i]->pos, entity_update_distance))
 				passive.entities[i]->update();
 		}
-		else {
+		if(passive.entities[i]->despawn) {
 			effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 			passive.rem_ove(i);
 		}
@@ -890,7 +907,7 @@ void GameState::update()
 			if (NPCs.entities[i]->action_state != 0 || entity_in_range(NPCs.entities[i]->pos, entity_update_distance))
 				NPCs.entities[i]->update();
 		}
-		else {
+		if(NPCs.entities[i]->despawn) {
 			effects.add({ 400,0,100,100 }, 20, { int(NPCs.entities[i]->getRelativePos().x) , int(NPCs.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 			NPCs.rem_ove(i);
 		}
@@ -942,6 +959,10 @@ void GameState::update()
 
 	for (int i = 0; i < items.curr_idx; i++) {
 
+		if(!items.entities[i]->despawn){
+			if(entity_in_range(items.entities[i]->pos, entity_update_distance))
+				items.entities[i]->update();
+		}
 		if (items.entities[i]->despawn) {
 
             // add item to player_inventory
@@ -952,10 +973,6 @@ void GameState::update()
 			items.rem_ove(i);
 			i--;
 			
-		}
-		else {
-			if(entity_in_range(items.entities[i]->pos, entity_update_distance))
-				items.entities[i]->update();
 		}
 		
 	}
