@@ -50,6 +50,20 @@ bool NewSaveState::fade_out()
 		return true;
 }
 
+bool NewSaveState::black_out()
+{
+	if (blackining < 255) {
+		blacking_out = true;
+		if (blackining + 750 * dt > 255)
+			blackining = 255;
+		else
+			blackining += 750 * dt;
+		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		return false;
+	}
+	return true;
+}
+
 void NewSaveState::update_arrow()
 {
 
@@ -267,6 +281,7 @@ void NewSaveState::update()
 		panel.setScale(scale * 0.52, scale * 0.52);
 		panel.setPosition(x, y);
 		tint.setSize({ win_x, win_y });
+		blackscreen.setSize({ win_x, win_y });
 		txt_box.setScale(scale * 0.6);
 		txt_box.setPosition({ x, y - 52 * scale });
 		characters.setScale(1.2 * scale, 1.2 * scale);
@@ -277,27 +292,30 @@ void NewSaveState::update()
 
 	update_arrow();
 
-	if (back) {
+
+	if (confirmed) {
+		if (black_out()) {
+			//button functionality
+			add_save();
+			states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800},test_str , save_no, -1, 0.0) });
+			states->at(GameID)->update();
+
+			// exceptions arrays were explained in the settings state
+
+			int exceptions[] = { GameID };
+			game.erase_states(exceptions, 1);
+
+			confirmed = 0;
+			return;
+		}
+	}
+	else if (back) {
 		if (fade_out()) {
 			back = false;
 			delete states->at(NewSaveID);
 			states->erase(NewSaveID);
 			return;
 		}
-	}
-	else if (confirmed) {
-		//button functionality
-		add_save();
-		states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800},test_str , save_no, -1, 0.0) });
-		states->at(GameID)->update();
-
-		// exceptions arrays were explained in the settings state
-
-		int exceptions[] = { GameID };
-		game.erase_states(exceptions, 1);
-
-		confirmed = 0;
-		return;
 	}
 	else
 		fade_in();
@@ -321,6 +339,8 @@ void NewSaveState::render()
 	draw_text("Choose name and", x, y - 112 * scale, 26 * scale);
 	draw_text("character", x, y - 112 * scale+ (20 * scale), 26 * scale);
 	render_characters();
+	if (blacking_out)
+		window->draw(blackscreen);
 }
 
 void NewSaveState::pollevent()

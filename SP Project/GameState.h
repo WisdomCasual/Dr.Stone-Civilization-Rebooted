@@ -286,14 +286,15 @@ private:
 	multimap<float, pointr> dynamic_rendering;
 	multimap<float, light> light_sources;
 	float light_level = 0.1, constant_light_level = 0.3, day_increment = 0.01;
-	bool night = 1, DoDayLightCycle = 1;
+	bool night = 1, DoDayLightCycle = 1, DoEntitySpawning = 1;
 
 	int size_x = 0, size_y = 0;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
 	Vector2i destroy_object_location = { -1, -1 };
 	float map_x = 0, map_y = 0;
-	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0;
+	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0, blackining = 255;
+	RectangleShape blackscreen;
 	Vector2u prev_win = { 0, 0 };
 	Texture minimap_tex;
 	Image base_minimap, minimap_img;
@@ -305,6 +306,7 @@ private:
 	unsigned short inventory_count[50]{};
 
 	//private functions:
+	void black_in();
 	void search_front(int, int, int, Vector3i***, bool***, int);
 	void load_map(string);
 	void load_entities(float);
