@@ -286,7 +286,7 @@ private:
 	multimap<float, pointr> dynamic_rendering;
 	multimap<float, light> light_sources;
 	float light_level = 0.1, constant_light_level = 0.3, day_increment = 0.01;
-	bool night = 1, DoDayLightCycle = 1, DoEntitySpawning = 1;
+	bool night = 1, DoDayLightCycle = 1, DoEntitySpawning = 1, EnableMiniMap = 1;
 
 	int size_x = 0, size_y = 0;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
