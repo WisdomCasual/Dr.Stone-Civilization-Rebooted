@@ -187,6 +187,11 @@ void NPC::update_looks()
 
 void NPC::update()
 {
+	if (game_time - despawn_timer > time_to_despawn && !persistant) {
+			despawn = 1;
+			return;
+		}
+	despawn_timer = game_time;
 	if (in_dialogue) {
 		states->insert({ DialogueID,new DialogueState(curr_dialogue,{win_x / 2,win_y / 2},scale / 2, curr_dialogue_num) });
 		states->at(DialogueID)->update();
@@ -230,9 +235,4 @@ void NPC::update()
 			current_hitbox = prev_hitbox;
 	}
 
-	if (game_time - despawn_timer > time_to_despawn && !persistant) {
-			despawn = 1;
-			return;
-		}
-	despawn_timer = game_time;
 }
