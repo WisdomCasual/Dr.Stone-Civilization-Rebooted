@@ -451,7 +451,7 @@ void GameState::maps_travel()
 
 			// maybe add time zone changes
 			if (travel_map == "Doz World") {
-				initial_game("Doz World", { 264, 264 });
+				initial_game(travel_map, { 264, 264 });
 				DoDayLightCycle = false;
 				DoEntitySpawning = false;
 				EnableMiniMap = false;
