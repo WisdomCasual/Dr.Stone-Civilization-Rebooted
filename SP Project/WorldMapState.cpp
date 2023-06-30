@@ -1,6 +1,5 @@
 #include "WorldMapState.h"
 
-
 void WorldMapState::fade_in()
 {
 	if (transparency < 255) {
@@ -48,6 +47,20 @@ bool WorldMapState::fade_out()
 		return true;
 }
 
+bool WorldMapState::black_out()
+{
+	if (blackining < 255) {
+		blacking_out = true;
+		if (blackining + 750 * dt > 255)
+			blackining = 255;
+		else
+			blackining += 750 * dt;
+		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		return false;
+	}
+	return true;
+}
+
 void WorldMapState::update_pins()
 {
 	pin.setScale(scale * 3.1, scale * 3.1);
@@ -85,8 +98,7 @@ void WorldMapState::update_pins()
 				}
 				else {
 					//choosed map in game///////////////////////////////////////////////////
-
-
+					change_map = true;
 				}
 			}
 			else {
@@ -176,6 +188,8 @@ WorldMapState::~WorldMapState()
 
 void WorldMapState::update()
 {
+	window->setMouseCursorVisible(true);
+
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
 	if (prev_win != window->getSize()) {
@@ -190,18 +204,36 @@ void WorldMapState::update()
 		////////////////////
 
 		tint.setSize({ win_x, win_y });
+		blackscreen.setSize({ win_x, win_y });
 		worldmap.setPosition(x, y);
 		worldmap.setScale(scale, scale);
 		pin.setScale(scale * 3.1, scale * 3.1);
 		namebox.setScale(scale*1.5, scale*1.5);
 	}
 
-	fade_in();
-
 	update_pins();
 
 	if (destruct)
 		return;
+
+
+	 if (change_map) {
+		if (black_out()) {
+			change_map = false;
+
+		}
+	}
+	else if (back) {
+		if (fade_out()) {
+			back = false;
+			delete states->at(WorldMapID);
+			states->erase(WorldMapID);
+			return;
+		}
+	}
+	else
+		fade_in();
+
 
 	if (move && selected) {
 		pins[moving] = { (int)((mouse_pos.x - x) / scale) ,(int)((mouse_pos.y - y) / scale) , pins[moving].x_size, pins[moving].y_size, (float)2.5 * scale , (float)1.2 * scale, 40 * scale };
@@ -235,6 +267,11 @@ void WorldMapState::render()
 	window->draw(tint);
 	window->draw(worldmap);
 	render_pins();
+	text.setFillColor(Color(255, 255, 255, transparency));
+	if(!admin)
+		draw_text("Press ESC to exit", x, y + (worldmap.getLocalBounds().height / 2 + 60) * scale, scale * 70);
+	if(blacking_out)
+		window->draw(blackscreen);
 }
 
 void WorldMapState::pollevent()
@@ -247,8 +284,13 @@ void WorldMapState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(PauseST);
-				states->at(PauseID)->update();
+				if (admin) {
+					states->insert(PauseST);
+					states->at(PauseID)->update();
+				}
+				else {
+					back = true;
+				}
 				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;

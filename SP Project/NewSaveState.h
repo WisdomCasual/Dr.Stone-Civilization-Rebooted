@@ -13,11 +13,11 @@ struct NewSaveState :public State
 private:
 	//variables
 	string test_str = "";
-	RectangleShape tint;
+	RectangleShape tint, blackscreen;
 	TextBox txt_box;
 	Sprite tissue, back_arrow, panel;
 	bool arrow_pressed = 0;
-	float scale = 1, win_x = 0, win_y = 0, x = 1, y = 1, transparency = 0, darkness = 0;
+	float scale = 1, win_x = 0, win_y = 0, x = 1, y = 1, transparency = 0, darkness = 0, blackining = 0;
 	Vector2f mouse_pos = { 0,0 }, clicked_on = { -1, -1 };
 	Vector2u prev_win = { 0, 0 };
 	int save_no;
@@ -26,7 +26,7 @@ private:
 	bool confirmed=0;
 	Text button_text;
 	Sprite buttontex;
-	bool button_pressed = 0;
+	bool button_pressed = 0, blacking_out = 0;
 	struct button {
 		string txt;
 		int x = 0, y = 0;
@@ -43,6 +43,7 @@ private:
 	//private functions
 	void fade_in();
 	bool fade_out();
+	bool black_out();
 
 	void update_arrow();
 

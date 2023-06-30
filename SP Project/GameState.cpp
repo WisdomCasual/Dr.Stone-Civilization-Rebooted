@@ -1,6 +1,16 @@
 #include "GameState.h"
 #include "MiniMapState.h"
 
+void GameState::black_in()
+{
+	if (blackining > 0) {
+		if (blackining - 500 * dt < 0)
+			blackining = 0;
+		else
+			blackining -= 500 * dt;
+		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+	}
+}
 
 void GameState::search_front(int x, int y, int layr, Vector3i*** temp_front, bool*** vis, int idx)
 {
@@ -381,6 +391,7 @@ void GameState::initial_stats()
 
 void GameState::initial_game(string current_map, Vector2f player_pos)
 {
+	this->current_map = current_map;
 	base_minimap.loadFromFile("Maps/" + current_map + "_minimap.png");
 	minimap_tex.loadFromFile("Maps/" + current_map + "_minimap.png");
 	minimap_img.loadFromFile("Maps/" + current_map + "_minimap.png");
@@ -655,41 +666,43 @@ void GameState::render_minimap()
 
 void GameState::entity_spawning()
 {
-	//cout << "not my lucky day\n";
-	screen_length = win_x / (16 * scale), screen_height = win_y / (16*scale);
-	short spawn_rect_x = screen_length + spawn_dist, spawn_rect_y = screen_height + spawn_dist;
-	spawn_total = rand() % (spawn_rect_x * 2 + spawn_rect_y * 2);
-	if (spawn_total > 2 * spawn_rect_x + spawn_rect_y) {
-		spawn_x = 0, spawn_y = 2 * spawn_rect_y - (spawn_total - 2*spawn_rect_x);
-	}
-	else if (spawn_total > spawn_rect_x + spawn_rect_y) {
-		spawn_x = 2 * spawn_rect_x - (spawn_total - spawn_rect_y), spawn_y = spawn_rect_y;
-	}
-	else if (spawn_total > spawn_rect_x) {
-		spawn_x = spawn_rect_x, spawn_y = spawn_total - spawn_rect_x;
-	}
-	else {
-		spawn_x = spawn_total, spawn_y = 0;
-	}
+	if (DoEntitySpawning) {
+		//cout << "not my lucky day\n";
+		screen_length = win_x / (16 * scale), screen_height = win_y / (16 * scale);
+		short spawn_rect_x = screen_length + spawn_dist, spawn_rect_y = screen_height + spawn_dist;
+		spawn_total = rand() % (spawn_rect_x * 2 + spawn_rect_y * 2);
+		if (spawn_total > 2 * spawn_rect_x + spawn_rect_y) {
+			spawn_x = 0, spawn_y = 2 * spawn_rect_y - (spawn_total - 2 * spawn_rect_x);
+		}
+		else if (spawn_total > spawn_rect_x + spawn_rect_y) {
+			spawn_x = 2 * spawn_rect_x - (spawn_total - spawn_rect_y), spawn_y = spawn_rect_y;
+		}
+		else if (spawn_total > spawn_rect_x) {
+			spawn_x = spawn_rect_x, spawn_y = spawn_total - spawn_rect_x;
+		}
+		else {
+			spawn_x = spawn_total, spawn_y = 0;
+		}
 
-	spawn_x += x_offset - spawn_dist, spawn_y += y_offset - spawn_dist;
+		spawn_x += x_offset - spawn_dist, spawn_y += y_offset - spawn_dist;
 
-	bool valid_spawn = 1;
+		bool valid_spawn = 1;
 
-	for (int i = -1; i < 2; i++) {
-		for (int j = -1; j < 2; j++) {
-			if (spawn_x + i < 0 || spawn_x >= size_x || spawn_y < 0 || spawn_y >= size_y || static_map[spawn_x + i][spawn_y + j].tile_props & 2) {
-				valid_spawn = 0;
-				break;
+		for (int i = -1; i < 2; i++) {
+			for (int j = -1; j < 2; j++) {
+				if (spawn_x + i < 0 || spawn_x >= size_x || spawn_y < 0 || spawn_y >= size_y || static_map[spawn_x + i][spawn_y + j].tile_props & 2) {
+					valid_spawn = 0;
+					break;
+				}
 			}
 		}
-	}
 
-	if (valid_spawn) {
-		//cout << "ONE PUUUUUUUNCH\n";
-		enemies.add(wolf(0), {16.f * spawn_x, 16.f * spawn_y});
-		enemies.entities[enemies.curr_idx - 1]->update();
-		//cout <<enemies.entities[enemies.curr_idx - 1]->getRelativePos().x <<' ' << enemies.entities[enemies.curr_idx - 1]->getRelativePos().y << '\n';
+		if (valid_spawn) {
+			//cout << "ONE PUUUUUUUNCH\n";
+			enemies.add(wolf(0), { 16.f * spawn_x, 16.f * spawn_y });
+			enemies.entities[enemies.curr_idx - 1]->update();
+			//cout <<enemies.entities[enemies.curr_idx - 1]->getRelativePos().x <<' ' << enemies.entities[enemies.curr_idx - 1]->getRelativePos().y << '\n';
+		}
 	}
 }
 
@@ -704,12 +717,19 @@ bool GameState::entity_in_range(Vector2f cords, short offset)
 void GameState::block_interactions_list(Vector2i interaction_tile)
 {
 	//cout << interaction_tile.x << ' ' << interaction_tile.y << '\n';
-	if (interaction_tile.x == 46 && (interaction_tile.y == 25 || interaction_tile.y == 26)) {
-		if(!dynamic_rendering.empty())
-			dynamic_rendering.clear();
-		dynamic_map.delete_all();
-		initial_game("Doz World", { 264, 264 });
-		DoDayLightCycle = false;
+	if (current_map == "Sheraton") {
+		if (interaction_tile.x == 46 && (interaction_tile.y == 25 || interaction_tile.y == 26)) {
+			if (!dynamic_rendering.empty())
+				dynamic_rendering.clear();
+			dynamic_map.delete_all();
+			initial_game("Doz World", { 264, 264 });
+			DoDayLightCycle = false;
+			DoEntitySpawning = false;
+		}
+		//else if (interaction_tile.x == 46 && (interaction_tile.y == 25 || interaction_tile.y == 26)) {
+		//	states->insert(WorldMapST);
+		//	states->at(WorldMapID)->update();
+		//}
 	}
 }
 
@@ -785,7 +805,7 @@ GameState::GameState(int character_id, string current_map, Vector2f player_pos, 
 	: items(50)
 {
 	window->setMouseCursorVisible(false);
-	this->character_name = character_name, this->current_map = current_map;
+	this->character_name = character_name;
 	this->character_id = character_id, this->save_num = save_num;
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
@@ -858,6 +878,7 @@ void GameState::update()
 		hotbar_selection.setScale(scale * 0.1, scale * 0.1);
 		health_indicator.setPosition(20 * scale , 20 * scale);
 		health_indicator.setScale(scale * 0.15, scale * 0.15);
+		blackscreen.setSize({ win_x, win_y });
 		for (int i = 0; i < 3; i++) {
 			tool_icons[i].setPosition(win_x / 2 + 3*scale, win_y - 20 * scale);
 			tool_icons[i].setScale(scale * 0.1, scale * 0.1);
@@ -883,6 +904,7 @@ void GameState::update()
 	if (fps_active)
 		fps_text.setString(fps_text.getString() + "\tCoordinates: " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
 
+	black_in();
 
 
 	//entity spawning                *******FIX RANDOM DAMAGE WITH ENEMY SPAWNING*****
@@ -1033,6 +1055,8 @@ void GameState::render()
 		window->draw(health_indicator);
 		render_minimap();
 	}
+	if (blackining)
+		window->draw(blackscreen);
 }
 
 void GameState::pollevent()
