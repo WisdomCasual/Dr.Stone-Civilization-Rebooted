@@ -32,7 +32,7 @@ void GameState::save()
 	if (ofs.is_open()) {
 		ofs << character_name << '\n';
 		ofs << (int)character_id << '\n';
-		ofs << 1 << '\n';
+		ofs << current_quest << '\n';
 		ofs << current_map << '\n';
 		ofs << player_entity->getRelativePos().x << ' ' << player_entity->getRelativePos().y << '\n';
 		ofs << player_entity->health << '\n';
@@ -431,6 +431,7 @@ void GameState::load_map(string map_name)
 	else
 		load_initial_map(map_name);
 	ifs.close();
+
 	dtclock.restart();
 }
 
@@ -633,6 +634,20 @@ void GameState::deload_map()
 	if (!dynamic_rendering.empty())
 		dynamic_rendering.clear();
 	dynamic_map.delete_all();
+
+
+	while (items.curr_idx)
+		items.rem_ove(items.curr_idx - 1);
+
+	while (enemies.curr_idx)
+		enemies.rem_ove(enemies.curr_idx - 1);
+
+	while (passive.curr_idx)
+		passive.rem_ove(passive.curr_idx - 1);
+
+	destructable_count = 0;
+	delete[] destructable_objects;
+	destructable_objects = nullptr;
 }
 
 void GameState::initial_stats()
