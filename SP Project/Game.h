@@ -47,7 +47,7 @@ public:
 	int framelimit = 120;
 	void erase_states(int[], int);
 	void exit_prompt();
-	void notification(string[], int);
+	void notification(string[], int, float up_time = 3);
 
 	//constructors/destructors:
 	Game();
