@@ -87,7 +87,7 @@ void WorldMapState::update_pins()
 				pn->second.pressed = 0;
 				if (admin) {
 					//choose map in MapBuilder
-					save_maps();
+					save();
 					states->insert({ MapBuilderID, new MapBuilderState(pn->first, pn->second.x_size, pn->second.y_size) });
 					states->at(MapBuilderID)->update();
 
@@ -142,7 +142,7 @@ void WorldMapState::render_pins()
 
 }
 
-void WorldMapState::save_maps()
+void WorldMapState::save()
 {
 	ofstream ofs("Maps/maps.ini", ofstream::out, ofstream::trunc);
 	auto mp_end = --pins.end();
@@ -308,7 +308,7 @@ void WorldMapState::pollevent()
 				states->at(ConfirmationID)->update();
 			} break;
 			case Keyboard::F6:
-				save_maps(); 
+				save(); 
 				{
 					string notification_s[] = { "Saved Successfully" };
 					game.notification(notification_s, 1);

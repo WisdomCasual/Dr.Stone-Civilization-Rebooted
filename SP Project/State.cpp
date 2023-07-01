@@ -84,6 +84,11 @@ void State::initial_tile_sheets(string file)
 	}
 }
 
+void State::save()
+{
+	cout << "lol\n";
+}
+
 Vector2f State::delta_movement()
 {
 	// returns direction of movement based on arrow/wasd keys --> {[-1,1],[-1,1]}

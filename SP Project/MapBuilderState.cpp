@@ -483,7 +483,7 @@ void MapBuilderState::create_mini_map()
 	mini_map.~Image();
 }
 
-void MapBuilderState::save_map()
+void MapBuilderState::save()
 {
 	ofstream ofs("Maps/" + map_name + ".mp", ofstream::out, ofstream::trunc);
 	if (ofs.is_open()) {
@@ -498,6 +498,8 @@ void MapBuilderState::save_map()
 		}
 		ofs.close();
 	}
+	for(int i = 1; i<=3; i++)
+		remove(("Saves/Save " + to_string(i) + "/" + map_name + ".mp").c_str());
 }
 
 void MapBuilderState::load_map()
@@ -639,7 +641,7 @@ void MapBuilderState::pollevent()
 				break;
 			case Keyboard::F6:
 				//are you sure?
-				save_map();
+				save();
 				create_mini_map();
 				{
 					string notification_s[] = { "Saved Successfully"};

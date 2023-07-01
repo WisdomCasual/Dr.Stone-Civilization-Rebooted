@@ -1,4 +1,6 @@
 #include "SavesState.h"
+#include <filesystem>
+
 
 void SavesState::fade_in()
 {
@@ -241,7 +243,7 @@ void SavesState::update_arrow()
 void SavesState::initial_saves()
 {
 	for (int i = 0; i < 3; i++) {
-		ifstream ifs("Saves/Save" + to_string(i + 1) + ".ini");
+		ifstream ifs("Saves/Save " + to_string(i + 1) + "/Save.dat");
 		string line;
 		if (!(ifs >> line)) {
 			saves[i].empty = 1; continue;
@@ -249,23 +251,14 @@ void SavesState::initial_saves()
 		saves[i].empty = 0;
 		ifs.seekg(ios::beg);
 		if (ifs.is_open()) {
-			string name, cur_map;
-			Vector2f player_pos;
-			int progress, character_id, health;
+			string name;
+			int progress, character_id;
 			getline(ifs, name);
 			saves[i].name = name;
 			ifs >> character_id;
 			saves[i].character_id = character_id;
 			ifs >> progress;
 			saves[i].progress = progress / quests_no * 100;      //<-- calculated by number of missons
-			ifs.ignore();
-			getline(ifs, cur_map);
-			saves[i].current_map = cur_map;
-			ifs >> player_pos.x >> player_pos.y;
-			saves[i].player_pos = player_pos;
-			ifs >> health;
-			saves[i].health = health;
-			ifs >> game_time;
 		}
 		ifs.close();
 	}
@@ -282,16 +275,17 @@ void SavesState::update()
 	blackscreen.setSize({ win_x, win_y });
 
 	if (del_save) {
-		string file_name = "Saves/Save" + to_string(del_save_no) + ".ini";
-		remove(file_name.c_str());
+		for (auto& path : filesystem::directory_iterator("Saves/Save " + to_string(del_save_no))) {
+			filesystem::remove_all(path);
+		}
 		saves[del_save_no-1].empty = 1;
 		del_save = 0;
 	}
 
-
+	
 	if (selected_save) {
 		if (black_out()) {
-			states->insert({ GameID, new GameState(saves[selected_save - 1].character_id, saves[selected_save - 1].current_map, saves[selected_save - 1].player_pos, saves[selected_save - 1].name, selected_save - 1, saves[selected_save - 1].health) });
+			states->insert({ GameID, new GameState(selected_save - 1) });
 			states->at(GameID)->update();
 			selected_save = 0;
 			int exceptions[] = { GameID };

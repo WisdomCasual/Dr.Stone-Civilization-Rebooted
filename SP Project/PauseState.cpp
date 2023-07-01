@@ -173,6 +173,13 @@ void PauseState::update()
 	else if (exit) {
 		exit = 0; 
 
+		if(states->find(GameID) != states->end())
+			states->at(GameID)->save();
+		else if (states->find(MapBuilderID) != states->end())
+			states->at(MapBuilderID)->save();
+		else if (states->find(WorldMapID) != states->end())
+			states->at(WorldMapID)->save();
+
 		states->insert(MainMenuST);
 		states->at(MainMenuID)->update();
 

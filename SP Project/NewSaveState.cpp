@@ -188,7 +188,7 @@ void NewSaveState::render_characters()
 
 void NewSaveState::add_save()
 {
-	ofstream ofs("Saves/Save" + to_string(save_no + 1) + ".ini", ofstream::out, ofstream::trunc);
+	ofstream ofs("Saves/Save " + to_string(save_no + 1) + "/Save.dat", ofstream::out, ofstream::trunc);
 
 	if (ofs.is_open()) {
 		ofs << test_str << '\n';
@@ -198,6 +198,7 @@ void NewSaveState::add_save()
 		ofs << 800 << ' ' << 800 << '\n';
 		ofs << -1 << '\n';
 		ofs << 0.0 << '\n';
+		ofs << 0.1 << 1 << '\n';
 	}
 	ofs.close();
 }
@@ -297,7 +298,7 @@ void NewSaveState::update()
 		if (black_out()) {
 			//button functionality
 			add_save();
-			states->insert({ GameID, new GameState((int)selected,"Sheraton", {800, 800},test_str , save_no, -1, 0.0) });
+			states->insert({ GameID, new GameState(save_no) });
 			states->at(GameID)->update();
 
 			// exceptions arrays were explained in the settings state

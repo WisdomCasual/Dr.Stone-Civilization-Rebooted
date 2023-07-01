@@ -13,10 +13,9 @@ private:
 	//variables:
 	struct save { // stores save 
 		int x, y, no;
-		int progress = 0, character_id = 0, health = 100;
-		string name, current_map;
+		int progress = 0, character_id = 0;
+		string name; 
 		bool empty = 1, hover = 0, del_hover = 0, pressed = 0, del_pressed = 0, del = 0;
-		Vector2f player_pos = { 0,0 };
 	};
 
 	Text del;

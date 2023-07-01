@@ -7,7 +7,7 @@ Items::~Items()
 }
 void Items::move()
 {
-	if (time <= 1.0) {
+	if (time <= 1.0 && !interact) {
 		float x_movement = velocity.x * dt, y_movement = velocity.y * dt;
 		if (legal_tile({ x_movement, 0 }, current_hitbox))
 			 {
@@ -25,7 +25,7 @@ void Items::move()
 }
 
 void Items::intersect(){
-	if (time > 1.0) {
+	if (time > 1.0 || interact) {
 		FloatRect item_hitbox = { getRelativePos().x - 8 * entity_stats.scale_const ,getRelativePos().y - 8 * entity_stats.scale_const,16 * entity_stats.scale_const,16 * entity_stats.scale_const };
 		if (item_hitbox.intersects(FloatRect(player_entity.getRelativePos().x - (player_entity.current_hitbox.x * player_entity.entity_stats.scale_const) / 2.0, player_entity.getRelativePos().y - (player_entity.current_hitbox.y * player_entity.entity_stats.scale_const) / 2.0, player_entity.current_hitbox.x * player_entity.entity_stats.scale_const, player_entity.current_hitbox.y * player_entity.entity_stats.scale_const)))
 		{

@@ -28,7 +28,6 @@ struct Game
 private:
 	//private variables:
 	RenderWindow* window;
-	Clock dtclock;
 	VideoMode* videomode;
 	map<int, State*> states;
 	map<string, Texture*> textures;
