@@ -64,6 +64,7 @@
 namespace globalvar {
 
 	inline float dt;
+    inline Clock dtclock;
 	inline RenderWindow* window;
 	inline map<int, State*>* states;
 	inline Event event;

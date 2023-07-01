@@ -177,7 +177,6 @@ private:
 	void undo();
 	void mouse_cords();
 	void create_mini_map();
-	void save_map();
 	void load_map();
 
 public:
@@ -186,6 +185,7 @@ public:
 	~MapBuilderState();
 
 	//public functions:
+	void save();
 	void update();
 	void render();
 	void pollevent();

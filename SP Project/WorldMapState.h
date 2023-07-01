@@ -51,7 +51,6 @@ struct WorldMapState : public State
 		bool black_out();
 		void update_pins();
 		void render_pins();
-		void save_maps();
 
 	public:
 		//public functions;
@@ -62,6 +61,7 @@ struct WorldMapState : public State
 
 
 		//public functions:
+		void save();
 		void update();
 		void render();
 		void pollevent();
