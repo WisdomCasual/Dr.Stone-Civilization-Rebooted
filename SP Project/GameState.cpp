@@ -37,7 +37,7 @@ void GameState::save()
 		ofs << player_entity->getRelativePos().x << ' ' << player_entity->getRelativePos().y << '\n';
 		ofs << player_entity->health << '\n';
 		ofs << game_time << '\n';
-		ofs << light_level << ' ' << night << '\n';
+		ofs << light_level << ' ' << day_increment << '\n';
 	}
 	ofs.close();
 	
@@ -127,7 +127,7 @@ void GameState::load_game()
 		ifs >> player_pos.x >> player_pos.y;
 		ifs >> health;
 		ifs >> game_time;
-		ifs >> light_level >> night;
+		ifs >> light_level >> day_increment;
 	}
 	ifs.close();
 
@@ -696,7 +696,6 @@ void GameState::initial_game(string current_map, Vector2f player_pos)
 		EnableMiniMap = false;
 	}
 	else {
-
 		DoDayLightCycle = true;
 		DoEntitySpawning = true;
 		EnableMiniMap = true;
@@ -1070,15 +1069,13 @@ void GameState::DayLightCycle()
 		}
 	}
 	light_level += day_increment * dt;
-	if (!night && light_level < 0.1) {
-		night = true;
+	if (light_level < 0.1) {
 		light_level = 0.1;
-		day_increment = -day_increment;
+		day_increment = 0.01;
 	}
-	else if (night && light_level > 1) {
-		night = false;
+	else if (light_level > 1) {
 		light_level = 1;
-		day_increment = -day_increment;
+		day_increment = -0.01;
 	}
 	if(DoDayLightCycle)
 		shader.setUniform("ambient_light", Glsl::Vec4(light_level, light_level, (light_level + 0.2 < 1 ? light_level + 0.2 : 1), 1.0));
