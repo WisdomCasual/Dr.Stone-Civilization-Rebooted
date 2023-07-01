@@ -167,6 +167,7 @@ void ConfirmationState::update()
 	else
 		fade_in();
 	update_buttons();
+	//dtclock.restart();
 }
 
 void ConfirmationState::render()

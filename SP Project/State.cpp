@@ -1,5 +1,5 @@
 #include "State.h"
-
+#include "Global.h"
 
 void State::initial_textures(string file)
 {
@@ -21,6 +21,7 @@ void State::initial_textures(string file)
 			textures[i] = temp_textures[i];
 	}
 	ifs.close();
+	globalvar::dtclock.restart();
 }
 
 void State::initial_tile_sheets(string file)
@@ -82,6 +83,7 @@ void State::initial_tile_sheets(string file)
 		}
 		ifs.close();
 	}
+	globalvar::dtclock.restart();
 }
 
 void State::save()
