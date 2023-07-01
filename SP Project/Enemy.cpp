@@ -1,36 +1,6 @@
 #include "Enemy.h"
 
 
-void Enemy::player_collision_check()
-{
-	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
-
-	entity_hitbox = FloatRect(getRelativePos().x - current_hitbox.x / 2, getRelativePos().y - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
-
-	player_hitbox.left += player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
-
-	if (entity_hitbox.intersects(player_hitbox))
-		player_entity.movement.x = 0;
-
-	player_hitbox.left -= player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
-	player_hitbox.top += player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
-
-	if (entity_hitbox.intersects(player_hitbox))
-		player_entity.movement.y = 0;
-
-	player_hitbox.top -= player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
-	player_hitbox.left += player_entity.knockback_direction.x * player_entity.knockback_v * dt;
-
-	if (entity_hitbox.intersects(player_hitbox))
-		player_entity.knockback_direction.x = 0;
-
-	player_hitbox.left -= player_entity.knockback_direction.x * player_entity.knockback_v * dt;
-	player_hitbox.top += player_entity.knockback_direction.y * player_entity.knockback_v * dt;
-
-	if (entity_hitbox.intersects(player_hitbox))
-		player_entity.knockback_direction.y = 0;
-}
-
 bool Enemy::collide_with_player(Vector2f movement)
 {
 	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
@@ -609,7 +579,6 @@ void Enemy::update()
 		}
 		delay += dt;
 	}
-	player_collision_check();
 
 	////////////////////PLayer Combat////////////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };

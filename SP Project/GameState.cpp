@@ -103,6 +103,7 @@ void GameState::save()
 			map_ofs << items.entities[i]->item_ID << ' ';
 			map_ofs << items.entities[i]->pos.x << ' ' << items.entities[i]->pos.y << ' ';
 			map_ofs << items.entities[i]->despawn_timer << ' ';
+			map_ofs << items.entities[i]->health << ' ';
 		}
 		map_ofs << '\n';
 
@@ -399,12 +400,15 @@ void GameState::load_saved_map(string map_name)
 		Vector2f pos;
 		float despawn_timer;
 		for (int i = 0; i < count; i++) {
+			int stack_count;
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
 			ifs >> despawn_timer;
+			ifs >> stack_count;
 			items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, pos, 0, 300.0, id);
 			items.entities[items.curr_idx - 1]->despawn_timer = despawn_timer;
 			items.entities[items.curr_idx - 1]->interact = 1;
+			items.entities[items.curr_idx - 1]->health = stack_count;
 		}
 
 

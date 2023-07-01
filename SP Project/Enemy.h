@@ -16,7 +16,6 @@ private:
 	bool* astar_done = nullptr;
 
 	//private functions
-	void player_collision_check();
 	bool collide_with_player(Vector2f);
 
 public:
