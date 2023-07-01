@@ -104,6 +104,15 @@ void GameState::save()
 			map_ofs << items.entities[i]->pos.x << ' ' << items.entities[i]->pos.y << ' ';
 			map_ofs << items.entities[i]->despawn_timer << ' ';
 		}
+		map_ofs << '\n';
+
+		map_ofs << light_sources.size() << '\n';
+		for (auto light : light_sources) {
+			map_ofs << light.second.color.x << ' ' << light.second.color.y << ' ' << light.second.color.z << ' ';
+			map_ofs << light.second.intensity << ' ';
+			map_ofs << light.second.position.x << ' ' << light.second.position.y << ' ';
+		}
+		map_ofs << '\n';
 
 
 	}
@@ -396,6 +405,16 @@ void GameState::load_saved_map(string map_name)
 			items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, pos, 0, 300.0, id);
 			items.entities[items.curr_idx - 1]->despawn_timer = despawn_timer;
 			items.entities[items.curr_idx - 1]->interact = 1;
+		}
+
+
+		ifs >> count;
+		for (int i = 0; i < count; i++) {
+			Vector3f color; Vector2f position; float inten;
+			ifs >> color.x >> color.y >> color.z;
+			ifs >> inten;
+			ifs >> position.x >> position.y;
+			light_sources.insert({ position.y, light(position, color, inten) });
 		}
 
 	}
