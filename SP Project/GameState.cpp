@@ -1372,18 +1372,15 @@ void GameState::update()
 
 void GameState::render()
 {
-	shader.setUniform("lightPos", player_entity->getPosition());
-	shader.setUniform("light_level", Glsl::Vec4(0.1, 0.1, 0.2, 1.0));
-
 	render_static_map();
 	render_entities();
-	if(states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID || states->rbegin()->first == DialogueID) {
+	if (states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID || states->rbegin()->first == DialogueID) {
 		window->draw(hotbar);
 		for (int i = 0; i < 3; i++)
 			window->draw(tool_icons[i]);
 		window->draw(hotbar_selection);
 		window->draw(health_indicator);
-		if(EnableMiniMap)
+		if (EnableMiniMap)
 			render_minimap();
 	}
 	if (blackining)
