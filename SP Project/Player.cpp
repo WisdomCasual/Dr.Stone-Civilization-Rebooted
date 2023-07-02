@@ -131,12 +131,12 @@ void Player::setPosition(float x_pos, float y_pos)
 void Player::use_tool()
 {
 	if (Lag >= 0.8&&stun<=0) {
-		if (state == 2) { // sword
+		if (state == 3) { // sword
 			int hit_animation = rand() % 2;
 			Hitbox_align(hit_animation);
 			action(hit_animation+1);
 		}
-		else if (state == 1 || state == 0) { // axe / pickaxe
+		else if (state == 2 || state == 1) { // axe / pickaxe
 			mine();
 			action(1);
 		}
