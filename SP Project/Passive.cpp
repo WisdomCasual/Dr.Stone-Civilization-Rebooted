@@ -35,6 +35,13 @@ Passive::~Passive()
 
 }
 
+void Passive::passive_knockback(Vector2f direction, float velocity)
+{
+	knockback_de = direction;
+	curr_movement = curr_movement * move_speed + knockback_de * velocity;
+	move_speed = 1;
+}
+
 void Passive::damaged(Color& original, float& delay)
 {
 	original = entity_sprite.getColor();
@@ -144,6 +151,7 @@ void Passive::update()
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.hit_range.left << '\t' << player_entity.hit_range.top<<endl;
 	if (player_entity.hit_range.intersects(Entity_Hitbox)) {
 		if (cooldown<=0) {
+			passive_knockback(Vector2f(player_entity.current_direction), 120);
 			damaged(original, stun);
 			action_state = 1;
 			switch_delay = 0;
@@ -157,15 +165,22 @@ void Passive::update()
 	}
 	if (cooldown)cooldown -= dt;
 	//cout << health << endl;
-	if (stun <= 0)entity_sprite.setColor(Color(original));
-	else stun -= dt;
+	if (stun <= 0) {
+		entity_sprite.setColor(Color(original));
+		knockback_ve = 0;
+		stateMachine();
+	}
+	else {
+		stun -= dt;
+		will_move = 1;
+		curr_movement -= knockback_de * dt * 15.f;
+	}
 	///////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin); ///////////////
 	updatePos();
-	stateMachine();
 
 	player_collision_check();
 
@@ -176,9 +191,10 @@ void Passive::update()
 			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
 			move({ 0, dt * move_speed * curr_movement.y });
-		if (legal_x || legal_y)
-			direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
-			
+		if (stun<=0) {
+			if (legal_x || legal_y)
+				direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
+		}
 		if (!legal_x || !legal_y) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;

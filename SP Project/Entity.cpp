@@ -74,7 +74,7 @@ void Entity::setScale(float new_scale_const)
 
 void Entity::move(Vector2f movement)
 {
-	if (!active_action&&stun<=0) {
+	if (!active_action) {
 		pos += movement;
 	}
 }
@@ -116,7 +116,7 @@ bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 
 void Entity::direction(Vector2f direction, bool moving)
 {
-	if (!active_action&&stun<=0) {
+	if (!active_action) {
 		if (direction.y < 0) {
 			//back
 			current_move = 0;
@@ -166,9 +166,9 @@ void Entity::render(Shader* shader)
 
 	//draws entity hitboxes for passive and hostile entities:
 	
-	//RectangleShape hitbox_debug;
-	//hitbox_debug.setSize({ entity_hitbox.width * scale, entity_hitbox.height * scale });
-	//hitbox_debug.setPosition({ entity_hitbox.left * scale + map_x * scale, entity_hitbox.top * scale + map_y * scale });
-	//hitbox_debug.setFillColor(Color(255,0,0,150));
-	//window->draw(hitbox_debug);
+	/*RectangleShape hitbox_debug;
+	hitbox_debug.setSize({ entity_hitbox.width * scale, entity_hitbox.height * scale });
+	hitbox_debug.setPosition({ entity_hitbox.left * scale + map_x * scale, entity_hitbox.top * scale + map_y * scale });
+	hitbox_debug.setFillColor(Color(255,0,0,150));
+	window->draw(hitbox_debug);*/
 }

@@ -218,7 +218,7 @@ public:
 	float stun = 0;
 	//RectangleShape test;
 	float Lag = 0;
-	float knockback_v=0,hit_cooldown=0;
+	float knockback_v=0,hit_cooldown=0.8;
 	/////////////////////////////////////////////////
 	//Public functions
 	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, Vector2i&, Entity* player = nullptr, bool persistant = 0, double time_to_despawn = 10.0, int item_id = 0);

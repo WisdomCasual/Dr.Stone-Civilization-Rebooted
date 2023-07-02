@@ -509,7 +509,7 @@ void MapBuilderState::load_map()
 	if (!(ifs >> line)) {
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < size_y; j++) {
-				tiles[i][j].layer[0] = { 21,49, 1 };
+				tiles[i][j].layer[0] = { 2,16, 1 };
 			}
 		}
 	}

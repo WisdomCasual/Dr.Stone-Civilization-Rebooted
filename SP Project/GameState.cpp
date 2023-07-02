@@ -175,50 +175,43 @@ void GameState::load_entities(float player_relative_y_pos)
 	}
 
 	//animals
-	lion_stats.animations = new animation * [1];
-	lion_stats.scale_const = 0.7;
-	lion_stats.base_movement_speed = 80;
-	lion_stats.base_animation_speed = 16.6;
-	lion_stats.textures_count = 1;
-	lion_stats.textures = new Texture * [lion_stats.textures_count];
-	lion_stats.textures[0] = new Texture;
+	//lion
+	enemy_stats[0].animations = new animation * [1];
+	enemy_stats[0].scale_const = 0.85;
+	enemy_stats[0].base_movement_speed = 80;
+	enemy_stats[0].base_animation_speed = 12;
+	enemy_stats[0].textures_count = 1;
+	enemy_stats[0].textures = new Texture * [enemy_stats[0].textures_count];
+	enemy_stats[0].textures[0] = new Texture;
 
-	lion_stats.textures[0]->loadFromFile("textures/game/entities/lion/lion.png");
+	enemy_stats[0].textures[0]->loadFromFile("textures/game/entities/lion/lion.png");
 
-	lion_stats.states_no = 1;
-	lion_stats.animations[0] = new animation[4];
-	lion_stats.animations[0][0] = { 4, {0, 0 * 64, 64, 64}, {20,63}, {32,32} }; //back
-	lion_stats.animations[0][1] = { 5, {0, 2 * 64, 64, 64}, {63,16}, {32,47} }; //right
-	lion_stats.animations[0][2] = { 5, {0, 1 * 64, 64, 64}, {63,16}, {32,48} }; //left
-	lion_stats.animations[0][3] = { 4, {0, 3 * 64, 64, 64}, {20,63}, {32,33} }; //front
+	enemy_stats[0].states_no = 1;
+	enemy_stats[0].animations[0] = new animation[4];
+	enemy_stats[0].animations[0][0] = { 4, {0, 146, 48, 49}, {24,48}, {24,24} }; //back
+	enemy_stats[0].animations[0][1] = { 4, {0, 103, 48, 42}, {46,12}, {24,36} }; //right
+	enemy_stats[0].animations[0][2] = { 4, {0,55, 48, 48}, {46,18}, {24,36} }; //left
+	enemy_stats[0].animations[0][3] = { 4, {0, 0, 48, 50}, {30,48}, {24,24} }; //front
 
-	wolf_stats.animations = new animation * [1];
-	wolf_stats.scale_const = 0.7;
-	wolf_stats.base_movement_speed = 80;
-	wolf_stats.states_no = 1;
-	wolf_stats.base_animation_speed = 16.6;
-	wolf_stats.textures_count = 1;
-	wolf_stats.textures = new Texture * [wolf_stats.textures_count];
-	wolf_stats.textures[0] = new Texture;
+	// Tiger
+
+	enemy_stats[1].animations = new animation * [1];
+	enemy_stats[1].scale_const = 0.85;
+	enemy_stats[1].base_movement_speed = 80;
+	enemy_stats[1].states_no = 1;
+	enemy_stats[1].base_animation_speed = 12;
+	enemy_stats[1].textures_count = 1;
+	enemy_stats[1].textures = new Texture * [enemy_stats[1].textures_count];
+	enemy_stats[1].textures[0] = new Texture;
 
 
-	wolf_stats.textures[0]->loadFromFile("textures/game/entities/wolf/wolf.png");
+	enemy_stats[1].textures[0]->loadFromFile("textures/game/entities/tiger/tiger.png");
 
-	wolf_stats.animations[0] = new animation[12];
-	wolf_stats.animations[0][0] = { 4, {160, 128, 32, 64}, {22,60}, {16,30} }; //back
-	wolf_stats.animations[0][1] = { 5, {320, 96, 64, 32}, {62,12}, {34,28} }; //right
-	wolf_stats.animations[0][2] = { 5, {320, 288, 64, 32}, {62,12}, {34,28} }; //left
-	wolf_stats.animations[0][3] = { 4, {0, 128, 32 , 64}, {22,60}, {16,30} };//front
-
-	wolf_stats.animations[0][4] = { 5, {160, 196, 32, 64}, {22,60}, {16,30} }; //back attack
-	wolf_stats.animations[0][5] = { 5, {320, 128, 64, 32}, {62,12}, {34,28} }; //right attack
-	wolf_stats.animations[0][6] = { 5, {320, 320, 64, 32}, {62,12}, {34,28} }; //left attack
-	wolf_stats.animations[0][7] = { 5, {0, 196, 32, 64}, {22,60}, {16,30} }; //front attack
-
-	wolf_stats.animations[0][8] = { 5, {160, 256, 32, 64}, {22,60}, {16,30} }; //back attack bsnanoh
-	wolf_stats.animations[0][9] = { 5, {320, 160, 64, 32}, {62,12}, {34,28} }; //right attack bsnanoh
-	wolf_stats.animations[0][10] = { 5, {320, 352, 64, 32}, {62,12}, {34,28} }; //left attack bsnanoh
-	wolf_stats.animations[0][11] = { 5, {0, 256, 32, 64}, {22,60}, {16,30} }; //front attack bsnanoh
+	enemy_stats[1].animations[0] = new animation[4];
+	enemy_stats[1].animations[0][0] = { 4, {0, 149, 48, 46}, {23,46}, {24,23} }; //back
+	enemy_stats[1].animations[0][1] = { 4, {0, 106, 48, 42}, {46,16}, {25,34} }; //right
+	enemy_stats[1].animations[0][2] = { 4, {0, 60, 48, 44}, {45,16}, {21,32} }; //left
+	enemy_stats[1].animations[0][3] = { 4, {0, 0, 48 , 54}, {21,54}, {24,27} };//front
 
 	cow_stats.animations = new animation * [1];
 	cow_stats.scale_const = 0.6;
@@ -302,7 +295,7 @@ void GameState::load_entities(float player_relative_y_pos)
 		player_entity->set_movement_speed(269);
 		player_stats.max_health = SHRT_MAX / 2;
 	}
-	enemies.add(wolf(0), {750, 750}, 1);
+	enemies.add(tiger(0), {750, 750}, 1);
 	enemies.add(lion(0), {900, 900}, 1);
 	passive.add(cow(2), {825, 825}, 1);
 	passive.add(llama(2), {875, 875}, 1);
@@ -630,7 +623,7 @@ void GameState::entity_spawning()
 
 	if (valid_spawn) {
 		//cout << "ONE PUUUUUUUNCH\n";
-		enemies.add(wolf(0), {16.f * spawn_x, 16.f * spawn_y});
+		enemies.add(tiger(0), {16.f * spawn_x, 16.f * spawn_y});
 		enemies.entities[enemies.curr_idx - 1]->update();
 	}
 }
@@ -914,7 +907,7 @@ void GameState::update()
 void GameState::render()
 {
 	shader.setUniform("lightPos", player_entity->getPosition());
-	shader.setUniform("light_level", Glsl::Vec4(0.1, 0.1, 0.2, 1.0));
+	shader.setUniform("light_level", Glsl::Vec4(1, 1,1, 1));
 
 	render_static_map();
 	render_entities();

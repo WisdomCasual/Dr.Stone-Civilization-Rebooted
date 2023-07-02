@@ -14,7 +14,9 @@ private:
 	path_tile* mp = nullptr;
 	short find_size_x = 50, find_size_y = 50, id = 1, *** vis = nullptr;
 	bool* astar_done = nullptr;
-
+	///////Combat variables///////
+	float knockback_ve = 0;
+	Vector2f knockback_de={0,0};
 	//private functions
 	void player_collision_check();
 	bool collide_with_player(Vector2f);
@@ -22,6 +24,7 @@ private:
 public:
 	~Enemy();
 	void is_there();
+	void enemy_knockback(Vector2f, float);
 	void damaged(Color&,float&,Sprite&);
 	void updatePos();
 	bool visionLines(Entity&);
