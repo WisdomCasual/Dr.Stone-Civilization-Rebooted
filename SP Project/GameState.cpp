@@ -112,6 +112,7 @@ void GameState::save()
 			map_ofs << light.second.color.x << ' ' << light.second.color.y << ' ' << light.second.color.z << ' ';
 			map_ofs << light.second.intensity << ' ';
 			map_ofs << light.second.position.x << ' ' << light.second.position.y << ' ';
+			map_ofs << light.second.day_light << ' ';
 		}
 		map_ofs << '\n';
 
@@ -246,6 +247,8 @@ void GameState::load_initial_map(string map_name)
 								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 0.5, 1), intensity) });
 							else if (tle.x < 15)
 								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 1, 0.5), intensity) });
+							else if (tle.x == 15)
+								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), 0.7, true) });
 						}
 					}
 					else {
@@ -415,11 +418,12 @@ void GameState::load_saved_map(string map_name)
 
 		ifs >> count;
 		for (int i = 0; i < count; i++) {
-			Vector3f color; Vector2f position; float inten;
+			Vector3f color; Vector2f position; float inten; bool day_light;
 			ifs >> color.x >> color.y >> color.z;
 			ifs >> inten;
 			ifs >> position.x >> position.y;
-			light_sources.insert({ position.y, light(position, color, inten) });
+			ifs >> day_light;
+			light_sources.insert({ position.y, light(position, color, inten, day_light) });
 		}
 
 	}
@@ -1077,8 +1081,11 @@ void GameState::DayLightCycle()
 	int count = 0;
 	for (auto i = light_sources.lower_bound(-map_y - 160); i != light_sources.end() && i->first <= -map_y + win_y / scale + 160; i++) {
 		if (i->second.position.x > -map_x - 160 && i->second.position.x < -map_x + win_x / scale + 160) {
+			if(i->second.day_light)
+				shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(light_level, light_level, (light_level + 0.2 < 1 ? light_level + 0.2 : 1)));
+			else
+				shader.setUniform("lights[" + to_string(count) + "].color", i->second.color);
 			shader.setUniform("lights[" + to_string(count) + "].position", (i->second.position + Vector2f(map_x, map_y)) * scale);
-			shader.setUniform("lights[" + to_string(count) + "].color", i->second.color);
 			shader.setUniform("lights[" + to_string(count) + "].intensity", i->second.intensity);
 			count++;
 		}
