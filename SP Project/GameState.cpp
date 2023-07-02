@@ -563,10 +563,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[0].animations[0][3] = { 4, {0,0,48,65}, {30,52}, {24,37} }; //front
 	//Sheep
 	passive_stats[1].animations = new animation * [1];
-	passive_stats[1].scale_const = 0.7;
+	passive_stats[1].scale_const = 0.85;
 	passive_stats[1].base_movement_speed = 80;
 	passive_stats[1].states_no = 1;
-	passive_stats[1].base_animation_speed = 16.6;
+	passive_stats[1].base_animation_speed = 12;
 	passive_stats[1].textures_count = 1;
 	passive_stats[1].textures = new Texture * [passive_stats[1].textures_count];
 	passive_stats[1].textures[0] = new Texture;
@@ -597,10 +597,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
 	NPC_stats.animations = new animation * [1];
-	NPC_stats.scale_const = 0.7;
+	NPC_stats.scale_const = 0.85;
 	NPC_stats.base_movement_speed = 80;
 	NPC_stats.states_no = 1;
-	NPC_stats.base_animation_speed = 16.6;
+	NPC_stats.base_animation_speed = 12;
 	NPC_stats.textures_count = 1;
 	NPC_stats.textures = new Texture * [passive_stats[1].textures_count];
 	NPC_stats.textures[0] = new Texture;
@@ -608,10 +608,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	NPC_stats.textures[0]->loadFromFile("textures/game/entities/sheep/sheep.png");
 
 	NPC_stats.animations[0] = new animation[5];
-	NPC_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,48} }; //back
-	NPC_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,84} }; //right
-	NPC_stats.animations[0][2] = { 4, {0, 1 * 96,64, 96}, {63,14}, {32,84} }; //left
-	NPC_stats.animations[0][3] = { 4, {0, 3 * 96, 64, 96}, {22,75}, {32,59} }; //front
+	NPC_stats.animations[0][0] = { 4, {0,154,48,46}, {24,42}, {29,22} }; //back
+	NPC_stats.animations[0][1] = { 4, {1,112,48,41}, {38,20}, {29,29} }; //right
+	NPC_stats.animations[0][2] = { 4, {0,60,48,45}, {40,18}, {27,33} }; //left
+	NPC_stats.animations[0][3] = { 4, {0,0,48,55}, {24,40}, {29,33} }; //front
 
 	item_stats.textures_count = 1;
 	item_stats.textures = new Texture * [item_stats.textures_count];
