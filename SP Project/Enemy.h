@@ -6,7 +6,7 @@ struct Enemy :
 {
 	using::Entity::Entity;
 private:
-	Vector2f fov = { 12.f, 120.f }, curr_movement = { 0.f, 0.f }; //fov = (magnitude, angle)
+	Vector2f fov = { 15.f, 120.f }, curr_movement = { 0.f, 0.f }; //fov = (magnitude, angle)
 	Vector2i prev_target_tile = { 0, 0 }, last_seen = { 0, 0 }, path_delta = {-1, -1}; //astar pos + map_delta = actual position 
 	Vector2f target_tile = { -1.f, -1.f }, last_seen_cord = { 0.f, 0.f }, delta_sign = {-1, -1};
 	bool will_move = 0, prev_check = 0;

@@ -204,7 +204,15 @@ void Passive::update()
 
 	if (will_move) {
 		short dir[2] = { 45, -45 };
-		bool legal_x = legal_direction({ dt * move_speed * curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)), legal_y = legal_direction({ 0, curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
+		bool legal_x, legal_y;
+		if (stun > 0) {
+			legal_x = legal_tile({ dt * move_speed * curr_movement.x, 0 }),
+				legal_y = legal_tile({ 0, dt * move_speed * curr_movement.y });
+		}
+		else {
+			legal_x = legal_direction({ dt * move_speed * curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)),
+				legal_y = legal_direction({ 0, dt * move_speed * curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
+		}
 		if (legal_x)
 			move({ dt * move_speed * curr_movement.x, 0 });
 		if (legal_y)
@@ -213,7 +221,7 @@ void Passive::update()
 			if (legal_x || legal_y)
 				direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 		}
-		if (!legal_x || !legal_y) {
+		if ((!legal_x || !legal_y) && stun <=0) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
