@@ -93,7 +93,7 @@ void NPC::start_dialogue(dialogue* curr_dialogue, short n)
 	curr_dialogue_num = n;
 
 	Vector2f dialogue_dir = (player_entity.getRelativePos() - getRelativePos()) / magnitude(player_entity.getRelativePos() - getRelativePos()), prev_hitbox = current_hitbox;
-	if (legal_direction(getRelativePos() / 16.f, roundf(dialogue_dir.x), roundf(dialogue_dir.y)) && !collide_with_player({0, 0})) {
+	if (legal_direction({0,0}, roundf(dialogue_dir.x), roundf(dialogue_dir.y)) && !collide_with_player({0, 0})) {
 		direction(Vector2f(roundf(dialogue_dir.x), roundf(dialogue_dir.y)));
 		update_looks();
 	}
@@ -225,7 +225,7 @@ void NPC::update()
 	if (will_move) {
 		Vector2f movement = { (abs(dt * move_speed * curr_movement.x) < abs(dist.x)) ? dt * move_speed * curr_movement.x : dist.x,
 							(abs(dt * move_speed * curr_movement.y) < abs(dist.y)) ? dt * move_speed * curr_movement.y : dist.y }, prev_hitbox = current_hitbox;;
-		if (legal_direction((getRelativePos() + movement) / 16.f, roundf(curr_movement.x), roundf(curr_movement.y)) && !collide_with_player(dt * move_speed * curr_movement)) {
+		if (legal_direction((movement) / 16.f, roundf(curr_movement.x), roundf(curr_movement.y)) && !collide_with_player(dt * move_speed * curr_movement)) {
 			dist.x -= movement.x, dist.y -= movement.y;
 			move(movement);
 
