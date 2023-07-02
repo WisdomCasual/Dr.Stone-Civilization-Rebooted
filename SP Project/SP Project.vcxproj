@@ -151,6 +151,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="InventoryState.cpp" />
     <ClCompile Include="Items.cpp" />
+    <ClCompile Include="MiniMapState.cpp" />
     <ClCompile Include="NewMapState.cpp" />
     <ClCompile Include="NewSaveState.cpp" />
     <ClCompile Include="NotificationState.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Items.h" />
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="MapBuilderState.h" />
+    <ClInclude Include="MiniMapState.h" />
     <ClInclude Include="NewMapState.h" />
     <ClInclude Include="NewSaveState.h" />
     <ClInclude Include="NotificationState.h" />

@@ -60,6 +60,7 @@ public:
 	void initial_textures(string);
 	void initial_tile_sheets(string);
 
+	virtual void save();
 	virtual void pollevent() = 0;
 	virtual void update() = 0;
 	virtual void render() = 0;

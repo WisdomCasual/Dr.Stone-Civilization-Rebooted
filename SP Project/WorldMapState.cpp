@@ -1,6 +1,5 @@
 #include "WorldMapState.h"
 
-
 void WorldMapState::fade_in()
 {
 	if (transparency < 255) {
@@ -48,6 +47,20 @@ bool WorldMapState::fade_out()
 		return true;
 }
 
+bool WorldMapState::black_out()
+{
+	if (blackining < 255) {
+		blacking_out = true;
+		if (blackining + 500 * dt > 255)
+			blackining = 255;
+		else
+			blackining += 500 * dt;
+		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		return false;
+	}
+	return true;
+}
+
 void WorldMapState::update_pins()
 {
 	pin.setScale(scale * 3.1, scale * 3.1);
@@ -74,7 +87,7 @@ void WorldMapState::update_pins()
 				pn->second.pressed = 0;
 				if (admin) {
 					//choose map in MapBuilder
-					save_maps();
+					save();
 					states->insert({ MapBuilderID, new MapBuilderState(pn->first, pn->second.x_size, pn->second.y_size) });
 					states->at(MapBuilderID)->update();
 
@@ -85,8 +98,8 @@ void WorldMapState::update_pins()
 				}
 				else {
 					//choosed map in game///////////////////////////////////////////////////
-
-
+					change_map = true;
+					selected_map = pn->first;
 				}
 			}
 			else {
@@ -129,7 +142,7 @@ void WorldMapState::render_pins()
 
 }
 
-void WorldMapState::save_maps()
+void WorldMapState::save()
 {
 	ofstream ofs("Maps/maps.ini", ofstream::out, ofstream::trunc);
 	auto mp_end = --pins.end();
@@ -145,7 +158,8 @@ void WorldMapState::save_maps()
 	ofs.close();
 }
 
-WorldMapState::WorldMapState(bool admin, bool tint_fade)
+WorldMapState::WorldMapState(string& selected_map, bool admin, bool tint_fade)
+	:selected_map(selected_map)
 {
 	this->tint_fade = tint_fade;
 	this->admin = admin;
@@ -176,6 +190,8 @@ WorldMapState::~WorldMapState()
 
 void WorldMapState::update()
 {
+	window->setMouseCursorVisible(true);
+
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
 	if (prev_win != window->getSize()) {
@@ -190,18 +206,40 @@ void WorldMapState::update()
 		////////////////////
 
 		tint.setSize({ win_x, win_y });
+		blackscreen.setSize({ win_x, win_y });
 		worldmap.setPosition(x, y);
 		worldmap.setScale(scale, scale);
 		pin.setScale(scale * 3.1, scale * 3.1);
 		namebox.setScale(scale*1.5, scale*1.5);
 	}
 
-	fade_in();
-
 	update_pins();
 
 	if (destruct)
 		return;
+
+
+	 if (change_map) {
+		if (black_out()) {
+			change_map = false;
+			states->at(GameID)->update();
+			states->at(GameID)->update();
+			delete states->at(WorldMapID);
+			states->erase(WorldMapID);
+			return;
+		}
+	}
+	else if (back) {
+		if (fade_out()) {
+			back = false;
+			delete states->at(WorldMapID);
+			states->erase(WorldMapID);
+			return;
+		}
+	}
+	else
+		fade_in();
+
 
 	if (move && selected) {
 		pins[moving] = { (int)((mouse_pos.x - x) / scale) ,(int)((mouse_pos.y - y) / scale) , pins[moving].x_size, pins[moving].y_size, (float)2.5 * scale , (float)1.2 * scale, 40 * scale };
@@ -226,6 +264,7 @@ void WorldMapState::update()
 		 delete_map = 0;
 		 string file_name = "Maps/" + map_to_delete + ".mp";
 		 remove(file_name.c_str());
+		 remove(("Maps/" + map_to_delete + "_minimap.png").c_str());
 		 pins.erase(map_to_delete);
 	 }
 }
@@ -235,6 +274,11 @@ void WorldMapState::render()
 	window->draw(tint);
 	window->draw(worldmap);
 	render_pins();
+	text.setFillColor(Color(255, 255, 255, transparency));
+	if(!admin)
+		draw_text("Press ESC to exit", x, y + (worldmap.getLocalBounds().height / 2 + 60) * scale, scale * 70);
+	if(blacking_out)
+		window->draw(blackscreen);
 }
 
 void WorldMapState::pollevent()
@@ -247,8 +291,13 @@ void WorldMapState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(PauseST);
-				states->at(PauseID)->update();
+				if (admin) {
+					states->insert(PauseST);
+					states->at(PauseID)->update();
+				}
+				else {
+					back = true;
+				}
 				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
@@ -259,7 +308,7 @@ void WorldMapState::pollevent()
 				states->at(ConfirmationID)->update();
 			} break;
 			case Keyboard::F6:
-				save_maps(); 
+				save(); 
 				{
 					string notification_s[] = { "Saved Successfully" };
 					game.notification(notification_s, 1);

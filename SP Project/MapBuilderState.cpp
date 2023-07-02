@@ -286,7 +286,7 @@ void MapBuilderState::draw_tools()
 					changes.atBack()->tiles = new Tile[wdth * hght];
 
 					for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x && i1 < size_x; i1++, i2++)
-						for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_x; j1++, j2++) {
+						for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_y; j1++, j2++) {
 
 							changes.atBack()->tiles[changes.atBack()->size] = tiles[i2][j2]; //<--store tiles before changes	
 							changes.atBack()->size++;
@@ -460,7 +460,7 @@ void MapBuilderState::create_mini_map()
 				for (int l = 0; l < 2; l++) {
 					new_color = Color::Transparent;
 					for (auto layer : tiles[i][j].layer) {
-						if (!(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 1) && !(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 8) && !((layer.second.x >= 11 && layer.second.x <= 15) && layer.second.y == 12 && layer.second.z == 3)) {
+						if (!(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 1) && !(tile_props[layer.second.z].properties[layer.second.x][layer.second.y].props & 8) && !((layer.second.x >= 11 && layer.second.x <= 15) && layer.second.y == 12 && layer.second.z == 3) && !( layer.second.y >= 16 && layer.second.z == 3)) {
 							Vector3i layer_tile = layer.second;
 							old_color = new_color;
 							tile_color = tile_sheets_img[layer_tile.z].getPixel(layer_tile.x * 16 + 5 + k * 6, layer_tile.y * 16 + 5 + l * 6);
@@ -483,7 +483,7 @@ void MapBuilderState::create_mini_map()
 	mini_map.~Image();
 }
 
-void MapBuilderState::save_map()
+void MapBuilderState::save()
 {
 	ofstream ofs("Maps/" + map_name + ".mp", ofstream::out, ofstream::trunc);
 	if (ofs.is_open()) {
@@ -498,6 +498,8 @@ void MapBuilderState::save_map()
 		}
 		ofs.close();
 	}
+	for(int i = 1; i<=3; i++)
+		remove(("Saves/Save " + to_string(i) + "/" + map_name + ".mp").c_str());
 }
 
 void MapBuilderState::load_map()
@@ -639,7 +641,7 @@ void MapBuilderState::pollevent()
 				break;
 			case Keyboard::F6:
 				//are you sure?
-				save_map();
+				save();
 				create_mini_map();
 				{
 					string notification_s[] = { "Saved Successfully"};

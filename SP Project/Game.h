@@ -15,6 +15,8 @@
 #include"DialogueState.h"
 #include"GameState.h"
 #include"InventoryState.h"
+#include "MiniMapState.h"
+
 #include"Global.h"
 using namespace globalvar;
 
@@ -26,7 +28,6 @@ struct Game
 private:
 	//private variables:
 	RenderWindow* window;
-	Clock dtclock;
 	VideoMode* videomode;
 	map<int, State*> states;
 	map<string, Texture*> textures;
@@ -46,7 +47,7 @@ public:
 	int framelimit = 120;
 	void erase_states(int[], int);
 	void exit_prompt();
-	void notification(string[], int);
+	void notification(string[], int, float up_time = 3);
 
 	//constructors/destructors:
 	Game();

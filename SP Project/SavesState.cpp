@@ -1,4 +1,6 @@
 #include "SavesState.h"
+#include <filesystem>
+
 
 void SavesState::fade_in()
 {
@@ -50,6 +52,20 @@ bool SavesState::fade_out()
 		return true;
 }
 
+bool SavesState::black_out()
+{
+	if (blackining < 255) {
+		blacking_out = true;
+		if (blackining + 500 * dt > 255)
+			blackining = 255;
+		else
+			blackining += 500 * dt;
+		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		return false;
+	}
+	return true;
+}
+
 void SavesState::update_saves()
 {
 	del.setOrigin(del.getLocalBounds().width / 2.0, del.getLocalBounds().top + del.getLocalBounds().height / 2.0);
@@ -70,13 +86,7 @@ void SavesState::update_saves()
 						saves[i].hover = 0;
 					}
 					else {
-						states->insert({ GameID, new GameState(saves[i].character_id, saves[i].current_map, saves[i].player_pos, saves[i].name, i, saves[i].health)});
-						states->at(GameID)->update();
-
-						int exceptions[] = { GameID };
-						game.erase_states(exceptions, 1);
-						destruct = 1;
-						return;
+						selected_save = i + 1;
 					}
 				saves[i].pressed = 0;
 			}
@@ -233,7 +243,7 @@ void SavesState::update_arrow()
 void SavesState::initial_saves()
 {
 	for (int i = 0; i < 3; i++) {
-		ifstream ifs("Saves/Save" + to_string(i + 1) + ".ini");
+		ifstream ifs("Saves/Save " + to_string(i + 1) + "/Save.dat");
 		string line;
 		if (!(ifs >> line)) {
 			saves[i].empty = 1; continue;
@@ -241,23 +251,14 @@ void SavesState::initial_saves()
 		saves[i].empty = 0;
 		ifs.seekg(ios::beg);
 		if (ifs.is_open()) {
-			string name, cur_map;
-			Vector2f player_pos;
-			int progress, character_id, health;
+			string name;
+			int progress, character_id;
 			getline(ifs, name);
 			saves[i].name = name;
 			ifs >> character_id;
 			saves[i].character_id = character_id;
 			ifs >> progress;
 			saves[i].progress = progress / quests_no * 100;      //<-- calculated by number of missons
-			ifs.ignore();
-			getline(ifs, cur_map);
-			saves[i].current_map = cur_map;
-			ifs >> player_pos.x >> player_pos.y;
-			saves[i].player_pos = player_pos;
-			ifs >> health;
-			saves[i].health = health;
-			ifs >> game_time;
 		}
 		ifs.close();
 	}
@@ -270,16 +271,28 @@ void SavesState::update()
 	scale = min(win_x / 570.0, win_y / 350.0);
 	if (win_x > 1280) scale *= 0.9;
 
-
 	tint.setSize({ win_x, win_y });
+	blackscreen.setSize({ win_x, win_y });
 
 	if (del_save) {
-		string file_name = "Saves/Save" + to_string(del_save_no) + ".ini";
-		remove(file_name.c_str());
+		for (auto& path : filesystem::directory_iterator("Saves/Save " + to_string(del_save_no))) {
+			filesystem::remove_all(path);
+		}
 		saves[del_save_no-1].empty = 1;
 		del_save = 0;
 	}
 
+	
+	if (selected_save) {
+		if (black_out()) {
+			states->insert({ GameID, new GameState(selected_save - 1) });
+			states->at(GameID)->update();
+			selected_save = 0;
+			int exceptions[] = { GameID };
+			game.erase_states(exceptions, 1);
+			return;
+		}
+	}
 	if (back) {
 		if (fade_out()) {
 			back = false;
@@ -301,8 +314,6 @@ void SavesState::update()
 		fade_in();
 
 	update_saves();
-	if (destruct)
-		return;
 	update_arrow();
 
 }
@@ -313,7 +324,8 @@ void SavesState::render()
 	window->draw(tint);
 	render_saves();
 	window->draw(arrow);
-
+	if (blacking_out)
+		window->draw(blackscreen);
 }
 
 void SavesState::pollevent()

@@ -13,7 +13,7 @@ struct NewSaveState :public State
 private:
 	//variables
 	string test_str = "";
-	RectangleShape tint;
+	RectangleShape tint, blackscreen;
 	TextBox txt_box;
 	Sprite tissue, back_arrow, panel;
 	bool arrow_pressed = 0;
@@ -26,7 +26,7 @@ private:
 	bool confirmed=0;
 	Text button_text;
 	Sprite buttontex;
-	bool button_pressed = 0;
+	bool button_pressed = 0, blacking_out = 0;
 	struct button {
 		string txt;
 		int x = 0, y = 0;
@@ -43,6 +43,7 @@ private:
 	//private functions
 	void fade_in();
 	bool fade_out();
+	bool black_out();
 
 	void update_arrow();
 

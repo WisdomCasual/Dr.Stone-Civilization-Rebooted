@@ -14,16 +14,22 @@ void NotificationState::render_strings()
 void NotificationState::update_velocity()
 {
 	float pos_y = notification_BG.getPosition().y;
-	if (pos_y >= win_y - (60 * (scale * .8) + 12 * scale) || notification_delay > 3) {
-		velocity.y += speed * dt;
+	if (notification_delay && pos_y > win_y - (60 * (scale * .8) + 12 * scale)) {
+		pos_y -= velocity * dt * pos_scale;
+		if (pos_y < win_y - (60 * (scale * .8) + 12 * scale))
+			pos_y = win_y - (60 * (scale * .8) + 12 * scale);
+		notification_BG.setPosition(notification_BG.getPosition().x, pos_y);
+	}
+	else if(notification_delay > 0){
+		notification_delay -= dt;
+		if (notification_delay < 0)
+			notification_delay = 0;
 	}
 	else {
-		notification_delay += dt;
-		velocity.y = 0;
+		pos_y += velocity * dt * pos_scale;
+		notification_BG.setPosition(notification_BG.getPosition().x, pos_y);
 	}
-	notification_BG.move(velocity * dt * pos_scale);
 	
-
 	if (pos_y > win_y)
 	{
 		delete states->at(NotificationID);
@@ -42,7 +48,6 @@ NotificationState::NotificationState()
 	notification_BG.setOrigin(145,0);
 	x_pos = window->getSize().x, y_pos = window->getSize().y;
 	notification_BG.setPosition(x_pos, y_pos);
-	velocity = { 0,(float) -100};
 }
 
 NotificationState::~NotificationState()

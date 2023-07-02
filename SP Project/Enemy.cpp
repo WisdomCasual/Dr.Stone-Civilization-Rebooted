@@ -1,24 +1,6 @@
  #include "Enemy.h"
 
 
-void Enemy::player_collision_check()
-{
-	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
-
-	entity_hitbox = FloatRect(getRelativePos().x - current_hitbox.x / 2, getRelativePos().y - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
-
-	player_hitbox.left += player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
-
-	if (entity_hitbox.intersects(player_hitbox))
-		player_entity.movement.x = 0;
-
-	player_hitbox.left -= player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
-	player_hitbox.top += player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
-
-	if (entity_hitbox.intersects(player_hitbox))
-		player_entity.movement.y = 0;
-}
-
 bool Enemy::collide_with_player(Vector2f movement)
 {
 	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
@@ -577,7 +559,11 @@ void Enemy::Hitbox_align()
 
 void Enemy::update()
 {
-	//cout << curr_movement.x << " " << curr_movement.y<<endl;
+	if (game_time - despawn_timer > time_to_despawn && !persistant) {
+		despawn = 1;
+		return;
+	}
+	despawn_timer = game_time;
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
@@ -602,7 +588,6 @@ void Enemy::update()
 		}
 		delay += dt;
 	}
-	player_collision_check();
 
 	////////////////////PLayer Combat////////////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
@@ -613,6 +598,7 @@ void Enemy::update()
 			//cout << player_entity.current_move << endl;
 			damaged(original,stun,entity_sprite);
 			cooldown = 1;
+			player_entity.combat_tag = combat_status_time;
 			health -= player_entity.damage;
 		}
 	}
@@ -624,6 +610,8 @@ void Enemy::update()
 			player_entity.current_frame = 0;
 			player_entity.damaged(player_entity.og_player_color, player_entity.stun, player_entity.entity_sprite);
 			player_entity.cooldown = 0.6;
+			player_entity.combat_tag = combat_status_time;
+			player_entity.knockback(curr_movement,150);
 			player_entity.knockback(Vector2f(current_direction), 150);
 			hit_cooldown = 0.8;
 			player_entity.health -= damage;
@@ -683,9 +671,4 @@ void Enemy::update()
 		}
 	}
 	is_there();
-	if (game_time - despawn_timer > time_to_despawn && !persistant) {
-		despawn = 1;
-		return;
-	}
-	despawn_timer = game_time;
 }
