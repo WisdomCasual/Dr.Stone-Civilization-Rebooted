@@ -1,4 +1,4 @@
-#include "Enemy.h"
+ #include "Enemy.h"
 
 
 void Enemy::player_collision_check()
@@ -44,11 +44,20 @@ void Enemy::is_there()
 	}
 }
 
+void Enemy::enemy_knockback(Vector2f direction, float velocity)
+{
+	knockback_de = direction;
+	curr_movement = curr_movement * move_speed + knockback_de * velocity;
+	move_speed = 1;
+	//cout << knockback_de.x<<" "<<knockback_de.y << " " << knockback_ve << endl;
+}
+
 void Enemy::damaged(Color& original,float& delay,Sprite& Entity)
 {
 	original = Entity.getColor();
 	Entity.setColor(Color(original.r, 155, 155));
 	delay = 0.4;
+	//cout << stun << endl;
 }
 
 void Enemy::updatePos()
@@ -562,12 +571,13 @@ void Enemy::Hitbox_align()
 	}
 	/*test.setFillColor(Color::Magenta);
 	test.setSize({hit_range.width*scale,hit_range.height*scale});
-	test.setPosition((hit_range.left + map_x) * scale, (hit_range.top + map_y) * scale);
-	*/
+	test.setPosition((hit_range.left + map_x) * scale, (hit_range.top + map_y) * scale);*/
+	
 }
 
 void Enemy::update()
 {
+	//cout << curr_movement.x << " " << curr_movement.y<<endl;
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
@@ -599,40 +609,55 @@ void Enemy::update()
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.hit_range.left << '\t' << player_entity.hit_range.top<<endl;
 	if (player_entity.hit_range.intersects(Entity_Hitbox)) {
 		if (cooldown<=0) {
+			enemy_knockback(Vector2f(player_entity.current_direction), 120);
+			//cout << player_entity.current_move << endl;
 			damaged(original,stun,entity_sprite);
 			cooldown = 1;
 			health -= player_entity.damage;
 		}
 	}
-	if (health <= 0) despawn = 1;
-	if(stun<=0)entity_sprite.setColor(Color(original));
-	else if(stun>0)stun -= dt;
-	if (cooldown>0)cooldown -= dt;
+	//cout << player_entity.current_move << endl;
+	//cout << knockback_ve << endl;
 	//////////////////Enemy Combat//////////////////////
 	if (hit_range.intersects(player_entity.Entity_Hitbox) || entity_sprite.getGlobalBounds().intersects(FloatRect(player_entity.getPosition().x - player_entity.current_hitbox.x * scale / 2, player_entity.getPosition().y - player_entity.current_hitbox.y * scale / 2, player_entity.current_hitbox.x * scale, player_entity.current_hitbox.y * scale))) {
-		if (player_entity.cooldown <= 0) {
+		if (player_entity.cooldown <= 0&&hit_cooldown<=0) {
 			player_entity.current_frame = 0;
 			player_entity.damaged(player_entity.og_player_color, player_entity.stun, player_entity.entity_sprite);
 			player_entity.cooldown = 0.6;
-			player_entity.knockback(curr_movement,150);
+			player_entity.knockback(Vector2f(current_direction), 150);
 			hit_cooldown = 0.8;
 			player_entity.health -= damage;
 		}
 	}
-	//cout << player_entity.health << '\t' << health << endl;
 	if (player_entity.health <= 0) {
 		player_entity.despawn = 1;
 	}
 	hit_cooldown -= dt*(hit_cooldown>0);
+	if (health <= 0) despawn = 1;
+	if (stun <= 0) {
+		entity_sprite.setColor(Color(original));
+		//cout << stun << endl;
+		knockback_ve = 0;
+		stateMachine();
+	}
+	else if (stun > 0) {
+		will_move = 1;
+		//curr_movement = knockback_de;
+		curr_movement -= knockback_de*dt*15.f;
+		action_state = 1;
+		prev_target_tile.x = -1;
+		stun -= dt;
+	}
+	if (cooldown>0)cooldown -= dt;
 	//////////////////////////////////////////////////////
 	current_rect = entity_stats.animations[state][current_move].rect;
 
 	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin); ///////////////
 	updatePos();
-	stateMachine();
 
 	if (will_move && hit_cooldown<=0) {
+		//cout <<move_speed<<" "<<knockback_ve << endl;
 		short dir[2] = { 45, -45 };
 		bool legal_x = legal_direction({ dt * move_speed * curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)),
 			legal_y = legal_direction({ 0, dt * move_speed * curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
@@ -646,8 +671,7 @@ void Enemy::update()
 			move({ 0, dt * move_speed * curr_movement.y });
 			moved = true;
 		}
-
-		direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
+		if(stun<=0)direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 		if ((!legal_x || !legal_y) && action_state == 0) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;

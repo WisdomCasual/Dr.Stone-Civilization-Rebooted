@@ -99,8 +99,8 @@ void Player::Hitbox_align(int animation)
 	}
 	/*test.setFillColor(Color::Magenta);
 	test.setSize({hit_range.width*scale,hit_range.height*scale});
-	test.setPosition((hit_range.left + map_x) * scale, (hit_range.top + map_y) * scale);
-	*/
+	test.setPosition((hit_range.left + map_x) * scale, (hit_range.top + map_y) * scale);*/
+	
 }
 
 void Player::setObjectStats(base_stats* object_stats, base_stats** destructable_objects, short* item_drops, short* item_drops_count)
