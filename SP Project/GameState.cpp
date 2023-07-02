@@ -1041,10 +1041,11 @@ void GameState::entity_spawning()
 			}
 		}
 
-	if (valid_spawn) {
-		//cout << "ONE PUUUUUUUNCH\n";
-		enemies.add(tiger(0), {16.f * spawn_x, 16.f * spawn_y});
-		enemies.entities[enemies.curr_idx - 1]->update();
+		if (valid_spawn) {
+			//cout << "ONE PUUUUUUUNCH\n";
+			enemies.add(tiger(0), { 16.f * spawn_x, 16.f * spawn_y });
+			enemies.entities[enemies.curr_idx - 1]->update();
+		}
 	}
 }
 
