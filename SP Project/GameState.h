@@ -16,8 +16,8 @@
 #define tiger(type) type, enemy_stats[1], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
 //eneimies = 0, items = 1, passive = 2, NPC = 3
 
-#define cow(type) type, cow_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
-#define deer(type) type, deer_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
+#define cow(type) type, passive_stats[0], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
+#define sheep(type) type, passive_stats[1], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
 #define llama(type) type, llama_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
 
 #define npc_details(persistant, despawn_time, type) persistant, despawn_time, type, 0
@@ -34,7 +34,7 @@ private:
 	dialogue death_message[2] = { {"Sneku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
 
 	Shader shader;
-	entity player_stats, cow_stats, deer_stats, llama_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
+	entity player_stats, llama_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
 	Player* player_entity = nullptr;
 
 	string character_name, current_map;
