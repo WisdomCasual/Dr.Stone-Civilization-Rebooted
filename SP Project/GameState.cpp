@@ -160,6 +160,7 @@ void GameState::set_textures()
 	tool_icons[0].setTexture(*textures[2]);
 	tool_icons[1].setTexture(*textures[3]);
 	tool_icons[2].setTexture(*textures[4]);
+	tool_icons[3].setTexture(*textures[8]);
 	minimap_frame.setTexture(*textures[6]);
 	minimap_frame.setOrigin(minimap_frame.getLocalBounds().width / 2, minimap_frame.getLocalBounds().height / 2);
 
@@ -171,7 +172,7 @@ void GameState::set_textures()
 	health_indicator.setOrigin(0, health_indicator.getLocalBounds().height / 2);
 	health_indicator.setTexture(*textures[5]);
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		tool_icons[i].setOrigin(tool_icons[i].getLocalBounds().width / 2, tool_icons[i].getLocalBounds().height / 2);
 		tool_icons[i].setColor(Color(130, 130, 130));
 	}
@@ -468,7 +469,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.base_movement_speed = 130;
 	player_stats.scale_const = 0.65;
 	player_stats.base_animation_speed = 16.6;
-	player_stats.textures_count = 4;
+	player_stats.textures_count = 5;
 	player_stats.textures = new Texture*[player_stats.textures_count];
 	player_stats.base_damage = 25;
 	player_stats.max_health = 100;
@@ -479,7 +480,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	}
 
 
-	for (int i = 0; i <= 3; i++) {
+	for (int i = 0; i <= 4; i++) {
 		player_stats.animations[i] = new animation[16];
 		player_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
 		player_stats.animations[i][1] = { 9, {0, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
@@ -487,12 +488,12 @@ void GameState::load_entities(float player_relative_y_pos)
 		player_stats.animations[i][3] = { 9, {0, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
 	}
 	for (int i = 1; i <= 3; i++) {
-		player_stats.animations[2][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
-		player_stats.animations[2][1 + i * 4] = { 6, {0, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
-		player_stats.animations[2][2 + i * 4] = { 6, {0, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
-		player_stats.animations[2][3 + i * 4] = { 6, {0, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
+		player_stats.animations[3][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
+		player_stats.animations[3][1 + i * 4] = { 6, {0, 1365 + (3 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //right
+		player_stats.animations[3][2 + i * 4] = { 6, {0, 1365 + (1 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //left
+		player_stats.animations[3][3 + i * 4] = { 6, {0, 1365 + (2 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //front
 	}
-	for (int i = 0; i <= 1; i++) {
+	for (int i = 1; i <= 2; i++) {
 		player_stats.animations[i][4] = { 5, {0, 1365 + 0 * 128, 128, 128}, {30,14}, {64,70} }; //back
 		player_stats.animations[i][5] = { 5, {0, 1365 + 3 * 128, 128, 128}, {30,14}, {64,70} }; //right
 		player_stats.animations[i][6] = { 5, {0, 1365 + 1 * 128, 128, 128}, {30,14}, {64,70} }; //left
@@ -628,7 +629,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	dialogue test[3] = { {"NPC", "hi there"}, {"NPC", "hello there"}, {"NPC", "welcome, traveller!"} } ;
 	NPCs.add(default_npc, { 968, 712}, npc_details(1, 10, 0), 3, test);
 
-	player_entity->change_state(3);
+	player_entity->change_state(4);
 
 }
 
@@ -1082,6 +1083,21 @@ void GameState::DayLightCycle()
 			count++;
 		}
 	}
+	if (player_entity->state == 0) {
+		
+		if (torch_intensity > 0.7)
+			torch_delta -= 0.2;
+		else if (torch_intensity < 0.6)
+			torch_delta = 0.2;
+
+		torch_intensity += torch_delta * dt;
+
+		shader.setUniform("lights[" + to_string(count) + "].position", (player_entity->getRelativePos() + Vector2f(map_x, map_y)) * scale);
+		shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(0.95, 0.92, 0.7));
+		shader.setUniform("lights[" + to_string(count) + "].intensity", torch_intensity);
+		count++;
+	}
+
 	light_level += day_increment * dt;
 	if (light_level < 0.1) {
 		light_level = 0.1;
@@ -1188,11 +1204,11 @@ void GameState::update()
 		health_indicator.setPosition(20 * scale , 20 * scale);
 		health_indicator.setScale(scale * 0.15, scale * 0.15);
 		blackscreen.setSize({ win_x, win_y });
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			tool_icons[i].setPosition(win_x / 2 + 3*scale, win_y - 20 * scale);
 			tool_icons[i].setScale(scale * 0.1, scale * 0.1);
 		}
-		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
 		minimap_frame.setPosition(win_x - 52 * scale,52 * scale);
 		minimap_frame.setScale(scale * 0.96, scale * 0.96);
 		minimap.setPosition(win_x - 52 * scale, 52 * scale);
@@ -1376,7 +1392,7 @@ void GameState::render()
 	render_entities();
 	if (states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID || states->rbegin()->first == DialogueID) {
 		window->draw(hotbar);
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 4; i++)
 			window->draw(tool_icons[i]);
 		window->draw(hotbar_selection);
 		window->draw(health_indicator);
@@ -1414,24 +1430,29 @@ void GameState::pollevent()
 				game.update_window();
 				break;
 			case Keyboard::Num1:
-				player_entity->change_state(3);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
-				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
+				player_entity->change_state(4);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num2:
-				player_entity->change_state(2);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
-				tool_icons[0].setColor(Color(255, 255, 255)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
+				player_entity->change_state(3);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(255, 255, 255)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num3:
-				player_entity->change_state(1);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
-				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(255, 255, 255)), tool_icons[2].setColor(Color(130, 130, 130));
+				player_entity->change_state(2);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(255, 255, 255)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num4:
+				player_entity->change_state(1);
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(255, 255, 255)), tool_icons[3].setColor(Color(130, 130, 130));
+				break;
+			case Keyboard::Num5:
 				player_entity->change_state(0);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
-				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(255, 255, 255));
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(255, 255, 255));
 				break;
 			case Keyboard::E:
 				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count)});
@@ -1475,13 +1496,13 @@ void GameState::pollevent()
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved) {
 				int new_state = player_entity->state + event.mouseWheel.delta;
-				if (new_state > 3) new_state = 3;
+				if (new_state > 4) new_state = 4;
 				else if (new_state < 0) new_state = 0;
 				player_entity->change_state(new_state);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
-				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
-				if(new_state!=3)
-					tool_icons[(2 - player_entity->state)].setColor(Color(255, 255, 255));
+				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
+				if(new_state!=4)
+					tool_icons[(3 - player_entity->state)].setColor(Color(255, 255, 255));
 			}
 		}
 	}
