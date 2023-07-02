@@ -140,7 +140,7 @@ private:
 	Sprite tile;
 	tex_tile picked_tile = { 0,0 };
 	int size_x, size_y;  //<-- map size
-	int x = 0, y = 0;    //<-- location of upper left corner of the map
+	float x = 0, y = 0;    //<-- location of upper left corner of the map
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
 	int x_mid = 0, y_mid = 0;       //<-- index of the tile in the center of the screen
 	int cam_speed = 150;
