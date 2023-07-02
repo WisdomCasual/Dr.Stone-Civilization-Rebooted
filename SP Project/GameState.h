@@ -284,6 +284,7 @@ private:
 		Vector2f position = { 0,0 };
 		Vector3f color = { 1,1,1 };
 		float intensity = 0.5;
+		bool day_light = false;
 	};
 
 	multimap<float, pointr> dynamic_rendering;
