@@ -605,7 +605,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	NPC_stats.textures = new Texture * [passive_stats[1].textures_count];
 	NPC_stats.textures[0] = new Texture;
 
-	NPC_stats.textures[0]->loadFromFile("textures/game/entities/deer/deer.png");
+	NPC_stats.textures[0]->loadFromFile("textures/game/entities/sheep/sheep.png");
 
 	NPC_stats.animations[0] = new animation[5];
 	NPC_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,48} }; //back
