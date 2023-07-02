@@ -647,20 +647,27 @@ void Enemy::update()
 	if (will_move && hit_cooldown<=0) {
 		//cout <<move_speed<<" "<<knockback_ve << endl;
 		short dir[2] = { 45, -45 };
-		bool legal_x = legal_direction({ dt * move_speed * curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)),
+		bool legal_x, legal_y;
+		if (stun > 0) {
+			legal_x = legal_tile({ dt * move_speed * curr_movement.x, 0 }),
+			legal_y = legal_tile({ 0, dt * move_speed * curr_movement.y });
+		}
+		else {
+			legal_x = legal_direction({ dt * move_speed * curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)),
 			legal_y = legal_direction({ 0, dt * move_speed * curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
+		}
 		bool moved = false;
 
-		if (legal_x && !collide_with_player({ curr_movement.x, 0 }) || action_state != 0){
+		if (legal_x && !collide_with_player({ curr_movement.x, 0 }) || action_state && stun <= 0){
 			move({ dt * move_speed * curr_movement.x, 0 });
 			moved = true;
 		}
-		if (legal_y && !collide_with_player({ 0, curr_movement.y }) || action_state != 0){
+		if (legal_y && !collide_with_player({ 0, curr_movement.y }) || action_state && stun <= 0){
 			move({ 0, dt * move_speed * curr_movement.y });
 			moved = true;
 		}
 		if(stun<=0)direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
-		if ((!legal_x || !legal_y) && action_state == 0) {
+		if ((!legal_x || !legal_y) && !action_state && stun <= 0) {
 			short move_offset = dir[rand() % 2];
 			theta += move_offset;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
