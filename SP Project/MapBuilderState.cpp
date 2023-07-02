@@ -500,6 +500,7 @@ void MapBuilderState::save()
 	}
 	for(int i = 1; i<=3; i++)
 		remove(("Saves/Save " + to_string(i) + "/" + map_name + ".mp").c_str());
+	create_mini_map();
 }
 
 void MapBuilderState::load_map()
