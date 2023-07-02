@@ -30,7 +30,7 @@ struct GameState : public State
 private:
 	//variables:
 
-	short no_update=0;
+	bool no_update=0;
 	dialogue death_message[2] = { {"Sneku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
 
 	Shader shader;
@@ -38,7 +38,7 @@ private:
 	Player* player_entity = nullptr;
 
 	string character_name, current_map;
-	int character_id, save_num;
+	int character_id, save_num, current_quest;
 
 	/////enemy spawning variables/////
 	float spawn_cd = 0;
@@ -48,12 +48,9 @@ private:
 				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
 
 
-
-
-
 	base_stats object_stats[30], * destructable_objects = nullptr;
 
-	Vector2f clicked_on = { -1, -1 };
+	Vector2f clicked_on = { -1, -1 }, waypoint_position = { -1, -1 }, quest_location = { -1, -1 }, respawn_point = {800, 800};
 
 	render_tile** static_map;
 
@@ -167,8 +164,8 @@ private:
 
 		int size = 1, curr_idx = 0, layer = 0;
 		float* destruction_time = nullptr,* time = nullptr;
-		Vector2i core_location;
-		entity_object* at; //dynamic array of objects
+		Vector2i core_location = { -1, -1 };
+		entity_object* at = nullptr; //dynamic array of objects
 
 		dynamic_objects() {
 			at = new entity_object[1];
@@ -208,7 +205,7 @@ private:
 
 	struct dynamic_objects_array {
 		int size = 1, curr_idx = 0;
-		dynamic_objects* at;  //dynamic 2D array of objects
+		dynamic_objects* at = nullptr;  //dynamic 2D array of objects
 
 		dynamic_objects_array() {
 			at = new dynamic_objects[1];
@@ -235,6 +232,9 @@ private:
 				at[i].size = old_dynamic_array[i].size;
 				at[i].layer = old_dynamic_array[i].layer;
 				at[i].curr_idx = old_dynamic_array[i].curr_idx;
+				at[i].core_location = old_dynamic_array[i].core_location;
+				at[i].destruction_time = old_dynamic_array[i].destruction_time;
+				at[i].time = old_dynamic_array[i].time;
 				int sub_copy_size = min(at[i].curr_idx, at[i].size);
 				for (int j = 0; j < sub_copy_size; j++) {
 					at[i].at[j] = old_dynamic_array[i].at[j];
@@ -280,34 +280,51 @@ private:
 		short tile = -1; Entity* entity = nullptr;
 	};
 
+	struct light {
+		Vector2f position = { 0,0 };
+		Vector3f color = { 1,1,1 };
+		float intensity = 0.5;
+	};
+
 	multimap<float, pointr> dynamic_rendering;
-
-
+	multimap<float, light> light_sources;
+	float light_level = 0.1, constant_light_level = 0.3, day_increment = 0.01;
+	bool DoDayLightCycle = 1, DoEntitySpawning = 1, EnableMiniMap = 1;
 
 	int size_x = 0, size_y = 0;  //<-- map size
 	int x = 0, y = 0;    //<-- location of upper left corner of the map
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
+	short destructable_count = 0;
 	Vector2i destroy_object_location = { -1, -1 };
 	float map_x = 0, map_y = 0;
-	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0;
+	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, heal_delay = 0, zero = 0;
+	RectangleShape blackscreen;
 	Vector2u prev_win = { 0, 0 };
 	Texture minimap_tex;
 	Image base_minimap, minimap_img;
 	short dynamic_update_minimap = 0;
 	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[3], minimap, minimap_frame;
-	CircleShape player_pointer;
+	CircleShape player_pointer, waypoint_pointer, quest_pointer;
+	string travel_map;
 	short item_drops[5], item_drops_count = -1;
 	in_order inventory_order;
 	unsigned short inventory_count[50]{};
 
 	//private functions:
+	void black_in();
+	bool black_out();
+	void load_game();
+	void set_textures();
 	void search_front(int, int, int, Vector3i***, bool***, int);
 	void load_map(string);
+	void load_initial_map(string);
+	void load_saved_map(string);
 	void load_entities(float);
 	void deload_map();
 	void initial_stats();
 	void initial_game(string, Vector2f);
 	void center_cam(Vector2f);
+	void maps_travel();
 	void destroyANDrestore_objects(Vector2i, bool);
 	void bigbang(Vector2i, bool destroy = 0);
 	void render_static_map();
@@ -318,15 +335,17 @@ private:
 	void entity_spawning();
 	bool entity_in_range(Vector2f, short offset = 0);
 	void block_interactions_list(Vector2i);
+	void DayLightCycle();
 
 
 public:
 	//constructors/destructors
-	GameState(int, string, Vector2f, string, int, int, double curr_game_time = 0);
+	GameState(int);
 	~GameState();
 	
 	//public functions:
 	void update_minimap_tile(Vector2i, Vector3i);
+	void save();
 	void update();
 	void render();
 	void pollevent();

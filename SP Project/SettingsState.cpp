@@ -86,7 +86,7 @@ void SettingsState::update_arrow()
 				arrow_pressed = 0;
 				// set the new resolution and framelimit
 				game.windowbounds = resolutions[resolution];
-				game.framelimit = framelimits[framelimit];
+				game.framelimit = framelimit_values[framelimit];
 				//deletes the current window and draws a new window 
 
 				if(framelimit != prev_framelimit || resolution != prev_resolution)
@@ -306,7 +306,7 @@ void SettingsState::settings_intializer()
 
 	//initialize framelimit data
 	for (int i = 0; i < framelimnum; i++) {
-		if (game.framelimit == framelimits[i]) {
+		if (game.framelimit == framelimit_values[i]) {
 			framelimit = prev_framelimit = i;
 			break;
 		}
@@ -319,7 +319,7 @@ void SettingsState::settings_intializer()
 		framelimits[framelimnum] = game.framelimit, framelimits_text[framelimnum] = to_string(game.framelimit);
 
 	for (int i = 0; i < framelimnum; i++)
-		framelimits_text[i] = to_string(framelimits[i]);
+		framelimits_text[i] = framelimits[i];
 
 
 	//intiliazie slider positions

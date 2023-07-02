@@ -19,6 +19,7 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 		current_hitbox = { 16, 16 };
 		despawn_timer = game_time;
 		this->item_ID = item_id;
+		health = 1;
 	}
 	else {
 		//cout << "here2\n";

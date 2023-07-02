@@ -199,6 +199,9 @@ public:
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
 
+	float combat_tag = 0.f;
+	float combat_status_time = 5.0f;
+
 	//for item drops
 	int item_ID = 0;
 
@@ -219,6 +222,7 @@ public:
 	//RectangleShape test;
 	float Lag = 0;
 	float knockback_v=0,hit_cooldown=0.8;
+	Vector2f knockback_direction = { -1.f,-1.f };
 	/////////////////////////////////////////////////
 	//Public functions
 	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, Vector2i&, Entity* player = nullptr, bool persistant = 0, double time_to_despawn = 10.0, int item_id = 0);

@@ -95,13 +95,13 @@ void Game::exit_prompt()
 	states.at(ConfirmationID)->update();
 }
 
-void Game::notification(string strings_arr[], int lines)
+void Game::notification(string strings_arr[], int lines, float up_time)
 {
 	for (int i = 0; i < lines; i++) {
 		notification_strings[i] = strings_arr[i];
 	}
-	notification_lines = lines+3;
-	notification_delay = 0;
+	notification_lines = lines + 3;
+	notification_delay = up_time;
 	if (states.find(NotificationID) == states.end())
 		states.insert(NotificationST);
 	states.at(NotificationID)->update();

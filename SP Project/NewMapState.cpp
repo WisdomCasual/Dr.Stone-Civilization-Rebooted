@@ -352,6 +352,7 @@ void NewMapState::render()
 		render_slider(i);
 
 	txt_box.drawTextBox(window);
+	text.setFillColor(Color(0, 0, 0, transparency));
 	draw_text("Create a new map", x, y - 35 * scale, 7.5 * scale);
 }
 

@@ -9,9 +9,8 @@ private:
 	//variables:
 	float x_pos = 0, y_pos = 0,text_x=0,text_y=0;
 	float win_x = 0, win_y = 0, scale = 1, pos_scale = 1;
+	float velocity = 200;
 	Vector2u prev_win = { 0,0 };
-	Vector2f velocity;
-	float speed = 80;
 	Sprite notification_BG;
 	//private functions;
 	void render_strings();
