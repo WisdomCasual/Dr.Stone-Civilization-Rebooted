@@ -18,10 +18,16 @@ private:
 		bool empty = 1, hover = 0, del_hover = 0, pressed = 0, del_pressed = 0, del = 0;
 	};
 
+	struct quest_name {
+		string first_line = "", second_line = "";
+	};
+
 	Text del;
     float scale = 1, transparency = 0, darkness = 0;
 	save saves[3] = { {-130,0,1}, {0,0,2}, {130,0,3} };
 	Vector2f clicked_on = { -1, -1 };
+
+	quest_name quest_names[10] = { {"3700 years", "later"}};   // <--- add quest names here
 
 	Sprite save_bg, savesBG, charactertex, arrow;
 	
