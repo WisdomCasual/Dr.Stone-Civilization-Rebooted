@@ -565,13 +565,13 @@ void GameState::load_entities(float player_relative_y_pos)
 		player_stats.textures[i]->loadFromFile("textures/game/entities/character " + to_string(character_id) + "/" + to_string(i) + ".png");
 	}
 
-
+	//Walking
 	for (int i = 0; i <= 4; i++) {
 		player_stats.animations[i] = new animation[16];
-		player_stats.animations[i][0] = { 9, {0, 8 * 65, 64, 65}, {30,14}, {32,48} }; //back
-		player_stats.animations[i][1] = { 9, {0, 11 * 65, 64, 65}, {30,14}, {32,48} }; //right
-		player_stats.animations[i][2] = { 9, {0, 9 * 65, 64, 65}, {30,14}, {32,48} }; //left
-		player_stats.animations[i][3] = { 9, {0, 10 * 65, 64, 65}, {30,14}, {32,48} }; //front
+		player_stats.animations[i][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
+		player_stats.animations[i][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
+		player_stats.animations[i][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
+		player_stats.animations[i][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
 	}
 	for (int i = 1; i <= 3; i++) {
 		player_stats.animations[3][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
@@ -596,7 +596,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	enemy_stats[0].textures = new Texture * [enemy_stats[0].textures_count];
 	enemy_stats[0].textures[0] = new Texture;
 
-	enemy_stats[0].textures[0]->loadFromFile("textures/game/entities/lion/lion.png");
+	enemy_stats[0].textures[0]->loadFromFile("textures/game/entities/enemies/lion.png");
 
 	enemy_stats[0].states_no = 1;
 	enemy_stats[0].animations[0] = new animation[4];
@@ -617,7 +617,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	enemy_stats[1].textures[0] = new Texture;
 
 
-	enemy_stats[1].textures[0]->loadFromFile("textures/game/entities/tiger/tiger.png");
+	enemy_stats[1].textures[0]->loadFromFile("textures/game/entities/enemies/tiger.png");
 
 	enemy_stats[1].animations[0] = new animation[4];
 	enemy_stats[1].animations[0][0] = { 4, {0, 149, 48, 46}, {23,46}, {24,23} }; //back
@@ -636,7 +636,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[0].textures[0] = new Texture;
 
 
-	passive_stats[0].textures[0]->loadFromFile("textures/game/entities/cow/cow.png");
+	passive_stats[0].textures[0]->loadFromFile("textures/game/entities/passive/cow.png");
 
 	passive_stats[0].animations[0] = new animation[4];
 	passive_stats[0].animations[0][0] = { 4, {0,164,48, 56}, {29,51}, {24,27} }; //back
@@ -653,7 +653,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[1].textures = new Texture * [passive_stats[1].textures_count];
 	passive_stats[1].textures[0] = new Texture;
 
-	passive_stats[1].textures[0]->loadFromFile("textures/game/entities/sheep/sheep.png");
+	passive_stats[1].textures[0]->loadFromFile("textures/game/entities/passive/sheep.png");
 
 	passive_stats[1].animations[0] = new animation[5];
 	passive_stats[1].animations[0][0] = { 4, {0,154,48,46}, {24,42}, {29,22} }; //back
@@ -670,7 +670,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[2].textures = new Texture * [passive_stats[2].textures_count];
 	passive_stats[2].textures[0] = new Texture;
 
-	passive_stats[2].textures[0]->loadFromFile("textures/game/entities/llama/llama.png");
+	passive_stats[2].textures[0]->loadFromFile("textures/game/entities/passive/llama.png");
 
 	passive_stats[2].animations[0] = new animation[5];
 	passive_stats[2].animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {64,64} }; //back
@@ -679,7 +679,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[2].animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
 	NPC_stats.animations = new animation * [1];
-	NPC_stats.scale_const = 0.85;
+	NPC_stats.scale_const = 0.65;
 	NPC_stats.base_movement_speed = 80;
 	NPC_stats.states_no = 1;
 	NPC_stats.base_animation_speed = 12;
@@ -687,13 +687,13 @@ void GameState::load_entities(float player_relative_y_pos)
 	NPC_stats.textures = new Texture * [passive_stats[1].textures_count];
 	NPC_stats.textures[0] = new Texture;
 
-	NPC_stats.textures[0]->loadFromFile("textures/game/entities/sheep/sheep.png");
+	NPC_stats.textures[0]->loadFromFile("textures/game/entities/NPCs/senku.png");
 
-	NPC_stats.animations[0] = new animation[5];
-	NPC_stats.animations[0][0] = { 4, {0,154,48,46}, {24,42}, {29,22} }; //back
-	NPC_stats.animations[0][1] = { 4, {1,112,48,41}, {38,20}, {29,29} }; //right
-	NPC_stats.animations[0][2] = { 4, {0,60,48,45}, {40,18}, {27,33} }; //left
-	NPC_stats.animations[0][3] = { 4, {0,0,48,55}, {24,40}, {29,33} }; //front
+	NPC_stats.animations[0] = new animation[4];
+	NPC_stats.animations[0][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
+	NPC_stats.animations[0][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
+	NPC_stats.animations[0][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
+	NPC_stats.animations[0][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
 
 	item_stats.textures_count = 1;
 	item_stats.textures = new Texture * [item_stats.textures_count];
