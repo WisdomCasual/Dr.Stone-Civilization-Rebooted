@@ -10,7 +10,7 @@ private:
 	bool will_move = 0, in_dialogue = 0;
 	float motion_delay = 4, move_speed = 100, switch_delay = 0, motion_cd = 0;
 	dialogue* npc_dialogues = nullptr, single_dialogue[1] = {}, *curr_dialogue;
-	short npc_type = 0, dialogues_num, curr_dialogue_num = 0, prev_tile_x = -1, prev_tile_y = -1;
+	short dialogues_num, curr_dialogue_num = 0, prev_tile_x = -1, prev_tile_y = -1;
 
 	//private functions
 	void player_collision_check();

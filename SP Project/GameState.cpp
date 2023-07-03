@@ -100,10 +100,11 @@ void GameState::save()
 		map_ofs << items.curr_idx << '\n';
 
 		for (int i = 0; i < items.curr_idx; i++) {
-			map_ofs << items.entities[i]->item_ID << ' ';
+			map_ofs << items.entities[i]->id << ' ';
 			map_ofs << items.entities[i]->pos.x << ' ' << items.entities[i]->pos.y << ' ';
 			map_ofs << items.entities[i]->despawn_timer << ' ';
 			map_ofs << items.entities[i]->health << ' ';
+			map_ofs << items.entities[i]->persistant << ' ';
 		}
 		map_ofs << '\n';
 
@@ -117,6 +118,46 @@ void GameState::save()
 		map_ofs << '\n';
 
 
+
+		map_ofs << enemies.curr_idx << '\n';
+
+		for (int i = 0; i < enemies.curr_idx; i++) {
+			map_ofs << enemies.entities[i]->id << ' ';
+			map_ofs << enemies.entities[i]->pos.x << ' ' << enemies.entities[i]->pos.y << ' ';
+			map_ofs << enemies.entities[i]->aStarID << ' ';
+			map_ofs << enemies.entities[i]->despawn_timer << ' ';
+			map_ofs << enemies.entities[i]->health << ' ';
+			map_ofs << enemies.entities[i]->persistant << ' ';
+		}
+		map_ofs << '\n';
+
+
+
+		map_ofs << passive.curr_idx << '\n';
+
+		for (int i = 0; i < passive.curr_idx; i++) {
+			map_ofs << passive.entities[i]->id << ' ';
+			map_ofs << passive.entities[i]->pos.x << ' ' << passive.entities[i]->pos.y << ' ';
+			map_ofs << passive.entities[i]->despawn_timer << ' ';
+			map_ofs << passive.entities[i]->health << ' ';
+			map_ofs << passive.entities[i]->persistant << ' ';
+		}
+		map_ofs << '\n';
+
+
+
+
+		map_ofs << NPCs.curr_idx << '\n';
+
+		for (int i = 0; i < NPCs.curr_idx; i++) {
+			map_ofs << NPCs.entities[i]->id << ' ';
+			map_ofs << NPCs.entities[i]->pos.x << ' ' << NPCs.entities[i]->pos.y << ' ';
+			map_ofs << NPCs.entities[i]->despawn_timer << ' ';
+			map_ofs << NPCs.entities[i]->health << ' ';
+			map_ofs << NPCs.entities[i]->persistant << ' ';
+			map_ofs << NPCs.entities[i]->npc_type << ' ';
+		}
+		map_ofs << '\n';
 	}
 	map_ofs.close();
 }
@@ -314,6 +355,8 @@ void GameState::load_initial_map(string map_name)
 		if (size_x)
 			delete[] temp_front[i];
 	}
+
+	initial_entities();
 }
 
 void GameState::load_saved_map(string map_name)
@@ -402,17 +445,14 @@ void GameState::load_saved_map(string map_name)
 		ifs >> count;
 		int id;
 		Vector2f pos;
-		float despawn_timer;
 		for (int i = 0; i < count; i++) {
-			int stack_count;
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
-			ifs >> despawn_timer;
-			ifs >> stack_count;
-			items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, pos, 0, 300.0, id);
-			items.entities[items.curr_idx - 1]->despawn_timer = despawn_timer;
+			items.add(item_spawn(id), pos, 0, 300.0);
+			ifs >> items.entities[items.curr_idx - 1]->despawn_timer;
 			items.entities[items.curr_idx - 1]->interact = 1;
-			items.entities[items.curr_idx - 1]->health = stack_count;
+			ifs >> items.entities[items.curr_idx - 1]->health;
+			ifs >> items.entities[items.curr_idx - 1]->persistant;
 		}
 
 
@@ -426,6 +466,48 @@ void GameState::load_saved_map(string map_name)
 			light_sources.insert({ position.y, light(position, color, inten, day_light) });
 		}
 
+
+
+		ifs >> count;
+
+		for (int i = 0; i < count; i++) {
+			ifs >> id;
+			//cout << id << '\n';
+			ifs >> pos.x >> pos.y;
+			enemies.add(enemy_spawn(id), pos);
+			ifs >> enemies.entities[i]->aStarID ;
+			ifs >> enemies.entities[i]->despawn_timer ;
+			ifs >> enemies.entities[i]->health ;
+			ifs >> enemies.entities[i]->persistant ;
+		}
+
+
+
+		ifs >> count;
+
+		for (int i = 0; i < count; i++) {
+			ifs >> id;
+			ifs >> pos.x >> pos.y;
+			passive.add(enemy_spawn(id), pos);
+			ifs >> passive.entities[i]->despawn_timer ;
+			ifs >> passive.entities[i]->health ;
+			ifs >> passive.entities[i]->persistant ;
+		}
+
+
+
+
+		ifs >> count;
+
+		for (int i = 0; i < count; i++) {
+			ifs >> id;
+			ifs >> pos.x >> pos.y;
+			NPCs.add(default_npc(id), pos);
+			ifs >> NPCs.entities[i]->despawn_timer ;
+			ifs >> NPCs.entities[i]->health ;
+			ifs >> NPCs.entities[i]->persistant ;
+			ifs >> NPCs.entities[i]->npc_type ;
+		}
 	}
 	ifs.close();
 
@@ -543,41 +625,42 @@ void GameState::load_entities(float player_relative_y_pos)
 	enemy_stats[1].animations[0][2] = { 4, {0, 60, 48, 44}, {45,16}, {21,32} }; //left
 	enemy_stats[1].animations[0][3] = { 4, {0, 0, 48 , 54}, {21,54}, {24,27} };//front
 
-	cow_stats.animations = new animation * [1];
-	cow_stats.scale_const = 0.6;
-	cow_stats.base_movement_speed = 80;
-	cow_stats.states_no = 1;
-	cow_stats.base_animation_speed = 16.6;
-	cow_stats.textures_count = 1;
-	cow_stats.textures = new Texture * [cow_stats.textures_count];
-	cow_stats.textures[0] = new Texture;
+	//Cow
+	passive_stats[0].animations = new animation * [1];
+	passive_stats[0].scale_const = 0.6;
+	passive_stats[0].base_movement_speed = 80;
+	passive_stats[0].states_no = 1;
+	passive_stats[0].base_animation_speed = 16.6;
+	passive_stats[0].textures_count = 1;
+	passive_stats[0].textures = new Texture * [passive_stats[0].textures_count];
+	passive_stats[0].textures[0] = new Texture;
 
 
-	cow_stats.textures[0]->loadFromFile("textures/game/entities/cow/cow.png");
+	passive_stats[0].textures[0]->loadFromFile("textures/game/entities/cow/cow.png");
 
-	cow_stats.animations[0] = new animation[4];
-	cow_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {28,72}, {64,64} }; //back
-	cow_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {88,16}, {64,64} }; //right
-	cow_stats.animations[0][2] = { 4, {0, 1 * 128, 128, 128}, {88,16}, {64,64} }; //left
-	cow_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {28,57}, {64,64} }; //front
+	passive_stats[0].animations[0] = new animation[4];
+	passive_stats[0].animations[0][0] = { 4, {0,164,48, 56}, {29,51}, {24,27} }; //back
+	passive_stats[0].animations[0][1] = { 4, {0,120,48,44}, {48,22}, {24,30} }; //right
+	passive_stats[0].animations[0][2] = { 4, {0,65,48, 50}, {48,22}, {24,37} }; //left
+	passive_stats[0].animations[0][3] = { 4, {0,0,48,65}, {30,52}, {24,37} }; //front
+	//Sheep
+	passive_stats[1].animations = new animation * [1];
+	passive_stats[1].scale_const = 0.85;
+	passive_stats[1].base_movement_speed = 80;
+	passive_stats[1].states_no = 1;
+	passive_stats[1].base_animation_speed = 12;
+	passive_stats[1].textures_count = 1;
+	passive_stats[1].textures = new Texture * [passive_stats[1].textures_count];
+	passive_stats[1].textures[0] = new Texture;
 
-	deer_stats.animations = new animation * [1];
-	deer_stats.scale_const = 0.7;
-	deer_stats.base_movement_speed = 80;
-	deer_stats.states_no = 1;
-	deer_stats.base_animation_speed = 16.6;
-	deer_stats.textures_count = 1;
-	deer_stats.textures = new Texture * [deer_stats.textures_count];
-	deer_stats.textures[0] = new Texture;
+	passive_stats[1].textures[0]->loadFromFile("textures/game/entities/sheep/sheep.png");
 
-	deer_stats.textures[0]->loadFromFile("textures/game/entities/deer/deer.png");
-
-	deer_stats.animations[0] = new animation[5];
-	deer_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,48} }; //back
-	deer_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,84} }; //right
-	deer_stats.animations[0][2] = { 4, {0, 1 * 96,64, 96}, {63,14}, {32,84} }; //left
-	deer_stats.animations[0][3] = { 4, {0, 3 * 96, 64, 96}, {22,75}, {32,59} }; //front
-
+	passive_stats[1].animations[0] = new animation[5];
+	passive_stats[1].animations[0][0] = { 4, {0,154,48,46}, {24,42}, {29,22} }; //back
+	passive_stats[1].animations[0][1] = { 4, {1,112,48,41}, {38,20}, {29,29} }; //right
+	passive_stats[1].animations[0][2] = { 4, {0,60,48,45}, {40,18}, {27,33} }; //left
+	passive_stats[1].animations[0][3] = { 4, {0,0,48,55}, {24,40}, {29,33} }; //front
+	//Lama
 	llama_stats.animations = new animation * [1];
 	llama_stats.scale_const = 0.7;
 	llama_stats.base_movement_speed = 80;
@@ -596,21 +679,21 @@ void GameState::load_entities(float player_relative_y_pos)
 	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
 	NPC_stats.animations = new animation * [1];
-	NPC_stats.scale_const = 0.7;
+	NPC_stats.scale_const = 0.85;
 	NPC_stats.base_movement_speed = 80;
 	NPC_stats.states_no = 1;
-	NPC_stats.base_animation_speed = 16.6;
+	NPC_stats.base_animation_speed = 12;
 	NPC_stats.textures_count = 1;
-	NPC_stats.textures = new Texture * [deer_stats.textures_count];
+	NPC_stats.textures = new Texture * [passive_stats[1].textures_count];
 	NPC_stats.textures[0] = new Texture;
 
-	NPC_stats.textures[0]->loadFromFile("textures/game/entities/deer/deer.png");
+	NPC_stats.textures[0]->loadFromFile("textures/game/entities/sheep/sheep.png");
 
 	NPC_stats.animations[0] = new animation[5];
-	NPC_stats.animations[0][0] = { 4, {0, 0 * 96, 64, 96}, {22,78}, {32,48} }; //back
-	NPC_stats.animations[0][1] = { 4, {0, 2 * 96, 64, 96}, {63,14}, {32,84} }; //right
-	NPC_stats.animations[0][2] = { 4, {0, 1 * 96,64, 96}, {63,14}, {32,84} }; //left
-	NPC_stats.animations[0][3] = { 4, {0, 3 * 96, 64, 96}, {22,75}, {32,59} }; //front
+	NPC_stats.animations[0][0] = { 4, {0,154,48,46}, {24,42}, {29,22} }; //back
+	NPC_stats.animations[0][1] = { 4, {1,112,48,41}, {38,20}, {29,29} }; //right
+	NPC_stats.animations[0][2] = { 4, {0,60,48,45}, {40,18}, {27,33} }; //left
+	NPC_stats.animations[0][3] = { 4, {0,0,48,55}, {24,40}, {29,33} }; //front
 
 	item_stats.textures_count = 1;
 	item_stats.textures = new Texture * [item_stats.textures_count];
@@ -625,13 +708,7 @@ void GameState::load_entities(float player_relative_y_pos)
 		player_entity->set_movement_speed(269);
 		player_stats.max_health = SHRT_MAX / 2;
 	}
-	enemies.add(tiger(0), {750, 750}, 1);
-	enemies.add(lion(0), {900, 900}, 1);
-	passive.add(cow(2), {825, 825}, 1);
-	passive.add(llama(2), {875, 875}, 1);
-	passive.add(deer(2), {725, 725}, 1);
-	dialogue test[3] = { {"NPC", "hi there"}, {"NPC", "hello there"}, {"NPC", "welcome, traveller!"} } ;
-	NPCs.add(default_npc, { 968, 712}, npc_details(1, 10, 0), 3, test);
+
 
 	player_entity->change_state(4);
 
@@ -664,6 +741,9 @@ void GameState::deload_map()
 
 	while (passive.curr_idx)
 		passive.rem_ove(passive.curr_idx - 1);
+
+	while (NPCs.curr_idx)
+		NPCs.rem_ove(NPCs.curr_idx - 1);
 
 	destructable_count = 0;
 	delete[] destructable_objects;
@@ -1033,7 +1113,7 @@ void GameState::entity_spawning()
 			spawn_x = spawn_total, spawn_y = 0;
 		}
 
-		spawn_x += x_offset - spawn_dist, spawn_y += y_offset - spawn_dist;
+		spawn_x += x_offset - spawn_dist/2.f, spawn_y += y_offset - spawn_dist/2.f;
 
 		bool valid_spawn = 1;
 
@@ -1047,9 +1127,17 @@ void GameState::entity_spawning()
 		}
 
 		if (valid_spawn) {
-			//cout << "ONE PUUUUUUUNCH\n";
-			enemies.add(tiger(0), { 16.f * spawn_x, 16.f * spawn_y });
-			enemies.entities[enemies.curr_idx - 1]->update();
+			if (light_level <= 0.4) {
+				enemies.add(enemy_spawn(rand() % number_of_enemies), {16.f * spawn_x, 16.f * spawn_y});
+				enemies.entities[enemies.curr_idx - 1]->update();
+			}
+			else {
+				//passive.add(passive_spawn(rand() % number_of_passives), { 16.f * spawn_x, 16.f * spawn_y });
+				//passive.entities[passive.curr_idx - 1]->update();
+				enemies.add(enemy_spawn(rand() % number_of_enemies), { 16.f * spawn_x, 16.f * spawn_y });
+				enemies.entities[enemies.curr_idx - 1]->update();
+
+			}
 		}
 	}
 }
@@ -1082,7 +1170,7 @@ void GameState::DayLightCycle()
 	for (auto i = light_sources.lower_bound(-map_y - 160); i != light_sources.end() && i->first <= -map_y + win_y / scale + 160; i++) {
 		if (i->second.position.x > -map_x - 160 && i->second.position.x < -map_x + win_x / scale + 160) {
 			if(i->second.day_light)
-				shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(light_level, light_level, (light_level + 0.2 < 1 ? light_level + 0.2 : 1)));
+				shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(light_level, light_level, light_level));
 			else
 				shader.setUniform("lights[" + to_string(count) + "].color", i->second.color);
 			shader.setUniform("lights[" + to_string(count) + "].position", (i->second.position + Vector2f(map_x, map_y)) * scale);
@@ -1119,6 +1207,13 @@ void GameState::DayLightCycle()
 	else
 		shader.setUniform("ambient_light", Glsl::Vec4(constant_light_level, constant_light_level, constant_light_level + 0.1, 1.0));
 	shader.setUniform("lightsCount", count);
+
+	//cout << light_level << '\n';
+}
+
+void GameState::initial_entities()
+{
+	NPCs.add(default_npc(0), { 968, 712 }, npc_details(1, 10, 0));
 }
 
 void GameState::update_minimap_tile(Vector2i position, Vector3i tile)
@@ -1153,10 +1248,10 @@ void GameState::update_minimap_tile(Vector2i position, Vector3i tile)
 	minimap_tex.update(pixels, 2, 2, position.x, position.y);
 }
 
-void GameState::check_in_inventory(int item_id)
+void GameState::check_in_inventory(int id)
 {
-	if (!inventory_count[item_id]) {
-		inventory_order.erase(item_id);
+	if (!inventory_count[id]) {
+		inventory_order.erase(id);
 	}
 }
 
@@ -1349,7 +1444,7 @@ void GameState::update()
 			nod* it = inventory_order.first;
 
 			while (it != NULL) {
-				items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, { (float)player_entity->getRelativePos().x , (float)player_entity->getRelativePos().y }, 0, 300.0, it->itm);
+				items.add(item_spawn(it->itm), player_entity->getRelativePos(), 0, 300.0);
 				items.entities[items.curr_idx - 1]->health = inventory_count[it->itm];
 				inventory_count[it->itm] = 0;
 				it = it->link;
@@ -1380,9 +1475,9 @@ void GameState::update()
 		if (items.entities[i]->despawn) {
 
             // add item to player_inventory
-			if (!inventory_count[items.entities[i]->item_ID])
-				inventory_order.add(items.entities[i]->item_ID);
-			inventory_count[items.entities[i]->item_ID]+= items.entities[i]->health;
+			if (!inventory_count[items.entities[i]->id])
+				inventory_order.add(items.entities[i]->id);
+			inventory_count[items.entities[i]->id]+= items.entities[i]->health;
 			// despawn item
 			items.rem_ove(i);
 			i--;
@@ -1486,7 +1581,7 @@ void GameState::pollevent()
 					if (item_drops_count != -1) {
 						Vector3i temp;
 						for (int i = 0; i < item_drops_count; i++) {
-							items.add(1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, { (float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y }, 0, 300.0, item_drops[i]);
+							items.add(item_spawn(item_drops[i]), {(float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y}, 0, 300.0);
 						}
 						item_drops_count = -1;
 					}
