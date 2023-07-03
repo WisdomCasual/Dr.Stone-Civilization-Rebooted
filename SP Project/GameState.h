@@ -82,7 +82,7 @@ private:
 			}
 		}
 
-		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, int id, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, short npc_type = 0, short dialogue_num = 0, string name = "NPC") {
+		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, int id, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, short npc_type = 0, string name = "NPC") {
 			if (curr_idx < limit) {
 				switch (type) {
 					case 0:

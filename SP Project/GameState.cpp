@@ -38,6 +38,7 @@ void GameState::save()
 		ofs << player_entity->health << '\n';
 		ofs << game_time << '\n';
 		ofs << light_level << ' ' << day_increment << '\n';
+		ofs << quest_idx << '\n';
 	}
 	ofs.close();
 	
@@ -180,6 +181,7 @@ void GameState::load_game()
 		ifs >> health;
 		ifs >> game_time;
 		ifs >> light_level >> day_increment;
+		ifs >> quest_idx;
 	}
 	ifs.close();
 
