@@ -60,7 +60,7 @@ void DialogueState::setScale(const float new_scale)
 	scale = new_scale;
 	output_text.setCharacterSize(40 * scale);
 	speaker_text.setCharacterSize(40 * scale);
-	pic.setScale(scale, scale);
+	pic.setScale(scale/2, scale/2);
 	box.setScale(scale, scale);
 }
 
@@ -131,7 +131,7 @@ void DialogueState::write_text()
 
 void DialogueState::set_expression(short id)
 {
-	pic.setTextureRect({ 160 * id, 0, 160, 150 });
+	pic.setTextureRect({ 320 * id, 0, 320, 300 });
 }
 
 void DialogueState::commands()

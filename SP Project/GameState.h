@@ -95,8 +95,8 @@ private:
 						entities[curr_idx]->set_type(npc_type);
 						switch (id) {
 							default:
-								dialogue test[3] = { {name, "hi there"}, {name, "hello there"}, {name, "welcome, traveller!"} };
-								entities[curr_idx]->set_dialogue(test, 3);
+								dialogue test[] = { {name, "Are you willing to help save the world?",3}};
+								entities[curr_idx]->set_dialogue(test, 1);
 						}
 						break;
 				}
