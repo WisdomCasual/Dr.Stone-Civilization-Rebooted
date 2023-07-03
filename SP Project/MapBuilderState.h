@@ -84,6 +84,8 @@ private:
 		/* delet top function */
 		void pop_front() {
 			if (back != NULL && back->back_link != NULL) {
+				if (back->back_link == NULL)
+					top = NULL;
 				nod* tmp;
 				tmp = back->back_link;
 				delete back;
@@ -110,6 +112,8 @@ private:
 		}
 		void pop_back() {
 			if (top->link != NULL) {
+				if (top->link == NULL)
+					back = NULL;
 				nod* tmp = top->link;
 
 				delete top;
