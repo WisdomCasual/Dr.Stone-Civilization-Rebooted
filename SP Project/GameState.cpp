@@ -568,10 +568,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	//Walking
 	for (int i = 0; i <= 4; i++) {
 		player_stats.animations[i] = new animation[16];
-		player_stats.animations[i][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
-		player_stats.animations[i][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
-		player_stats.animations[i][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
-		player_stats.animations[i][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
+		player_stats.animations[i][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,58} }; //back
+		player_stats.animations[i][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,58} }; //right
+		player_stats.animations[i][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,58} }; //left
+		player_stats.animations[i][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,58} }; //front
 	}
 	for (int i = 1; i <= 3; i++) {
 		player_stats.animations[3][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
