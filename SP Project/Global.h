@@ -1,5 +1,6 @@
 #pragma once
 #include"State.h"
+#include <random>
 
 #define PI 3.141593f
 // background: 1, MainMenuState: 2 , SavesState: 3 , NewSaveState: 4 , GameState: 5 , 
@@ -80,6 +81,9 @@ namespace globalvar {
 	inline int notification_lines = 1;
 	inline float notification_delay = 0;
 
+    inline random_device real_randomness;
+    inline mt19937 mt(real_randomness());
+
     inline string item_names[50] = {"Wood", "Stone"};
 
 	inline const int dx[4] = { 1, -1, 0, 0 };
@@ -122,6 +126,11 @@ namespace globalvar {
 		return Vector2f(V.x * cos(V.y), V.x * sin(V.y));
 	} //magnitude, direction
 
+    inline int generate_random(float mn = 0, float mx = FLT_MAX-1) {
+        uniform_real_distribution<float> dist(mn, mx+1);
+        int rando = dist(mt);
+        return (rando > mx) ? mx : rando;
+    }
 
     struct nod {
         int itm;

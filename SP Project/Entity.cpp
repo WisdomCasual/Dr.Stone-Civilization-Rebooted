@@ -17,7 +17,6 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 		entity_sprite.setTextureRect(IntRect(id * 16, 0, 16, 16));
 		entity_sprite.setOrigin(8, 8);
 		current_hitbox = { 16, 16 };
-		despawn_timer = game_time;
 		health = 1;
 	}
 	else {
@@ -31,7 +30,8 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 		//srand(time(0));
 	}
 	this->id = id;
-
+	
+	despawn_timer = game_time;
 	animation_delay = 1 / entity_stats.base_animation_speed;
 }
 

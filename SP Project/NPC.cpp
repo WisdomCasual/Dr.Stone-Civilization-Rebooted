@@ -220,7 +220,7 @@ void NPC::update()
 			player_entity.interact = 0;
 			switch (npc_type) {
 			default: {
-				single_dialogue[0] = npc_dialogues[rand() % dialogues_num];
+				single_dialogue[0] = npc_dialogues[generate_random(0, dialogues_num-1)];
 				start_dialogue(single_dialogue, 1);
 			}
 			}
