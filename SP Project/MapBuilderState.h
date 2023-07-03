@@ -83,7 +83,7 @@ private:
 
 		/* delet top function */
 		void pop_front() {
-			if (back != NULL && back->back_link != NULL) {
+			if (back != NULL) {
 				if (back->back_link == NULL)
 					top = NULL;
 				nod* tmp;
