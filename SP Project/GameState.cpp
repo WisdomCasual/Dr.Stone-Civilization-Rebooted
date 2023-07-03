@@ -1225,7 +1225,57 @@ void GameState::initial_entities()
 	}
 
 	else if (current_map == "Sheraton") {
-		NPCs.add(default_npc(0), { 968, 712 }, npc_details(1, 10, 0));
+		NPCs.add(default_npc(0), { 968, 712 }, npc_details(1, 10, 1));
+	}
+}
+
+void GameState::quests()
+{
+	switch (quest_idx) {
+		case -1:
+		case 0:
+			if (quest_dialogue != nullptr)
+				delete[] quest_dialogue;
+			quest_dialogue = new dialogue[11];
+			quest_dialogue[0] = { "???", "Hey, you, wake up..\n/E2You've been sleeping for too long..", 0, 1};
+			quest_dialogue[1] = { "???", "3700 years to be precise..", 0, 1 };
+			quest_dialogue[2] = { character_name, "Where.. Am I..?", 0, 2 };
+			quest_dialogue[3] = { character_name, "Who.. Are you?..", 0, 2 };
+			quest_dialogue[4] = { "Senku", "My name is Senku, and this is earth 3700 years after the petrification incident", 2, 1 };
+			quest_dialogue[5] = { character_name, "You can call me " + character_name + ", nice meeting yo-", 0, 2};
+			quest_dialogue[6] = { "Senku", "Listen, " + character_name + ", It's not time for introduciton, /E3I need your help to restore the civilization right now", 2, 1};
+			quest_dialogue[7] = { character_name, "I'm all ears, what do I need to do right now?", 0, 2 };
+			quest_dialogue[8] = { "Senku", "Good, now..\nI've already supplied you with some basic tools, so now I want you to gather a few matterials", 2, 1 };
+			quest_dialogue[9] = { "Senku", "For now we need some wood (5 to be precise), which you can gather from trees using your axe.. as well as a bit of stone (3 to be precise) which you can mine using the pickaxe I supplied you with.\nAnd when you're done come meet me", 2, 1 };
+			quest_dialogue[10] = { character_name, "Roger that, I'll be right back", 0, 2 };
+			quest_dialogue_num = 11;
+
+			states->insert({ DialogueID,new DialogueState(quest_dialogue,{win_x / 2,win_y / 2},scale / 2, quest_dialogue_num) });
+			states->at(DialogueID)->update();
+			quest_idx++;
+			break;
+
+		case 1:
+			if (quest_location != Vector2f(968.f, 968.f)) {
+				quest_location = Vector2f(968.f, 968.f);
+			}
+			if (inventory_count[0] >= 5 && inventory_count[1] >= 3)
+				quest_idx++;
+			break;
+		case 2:
+			if (quest_location != NPCs.entities[0]->pos) {
+				quest_location = NPCs.entities[0]->pos;
+			}
+			break;
+		case 3:
+			inventory_count[0] -= 5, inventory_count[1] -= 3;
+			check_in_inventory(0);
+			check_in_inventory(1);
+			quest_idx++;
+			current_quest++;
+			break;
+		default:
+			quest_location.x = -1.f;
 	}
 }
 
@@ -1498,6 +1548,7 @@ void GameState::update()
 		
 	}
 	game_time += dt;
+	quests();
 }
 
 void GameState::render()
