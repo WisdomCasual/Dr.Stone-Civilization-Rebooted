@@ -840,8 +840,8 @@ void GameState::maps_travel()
 			if (travel_map == "Doz World") {
 				initial_game(travel_map, { 264, 264 });
 			}
-
-
+			else if(travel_map == "Sheraton")
+				initial_game("Sheraton", { 800, 800 });
 			travel_map.clear();
 		}
 	}
@@ -1160,6 +1160,11 @@ void GameState::block_interactions_list(Vector2i interaction_tile)
 		else if (interaction_tile.x == 26 && interaction_tile.y == 19) {
 			states->insert({ 9, new WorldMapState(travel_map) });
 			states->at(WorldMapID)->update();
+		}
+	}
+	else if (current_map == "Doz World") {
+		if (interaction_tile.x >= 22 && interaction_tile.x <= 26 && interaction_tile.y == 29) {
+			travel_map = "Sheraton";
 		}
 	}
 }
