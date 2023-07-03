@@ -203,14 +203,14 @@ public:
 	float combat_status_time = 5.0f;
 
 	//for item drops
-	int item_ID = 0;
+	int id = 0;
 
 	FloatRect entity_hitbox;
 
 	bool despawn = 0, persistant = 0, interact = 0;
 	double despawn_timer = game_time;
 	const double time_to_despawn;
-	short state = 0, action_state = 0, health = 100, damage = 10;
+	short state = 0, action_state = 0, health = 100, damage = 10, aStarID = 1, npc_type = 0 ;
 
 	//////////////////Combat Stuff//////////////////
 	FloatRect hit_range, Entity_Hitbox;
@@ -225,7 +225,7 @@ public:
 	Vector2f knockback_direction = { -1.f,-1.f };
 	/////////////////////////////////////////////////
 	//Public functions
-	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, Vector2i&, Entity* player = nullptr, bool persistant = 0, double time_to_despawn = 10.0, int item_id = 0);
+	Entity(entity&, bool, render_tile**&, sheet_properties*, float&, float&, int&, int&, float&, float&, Vector2i&, Entity* player = nullptr, bool persistant = 0, double time_to_despawn = 10.0, int id = 0);
 	virtual ~Entity();
 
 	Vector2f getPosition();
@@ -247,6 +247,7 @@ public:
 	virtual void set_type(short) {};
 	virtual void set_dialogue(dialogue*, short) {};
 	virtual Vector2i block_interaction() { return Vector2i(); };
+	virtual void interaction_notification(string interaction_type = "Interact") {};
 	void render(Shader*);
 
 };

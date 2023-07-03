@@ -83,13 +83,13 @@ void MapBuilderState::grid(int x_win, int y_win)
 		RectangleShape grid_rect;
 		grid_rect.setSize(Vector2f(2, y_win));
 		grid_rect.setFillColor(Color::Black);
-		for (int i = 0; i < x_win - (int)x % (int)(scale * 16); i += 16 * scale) {
-			grid_rect.setPosition(i + (int)x % (int)(scale * 16), 0);
+		for (int i = 0; i < x_win - x % (int)(scale * 16); i += 16 * scale) {
+			grid_rect.setPosition(i + x % (int)(scale * 16), 0);
 			window->draw(grid_rect);
 		}
 		grid_rect.setSize(Vector2f(x_win, 2));
-		for (int i = 0; i < y_win - (int)y % (int)(scale * 16); i += 16 * scale) {
-			grid_rect.setPosition(0, i + (int)y % (int)(scale * 16));
+		for (int i = 0; i < y_win - y % (int)(scale * 16); i += 16 * scale) {
+			grid_rect.setPosition(0, i + y % (int)(scale * 16));
 			window->draw(grid_rect);
 		}
 	}
@@ -441,9 +441,9 @@ void MapBuilderState::mouse_cords()
 {
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 	relative_mouse_pos = mouse_pos;
-	relative_mouse_pos.x -= (int)x % int(16 * scale), relative_mouse_pos.y -= (int)y % int(16 * scale);
+	relative_mouse_pos.x -= x % int(16 * scale), relative_mouse_pos.y -= y % int(16 * scale);
 	if (mouse_pos.x > 0 && mouse_pos.x < window->getSize().x && mouse_pos.y > 0 && mouse_pos.y < window->getSize().y) {
-		hover_tile = { int(relative_mouse_pos.x / scale / 16) * 16 * scale + (int)x % int(16 * scale), int(relative_mouse_pos.y / scale / 16) * 16 * scale + (int)y % int(16 * scale) };
+		hover_tile = { int(relative_mouse_pos.x / scale / 16) * 16 * scale + x % int(16 * scale), int(relative_mouse_pos.y / scale / 16) * 16 * scale + y % int(16 * scale) };
 	}
 	selected_tile = { int((mouse_pos.x - x) / scale / 16), int((mouse_pos.y - y) / scale / 16) };
 }

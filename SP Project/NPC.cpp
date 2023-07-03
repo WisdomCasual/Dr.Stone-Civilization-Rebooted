@@ -213,12 +213,16 @@ void NPC::update()
 	updatePos();
 	type_behaviour();
 	player_collision_check();
-	if (player_entity.interact && magnitude(player_entity.getRelativePos() - getRelativePos()) <= 48) {
-		player_entity.interact = 0;
-		switch (npc_type) {
+	if (magnitude(player_entity.getRelativePos() - getRelativePos()) <= 48) {
+		player_entity.interaction_notification("Talk");
+
+		if (player_entity.interact) {
+			player_entity.interact = 0;
+			switch (npc_type) {
 			default: {
 				single_dialogue[0] = npc_dialogues[rand() % dialogues_num];
 				start_dialogue(single_dialogue, 1);
+			}
 			}
 		}
 	}

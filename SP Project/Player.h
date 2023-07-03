@@ -44,6 +44,7 @@ public:
 	void setDamage(short);
 	void setHealth(short);
 	Vector2i block_interaction();
+	void interaction_notification(string interaction_type = "Interact");
 	void update();
 	void pollevent();
 
