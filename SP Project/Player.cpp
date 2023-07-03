@@ -132,7 +132,7 @@ void Player::use_tool()
 {
 	if (Lag >= 0.8&&stun<=0) {
 		if (state == 3) { // sword
-			int hit_animation = rand() % 2;
+			int hit_animation = generate_random(0, 1);
 			Hitbox_align(hit_animation);
 			action(hit_animation+1);
 		}

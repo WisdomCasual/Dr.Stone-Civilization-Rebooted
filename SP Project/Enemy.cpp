@@ -508,10 +508,10 @@ void Enemy::stateMachine()
 			move_speed = entity_stats.base_movement_speed / 2;
 			animation_delay = 1 / (entity_stats.base_animation_speed/2);
 			motion_delay = 0;
-			will_move = rand() % 4;
-			move_for = 3 + rand() % 2;
+			will_move = generate_random(0, 3);
+			move_for = 3 + generate_random(0, 1);
 			if (will_move) {
-				theta = (rand() % 8) * 45;
+				theta = (generate_random(0, 7)) * 45;
 				direction({ 0, 0 });
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 				for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
@@ -668,7 +668,7 @@ void Enemy::update()
 		}
 		if(stun<=0)direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
 		if ((!legal_x || !legal_y) && !action_state && stun <= 0) {
-			short move_offset = dir[rand() % 2];
+			short move_offset = dir[generate_random(0, 1)];
 			theta += move_offset;
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 			for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {

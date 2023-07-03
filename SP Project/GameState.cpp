@@ -1099,7 +1099,7 @@ void GameState::entity_spawning()
 		//cout << "not my lucky day\n";
 		screen_length = win_x / (16 * scale), screen_height = win_y / (16 * scale);
 		short spawn_rect_x = screen_length + spawn_dist, spawn_rect_y = screen_height + spawn_dist;
-		spawn_total = rand() % (spawn_rect_x * 2 + spawn_rect_y * 2);
+		spawn_total = generate_random(0, (spawn_rect_x * 2 + spawn_rect_y * 2)-1);
 		if (spawn_total > 2 * spawn_rect_x + spawn_rect_y) {
 			spawn_x = 0, spawn_y = 2 * spawn_rect_y - (spawn_total - 2 * spawn_rect_x);
 		}
@@ -1128,14 +1128,12 @@ void GameState::entity_spawning()
 
 		if (valid_spawn) {
 			if (light_level <= 0.4) {
-				enemies.add(enemy_spawn(rand() % number_of_enemies), {16.f * spawn_x, 16.f * spawn_y});
+				enemies.add(enemy_spawn(generate_random(0, number_of_enemies-1)), {16.f * spawn_x, 16.f * spawn_y});
 				enemies.entities[enemies.curr_idx - 1]->update();
 			}
 			else {
-				//passive.add(passive_spawn(rand() % number_of_passives), { 16.f * spawn_x, 16.f * spawn_y });
-				//passive.entities[passive.curr_idx - 1]->update();
-				enemies.add(enemy_spawn(rand() % number_of_enemies), { 16.f * spawn_x, 16.f * spawn_y });
-				enemies.entities[enemies.curr_idx - 1]->update();
+				passive.add(passive_spawn(generate_random(0, number_of_passives-1)), { 16.f * spawn_x, 16.f * spawn_y });
+				passive.entities[passive.curr_idx - 1]->update();
 
 			}
 		}
@@ -1296,7 +1294,6 @@ GameState::~GameState()
 void GameState::update()
 {
 	window->setMouseCursorVisible(false);
-
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
@@ -1341,7 +1338,7 @@ void GameState::update()
 	spawn_cd += dt;
 	if (spawn_cd >= def_spawn_cd) {
 		spawn_cd = 0;
-		if (!(rand() % 3))
+		if (!generate_random(0, 3))
 			entity_spawning();
 	}
 

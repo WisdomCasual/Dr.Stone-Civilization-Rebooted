@@ -118,6 +118,8 @@ Game::Game()
 	initial_window();
 	initial_states();
 	initial_fps();
+
+	
 }
 
 Game::~Game()
