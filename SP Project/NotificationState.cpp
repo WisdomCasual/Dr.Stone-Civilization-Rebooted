@@ -14,10 +14,12 @@ void NotificationState::render_strings()
 void NotificationState::update_velocity()
 {
 	float pos_y = notification_BG.getPosition().y;
-	if (notification_delay && pos_y > win_y - (60 * (scale * .8) + 12 * scale)) {
+	//cout << notification_delay << endl;
+	if (notification_delay && pos_y > win_y - 60 * scale) {
+		//cout << "here" << endl;
 		pos_y -= velocity * dt * pos_scale;
-		if (pos_y < win_y - (60 * (scale * .8) + 12 * scale))
-			pos_y = win_y - (60 * (scale * .8) + 12 * scale);
+		if (pos_y < win_y - 60 * scale)
+			pos_y = win_y - 60 * scale;
 		notification_BG.setPosition(notification_BG.getPosition().x, pos_y);
 	}
 	else if(notification_delay > 0){
