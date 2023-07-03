@@ -11,7 +11,7 @@ DialogueState::DialogueState(dialogue* dialogues, Vector2f pos, float scale, int
 	setPosition(pos);
 	setScale(scale);
 	box.setTexture(*textures[0]);
-	lim = box.getLocalBounds().height * 0.85 / 30;
+	lim = box.getLocalBounds().height * 0.9 / 30;
 }
 
 DialogueState::~DialogueState()
@@ -30,7 +30,7 @@ void DialogueState::setDialogue(dialogue* dialogues, int dialogues_number)
 void DialogueState::setTexture(Texture& box_texture)
 {
 	box.setTexture(box_texture);
-	box.setScale(scale * 2, scale * 2);
+	box.setScale(scale * 4, scale * 4);
 	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
 	box.setPosition(position);
 }
@@ -46,22 +46,23 @@ void DialogueState::setPosition(const Vector2f new_position)
 	position = new_position;
 	output_text.setString(y_string);
 	text_y_bound = output_text.getLocalBounds().top + output_text.getLocalBounds().height / 2.0;
-	text_x_offset = position.x - (box_bounds.width / 6.0);
+	text_x_offset = position.x + (box_bounds.width / 7.8);
+	text_y_offset = position.y + (box_bounds.height / 10.f);
 	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
 	box.setPosition(position);
 	speaker_text.setOrigin(speaker_text.getLocalBounds().left, speaker_text.getLocalBounds().top + speaker_text.getLocalBounds().height);
-	speaker_text.setPosition(Vector2f((float)position.x - box_bounds.width / 2.0, (float)position.y - box_bounds.height / 2.0));
+	speaker_text.setPosition(Vector2f((float)position.x - box_bounds.width / 4.7f, (float)position.y - box_bounds.height / 3.25f));
 	pic.setOrigin(pic.getLocalBounds().left + pic.getLocalBounds().width / 2, pic.getLocalBounds().top + pic.getLocalBounds().height / 2);
-	pic.setPosition(Vector2f (position.x + box_bounds.width / 3.0, position.y));
+	pic.setPosition(Vector2f (position.x - box_bounds.width / 2.8, position.y));
 }
 
 void DialogueState::setScale(const float new_scale)
 {
 	scale = new_scale;
 	output_text.setCharacterSize(40 * scale);
-	speaker_text.setCharacterSize(40 * scale);
-	pic.setScale(scale, scale);
-	box.setScale(scale, scale);
+	speaker_text.setCharacterSize(37 * scale);
+	pic.setScale(scale/1.6, scale/1.6);
+	box.setScale(scale*2, scale*2);
 }
 
 void DialogueState::render_text()
@@ -75,7 +76,7 @@ void DialogueState::render_text()
 		else
 			output_text.setString(output_strings[i]);
 		output_text.setOrigin(output_text.getLocalBounds().left + output_text.getLocalBounds().width / 2.0, text_y_bound);
-		output_text.setPosition(Vector2f(text_x_offset, position.y + init_line * dis));
+		output_text.setPosition(Vector2f(text_x_offset, (text_y_offset) + init_line * dis));
 		if (!add_idx && i == lines - 1)
 			output_text.setString(output_strings[i]);
 		window->draw(output_text);
@@ -106,8 +107,8 @@ void DialogueState::word_in_new_line()
 
 void DialogueState::write_text()
 {
-	if (text_x_bound >= 0.6 * box_bounds.width || dialogues[dialogue_idx].text[char_idx] == '\n') {
-		if (text_x_bound >= 0.6 * box_bounds.width) {
+	if (text_x_bound >= 0.7 * box_bounds.width || dialogues[dialogue_idx].text[char_idx] == '\n') {
+		if (text_x_bound >= 0.7 * box_bounds.width) {
 			word_in_new_line();
 		}
 		else
@@ -131,7 +132,7 @@ void DialogueState::write_text()
 
 void DialogueState::set_expression(short id)
 {
-	pic.setTextureRect({ 160 * id, 0, 160, 150 });
+	pic.setTextureRect({ 320 * id, 0, 320, 300 });
 }
 
 void DialogueState::commands()
@@ -193,8 +194,8 @@ void DialogueState::update()
 
 void DialogueState::render()
 {
-	window->draw(box);
 	window->draw(pic);
+	window->draw(box);
 	window->draw(speaker_text);
 	render_text();
 }
@@ -209,8 +210,8 @@ void DialogueState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
-				states->insert(PauseST);
-				states->at(PauseID)->update();
+				delete states->at(DialogueID);
+				states->erase(DialogueID);
 				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
