@@ -27,7 +27,7 @@ private:
 	save saves[3] = { {-130,0,1}, {0,0,2}, {130,0,3} };
 	Vector2f clicked_on = { -1, -1 };
 
-	quest_name quest_names[10] = { {"3700 years", "later"}};   // <--- add quest names here
+	quest_name quest_names[10] = { {"3700 years", "later"}, {"Epic", "battle"}};   // <--- add quest names here
 
 	Sprite save_bg, savesBG, charactertex, arrow;
 	

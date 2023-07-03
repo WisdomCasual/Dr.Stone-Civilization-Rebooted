@@ -14,7 +14,7 @@ private:
 	dialogue* dialogues;
 	Text output_text, speaker_text;
 	Vector2f position = { 0, 0 };
-	float scale = 1, delay = 0, text_y_bound = 0, text_x_bound = 0, text_x_offset;
+	float scale = 1, delay = 0, text_y_bound = 0, text_x_bound = 0, text_x_offset, text_y_offset;
 	int dialogues_number = 1, char_idx = 0, dialogue_idx = 0, reminder_idx = 0, lines = 1, lim = 4, temp_idx = 0;
 	bool typing = 1, empty_state = 0, skip = 0, test = 0, cursor = 0, add_idx = 1;
 	Sprite box, pic;

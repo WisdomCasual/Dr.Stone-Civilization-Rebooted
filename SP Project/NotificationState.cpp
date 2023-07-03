@@ -14,9 +14,7 @@ void NotificationState::render_strings()
 void NotificationState::update_velocity()
 {
 	float pos_y = notification_BG.getPosition().y;
-	//cout << notification_delay << endl;
 	if (notification_delay && pos_y > win_y - 60 * scale) {
-		//cout << "here" << endl;
 		pos_y -= velocity * dt * pos_scale;
 		if (pos_y < win_y - 60 * scale)
 			pos_y = win_y - 60 * scale;
