@@ -30,13 +30,19 @@ private:
 	//variables:
 
 	bool no_update=0;
-	dialogue death_message[2] = { {"Senku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
+	dialogue death_message[2] = { {"Senku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Senku: " ,"Press F to respawn..\n/E2Better luck next time!", 1, 1} };
+
+
+	//quest dialogues//
+	dialogue* quest_dialogue = nullptr;
+	short quest_dialogue_num = 0;
+	///////////////////////////
 
 	Shader shader;
 	entity player_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
 	Player* player_entity = nullptr;
 
-	string character_name, current_map;
+	string current_map;
 	int character_id, save_num, current_quest;
 
 	/////enemy spawning variables/////
@@ -47,6 +53,7 @@ private:
 				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
 
 	const short number_of_enemies = 2, number_of_passives = 2;
+
 
 
 	base_stats object_stats[30], * destructable_objects = nullptr;
@@ -343,6 +350,7 @@ private:
 	void block_interactions_list(Vector2i);
 	void DayLightCycle();
 	void initial_entities();
+	void quests();
 
 
 public:
