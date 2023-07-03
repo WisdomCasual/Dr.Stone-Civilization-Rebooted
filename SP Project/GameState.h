@@ -33,7 +33,7 @@ private:
 	dialogue death_message[2] = { {"Senku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
 
 	Shader shader;
-	entity player_stats, cow_stats, deer_stats, llama_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
+	entity player_stats, llama_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
 	Player* player_entity = nullptr;
 
 	string character_name, current_map;
