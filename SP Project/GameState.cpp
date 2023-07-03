@@ -630,7 +630,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[0].scale_const = 0.85;
 	passive_stats[0].base_movement_speed = 80;
 	passive_stats[0].states_no = 1;
-	passive_stats[0].base_animation_speed = 16.6;
+	passive_stats[0].base_animation_speed = 12;
 	passive_stats[0].textures_count = 1;
 	passive_stats[0].textures = new Texture * [passive_stats[0].textures_count];
 	passive_stats[0].textures[0] = new Texture;
