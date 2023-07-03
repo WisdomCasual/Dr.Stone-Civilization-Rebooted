@@ -30,13 +30,19 @@ private:
 	//variables:
 
 	bool no_update=0;
-	dialogue death_message[2] = { {"Senku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
+	dialogue death_message[2] = { {"Senku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Senku: " ,"Press F to respawn..\n/E2Better luck next time!", 1, 1} };
+
+
+	//quest dialogues//
+	dialogue* quest_dialogue = nullptr;
+	short quest_dialogue_num = 0;
+	///////////////////////////
 
 	Shader shader;
 	entity player_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
 	Player* player_entity = nullptr;
 
-	string character_name, current_map;
+	string current_map;
 	int character_id, save_num, current_quest;
 
 	/////enemy spawning variables/////
@@ -47,6 +53,7 @@ private:
 				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
 
 	const short number_of_enemies = 2, number_of_passives = 2;
+
 
 
 	base_stats object_stats[30], * destructable_objects = nullptr;
@@ -75,7 +82,7 @@ private:
 			}
 		}
 
-		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, int id, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, short npc_type = 0, short dialogue_num = 0, string name = "NPC") {
+		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, int id, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, short npc_type = 0, string name = "NPC") {
 			if (curr_idx < limit) {
 				switch (type) {
 					case 0:
@@ -95,8 +102,8 @@ private:
 						entities[curr_idx]->set_type(npc_type);
 						switch (id) {
 							default:
-								dialogue test[3] = { {name, "hi there"}, {name, "hello there"}, {name, "welcome, traveller!"} };
-								entities[curr_idx]->set_dialogue(test, 3);
+								dialogue test[] = { {name, "Are you willing to help save the world?",3}};
+								entities[curr_idx]->set_dialogue(test, 1);
 						}
 						break;
 				}
@@ -343,6 +350,7 @@ private:
 	void block_interactions_list(Vector2i);
 	void DayLightCycle();
 	void initial_entities();
+	void quests();
 
 
 public:

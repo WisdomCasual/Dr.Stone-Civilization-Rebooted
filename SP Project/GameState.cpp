@@ -38,6 +38,7 @@ void GameState::save()
 		ofs << player_entity->health << '\n';
 		ofs << game_time << '\n';
 		ofs << light_level << ' ' << day_increment << '\n';
+		ofs << quest_idx << '\n';
 	}
 	ofs.close();
 	
@@ -180,6 +181,7 @@ void GameState::load_game()
 		ifs >> health;
 		ifs >> game_time;
 		ifs >> light_level >> day_increment;
+		ifs >> quest_idx;
 	}
 	ifs.close();
 
@@ -568,10 +570,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	//Walking
 	for (int i = 0; i <= 4; i++) {
 		player_stats.animations[i] = new animation[16];
-		player_stats.animations[i][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
-		player_stats.animations[i][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
-		player_stats.animations[i][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
-		player_stats.animations[i][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
+		player_stats.animations[i][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,58} }; //back
+		player_stats.animations[i][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,58} }; //right
+		player_stats.animations[i][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,58} }; //left
+		player_stats.animations[i][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,58} }; //front
 	}
 	for (int i = 1; i <= 3; i++) {
 		player_stats.animations[3][0 + i * 4] = { 6, {0, 1365 + (0 + (i - 1) * 4) * 192, 192, 192}, {30,14}, {96,100} }; //back
@@ -630,7 +632,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[0].scale_const = 0.85;
 	passive_stats[0].base_movement_speed = 80;
 	passive_stats[0].states_no = 1;
-	passive_stats[0].base_animation_speed = 16.6;
+	passive_stats[0].base_animation_speed = 12;
 	passive_stats[0].textures_count = 1;
 	passive_stats[0].textures = new Texture * [passive_stats[0].textures_count];
 	passive_stats[0].textures[0] = new Texture;
@@ -839,6 +841,9 @@ void GameState::maps_travel()
 			// maybe add time zone changes
 			if (travel_map == "Doz World") {
 				initial_game(travel_map, { 264, 264 });
+			}
+			else if (travel_map == "maze") {
+				initial_game(travel_map, { 712.f, 1864.f });
 			}
 			else if(travel_map == "Sheraton")
 				initial_game("Sheraton", { 800, 800 });
@@ -1216,7 +1221,64 @@ void GameState::DayLightCycle()
 
 void GameState::initial_entities()
 {
-	NPCs.add(default_npc(0), { 968, 712 }, npc_details(1, 10, 0));
+	if (current_map == "maze") {
+		enemies.add(enemy_spawn(1), { 488.f, 1624.f }, 1);
+		enemies.entities[enemies.curr_idx - 1]->setScale(0.35);
+	}
+
+	else if (current_map == "Sheraton") {
+		NPCs.add(default_npc(0), { 968, 712 }, npc_details(1, 10, 1));
+	}
+}
+
+void GameState::quests()
+{
+	switch (quest_idx) {
+		case -1:
+		case 0:
+			if (quest_dialogue != nullptr)
+				delete[] quest_dialogue;
+			quest_dialogue = new dialogue[11];
+			quest_dialogue[0] = { "???", "Hey, you, wake up..\n/E2You've been sleeping for too long..", 0, 1};
+			quest_dialogue[1] = { "???", "3700 years to be precise..", 0, 1 };
+			quest_dialogue[2] = { character_name, "Where.. Am I..?", 0, 2 };
+			quest_dialogue[3] = { character_name, "Who.. Are you?..", 0, 2 };
+			quest_dialogue[4] = { "Senku", "My name is Senku, and this is earth 3700 years after the petrification incident", 2, 1 };
+			quest_dialogue[5] = { character_name, "You can call me " + character_name + ", nice meeting yo-", 0, 2};
+			quest_dialogue[6] = { "Senku", "Listen, " + character_name + ", It's not time for introduciton, /E3I need your help to restore the civilization right now", 2, 1};
+			quest_dialogue[7] = { character_name, "I'm all ears, what do I need to do right now?", 0, 2 };
+			quest_dialogue[8] = { "Senku", "Good, now..\nI've already supplied you with some basic tools, so now I want you to gather a few matterials", 2, 1 };
+			quest_dialogue[9] = { "Senku", "For now we need some wood (5 to be precise), which you can gather from trees using your axe.. as well as a bit of stone (3 to be precise) which you can mine using the pickaxe I supplied you with.\nAnd when you're done come meet me", 2, 1 };
+			quest_dialogue[10] = { character_name, "Roger that, I'll be right back", 0, 2 };
+			quest_dialogue_num = 11;
+
+			states->insert({ DialogueID,new DialogueState(quest_dialogue,{win_x / 2,win_y / 2},scale / 2, quest_dialogue_num) });
+			states->at(DialogueID)->update();
+			quest_idx++;
+			break;
+
+		case 1:
+			if (quest_location != Vector2f(968.f, 968.f)) {
+				quest_location = Vector2f(968.f, 968.f);
+			}
+			if (inventory_count[0] >= 5 && inventory_count[1] >= 3)
+				quest_idx++;
+			break;
+		case 2:
+			if (quest_location != NPCs.entities[0]->pos) {
+				quest_location = NPCs.entities[0]->pos;
+			}
+			break;
+		case 3:
+			inventory_count[0] -= 5, inventory_count[1] -= 3;
+			check_in_inventory(0);
+			check_in_inventory(1);
+			quest_idx++;
+			current_quest++;
+			break;
+		default:
+			quest_location.x = -1.f;
+	}
 }
 
 void GameState::update_minimap_tile(Vector2i position, Vector3i tile)
@@ -1488,6 +1550,7 @@ void GameState::update()
 		
 	}
 	game_time += dt;
+	quests();
 }
 
 void GameState::render()

@@ -89,7 +89,12 @@ void NPC::set_dialogue(dialogue* dialogues, short n)
 
 void NPC::start_dialogue(dialogue* curr_dialogue, short n)
 {
-	this->curr_dialogue = curr_dialogue;
+
+	if (this->curr_dialogue != nullptr)
+		delete[] this->curr_dialogue;
+	this->curr_dialogue = new dialogue[n];
+	for (int i = 0; i < n; i++)
+		this->curr_dialogue[i] = curr_dialogue[i];
 	curr_dialogue_num = n;
 
 	Vector2f dialogue_dir = (player_entity.getRelativePos() - getRelativePos()) / magnitude(player_entity.getRelativePos() - getRelativePos()), prev_hitbox = current_hitbox;
@@ -219,10 +224,28 @@ void NPC::update()
 		if (player_entity.interact) {
 			player_entity.interact = 0;
 			switch (npc_type) {
-			default: {
+				case 1: {
+					switch (quest_idx) {
+						case 1: {
+							dialogue not_enough[1] = { {"Senku", "What are you doing here? Go get me the resources", 0, 1} };
+							start_dialogue(not_enough, 1);
+							break;
+						}
+						case 2: {
+							dialogue enough[2] = { {"Senku", "Great work! You can go now, await further orders", 2, 1}, {character_name, "You got it", 1, 2} };
+							start_dialogue(enough, 2);
+							quest_idx++;
+							npc_type = 0;
+							break;
+						}
+					}
+				}
+					
+					break;
+				default: {
 				single_dialogue[0] = npc_dialogues[generate_random(0, dialogues_num-1)];
 				start_dialogue(single_dialogue, 1);
-			}
+				}
 			}
 		}
 	}
