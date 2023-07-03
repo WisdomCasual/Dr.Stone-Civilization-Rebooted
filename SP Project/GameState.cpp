@@ -840,6 +840,9 @@ void GameState::maps_travel()
 			if (travel_map == "Doz World") {
 				initial_game(travel_map, { 264, 264 });
 			}
+			else if (travel_map == "maze") {
+				initial_game(travel_map, { 712.f, 1864.f });
+			}
 			else if(travel_map == "Sheraton")
 				initial_game("Sheraton", { 800, 800 });
 			travel_map.clear();
@@ -1216,7 +1219,14 @@ void GameState::DayLightCycle()
 
 void GameState::initial_entities()
 {
-	NPCs.add(default_npc(0), { 968, 712 }, npc_details(1, 10, 0));
+	if (current_map == "maze") {
+		enemies.add(enemy_spawn(1), { 488.f, 1624.f }, 1);
+		enemies.entities[enemies.curr_idx - 1]->setScale(0.35);
+	}
+
+	else if (current_map == "Sheraton") {
+		NPCs.add(default_npc(0), { 968, 712 }, npc_details(1, 10, 0));
+	}
 }
 
 void GameState::update_minimap_tile(Vector2i position, Vector3i tile)
