@@ -289,7 +289,7 @@ void GameState::load_initial_map(string map_name)
 							else if (tle.x < 15)
 								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 1, 0.5), intensity) });
 							else if (tle.x == 15)
-								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), 0.7, true) });
+								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), 0.5, true) });
 						}
 					}
 					else {
@@ -627,7 +627,7 @@ void GameState::load_entities(float player_relative_y_pos)
 
 	//Cow
 	passive_stats[0].animations = new animation * [1];
-	passive_stats[0].scale_const = 0.6;
+	passive_stats[0].scale_const = 0.85;
 	passive_stats[0].base_movement_speed = 80;
 	passive_stats[0].states_no = 1;
 	passive_stats[0].base_animation_speed = 16.6;
@@ -661,22 +661,22 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[1].animations[0][2] = { 4, {0,60,48,45}, {40,18}, {27,33} }; //left
 	passive_stats[1].animations[0][3] = { 4, {0,0,48,55}, {24,40}, {29,33} }; //front
 	//Lama
-	llama_stats.animations = new animation * [1];
-	llama_stats.scale_const = 0.7;
-	llama_stats.base_movement_speed = 80;
-	llama_stats.states_no = 1;
-	llama_stats.base_animation_speed = 16.6;
-	llama_stats.textures_count = 1;
-	llama_stats.textures = new Texture * [llama_stats.textures_count];
-	llama_stats.textures[0] = new Texture;
+	passive_stats[2].animations = new animation * [1];
+	passive_stats[2].scale_const = 0.7;
+	passive_stats[2].base_movement_speed = 80;
+	passive_stats[2].states_no = 1;
+	passive_stats[2].base_animation_speed = 16.6;
+	passive_stats[2].textures_count = 1;
+	passive_stats[2].textures = new Texture * [passive_stats[2].textures_count];
+	passive_stats[2].textures[0] = new Texture;
 
-	llama_stats.textures[0]->loadFromFile("textures/game/entities/llama/llama.png");
+	passive_stats[2].textures[0]->loadFromFile("textures/game/entities/llama/llama.png");
 
-	llama_stats.animations[0] = new animation[5];
-	llama_stats.animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {64,64} }; //back
-	llama_stats.animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {47,17}, {64,82} }; //right
-	llama_stats.animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {64,82} }; //left
-	llama_stats.animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
+	passive_stats[2].animations[0] = new animation[5];
+	passive_stats[2].animations[0][0] = { 4, {0, 0 * 128, 128, 128}, {26,68}, {64,64} }; //back
+	passive_stats[2].animations[0][1] = { 4, {0, 3 * 128, 128, 128}, {47,17}, {64,82} }; //right
+	passive_stats[2].animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {64,82} }; //left
+	passive_stats[2].animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
 	NPC_stats.animations = new animation * [1];
 	NPC_stats.scale_const = 0.85;
