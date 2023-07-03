@@ -7,7 +7,7 @@
 //MapBuilderState: 6, PauseState: 10, SettingsState: 11, ConfirmState: 12: 
 
 
-#define quests_no 1
+#define quests_no 2
 
 #define BackgroundID 1
 #define BackgroundST { 1, new Background }
@@ -74,6 +74,8 @@ namespace globalvar {
 	inline bool fps_active = 0, fullscreen = 0, vsync = 0, exit_game = 0;
     inline float delay = 0;
     inline double game_time = 0;
+    inline short quest_idx = -1;
+    inline string character_name;
 
 	inline Font font;
 	inline Text fps_text, text;
@@ -93,7 +95,7 @@ namespace globalvar {
 
 	struct dialogue {
 		string speaker, text;
-		short expression = 0, pic = 1;
+		short expression = 0, pic = 1; //pic is 1-based, expression is 0-based
 	};
 
 	inline void draw_text(string text_string, int x_pos, int y_pos, float characterSize)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
