@@ -289,7 +289,7 @@ void GameState::load_initial_map(string map_name)
 							else if (tle.x < 15)
 								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 1, 0.5), intensity) });
 							else if (tle.x == 15)
-								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), 0.7, true) });
+								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), 0.5, true) });
 						}
 					}
 					else {
