@@ -162,8 +162,9 @@ void SavesState::render_saves()
 			draw_text("Progress", x + saves[i].x * scale, y + 65 * scale, 14 * scale);
 			draw_text(to_string(saves[i].progress) + "%", x + saves[i].x * scale, y + 78 * scale, 14 * scale);
 			text.setFillColor(Color(170, 170, 170, transparency));
-			//draw_text(window, "Electirc", pos_x, pos_y + dis * 1.3, 50 * scale);
-			//draw_text(window, "Generator", pos_x, pos_y + dis * 2, 50 * scale);
+
+			draw_text(quest_names[saves[i].progress].first_line, x + saves[i].x * scale, y + 30 * scale, 14 * scale);
+			draw_text(quest_names[saves[i].progress].second_line, x + saves[i].x * scale, y + 45 * scale, 14 * scale);
 
 		    ////////////place holder/////////
 			charactertex.setTextureRect(IntRect( (saves[i].character_id-1) * 64, 0, 64, 64));
