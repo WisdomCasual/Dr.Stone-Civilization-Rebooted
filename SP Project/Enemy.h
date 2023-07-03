@@ -12,7 +12,7 @@ private:
 	bool will_move = 0, prev_check = 0;
 	float theta = 0, motion_delay = 4, sound_range = 5.f, move_speed = 100, checking_range = 90.0;
 	path_tile* mp = nullptr;
-	short find_size_x = 50, find_size_y = 50, id = 1, *** vis = nullptr;
+	short find_size_x = 50, find_size_y = 50, *** vis = nullptr;
 	bool* astar_done = nullptr;
 	///////Combat variables///////
 	float knockback_ve = 0;

@@ -102,9 +102,10 @@ void Game::notification(string strings_arr[], int lines, float up_time)
 	}
 	notification_lines = lines + 3;
 	notification_delay = up_time;
-	if (states.find(NotificationID) == states.end())
+	if (states.find(NotificationID) == states.end()) {
 		states.insert(NotificationST);
-	states.at(NotificationID)->update();
+	}
+	//states.at(NotificationID)->update();
 }
 
 Game::Game()

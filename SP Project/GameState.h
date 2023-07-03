@@ -12,16 +12,15 @@
 #include"DialogueState.h"
 #include "InventoryState.h"
 
-#define lion(type) type, enemy_stats[0], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
-#define tiger(type) type, enemy_stats[1], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
 //eneimies = 0, items = 1, passive = 2, NPC = 3
 
-#define cow(type) type, cow_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
-#define deer(type) type, deer_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
-#define llama(type) type, llama_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
+#define npc_details(persistant, despawn_time, type) persistant, despawn_time, type
+#define default_npc(id) 3, NPC_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
 
-#define npc_details(persistant, despawn_time, type) persistant, despawn_time, type, 0
-#define default_npc 3, NPC_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity
+#define enemy_spawn(id) 0, enemy_stats[id], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
+#define passive_spawn(id) 2, passive_stats[id], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
+
+#define item_spawn(id) 1, item_stats, 0, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
 
 using namespace globalvar;
 
@@ -31,7 +30,7 @@ private:
 	//variables:
 
 	bool no_update=0;
-	dialogue death_message[2] = { {"Sneku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
+	dialogue death_message[2] = { {"Senku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Sneku: " ,"Heading back to the mainmenu\n/E2Better luck next time!", 1, 1} };
 
 	Shader shader;
 	entity player_stats, cow_stats, deer_stats, llama_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
@@ -44,8 +43,10 @@ private:
 	float spawn_cd = 0;
 	short spawn_type = 0, left_bound, right_bound, up_bound, down_bound, screen_length, screen_height, spawn_x, spawn_y, spawn_total;         // if %2 = 1 then enemy, else then passive
 	const float def_spawn_cd = 5.0;
-	const short spawn_dist = 7, entity_render_distance = 5 * 16, object_render_distance = 3 * 16, entity_update_distance = 30 * 16,
+	const short spawn_dist = 6, entity_render_distance = 5 * 16, object_render_distance = 3 * 16, entity_update_distance = 30 * 16,
 				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
+
+	const short number_of_enemies = 2, number_of_passives = 3;
 
 
 	base_stats object_stats[30], * destructable_objects = nullptr;
@@ -74,26 +75,29 @@ private:
 			}
 		}
 
-		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, int drop_id = 0, short npc_type = 0, short dialogue_num = 0, dialogue* dialogues = nullptr) {
+		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, int id, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, short npc_type = 0, short dialogue_num = 0, string name = "NPC") {
 			if (curr_idx < limit) {
 				switch (type) {
 					case 0:
-						entities[curr_idx] = new Enemy(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn);
+						entities[curr_idx] = new Enemy(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn, id);
 						entities[curr_idx]->setVisArray(&vis, &astar_done, find_size_x, find_size_y);
 						entities[curr_idx]->setID(curr_idx + 1);
 						break;
 					case 1:
 						//items
-						entities[curr_idx] = new Items(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn, drop_id);
+						entities[curr_idx] = new Items(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn, id);
 						break;
 					case 2:
-						entities[curr_idx] = new Passive(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn);
+						entities[curr_idx] = new Passive(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn, id);
 						break;
 					case 3:
-						entities[curr_idx] = new NPC(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn);
+						entities[curr_idx] = new NPC(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn, id);
 						entities[curr_idx]->set_type(npc_type);
-						if(npc_type == 0)
-							entities[curr_idx]->set_dialogue(dialogues, dialogue_num);
+						switch (id) {
+							default:
+								dialogue test[3] = { {name, "hi there"}, {name, "hello there"}, {name, "welcome, traveller!"} };
+								entities[curr_idx]->set_dialogue(test, 3);
+						}
 						break;
 				}
 				entities[curr_idx]->setPosition(initial_position.x, initial_position.y);
@@ -107,6 +111,7 @@ private:
 			entities[idx] = nullptr;
 			curr_idx--;
 			entities[idx] = entities[curr_idx]; 
+			//entities[idx]->setID(idx + 1);
 			entities[curr_idx] = nullptr;
 		}
 
@@ -337,6 +342,7 @@ private:
 	bool entity_in_range(Vector2f, short offset = 0);
 	void block_interactions_list(Vector2i);
 	void DayLightCycle();
+	void initial_entities();
 
 
 public:

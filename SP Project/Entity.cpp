@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, bool persistant, double time_to_despawn, int item_id)
+Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, bool persistant, double time_to_despawn, int id)
 	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map), player_entity(*player), x_offset(x_offset), y_offset(y_offset), destroy_object_location(destroy_object_location), time_to_despawn(time_to_despawn), persistant(persistant)
 {
 	this->size_x = size_x, this->size_y = size_y;
@@ -14,11 +14,10 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 	//cout << "here1\n";
 	if (!has_legs) {
 		entity_sprite.setTexture(*entity_stats.textures[state]);
-		entity_sprite.setTextureRect(IntRect(item_id * 16, 0, 16, 16));
+		entity_sprite.setTextureRect(IntRect(id * 16, 0, 16, 16));
 		entity_sprite.setOrigin(8, 8);
 		current_hitbox = { 16, 16 };
 		despawn_timer = game_time;
-		this->item_ID = item_id;
 		health = 1;
 	}
 	else {
@@ -31,6 +30,7 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 		health = entity_stats.max_health, damage = entity_stats.base_damage;
 		//srand(time(0));
 	}
+	this->id = id;
 
 	animation_delay = 1 / entity_stats.base_animation_speed;
 }
