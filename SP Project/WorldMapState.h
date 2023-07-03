@@ -21,6 +21,8 @@ inline void load_maps()
 		string mp_name; int a, b, c, d;
 		while (!ifs.eof()) {
 			getline(ifs, mp_name, '|');
+			if (mp_name == "")
+				continue;
 			ifs >> a >> b >> c >> d;
 			ifs.ignore();
 			pins.insert({ mp_name , {a,b,c,d} });
