@@ -20,7 +20,7 @@ MapBuilderState::MapBuilderState(string map_name, int a, int b) : size_x(a), siz
 	//selection rectangle
 	select_rect.setSize(Vector2f(16, 16));
 	select_rect.setFillColor(Color::Transparent);
-	select_rect.setOutlineThickness(3);
+	select_rect.setOutlineThickness(4);
 	select_rect.setOutlineColor(Color::Green);
 
 	srand(time(0));
@@ -62,7 +62,7 @@ void MapBuilderState::hover()
 	else if(picked_tile.global_select_done)
 		hover_rect.setSize(Vector2f(wdth * 16, hght * 16));
 	else
-		hover_rect.setSize(Vector2f( 16*brush_size, 16*brush_size ));
+		hover_rect.setSize(Vector2f( 16 * brush_size, 16 * brush_size ));
 	hover_rect.setPosition(hover_tile);
 	hover_rect.setScale(scale, scale);
 }
@@ -83,13 +83,17 @@ void MapBuilderState::grid(int x_win, int y_win)
 		RectangleShape grid_rect;
 		grid_rect.setSize(Vector2f(2, y_win));
 		grid_rect.setFillColor(Color::Black);
-		for (int i = 0; i < x_win - x % (int)(scale * 16); i += 16 * scale) {
-			grid_rect.setPosition(i + x % (int)(scale * 16), 0);
+
+		float x_off = x + x_offset * 16 * scale;
+		float y_off = y + y_offset * 16 * scale;
+
+		for (int i = 0; x_off + i * 16 * scale <= x_win; i++) {
+			grid_rect.setPosition(x_off + i * scale * 16, 0);
 			window->draw(grid_rect);
 		}
 		grid_rect.setSize(Vector2f(x_win, 2));
-		for (int i = 0; i < y_win - y % (int)(scale * 16); i += 16 * scale) {
-			grid_rect.setPosition(0, i + y % (int)(scale * 16));
+		for (int i = 0; y_off + i * 16 * scale <= y_win; i++) {
+			grid_rect.setPosition(0, y_off + i * scale * 16);
 			window->draw(grid_rect);
 		}
 	}
@@ -239,7 +243,7 @@ void MapBuilderState::selection()
 		if (start_x < 0) start_x = 0; 
 		if (start_y < 0) start_y = 0;
 
-		select_rect.setPosition(x+start_x * 16 * scale, y+start_y * 16 * scale);
+		select_rect.setPosition(x + start_x * 16 * scale, y+start_y * 16 * scale);
 
 		wdth = abs(selection_start.x - selected_tile.x) + 1, hght = abs(selection_start.y - selected_tile.y) + 1;
 
@@ -441,9 +445,9 @@ void MapBuilderState::mouse_cords()
 {
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 	relative_mouse_pos = mouse_pos;
-	relative_mouse_pos.x -= x % int(16 * scale), relative_mouse_pos.y -= y % int(16 * scale);
+	relative_mouse_pos.x -= x - x_offset * 16 * scale, relative_mouse_pos.y -= y - y_offset * 16 * scale;
 	if (mouse_pos.x > 0 && mouse_pos.x < window->getSize().x && mouse_pos.y > 0 && mouse_pos.y < window->getSize().y) {
-		hover_tile = { int(relative_mouse_pos.x / scale / 16) * 16 * scale + x % int(16 * scale), int(relative_mouse_pos.y / scale / 16) * 16 * scale + y % int(16 * scale) };
+		hover_tile = { int(relative_mouse_pos.x / scale / 16) * 16 * scale + (x - x_offset * 16 * scale), int(relative_mouse_pos.y / scale / 16) * 16 * scale + (y - y_offset * 16 * scale) };
 	}
 	selected_tile = { int((mouse_pos.x - x) / scale / 16), int((mouse_pos.y - y) / scale / 16) };
 }
@@ -512,7 +516,18 @@ void MapBuilderState::load_map()
 	if (!(ifs >> line)) {
 		for (int i = 0; i < size_x; i++) {
 			for (int j = 0; j < size_y; j++) {
-				tiles[i][j].layer[0] = { 2,16, 1 };
+				switch (generate_random(0, 4)) {
+				case 0:
+					tiles[i][j].layer[0] = { 11, 13, 3 }; break;
+				case 1:
+					tiles[i][j].layer[0] = { 12, 13, 3 }; break;
+				case 2:
+					tiles[i][j].layer[0] = { 13, 13, 3 }; break;
+				case 3:
+					tiles[i][j].layer[0] = { 12, 14, 3 }; break;
+				case 4:
+					tiles[i][j].layer[0] = { 13, 14, 3 }; break;
+				}
 			}
 		}
 	}
@@ -742,7 +757,7 @@ void MapBuilderState::pollevent()
 					picked_tile.global_select_done = 0;
 					picked_tile.select_done = 0;
 					picked_tile.previous_drawn_tile = { -1,-1 }, picked_tile.previous_erased_tile = { -1,-1 };
-					brush_size += (brush_size < 25);
+					brush_size += (brush_size < 50);
 				}
 				else {
 					if (spread_chance < spread_chances_num-1)
@@ -786,15 +801,21 @@ void MapBuilderState::pollevent()
 			//camera zoom
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved)
-				if (scale + event.mouseWheel.delta > global_scale && scale + event.mouseWheel.delta < 20*global_scale) {
+				if (scale + event.mouseWheel.delta * 0.5 * scaling_speed > 1 && scale + event.mouseWheel.delta * scaling_speed < 20 * global_scale && scale>1) {
 					if (global_scale < 1)
-						scaling_speed = 1.0/speed_list[(int)round(log(int(round(1 / global_scale))))];
+						scaling_speed = 1.0 / speed_list[(int)round(log(int(round(1 / global_scale))))];
 					else
 						scaling_speed = round(global_scale);
-					x -= event.mouseWheel.delta * 16*scaling_speed * x_mid;
-					y -= event.mouseWheel.delta * 16*scaling_speed * y_mid;
-					scale += event.mouseWheel.delta * scaling_speed;
-				} break;
+					x -= event.mouseWheel.delta * 8 * scaling_speed * x_mid;
+					y -= event.mouseWheel.delta * 8 * scaling_speed * y_mid;
+					scale += event.mouseWheel.delta * 0.5 * scaling_speed;
+				}
+			else if (scale + event.mouseWheel.delta / 100.0 > 0.2 && scale + event.mouseWheel.delta * scaling_speed < 20 * global_scale) {
+					x -= event.mouseWheel.delta / 100.0 * 16 * x_mid;
+					y -= event.mouseWheel.delta / 100.0 * 16 * y_mid;
+					scale += event.mouseWheel.delta / 100.0;
+				}
+			break;
 		}
 	}
 
