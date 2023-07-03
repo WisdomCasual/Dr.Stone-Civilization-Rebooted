@@ -275,8 +275,10 @@ void SavesState::update()
 	blackscreen.setSize({ win_x, win_y });
 
 	if (del_save) {
+		filesystem::directory_entry dnd("Saves/Save " + to_string(del_save_no) + "\\DO NOT DELETE THIS.DND");
 		for (auto& path : filesystem::directory_iterator("Saves/Save " + to_string(del_save_no))) {
-			filesystem::remove_all(path);
+			if(path != dnd)
+				filesystem::remove_all(path);
 		}
 		saves[del_save_no-1].empty = 1;
 		del_save = 0;

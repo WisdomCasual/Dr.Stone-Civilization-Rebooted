@@ -46,7 +46,7 @@ private:
 	const short spawn_dist = 6, entity_render_distance = 5 * 16, object_render_distance = 3 * 16, entity_update_distance = 30 * 16,
 				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
 
-	const short number_of_enemies = 2, number_of_passives = 3;
+	const short number_of_enemies = 2, number_of_passives = 2;
 
 
 	base_stats object_stats[30], * destructable_objects = nullptr;

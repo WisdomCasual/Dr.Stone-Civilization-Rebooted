@@ -345,7 +345,7 @@ void MapBuilderState::draw_tools()
 					else {
 						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++) {
 							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
-								rand_spray = rand() % spread_chances[spread_chance];
+								rand_spray = generate_random(0, spread_chances[spread_chance]);
 								changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j]; //<--store tiles before changes	
 								changes.atBack()->size++;
 
