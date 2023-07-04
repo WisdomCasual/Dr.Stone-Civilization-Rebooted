@@ -444,12 +444,11 @@ void MapBuilderState::erase_tools()
 void MapBuilderState::mouse_cords()
 {
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
-	relative_mouse_pos = mouse_pos;
-	relative_mouse_pos.x -= x - x_offset * 16 * scale, relative_mouse_pos.y -= y - y_offset * 16 * scale;
-	if (mouse_pos.x > 0 && mouse_pos.x < window->getSize().x && mouse_pos.y > 0 && mouse_pos.y < window->getSize().y) {
-		hover_tile = { int(relative_mouse_pos.x / scale / 16) * 16 * scale + (x - x_offset * 16 * scale), int(relative_mouse_pos.y / scale / 16) * 16 * scale + (y - y_offset * 16 * scale) };
-	}
 	selected_tile = { int((mouse_pos.x - x) / scale / 16), int((mouse_pos.y - y) / scale / 16) };
+
+	if (mouse_pos.x > 0 && mouse_pos.x < window->getSize().x && mouse_pos.y > 0 && mouse_pos.y < window->getSize().y) {
+		hover_tile = { x + selected_tile.x * 16 * scale - (x > mouse_pos.x ? 16 * scale : 0), y + selected_tile.y * 16 * scale - (y > mouse_pos.y ? 16 * scale : 0) };
+	}
 }
 
 void MapBuilderState::create_mini_map()
@@ -564,7 +563,7 @@ void MapBuilderState::undo()
 	else
 		y_pressed = 0;
 
-	while (changes.size > 50)
+	while (changes.size > 25)
 		changes.pop_front();
 
 	if (ctrl_pressed && y_pressed) {
