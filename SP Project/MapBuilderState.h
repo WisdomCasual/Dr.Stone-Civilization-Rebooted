@@ -30,11 +30,11 @@ private:
 		}
 	};
 
-
 	struct nod {
 		change itm;
 		struct nod* link = NULL, * back_link = NULL;
 	};
+
 	struct special_stack {
 	private:
 		nod* front = NULL, * back = NULL;
