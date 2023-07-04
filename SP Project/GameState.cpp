@@ -402,9 +402,6 @@ void GameState::load_saved_map(string map_name)
 
 			ifs >> temp_pos.x >> temp_pos.y;
 			ifs >> temp_tile.x >> temp_tile.y >> temp_tile.z;
-
-			update_minimap_tile(Vector2i(temp_pos.x * 2, temp_pos.y * 2), temp_tile);
-
 			temp.add({ temp_pos, temp_tile });
 			dynamic_map.add(temp);
 			ifs >> dynamic_map.at[i].layer;
@@ -414,6 +411,8 @@ void GameState::load_saved_map(string map_name)
 				dynamic_map.at[i].time = &static_map[dynamic_map.at[i].core_location.x][dynamic_map.at[i].core_location.y].time;
 				dynamic_map.at[i].destruction_time = &static_map[dynamic_map.at[i].core_location.x][dynamic_map.at[i].core_location.y].destruction_time;
 			}
+			if(!dynamic_map.at[i].destruction_time)
+				update_minimap_tile(Vector2i(temp_pos.x * 2, temp_pos.y * 2), temp_tile);
 			static_map[(int)temp_pos.x][(int)temp_pos.y].dynamic_idx = i;
 		}
 
@@ -426,8 +425,9 @@ void GameState::load_saved_map(string map_name)
 				Vector2f temp_pos; Vector3i temp_tile;
 				ifs >> temp_pos.x >> temp_pos.y;
 				ifs >> temp_tile.x >> temp_tile.y >> temp_tile.z;
-				update_minimap_tile(Vector2i(temp_pos.x * 2, temp_pos.y * 2), temp_tile);
 				dynamic_map.at[i].add({ temp_pos, temp_tile });
+				if(!dynamic_map.at[i].destruction_time)
+					update_minimap_tile(Vector2i(temp_pos.x * 2, temp_pos.y * 2), temp_tile);
 			}
 		}
 

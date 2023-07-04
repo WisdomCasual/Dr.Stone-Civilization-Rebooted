@@ -37,7 +37,7 @@ private:
 	};
 	struct special_stack {
 	private:
-		nod* top = NULL, * back = NULL;
+		nod* top, * back;
 		
 	public:
 		int size = 0;
@@ -83,7 +83,7 @@ private:
 
 		/* delet top function */
 		void pop_front() {
-			if (back != NULL) {
+			if (back != NULL && back->back_link != NULL) {
 				if (back->back_link == NULL)
 					top = NULL;
 				nod* tmp;
