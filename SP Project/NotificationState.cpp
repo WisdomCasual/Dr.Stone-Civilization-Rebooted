@@ -86,6 +86,8 @@ void NotificationState::update()
 
 void NotificationState::render()
 {
-	window->draw(notification_BG);
-	render_strings();
+	if (states->rbegin()->first != DialogueID) {
+		window->draw(notification_BG);
+		render_strings();
+	}
 }
