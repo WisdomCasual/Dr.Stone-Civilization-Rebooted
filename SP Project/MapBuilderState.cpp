@@ -211,19 +211,20 @@ void MapBuilderState::update()
 
 void MapBuilderState::selection()
 {
-	if (selected_tile.x < 0)
-		selected_tile.x = 0;
-	else if (selected_tile.x >= size_x)
-		selected_tile.x = size_x - 1;
-	if (selected_tile.y < 0)
-		selected_tile.y = 0;
-	else if (selected_tile.y >= size_y)
-		selected_tile.y = size_y - 1;
+	copy_selection = selected_tile;
+	if (copy_selection.x < 0)
+		copy_selection.x = 0;
+	else if (copy_selection.x >= size_x)
+		copy_selection.x = size_x - 1;
+	if (copy_selection.y < 0)
+		copy_selection.y = 0;
+	else if (copy_selection.y >= size_y)
+		copy_selection.y = size_y - 1;
 
 	if (Keyboard::isKeyPressed(Keyboard::LShift) && window->hasFocus()) {
 		if (!selecting) {
-			selection_start.x = selected_tile.x;
-			selection_start.y = selected_tile.y;
+			selection_start.x = copy_selection.x;
+			selection_start.y = copy_selection.y;
 		}
 		selecting = 1;
 		picked_tile.global_select_done = 0;
@@ -231,21 +232,21 @@ void MapBuilderState::selection()
 	else {
 		if (selecting) {
 			picked_tile.global_select_done = 1, picked_tile.global_layer = layer;
-			selection_end = selected_tile;
+			selection_end = copy_selection;
 		}
 		selecting = 0;
 	}
 
 
 	if (selecting) {
-		start_x = min(selection_start.x, selected_tile.x), start_y = min(selection_start.y, selected_tile.y);
+		start_x = min(selection_start.x, copy_selection.x), start_y = min(selection_start.y, copy_selection.y);
 
 		if (start_x < 0) start_x = 0; 
 		if (start_y < 0) start_y = 0;
 
 		select_rect.setPosition(x + start_x * 16 * scale, y+start_y * 16 * scale);
 
-		wdth = abs(selection_start.x - selected_tile.x) + 1, hght = abs(selection_start.y - selected_tile.y) + 1;
+		wdth = abs(selection_start.x - copy_selection.x) + 1, hght = abs(selection_start.y - copy_selection.y) + 1;
 
 
 		select_rect.setSize(Vector2f(wdth * 16 * scale, hght * 16 * scale));
@@ -260,7 +261,7 @@ void MapBuilderState::selection()
 
 void MapBuilderState::draw_tools()
 {
-	if (Mouse::isButtonPressed(Mouse::Left) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
+	if (Mouse::isButtonPressed(Mouse::Left) && selected_tile.x < size_x && selected_tile.y < size_y && window->hasFocus()) {
 		if (selected_tile != picked_tile.previous_drawn_tile) {
 			picked_tile.previous_drawn_tile = selected_tile;
 			picked_tile.previous_erased_tile = { -1, -1 };
@@ -273,13 +274,16 @@ void MapBuilderState::draw_tools()
 					changes.add(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + picked_tile.wdth, selected_tile.y + picked_tile.hght } });
 					changes.atBack()->tiles = new Tile[picked_tile.wdth * picked_tile.hght];
 
-					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth && i2 < size_x; i1++, i2++)
+					for (int i1 = picked_tile.start_x, i2 = selected_tile.x; i1 < picked_tile.start_x + picked_tile.wdth && i2 < size_x; i1++, i2++) {
+						if (i2 < 0) continue;
 						for (int j1 = picked_tile.start_y, j2 = selected_tile.y; j1 < picked_tile.start_y + picked_tile.hght && j2 < size_y; j1++, j2++) {
+							if (j2 < 0) continue;
 							changes.atBack()->tiles[changes.atBack()->size] = tiles[i2][j2]; //<--store tiles before changes	
 							changes.atBack()->size++;
-							tiles[i2][j2].layer[layer] = { i1, j1, picked_tile.tex_id};
+							tiles[i2][j2].layer[layer] = { i1, j1, picked_tile.tex_id };
 						}
-					drawn_selection = 1;
+						drawn_selection = 1;
+					}
 				}
 			}
 			else if (picked_tile.global_select_done) {
@@ -337,18 +341,22 @@ void MapBuilderState::draw_tools()
 					changes.atBack()->tiles = new Tile[brush_size * brush_size];
 
 					if (!(Keyboard::isKeyPressed(Keyboard::LAlt) && brush_size > 1)) {
-						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++)
+						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++) {
+							if (i < 0) continue;
 							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
-
+								if (j < 0) continue;
 								changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j]; //<--store tiles before changes	
 								changes.atBack()->size++;
 
 								tiles[i][j].layer[layer] = { picked_tile.x, picked_tile.y, picked_tile.tex_id };
 							}
+						}
 					}
 					else {
 						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++) {
+							if (i < 0) continue;
 							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
+								if (j < 0) continue;
 								rand_spray = generate_random(0, spread_chances[spread_chance]);
 								changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j]; //<--store tiles before changes	
 								changes.atBack()->size++;
@@ -369,7 +377,7 @@ void MapBuilderState::draw_tools()
 
 void MapBuilderState::erase_tools()
 {
-	if (Mouse::isButtonPressed(Mouse::Right) && selected_tile.x >= 0 && selected_tile.x < size_x && selected_tile.y >= 0 && selected_tile.y < size_y && window->hasFocus()) {
+	if (Mouse::isButtonPressed(Mouse::Right) && selected_tile.x < size_x && selected_tile.y < size_y && window->hasFocus()) {
 		if (selected_tile != picked_tile.previous_erased_tile) {
 			picked_tile.previous_erased_tile = selected_tile;
 			picked_tile.previous_drawn_tile = { -1, -1 };
@@ -405,33 +413,38 @@ void MapBuilderState::erase_tools()
 					changes.add(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + picked_tile.wdth, point_on_line.y + picked_tile.hght } });
 					changes.atBack()->tiles = new Tile[picked_tile.wdth * picked_tile.hght];
 
-					for (int i = point_on_line.x; i < point_on_line.x + picked_tile.wdth; i++)
+					for (int i = point_on_line.x; i < point_on_line.x + picked_tile.wdth; i++) {
+						if (i < 0) continue;
 						for (int j = point_on_line.y; j < point_on_line.y + picked_tile.hght; j++) {
-
+							if (j < 0) continue;
 							changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j]; //<--store tiles before changes	
 							changes.atBack()->size++;
-							
+
 							if (Keyboard::isKeyPressed(Keyboard::LAlt))
-									tiles[i][j].layer.clear();
+								tiles[i][j].layer.clear();
 							else
 								tiles[i][j].layer.erase(layer);
 						}
+					}
 				}
 				else {
 					//store changed area info
 					changes.add(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
 					changes.atBack()->tiles = new Tile[brush_size * brush_size];
 
-					for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++)
+					for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++) {
+						if (i < 0) continue;
 						for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
+							if (j < 0) continue;
 							changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j]; //<--store tiles before changes	
 							changes.atBack()->size++;
 
 							if (Keyboard::isKeyPressed(Keyboard::LAlt))
-									tiles[i][j].layer.clear();
+								tiles[i][j].layer.clear();
 							else
 								tiles[i][j].layer.erase(layer);
 						}
+					}
 				}
 
 			}
@@ -444,10 +457,10 @@ void MapBuilderState::erase_tools()
 void MapBuilderState::mouse_cords()
 {
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
-	selected_tile = { int((mouse_pos.x - x) / scale / 16), int((mouse_pos.y - y) / scale / 16) };
+	selected_tile = { int((mouse_pos.x - x) / scale / 16 - (x > mouse_pos.x ? 1 : 0)), int((mouse_pos.y - y) / scale / 16) - (y > mouse_pos.y ? 1 : 0) };
 
 	if (mouse_pos.x > 0 && mouse_pos.x < window->getSize().x && mouse_pos.y > 0 && mouse_pos.y < window->getSize().y) {
-		hover_tile = { x + selected_tile.x * 16 * scale - (x > mouse_pos.x ? 16 * scale : 0), y + selected_tile.y * 16 * scale - (y > mouse_pos.y ? 16 * scale : 0) };
+		hover_tile = { x + selected_tile.x * 16 * scale, y + selected_tile.y * 16 * scale };
 	}
 }
 
@@ -572,13 +585,16 @@ void MapBuilderState::undo()
 			if (!undid_changes.empty()) {
 				changes.add(change{ { undid_changes.atBack()->start.x , undid_changes.atBack()->start.y }, { undid_changes.atBack()->end.x, undid_changes.atBack()->end.y } });
 				changes.atBack()->tiles = new Tile[undid_changes.atBack()->size];
-				for (int i = undid_changes.atBack()->start.x, c = 0; i < undid_changes.atBack()->end.x && i < size_x; i++)
+				for (int i = undid_changes.atBack()->start.x, c = 0; i < undid_changes.atBack()->end.x && i < size_x; i++) {
+					if (i < 0) continue;
 					for (int j = undid_changes.atBack()->start.y; j < undid_changes.atBack()->end.y && j < size_y; j++) {
+						if (j < 0) continue;
 						changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j];
 						changes.atBack()->size++;
 						tiles[i][j] = undid_changes.atBack()->tiles[c];
 						c++;
 					}
+				}
 				undid_changes.pop_back();
 			}
 		}
@@ -594,13 +610,16 @@ void MapBuilderState::undo()
 				undid_changes.add(change{ { changes.atBack()->start.x , changes.atBack()->start.y }, { changes.atBack()->end.x, changes.atBack()->end.y } });
 				undid_changes.atBack()->tiles = new Tile[changes.atBack()->size];
 
-				for (int i = changes.atBack()->start.x, c = 0; i < changes.atBack()->end.x && i < size_x; i++)
+				for (int i = changes.atBack()->start.x, c = 0; i < changes.atBack()->end.x && i < size_x; i++) {
+					if (i < 0) continue;
 					for (int j = changes.atBack()->start.y; j < changes.atBack()->end.y && j < size_y; j++) {
+						if (j < 0) continue;
 						undid_changes.atBack()->tiles[undid_changes.atBack()->size] = tiles[i][j];
 						undid_changes.atBack()->size++;
-					    tiles[i][j] = changes.atBack()->tiles[c];
+						tiles[i][j] = changes.atBack()->tiles[c];
 						c++;
 					}
+				}
 				changes.pop_back();
 			}
 		}

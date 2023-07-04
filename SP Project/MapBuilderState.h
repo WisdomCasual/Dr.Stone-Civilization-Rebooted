@@ -141,7 +141,7 @@ private:
 	const int speed_list[5] = { 1, 2, 4, 8, 16 };
 	bool layer_toggle[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
 	Vector2f mouse_pos = { 0, 0 }, relative_mouse_pos = {0, 0}, hover_tile = { 0 , 0 };
-	Vector2i selected_tile = { 0, 0 }, selection_start = { 0,0 }, selection_end = { 0,0 }, line_start = { 0, 0 }, point_on_line = { 0,0 };
+	Vector2i selected_tile = { 0, 0 }, copy_selection = { 0,0 }, selection_start = { 0,0 }, selection_end = { 0,0 }, line_start = { 0, 0 }, point_on_line = { 0,0 };
 	short active_highlight = 0;
 	float slope = 0;
 	bool click = 0;
