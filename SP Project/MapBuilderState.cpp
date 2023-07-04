@@ -576,7 +576,7 @@ void MapBuilderState::undo()
 	else
 		y_pressed = 0;
 
-	while (changes.size > 25)
+	while (changes.size > 50)
 		changes.pop_front();
 
 	if (ctrl_pressed && y_pressed) {
