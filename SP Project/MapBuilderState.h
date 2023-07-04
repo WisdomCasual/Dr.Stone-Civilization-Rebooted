@@ -33,18 +33,17 @@ private:
 
 	struct nod {
 		change itm;
-		struct nod* link, * back_link;
+		struct nod* link = NULL, * back_link = NULL;
 	};
 	struct special_stack {
 	private:
-		nod* top, * back;
+		nod* front = NULL, * back = NULL;
 		
 	public:
 		int size = 0;
 		/* insert function */
 		special_stack() {
-			top = NULL;
-			back = NULL;
+
 		}
 
 		~special_stack() {
@@ -58,83 +57,69 @@ private:
 
 			tmp->itm = inputed;
 
-			tmp->link = top;
+			tmp->back_link = back;
 
-			top = tmp;
-			top->back_link = NULL;
+			back = tmp;
 
-			if (top->link != NULL) {
+			back->link = NULL;
 
-				top->link->back_link = top;
-
-				if (top->link->link == NULL)
-					back = top->link;
-
-			}
+			if (back->back_link != NULL)
+				back->back_link->link = back;
+			else
+				front = back;
 			size++;
 		}
 
 		/* empty function */
 		bool empty() {
-			if (top == NULL)
+			if (back == NULL)
 				return 1;
-			else return 0;
+			else 
+				return 0;
 		}
 
 		/* delet top function */
 		void pop_front() {
-			if (back != NULL && back->back_link != NULL) {
-				if (back->back_link == NULL)
-					top = NULL;
-				nod* tmp;
-				tmp = back->back_link;
-				delete back;
-
-				back = tmp;
-
-				back->link = NULL;
-
+			if (front != NULL) {
+				nod* tmp = front->link;
+				if (tmp == NULL)
+					back = NULL;
+				else
+					tmp->back_link = NULL;
+				delete front;
+				front = tmp;
 				size--;
 			}
-			else { delete top;  top = NULL; size = 0; }
+		}
 
+		void pop_back() {
+			if (back != NULL) {
+				nod* tmp = back->back_link;
+				if (tmp == NULL)
+					front = NULL;
+				else
+					tmp->link = NULL;
+				delete back;
+				back = tmp;
+				size--;
+			}
 		}
 
 		/* clear function */
 		void clear() {
 			while (!empty())
 				pop_front();
-			size = 0;
 		}
 
 		change* atBack() {
-			return &top->itm;
-		}
-		void pop_back() {
-			if (top->link != NULL) {
-				if (top->link == NULL)
-					back = NULL;
-				nod* tmp = top->link;
-
-				delete top;
-
-				top = tmp;
-
-				top->back_link = NULL;
-			}
-			else {
-				delete top;
-				top = NULL;
-			}
-			size--;
-		}
-
-		change* front() {
-			if(top->link == NULL)
-				return &top->itm;
 			return &back->itm;
 		}
-	}changes, undid_changes;
+
+		change* atfront() {
+			return &front->itm;
+		}
+
+	} changes, undid_changes;
 
 	bool ctrl_pressed = 0, z_pressed = 0, y_pressed = 0, undid = 0, redone = 0, display_text = 1;
 
