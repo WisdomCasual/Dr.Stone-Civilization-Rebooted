@@ -1252,7 +1252,7 @@ void GameState::quests()
 			quest_dialogue[10] = { character_name, "Roger that, I'll be right back", 0, 2 };
 			quest_dialogue_num = 11;
 
-			states->insert({ DialogueID,new DialogueState(quest_dialogue,{win_x / 2,win_y / 2},scale / 2, quest_dialogue_num) });
+			states->insert({ DialogueID,new DialogueState(quest_dialogue,{win_x / 2, win_y - 70 * scale},scale / 2, quest_dialogue_num) });
 			states->at(DialogueID)->update();
 			quest_idx++;
 			break;
@@ -1485,7 +1485,7 @@ void GameState::update()
 		if (!no_update) {
 			health_indicator.setTextureRect(IntRect(0, 0, 590, 100));
 			//CHANGE MESSAGE TO RESPAWN
-			states->insert({ DialogueID,new DialogueState(death_message,{win_x / 2,win_y / 2},scale / 2,2) });
+			states->insert({ DialogueID,new DialogueState(death_message,{win_x / 2, win_y - 70 * scale},scale / 2,2) });
 			states->at(DialogueID)->update();
 			no_update = 1;
 		}
@@ -1558,10 +1558,12 @@ void GameState::render()
 	render_static_map();
 	render_entities();
 	if (states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID || states->rbegin()->first == DialogueID) {
-		window->draw(hotbar);
-		for (int i = 0; i < 4; i++)
-			window->draw(tool_icons[i]);
-		window->draw(hotbar_selection);
+		if(states->rbegin()->first != DialogueID){
+			window->draw(hotbar);
+			for (int i = 0; i < 4; i++)
+				window->draw(tool_icons[i]);
+			window->draw(hotbar_selection);
+		}
 		window->draw(health_indicator);
 		if (EnableMiniMap)
 			render_minimap();
