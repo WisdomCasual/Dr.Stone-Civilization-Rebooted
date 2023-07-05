@@ -32,6 +32,9 @@ private:
 	map<int, State*> states;
 	map<string, Texture*> textures;
 	bool prev_fullscreen = 0;
+	short menu_music_idx = 0, ingame_music_idx = 0;
+	const short menu_music_count = 3, ingame_music_count = 5;
+	short menu_music[3] = { 0, 1, 2 }, ingame_music[5] = { 3, 4, 5, 6, 7};
 
 	//private functions:
 	void initial_window();
@@ -39,7 +42,7 @@ private:
 	void initial_icon();
 	void initial_fps();
 	void calc_fps();
-	void initial_sfx();
+	void initial_sounds();
 
 public:
 	//public variables:

@@ -66,11 +66,13 @@ void Game::calc_fps()
 	fps_text.setCharacterSize(40 * ((float)window->getSize().y / 1080.0));
 }
 
-void Game::initial_sfx()
+void Game::initial_sounds()
 {
+	shuffle(ingame_music, ingame_music + ingame_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
+	shuffle(menu_music, menu_music + menu_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
+
 	click_buff.loadFromFile("Audio/ui/click.ogg");
 	click.setBuffer(click_buff);
-
 }
 
 void Game::erase_states(int exceptions[], int size = 0)
@@ -127,7 +129,7 @@ Game::Game()
 	initial_window();
 	initial_states();
 	initial_fps();
-	initial_sfx();
+	initial_sounds();
 	
 }
 
@@ -151,10 +153,22 @@ void Game::play_music(int track_num)
 
 	if (!music.getStatus()) {	
 		if (track_num == -1) {
-			if (states.find(GameID) != states.end() || states.find(WorldMapID) != states.end() || states.find(MapBuilderID) != states.end())
-				track_num = generate_random(3, 7);
-			else
-				track_num = generate_random(0, 2);
+			if (states.find(GameID) != states.end() || states.find(WorldMapID) != states.end() || states.find(MapBuilderID) != states.end()) {
+				if (ingame_music_idx > ingame_music_count - 1) {
+					ingame_music_idx = 0;
+					shuffle(ingame_music, ingame_music + ingame_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
+				}
+				track_num = ingame_music[ingame_music_idx];
+				ingame_music_idx++;
+			}
+			else {
+				if (menu_music_idx > menu_music_count - 1) {
+					menu_music_idx = 0;
+					shuffle(menu_music, menu_music + menu_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
+				}
+				track_num = menu_music[menu_music_idx];
+				menu_music_idx++;
+			}
 		}
 		music.openFromFile("Audio/Music/" + to_string(track_num) + ".ogg");
 		music.play();
