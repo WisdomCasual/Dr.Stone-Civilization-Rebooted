@@ -795,6 +795,7 @@ void MapBuilderState::pollevent()
 				}
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 				case Mouse::Middle:

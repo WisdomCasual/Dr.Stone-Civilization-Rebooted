@@ -10,6 +10,8 @@ void Game::initial_window()
 			ifs >> framelimit;
 			ifs >> fullscreen;
 			ifs >> vsync;
+			ifs >> game_volume;
+			ifs >> music_volume;
 		}
 		ifs.close();
 
@@ -62,6 +64,13 @@ void Game::calc_fps()
 	if (delay > 1.0) { fps = frame_sum / frame_count; delay = 0, frame_sum = 0, frame_count = 0; }
 	fps_text.setString("  FPS " + to_string(fps));
 	fps_text.setCharacterSize(40 * ((float)window->getSize().y / 1080.0));
+}
+
+void Game::initial_sfx()
+{
+	click_buff.loadFromFile("Audio/ui/click.ogg");
+	click.setBuffer(click_buff);
+
 }
 
 void Game::erase_states(int exceptions[], int size = 0)
@@ -118,7 +127,7 @@ Game::Game()
 	initial_window();
 	initial_states();
 	initial_fps();
-
+	initial_sfx();
 	
 }
 
@@ -135,7 +144,41 @@ Game::~Game()
 	states.clear();
 }
 
-void Game::update_window()
+void Game::play_music(int track_num)
+{
+	if (music.getVolume() != music_volume)
+		music.setVolume(music_volume);
+
+	if (!music.getStatus()) {	
+		if (track_num == -1) {
+			if (states.find(GameID) != states.end() || states.find(WorldMapID) != states.end() || states.find(MapBuilderID) != states.end())
+				track_num = generate_random(3, 7);
+			else
+				track_num = generate_random(0, 2);
+		}
+		music.openFromFile("Audio/Music/" + to_string(track_num) + ".ogg");
+		music.play();
+	}
+}
+
+void Game::play_sfx(int sfx_id)
+{
+	switch (sfx_id) {
+	case 0:
+		click.setVolume(game_volume);
+		click.setPitch(0.6);
+		click.play();
+		break;
+	case 1:
+		click.setVolume(game_volume);
+		click.setPitch(0.5);
+		click.play();
+		break;
+
+	}
+}
+
+void Game::save()
 {
 	ofstream ofs("config/window.ini");
 	if (ofs.is_open()) {
@@ -143,9 +186,17 @@ void Game::update_window()
 		ofs << windowbounds.width << ' ' << windowbounds.height << '\n';
 		ofs << framelimit << '\n';
 		ofs << fullscreen << '\n';
-		ofs << vsync;
+		ofs << vsync << '\n';
+		ofs << game_volume << ' ';
+		ofs << music_volume << '\n';
 		ofs.close();
 	}
+}
+
+void Game::update_window()
+{
+	save();
+
 	if (prev_res != windowbounds || prev_fullscreen != fullscreen)
 		delete window;
 	initial_window();
@@ -175,6 +226,8 @@ void Game::update()
 	pollevent();
 	calc_fps();
 	//calls update function of the top state in the map
+
+	play_music();
 
 	if (!states.empty())
 		this->states.rbegin()->second->update();

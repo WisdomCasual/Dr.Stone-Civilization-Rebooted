@@ -198,7 +198,7 @@ void NPC::update()
 		}
 	despawn_timer = game_time;
 	if (in_dialogue) {
-		states->insert({ DialogueID,new DialogueState(curr_dialogue,{win_x / 2, win_y - 70 * scale},scale / 2, curr_dialogue_num) });
+		states->insert({ DialogueID,new DialogueState(curr_dialogue,{0, 140}, 1, curr_dialogue_num) });
 		states->at(DialogueID)->update();
 		in_dialogue = 0;
 		//cout << "\n------------------------------------\n";

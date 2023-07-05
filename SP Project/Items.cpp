@@ -1,10 +1,9 @@
 #include "Items.h"
 
-
-
 Items::~Items()
 {
 }
+
 void Items::move()
 {
 	if (time <= 1.0 && !interact) {

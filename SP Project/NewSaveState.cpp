@@ -74,6 +74,8 @@ void NewSaveState::update_arrow()
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		back_arrow.setScale(scale * 1.2, scale * 1.2);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
+			if(!arrow_pressed)
+				game.play_sfx(1);
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
 			back_arrow.setScale(scale * 1.08, scale * 1.08);
@@ -105,7 +107,11 @@ void NewSaveState::update_buttons()
 		buttontex.setColor(Color(255, 255, 255, transparency));
 		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))confirm.pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
+				if(!confirm.pressed)
+					game.play_sfx(0);
+				confirm.pressed = 1;
+			}
 			else {
 				if (confirm.pressed)
 					confirm.execute = 1;
@@ -151,7 +157,11 @@ void NewSaveState::update_characters()
 		characters.setTextureRect({ i * 64,0,64,64 });
 		characters.setPosition(x - 60 * scale + 60 * scale * i, y + 20 * scale);
 		if (characters.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && characters.getGlobalBounds().contains(clicked_on))pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && characters.getGlobalBounds().contains(clicked_on)) {
+				if(!pressed && selected != i + 1)
+					game.play_sfx(0);
+				pressed = 1;
+			}
 		}
 		if (pressed)
 		{
@@ -237,7 +247,7 @@ NewSaveState::NewSaveState(int save_no)
 	// initializing the text box's text LoL
 
 	txt_box.initializeTextBox(test_str, *textures[2], "Enter name", Vector2f(win_x / 2.0, (win_y / 2) + 5 * scale), scale * 1.2);
-
+	txt_box.setLimit(162);
 	buttontex.setTexture(*textures[4]);
 	buttontex.setTextureRect(IntRect(0, 0, 108, 49));
 	buttontex.setOrigin(108 / 2, 49 / 2);
@@ -298,6 +308,7 @@ void NewSaveState::update()
 	if (confirmed) {
 		if (black_out()) {
 			//button functionality
+			game.music.stop();
 			add_save();
 			states->insert({ GameID, new GameState(save_no) });
 			states->at(GameID)->update();
@@ -364,6 +375,7 @@ void NewSaveState::pollevent()
 				game.update_window();
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:

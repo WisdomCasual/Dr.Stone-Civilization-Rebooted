@@ -167,6 +167,7 @@ void InventoryState::pollevent()
 				game.update_window();
 				break;
 			}
+			break;
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved) {
 

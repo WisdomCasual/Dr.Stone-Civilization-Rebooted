@@ -62,6 +62,8 @@ void NewMapState::update_arrow()
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		back_arrow.setScale(scale * 0.36, scale * 0.36);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
+			if(!arrow_pressed)
+				game.play_sfx(1);
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
 			back_arrow.setScale(scale * 0.33, scale * 0.33);
@@ -182,7 +184,11 @@ void NewMapState::update_buttons()
 		buttontex.setColor(Color(255, 255, 255, transparency));
 		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))confirm.pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
+				if(!confirm.pressed)
+					game.play_sfx(0);
+				confirm.pressed = 1;
+			}
 			else {
 				if (confirm.pressed)
 					confirm.execute = 1;
@@ -376,6 +382,7 @@ void NewMapState::pollevent()
 				initialize_sliders();
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:

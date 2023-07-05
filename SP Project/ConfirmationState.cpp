@@ -53,7 +53,15 @@ void ConfirmationState::update_buttons()
 	for (int i = 0; i < 2; i++) {
 		buttontex.setPosition(x + buttons[i].x * scale, y + buttons[i].y * scale);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))buttons[i].pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
+				if (!buttons[i].pressed) {
+					if(i)
+						game.play_sfx(0);
+					else
+						game.play_sfx(1);
+				}
+				buttons[i].pressed = 1;
+			}
 			else {
 				if (buttons[i].pressed)
 					buttons[i].execute = 1;
@@ -194,6 +202,7 @@ void ConfirmationState::pollevent()
 				game.update_window();
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:

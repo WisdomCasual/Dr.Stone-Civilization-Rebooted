@@ -7,7 +7,15 @@ void PauseState::update_buttons()
 		buttontex.setTextureRect(IntRect(0, buttons[i].pressed * 49, 190, 49));
 		buttontex.setPosition(x + buttons[i].x * scale * 0.33, y + buttons[i].y * scale * 0.33);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))buttons[i].pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
+				if (!buttons[i].pressed) {
+					if(i == 1)
+						game.play_sfx(0);
+					else
+						game.play_sfx(1);
+				}
+				buttons[i].pressed = 1;
+			}
 			else {
 				if (buttons[i].pressed)
 					*buttons[i].execute = 1;
@@ -173,6 +181,8 @@ void PauseState::update()
 	else if (exit) {
 		exit = 0; 
 
+		game.music.stop();
+
 		if(states->find(GameID) != states->end())
 			states->at(GameID)->save();
 		else if (states->find(MapBuilderID) != states->end())
@@ -214,6 +224,7 @@ void PauseState::pollevent()
 				game.update_window();
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:

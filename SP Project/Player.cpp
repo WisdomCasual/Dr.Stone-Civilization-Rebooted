@@ -23,7 +23,7 @@ void Player::player_movement(float x_movement,float y_movement,float velocity)
 		if (size_x * 16 * scale > win_x) {
 			if ((entity_sprite.getPosition().x + x_movement * scale >= 150 * scale || v_direction.x > 0) && (entity_sprite.getPosition().x + x_movement * scale < win_x - 150 * scale || v_direction.x <= 0))
 				move({ x_movement * scale,  0 });
-			else if ((-map_x + x_movement >= 0 || v_direction.x > 0) && (-map_x * scale + win_x <= (size_x - 1) * 16 * scale || v_direction.x < 0))
+			else if ((-map_x + x_movement >= 0 || v_direction.x > 0) && (-map_x * scale + win_x <= (size_x) * 16 * scale || v_direction.x < 0))
 				move_cam(x_movement, 0);
 			else if (entity_sprite.getPosition().x + x_movement * scale >= 0 && entity_sprite.getPosition().x + x_movement * scale < win_x - 5)
 				move({ x_movement * scale,  0 });
@@ -40,7 +40,7 @@ void Player::player_movement(float x_movement,float y_movement,float velocity)
 			if ((entity_sprite.getPosition().y + y_movement * scale >= 100 * scale || v_direction.y > 0) && (entity_sprite.getPosition().y + y_movement * scale < win_y - 100 * scale || v_direction.y <= 0))
 				move({ 0, y_movement * scale });
 
-			else if ((-map_y + y_movement >= 0 || v_direction.y > 0) && (-map_y * scale + win_y <= (size_y - 1) * 16 * scale || v_direction.y < 0))
+			else if ((-map_y + y_movement >= 0 || v_direction.y > 0) && (-map_y * scale + win_y <= (size_y) * 16 * scale || v_direction.y < 0))
 				move_cam(0, y_movement);
 
 			else if (entity_sprite.getPosition().y + y_movement * scale >= 0 && entity_sprite.getPosition().y + y_movement * scale < win_y - 5)
@@ -255,8 +255,6 @@ void Player::interaction_notification(string interaction_type)
 	string notification_s[] = { "Press 'F' To " + interaction_type};
 	game.notification(notification_s, 1, dt);
 }
-
-
 
 void Player::update()
 {

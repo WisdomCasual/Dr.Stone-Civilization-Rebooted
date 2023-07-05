@@ -1,7 +1,6 @@
 #include "SavesState.h"
 #include <filesystem>
 
-
 void SavesState::fade_in()
 {
 	if (transparency < 255) {
@@ -77,7 +76,11 @@ void SavesState::update_saves()
 		save_bg.setPosition(x + saves[i].x * scale, y + saves[i].y * scale);
 		if (save_bg.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			saves[i].hover = 1;
-			if (Mouse::isButtonPressed(Mouse::Left) && save_bg.getGlobalBounds().contains(clicked_on))saves[i].pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && save_bg.getGlobalBounds().contains(clicked_on)) {
+				if(!saves[i].pressed)
+					game.play_sfx(0);
+				saves[i].pressed = 1;
+			}
 			else {
 				if (saves[i].pressed)
 					if (saves[i].empty) {
@@ -98,7 +101,11 @@ void SavesState::update_saves()
 		}
 		del.setPosition(x + saves[i].x * scale, y + (saves[i].y + 115) * scale);
 		if (del.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && del.getGlobalBounds().contains(clicked_on))saves[i].del_pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && del.getGlobalBounds().contains(clicked_on)) {
+				if(!saves[i].del_pressed)
+					game.play_sfx(0);
+				saves[i].del_pressed = 1;
+			}
 			else {
 				saves[i].del_hover = 1;
 
@@ -222,6 +229,8 @@ void SavesState::update_arrow()
 		arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		arrow.setScale(scale * 0.8, scale * 0.8);
 		if (Mouse::isButtonPressed(Mouse::Left) && arrow.getGlobalBounds().contains(clicked_on)) {
+			if(!arrow_pressed)
+				game.play_sfx(1);
 			arrow_pressed = 1;
 			arrow.setTextureRect(IntRect(44, 0, 22, 21));
 			arrow.setScale(scale * 0.75, scale * 0.75);
@@ -288,6 +297,7 @@ void SavesState::update()
 	
 	if (selected_save) {
 		if (black_out()) {
+			game.music.stop();
 			states->insert({ GameID, new GameState(selected_save - 1) });
 			states->at(GameID)->update();
 			selected_save = 0;
@@ -350,6 +360,7 @@ void SavesState::pollevent()
 				game.update_window();
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:
