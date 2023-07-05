@@ -2,7 +2,7 @@
 
 Background::Background()
 {
-	bg_tex.loadFromFile("textures/background/" + to_string(generate_random(0, 4)) + ".png");
+	bg_tex.loadFromFile("textures/background/" + to_string(generate_random(0, 7)) + ".png");
 	bg.setTexture(bg_tex);
 	bg_x = bg.getGlobalBounds().width, bg_y = bg.getGlobalBounds().height;
 }
