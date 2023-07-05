@@ -146,8 +146,6 @@ void GameState::save()
 		map_ofs << '\n';
 
 
-
-
 		map_ofs << NPCs.curr_idx << '\n';
 
 		for (int i = 0; i < NPCs.curr_idx; i++) {
@@ -158,6 +156,19 @@ void GameState::save()
 			map_ofs << NPCs.entities[i]->persistant << ' ';
 			map_ofs << NPCs.entities[i]->npc_type << ' ';
 		}
+
+		map_ofs << '\n';
+
+
+		map_ofs << inventory_order.size << '\n';
+
+		nod* it = inventory_order.first;
+		while (it != nullptr) {
+			map_ofs << it->itm << ' ';
+			map_ofs << inventory_count[it->itm] << ' ';
+			it = it->link;
+		}
+
 		map_ofs << '\n';
 	}
 	map_ofs.close();
@@ -537,6 +548,18 @@ void GameState::load_saved_map(string map_name)
 			ifs >> NPCs.entities[i]->persistant ;
 			ifs >> NPCs.entities[i]->npc_type ;
 		}
+
+
+		ifs >> count;
+
+		int itm;
+		for (int i = 0; i < count; i++) {
+			ifs >> itm;
+			ifs >> inventory_count[itm];
+			inventory_order.add(itm);
+		}
+
+
 	}
 	ifs.close();
 
