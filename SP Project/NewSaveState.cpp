@@ -208,7 +208,7 @@ void NewSaveState::add_save()
 		ofs << 800 << ' ' << 800 << '\n';
 		ofs << -1 << '\n';
 		ofs << 0.0 << '\n';
-		ofs << 0.9 << ' ' << -0.01 << '\n';
+		ofs << 0.1 << ' ' << 0.01 << '\n';
 		ofs << -1 << '\n';
 	}
 	ofs.close();

@@ -3,7 +3,9 @@
 Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, bool persistant, double time_to_despawn, int id)
 	: entity_stats(entity_stats), map_x(map_x), map_y(map_y), size_x(size_x), size_y(size_y), static_map(static_map), player_entity(*player), x_offset(x_offset), y_offset(y_offset), destroy_object_location(destroy_object_location), time_to_despawn(time_to_despawn), persistant(persistant)
 {
-	this->size_x = size_x, this->size_y = size_y;
+	this->size_x = size_x;
+	this->size_y = size_y;
+	this->id = id;
 
 	despawn_timer = game_time;
 	tile_props = tile_props_ptr;
@@ -20,16 +22,20 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 		health = 1;
 	}
 	else {
-		//cout << "here2\n";
-		//initial_textures("game/entities/" + entity_name);
-		//cout << "here3\n";
+
 		if(!entity_stats.is_player)
 			current_hitbox = entity_stats.animations[state][current_move].hitbox_rect;
 		entity_sprite.setTexture(*entity_stats.textures[state]);
 		health = entity_stats.max_health, damage = entity_stats.base_damage;
-		//srand(time(0));
 	}
-	this->id = id;
+
+	if (entity_stats.buffers_count) {
+		sounds = new Sound[entity_stats.buffers_count];
+
+		for (int i = 0; i < entity_stats.buffers_count; i++)
+			sounds[i].setBuffer(*entity_stats.soundbuffers[i]);
+
+	}
 	
 	despawn_timer = game_time;
 	animation_delay = 1 / entity_stats.base_animation_speed;
@@ -37,7 +43,8 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 
 Entity::~Entity()
 {
-
+	if (sounds != nullptr)
+		delete[] sounds;
 }
 
 Vector2f Entity::getRelativePos()

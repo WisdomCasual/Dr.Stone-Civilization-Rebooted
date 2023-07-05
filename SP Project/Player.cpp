@@ -130,11 +130,13 @@ void Player::setPosition(float x_pos, float y_pos)
 
 void Player::use_tool()
 {
-	if (Lag >= 0.8&&stun<=0) {
+	if (Lag >= 0.8 && stun<=0) {
 		if (state == 3) { // sword
-			int hit_animation = generate_random(0, 1);
-			Hitbox_align(hit_animation);
-			action(hit_animation+1);
+			random_num = generate_random(0, 1);
+			Hitbox_align(random_num);
+			action(random_num + 1);
+			sounds[random_num].setVolume(game_volume);
+			sounds[random_num].play();
 		}
 		else if (state == 2 || state == 1) { // axe / pickaxe
 			mine();
@@ -201,6 +203,17 @@ void Player::mine()
 			else break;
 
 		if (static_map[core_location.x][core_location.y].tool_type == state) {
+			if (state == 2) {
+				random_num = generate_random(2, 5);
+				sounds[random_num].setVolume(game_volume);
+				sounds[random_num].play();
+			}
+			else if (state == 1) {
+				random_num = generate_random(6, 9);
+				sounds[random_num].setVolume(game_volume);
+				sounds[random_num].play();
+			}
+
 			tool_used_on = { destroy_location.x * 16 + 8, destroy_location.y * 16 + 8};
 
 		   (*destructable_objects)[static_map[core_location.x][core_location.y].object_ID].health -= destruction_power;
@@ -292,6 +305,13 @@ void Player::update()
 	}
 	if (Lag < 0.8)
 		Lag += dt;
+
+	if (state == 0 && !sounds[10].getStatus() && !sounds[11].getStatus() && !sounds[12].getStatus() && !sounds[13].getStatus()) {
+		random_num = generate_random(10, 13);
+		sounds[random_num].setVolume(game_volume);
+		sounds[random_num].play();
+	}
+
 
 	if (stun <= 0) {
 		//cout << "here\n";
