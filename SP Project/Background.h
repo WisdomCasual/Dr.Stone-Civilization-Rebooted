@@ -8,6 +8,7 @@ struct Background : public State
 {
 private:
 	Sprite bg;
+	Texture bg_tex;
 	float win_x = 0, win_y = 0; //<-- window dimentions
 	float bg_x = 0, bg_y = 0;   //<-- image dimentions
 	float scale = 0;
