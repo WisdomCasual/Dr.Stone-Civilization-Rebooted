@@ -163,6 +163,33 @@ void GameState::save()
 	map_ofs.close();
 }
 
+void GameState::initial_sounds()
+{
+	//loads the current state's Sounds files
+	string audio_name;
+	ifstream ifs("Audio/Game Sounds/soundnames.ini");
+	if (ifs.is_open()) {
+		SoundBuffer temp_buffers[100];
+		int sounds_count = 0;
+		while (!ifs.eof()) {
+			getline(ifs, audio_name);
+			temp_buffers[sounds_count].loadFromFile("Audio/Game Sounds/" + audio_name + ".ogg");
+			sounds_count++;
+		}
+		sounds_no = sounds_count;
+		sound_buffers = new SoundBuffer [sounds_count];
+
+		for (int i = 0; i < sounds_count; i++)
+		{
+			sound_buffers[i] = temp_buffers[i];
+		}
+		//delete[] temp_buffers;
+		//delete[] temp_sounds;
+	}
+	ifs.close();
+	globalvar::dtclock.restart();
+}
+
 void GameState::load_game()
 {
 	ifstream ifs("Saves/Save " + to_string(save_num + 1) + "/Save.dat");
@@ -588,6 +615,13 @@ void GameState::load_entities(float player_relative_y_pos)
 		player_stats.animations[i][7] = { 5, {0, 1365 + 2 * 128, 128, 128}, {30,14}, {64,70} }; //front
 	}
 
+	player_stats.buffers_count = 14;
+	player_stats.soundbuffers = new SoundBuffer* [player_stats.buffers_count];
+
+	for(int i = 0; i < player_stats.buffers_count; i++)
+		player_stats.soundbuffers[i] = &sound_buffers[i];
+
+
 	//animals
 	//lion
 	enemy_stats[0].animations = new animation * [1];
@@ -700,6 +734,8 @@ void GameState::load_entities(float player_relative_y_pos)
 	item_stats.textures_count = 1;
 	item_stats.textures = new Texture * [item_stats.textures_count];
 	item_stats.textures[0] = new Texture;
+
+	item_pickup_sound.setBuffer(sound_buffers[14]);
 
 	item_stats.textures[0]->loadFromFile("textures/game/item drops.png");
 
@@ -1336,6 +1372,8 @@ GameState::GameState(int save_num)
 
 	initial_tile_sheets("game/tiles");
 	initial_textures("game");
+	initial_sounds();
+
 
 	load_game();
 	set_textures();
@@ -1351,6 +1389,9 @@ GameState::~GameState()
 
 	if (player_entity != nullptr)
 		delete player_entity;
+
+	if (sound_buffers != nullptr)
+		delete[] sound_buffers;
 }
 
 void GameState::update()
@@ -1532,11 +1573,10 @@ void GameState::update()
 
 	for (int i = 0; i < items.curr_idx; i++) {
 
-		if(!items.entities[i]->despawn){
-			if(entity_in_range(items.entities[i]->pos, entity_update_distance))
-				items.entities[i]->update();
-		}
 		if (items.entities[i]->despawn) {
+
+			item_pickup_sound.setVolume(game_volume);
+			item_pickup_sound.play();
 
             // add item to player_inventory
 			if (!inventory_count[items.entities[i]->id])
@@ -1546,6 +1586,10 @@ void GameState::update()
 			items.rem_ove(i);
 			i--;
 			
+		}
+		else{
+			if(entity_in_range(items.entities[i]->pos, entity_update_distance))
+				items.entities[i]->update();
 		}
 		
 	}
@@ -1666,14 +1710,16 @@ void GameState::pollevent()
 			break;
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved) {
-				int new_state = player_entity->state + event.mouseWheel.delta;
-				if (new_state > 4) new_state = 4;
-				else if (new_state < 0) new_state = 0;
-				player_entity->change_state(new_state);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
-				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
-				if(new_state!=4)
-					tool_icons[(3 - player_entity->state)].setColor(Color(255, 255, 255));
+				if (!player_entity->active_action) {
+					int new_state = player_entity->state + event.mouseWheel.delta;
+					if (new_state > 4) new_state = 4;
+					else if (new_state < 0) new_state = 0;
+					player_entity->change_state(new_state);
+					hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+					tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
+					if (new_state != 4)
+						tool_icons[(3 - player_entity->state)].setColor(Color(255, 255, 255));
+				}
 			}
 		}
 	}

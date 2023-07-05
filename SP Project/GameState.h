@@ -29,7 +29,7 @@ struct GameState : public State
 private:
 	//variables:
 
-	bool no_update=0;
+	bool no_update = 0;
 	dialogue death_message[2] = { {"Senku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Senku: " ,"Press F to respawn..\n/E2Better luck next time!", 1, 1} };
 
 
@@ -41,6 +41,7 @@ private:
 	Shader shader;
 	entity player_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
 	Player* player_entity = nullptr;
+	Sound item_pickup_sound;
 
 	string current_map;
 	int character_id, save_num, current_quest;
@@ -48,7 +49,7 @@ private:
 	/////enemy spawning variables/////
 	float spawn_cd = 0;
 	short spawn_type = 0, left_bound, right_bound, up_bound, down_bound, screen_length, screen_height, spawn_x, spawn_y, spawn_total;         // if %2 = 1 then enemy, else then passive
-	const float def_spawn_cd = 5.0;
+	const float def_spawn_cd = 3.0;
 	const short spawn_dist = 6, entity_render_distance = 5 * 16, object_render_distance = 3 * 16, entity_update_distance = 30 * 16,
 				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
 
@@ -323,9 +324,14 @@ private:
 	in_order inventory_order;
 	unsigned short inventory_count[50]{};
 
+	int sounds_no = 0;
+	SoundBuffer* sound_buffers = nullptr;
+
+
 	//private functions:
 	void black_in();
 	bool black_out();
+	void initial_sounds();
 	void load_game();
 	void set_textures();
 	void search_front(int, int, int, Vector3i***, bool***, int);

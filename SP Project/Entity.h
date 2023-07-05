@@ -18,7 +18,8 @@ struct entity {
 	//states[]->moves[]->animation{}
 	animation** animations = nullptr;
 	Texture** textures = nullptr;
-	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no = 0, textures_count = 0;
+	SoundBuffer** soundbuffers = nullptr;
+	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no = 0, textures_count = 0, buffers_count = 0;
 	float scale_const = 1, base_animation_speed = 16.6667f;
 
 	bool is_player = 0;
@@ -38,6 +39,9 @@ struct entity {
 					delete[] animations[i];
 			delete[] animations;
 		}
+
+		if (soundbuffers != nullptr)
+			delete[] soundbuffers;
 	}
 };
 
@@ -194,10 +198,11 @@ public:
 	Vector2u prev_win = { 0, 0 };
 	const Vector2i hitbox_check[2][2] = { {{1, 0}, {0, -1}}, {{0, 1}, {-1, 0}} };
 	Vector2i current_direction = { 0,1 };
-	int active_action = 0, move_for = 0;
+	int active_action = 0, move_for = 0, random_num = 0;
 	Vector2f pos = { 0, 0 };
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
+	Sound* sounds = nullptr;
 
 	float combat_tag = 0.f;
 	float combat_status_time = 5.0f;

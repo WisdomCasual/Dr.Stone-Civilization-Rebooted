@@ -71,7 +71,7 @@ void Game::initial_sounds()
 	shuffle(ingame_music, ingame_music + ingame_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
 	shuffle(menu_music, menu_music + menu_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
 
-	click_buff.loadFromFile("Audio/ui/click.ogg");
+	click_buff.loadFromFile("Audio/UI/click.ogg");
 	click.setBuffer(click_buff);
 }
 
