@@ -145,6 +145,7 @@ void MiniMapState::pollevent()
 				game.update_window();
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:

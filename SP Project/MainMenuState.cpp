@@ -36,10 +36,15 @@ void MainMenuState::update_buttons()
 		buttontex.setTextureRect(IntRect(0,button.pressed * 49, 190, 49));
 		buttontex.setPosition(x+button.x * scale, y+button.y * scale);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))button.pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
+				if(!button.pressed)
+					game.play_sfx(0);
+				button.pressed = 1;
+			}
 			else {
-				if (button.pressed)
+				if (button.pressed) {
 					button.execute = 1;
+				}
 				button.pressed = 0; 
 			}
 			button.hover = 1;
@@ -180,6 +185,7 @@ void MainMenuState::pollevent()
 				game.update_window();
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:

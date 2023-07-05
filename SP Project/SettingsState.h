@@ -40,7 +40,7 @@ private:
     Color color;
     int save_framelimit = 120, save_volume = 100, save_music = 100;
 
-    short resolution = resnum, framelimit = framelimnum, game_volume = 100, music_volume = 100, prev_resolution = resnum, prev_framelimit = framelimnum;
+    short resolution = resnum, framelimit = framelimnum, prev_resolution = resnum, prev_framelimit = framelimnum;
     VideoMode resolutions[resnum + 1] = { {800, 600}, {1280, 720}, {1280, 800}, {1366, 768}, {1920, 1080}, {1920, 1200}, {2560, 1440}, {2560, 1600}, {3840, 2160}, {3840, 2400} };
     string framelimits[framelimnum + 1] = { "30", "60", "90", "120", "144", "165", "Unlocked"}; //<-- last slot reserved for custom paramaters ^
     short framelimit_values[framelimnum + 1] = { 30, 60, 90, 120, 144, 165, 5000 };

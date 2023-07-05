@@ -76,6 +76,8 @@ void SettingsState::update_arrow()
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		back_arrow.setScale(scale * 0.3, scale * 0.3);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
+			if(!arrow_pressed)
+				game.play_sfx(1);
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
 			back_arrow.setScale(scale * 0.27, scale * 0.27);
@@ -91,6 +93,8 @@ void SettingsState::update_arrow()
 
 				if(framelimit != prev_framelimit || resolution != prev_resolution)
 					game.update_window();
+				else
+					game.save();
 
 				exit = true;
 			}
@@ -119,6 +123,8 @@ void SettingsState::dev_button()
 	// detect for clicks
 	if (devbutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		if (Mouse::isButtonPressed(Mouse::Left) && devbutton.getGlobalBounds().contains(clicked_on)) {
+			if(!button_pressed)
+				game.play_sfx(0);
 			button_pressed = 1;
 			devtext.setPosition(x + 35 * scale, y + 35.4 * scale);
 			devbutton.setTextureRect(IntRect(45, 0, 45, 49));
@@ -340,7 +346,15 @@ void SettingsState::update_checkbox(int i)
 
 	checkbox.setPosition(x + checkboxes[i].x * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale);
 	if (checkbox.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-		if (Mouse::isButtonPressed(Mouse::Left) && checkbox.getGlobalBounds().contains(clicked_on)) checkboxes[i].pressed = 1;
+		if (Mouse::isButtonPressed(Mouse::Left) && checkbox.getGlobalBounds().contains(clicked_on)) {
+			if (!checkboxes[i].pressed) {
+				if(checkboxes[i].checked)
+					game.play_sfx(1);
+				else
+					game.play_sfx(0);
+			}
+			checkboxes[i].pressed = 1;
+		}
 		else {
 			if (checkboxes[i].pressed) {
 				if (checkboxes[i].checked)
@@ -569,6 +583,7 @@ void SettingsState::pollevent()
 				settings_intializer();
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:

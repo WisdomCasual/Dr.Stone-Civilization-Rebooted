@@ -39,9 +39,13 @@ private:
 	void initial_icon();
 	void initial_fps();
 	void calc_fps();
+	void initial_sfx();
 
 public:
 	//public variables:
+	Music music;
+	SoundBuffer click_buff;
+	Sound click;
 	string title = "none";
 	VideoMode windowbounds = { 800, 600 }, prev_res = { 0, 0 };
 	int framelimit = 120;
@@ -54,6 +58,9 @@ public:
 	~Game();
 
 	//public functions:
+	void play_music(int track_num = -1);
+	void play_sfx(int);
+	void save();
 	void update_window();
 	void updatedt();
 	void pollevent();

@@ -77,7 +77,8 @@ void WorldMapState::update_pins()
 
 		if ((pin.getGlobalBounds().contains(mouse_pos) || namebox.getGlobalBounds().contains(mouse_pos)) && !selected && !new_map) {
 			if (Mouse::isButtonPressed(Mouse::Left) && (namebox.getGlobalBounds().contains(clicked_on) || pin.getGlobalBounds().contains(clicked_on))) {
-
+				if(!pn->second.pressed)
+					game.play_sfx(0);
 				pn->second.pin_scale = scale * 2.9;
 				pn->second.namebox_scale = scale * 1.44;
 				pn->second.text_size = 50 * scale;
@@ -328,6 +329,7 @@ void WorldMapState::pollevent()
 				if (admin)
 					del = 1; break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:

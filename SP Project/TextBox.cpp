@@ -1,5 +1,5 @@
 #include "TextBox.h"
-
+#include "Game.h"
 
 TextBox::TextBox()
 {
@@ -41,6 +41,11 @@ void TextBox::setPosition(const Vector2f new_position)
 	placeholder_text.setPosition(position);
 }
 
+void TextBox::setLimit(float limit)
+{
+	this->limit = limit;
+}
+
 void TextBox::setScale(const float new_scale)
 {
 	scale = new_scale;
@@ -48,7 +53,6 @@ void TextBox::setScale(const float new_scale)
 	inputted_text.setCharacterSize(40 * scale);
 	placeholder_text.setCharacterSize(40 * scale);
 }
-
 
 void TextBox::setPlaceholderText(const string placeholder)
 {
@@ -61,8 +65,11 @@ void TextBox::text_poll(Event event)
 	switch (event.type) {
 	case Event::MouseButtonPressed:
 		if (event.mouseButton.button == Mouse::Left) {
-			if (box.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window))))
+			if (box.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+				if(!isActive)
+					game.play_sfx(0);
 				isActive = 1;
+			}
 			else {
 				isActive = 0;
 				save_text();
@@ -74,6 +81,7 @@ void TextBox::text_poll(Event event)
 	case Event::TextEntered:
 		if (isActive) {
 			if (event.text.unicode == 13) {
+				game.play_sfx(0);
 				submit();
 				isActive = 0;
 			}
@@ -89,7 +97,7 @@ void TextBox::text_poll(Event event)
 					pw_string.pop_back();
 				}
 			}
-			if (event.text.unicode > 31 && event.text.unicode < 127 && event.text.unicode != 96 && input_string.size() < character_limit && text_x_bound < box_x_bound) {
+			if (event.text.unicode > 31 && event.text.unicode < 127 && event.text.unicode != 96 && input_string.size() < character_limit && text_x_bound < box_x_bound && text_x_bound < limit * scale) {
 				if (selected) {
 					input_string.clear();
 					pw_string.clear();
@@ -107,7 +115,7 @@ void TextBox::text_poll(Event event)
 					input_string.clear();
 					pw_string.clear();
 				}
-				for (int i = 0; i < clipboard.size() && input_string.size() < character_limit && text_x_bound < box_x_bound; i++) {
+				for (int i = 0; i < clipboard.size() && input_string.size() < character_limit && text_x_bound < box_x_bound && text_x_bound < limit * scale; i++) {
 					if (clipboard[i] > 31 && clipboard[i] < 127 && clipboard[i] != 96) {
 						input_string += clipboard[i];
 						pw_string += '*';
@@ -188,8 +196,6 @@ void TextBox::submit()
 		*submit_bool = 1;
 }
 
-
-
 void TextBox::update()
 {
 	inputted_text.setString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
@@ -221,5 +227,3 @@ void TextBox::update()
 		delay = 0;
 
 }
-
-

@@ -60,6 +60,8 @@ void PasswordState::update_arrow()
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		back_arrow.setScale(scale * 0.4, scale * 0.4);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
+			if(!arrow_pressed)
+				game.play_sfx(1);
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
 			back_arrow.setScale(scale * 0.36, scale * 0.36);
@@ -91,7 +93,11 @@ void PasswordState::update_buttons()
 			buttontex.setColor(Color(255, 255, 255, transparency));
 		buttontex.setPosition(x + confirm.x * scale / 3.5, y + confirm.y * scale / 3.5);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on))confirm.pressed = 1;
+			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
+				if(!confirm.pressed)
+					game.play_sfx(0);
+				confirm.pressed = 1;
+			}
 			else {
 				if (confirm.pressed)
 					confirm.execute = 1;
@@ -218,6 +224,7 @@ void PasswordState::update()
 		}
 	}
 	else if (proceed) {
+		game.music.stop();
 		if (fade_out()) {
 			proceed = false;
 			string placeholer;
@@ -280,6 +287,7 @@ void PasswordState::pollevent()
 				game.update_window();
 				break;
 			}
+			break;
 		case Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case Mouse::Left:
