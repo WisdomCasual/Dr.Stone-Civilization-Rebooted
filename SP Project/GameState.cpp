@@ -60,6 +60,8 @@ void GameState::save()
 
 		//save static map
 		map_ofs << size_x << ' ' << size_y << '\n';
+		map_ofs << respawn_point.x << ' ' << respawn_point.y << '\n';
+
 		for (int i = 0; i < size_x; i++)
 			for (int j = 0; j < size_y; j++) {
 				map_ofs << static_map[i][j].size << ' ';
@@ -339,6 +341,10 @@ void GameState::load_initial_map(string map_name)
 							else if (tle.x == 15)
 								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), 0.5, true) });
 						}
+						if (tle.y == 17 && tle.z == 3) {
+							if (tle.x == 0)
+								respawn_point = {i * 16.0f + 8.0f, j * 16.0f + 8.0f};
+						}
 					}
 					else {
 						if (layer_prop & 32) {
@@ -414,6 +420,8 @@ void GameState::load_saved_map(string map_name)
 
 		//save static map
 		ifs >> size_x >> size_y;
+
+		ifs >> respawn_point.x >> respawn_point.y;
 
 		static_map = new render_tile * [size_x];
 
@@ -846,6 +854,8 @@ void GameState::initial_game(string current_map, Vector2f player_pos)
 	minimap.setOrigin(minimap.getLocalBounds().width / 2, minimap.getLocalBounds().height / 2);
 
 	load_map(current_map);
+	if (player_pos.x == -1)
+		player_pos = respawn_point;
 	center_cam(player_pos);
 
 	if (current_map == "Doz World") {   //<-add indoor maps here
@@ -895,15 +905,9 @@ void GameState::maps_travel()
 		if (black_out()) {
 			save();
 			// maybe add time zone changes
-			if (travel_map == "Doz World") {
-				initial_game(travel_map, { 264, 264 });
-			}
-			else if (travel_map == "maze") {
-				initial_game(travel_map, { 712.f, 1864.f });
-			}
-			else if(travel_map == "Sheraton")
-				initial_game("Sheraton", { 800, 800 });
+			initial_game(travel_map, travel_location);
 			travel_map.clear();
+			travel_location = { -1, -1 };
 		}
 	}
 	else
@@ -1240,6 +1244,7 @@ void GameState::block_interactions_list(Vector2i interaction_tile)
 	else if (current_map == "Doz World") {
 		if (interaction_tile.x >= 22 && interaction_tile.x <= 26 && interaction_tile.y == 29) {
 			travel_map = "Sheraton";
+			travel_location = { 746.f, 426.f };
 		}
 	}
 }

@@ -320,6 +320,7 @@ private:
 	Sprite tile, hotbar, hotbar_selection, health_indicator, tool_icons[4], minimap, minimap_frame;
 	CircleShape player_pointer, waypoint_pointer, quest_pointer;
 	string travel_map;
+	Vector2f travel_location = { -1, -1 };
 	short item_drops[5], item_drops_count = -1;
 	in_order inventory_order;
 	unsigned short inventory_count[50]{};
