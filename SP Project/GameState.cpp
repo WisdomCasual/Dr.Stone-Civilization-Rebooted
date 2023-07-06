@@ -1006,12 +1006,6 @@ void GameState::render_static_map()
 			else
 				static_map[i][j].time = game_time;
 		}
-
-	//render effects
-	for (int i = 0; i < effects.curr_idx; i++) {
-		effects.animations[i]->render(&shader);
-	}
-
 }
 
 void GameState::render_entities()
@@ -1065,6 +1059,19 @@ void GameState::render_entities()
 			dynamic_rendering.insert({ NPCs.entities[i]->pos.y, {-1, NPCs.entities[i]} });
 		}
 	}
+
+	//render effects
+	for (int i = 0; i < effects.curr_idx; i++) {
+		if (effects.animations[i]->pos.y >= -map_y - entity_render_distance &&
+			effects.animations[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			effects.animations[i]->pos.x >= -map_x - entity_render_distance &&
+			effects.animations[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			if (effects.animations[i]->despawn)
+				continue;
+			dynamic_rendering.insert({ (float)effects.animations[i]->pos.y, {-1, nullptr, effects.animations[i]} });
+		}
+	}
+
 	//int debug_ctr = 0;
 	//cout << "total entities/objects: " << dynamic_rendering.size() << '\n';
 	for (auto i = dynamic_rendering.lower_bound(-map_y - min(entity_render_distance, object_render_distance) - 32.f);
@@ -1102,14 +1109,23 @@ void GameState::render_entities()
 
 			i++;
 		}
+		else if(i->second.entity != nullptr){
+			if (i->second.entity->despawn) {
+				i = dynamic_rendering.erase(i);
+				continue;
+			}
+			i->second.entity->render(&shader);
+			i->second.entity = nullptr;
+			i = dynamic_rendering.erase(i);
+		}
 		else {
-			if (i->second.entity != nullptr) {
-				if (i->second.entity->despawn) {
+			if (i->second.effect != nullptr) {
+				if (i->second.effect->despawn) {
 					i = dynamic_rendering.erase(i);
-					return;
+					continue;
 				}
-				i->second.entity->render(&shader);
-				i->second.entity = nullptr;
+				i->second.effect->render(&shader);
+				i->second.effect = nullptr;
 			}
 			i = dynamic_rendering.erase(i);
 		}

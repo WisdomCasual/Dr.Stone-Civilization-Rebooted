@@ -290,7 +290,7 @@ private:
 	}dynamic_map;
 
 	struct pointr {
-		short tile = -1; Entity* entity = nullptr;
+		short tile = -1; Entity* entity = nullptr; Animation* effect = nullptr;
 	};
 
 	struct light {
