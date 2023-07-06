@@ -201,15 +201,16 @@ void NewSaveState::add_save()
 	ofstream ofs("Saves/Save " + to_string(save_no + 1) + "/Save.dat", ofstream::out, ofstream::trunc);
 
 	if (ofs.is_open()) {
-		ofs << test_str << '\n';
-		ofs << (int)selected << '\n';
-		ofs << 0 << '\n';
-		ofs << "Sheraton" << '\n';
-		ofs << 800 << ' ' << 800 << '\n';
-		ofs << -1 << '\n';
-		ofs << 0.0 << '\n';
-		ofs << 0.1 << ' ' << 0.01 << '\n';
-		ofs << -1 << '\n';
+		ofs << test_str << '\n';                // <-- name
+		ofs << (int)selected << '\n';           // <-- selected character ID
+		ofs << 0 << '\n';                       // <-- current quest
+		ofs << "Sheraton" << '\n';              // <-- current map
+		ofs << 800 << ' ' << 800 << '\n';       // <-- current position
+		ofs << -1 << '\n';                      // <-- current health
+		ofs << 0.0 << '\n';                     // <-- current game time
+		ofs << 0.1 << ' ' << 0.01 << '\n';      // <-- current light level - time increments
+		ofs << -1 << '\n';                      // <-- current quest index
+		ofs << 0 << '\n';                       // <-- current number of items in inventory
 	}
 	ofs.close();
 }

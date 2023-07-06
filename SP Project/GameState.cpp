@@ -39,6 +39,17 @@ void GameState::save()
 		ofs << game_time << '\n';
 		ofs << light_level << ' ' << day_increment << '\n';
 		ofs << quest_idx << '\n';
+
+		ofs << inventory_order.size << '\n';
+
+		nod* it = inventory_order.first;
+		while (it != nullptr) {
+			ofs << it->itm << ' ';
+			ofs << inventory_count[it->itm] << ' ';
+			it = it->link;
+		}
+
+		ofs << '\n';
 	}
 	ofs.close();
 	
@@ -159,17 +170,6 @@ void GameState::save()
 
 		map_ofs << '\n';
 
-
-		map_ofs << inventory_order.size << '\n';
-
-		nod* it = inventory_order.first;
-		while (it != nullptr) {
-			map_ofs << it->itm << ' ';
-			map_ofs << inventory_count[it->itm] << ' ';
-			it = it->link;
-		}
-
-		map_ofs << '\n';
 	}
 	map_ofs.close();
 }
@@ -210,16 +210,24 @@ void GameState::load_game()
 
 	ifs.seekg(ios::beg);
 	if (ifs.is_open()) {
-		getline(ifs, character_name);
-		ifs >> character_id;
-		ifs >> current_quest;
-		ifs.ignore();
-		getline(ifs, current_map);
-		ifs >> player_pos.x >> player_pos.y;
-		ifs >> health;
-		ifs >> game_time;
-		ifs >> light_level >> day_increment;
-		ifs >> quest_idx;
+		getline(ifs, character_name);              // <-- name
+		ifs >> character_id;				  	   // <-- selected character ID
+		ifs >> current_quest;					   // <-- current quest
+		ifs.ignore();									   
+		getline(ifs, current_map);                 // <-- current map
+		ifs >> player_pos.x >> player_pos.y;	   // <-- current position
+		ifs >> health;							   // <-- current health
+		ifs >> game_time;						   // <-- current game time
+		ifs >> light_level >> day_increment;	   // <-- current light level - time increments
+		ifs >> quest_idx;						   // <-- current quest index
+		
+		int itm, count;
+		ifs >> count;                              // <-- current number of items in inventory
+		for (int i = 0; i < count; i++) {
+			ifs >> itm;                            // <-|
+			ifs >> inventory_count[itm];           // <-| inventory items
+			inventory_order.add(itm);              // <-|
+		}
 	}
 	ifs.close();
 
@@ -548,17 +556,6 @@ void GameState::load_saved_map(string map_name)
 			ifs >> NPCs.entities[i]->persistant ;
 			ifs >> NPCs.entities[i]->npc_type ;
 		}
-
-
-		ifs >> count;
-
-		int itm;
-		for (int i = 0; i < count; i++) {
-			ifs >> itm;
-			ifs >> inventory_count[itm];
-			inventory_order.add(itm);
-		}
-
 
 	}
 	ifs.close();
