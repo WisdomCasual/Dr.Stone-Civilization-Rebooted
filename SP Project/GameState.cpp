@@ -575,6 +575,7 @@ void GameState::search_front(int x, int y, int layr, Vector3i*** temp_front, boo
 {
 	update_minimap_tile(Vector2i(x * 2, y * 2), temp_front[layr][x][y]);
 	vis[layr][x][y] = 1;
+
 	for (int i = 0; i < 4; i++) {
 		int new_x = x + dx[i], new_y = y + dy[i];
 		if (new_x < size_x && new_y < size_y && new_x >= 0 && new_y >= 0 && temp_front[layr][new_x][new_y].x && !vis[layr][new_x][new_y]) {
