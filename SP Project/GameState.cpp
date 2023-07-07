@@ -411,6 +411,7 @@ void GameState::load_initial_map(string map_name)
 	}
 
 	initial_entities();
+	minimap_tex.loadFromImage(minimap_img);
 }
 
 void GameState::load_saved_map(string map_name)
@@ -568,7 +569,7 @@ void GameState::load_saved_map(string map_name)
 	}
 	ifs.close();
 
-
+	minimap_tex.loadFromImage(minimap_img);
 }
 
 void GameState::search_front(int x, int y, int layr, Vector3i*** temp_front, bool*** vis, int idx)
@@ -1155,8 +1156,11 @@ void GameState::render_entities()
 		}
 	}
 
-	if(dynamic_update_minimap)
+	if (dynamic_update_minimap) {
 		dynamic_update_minimap--;
+		if (!dynamic_update_minimap)
+			minimap_tex.loadFromImage(minimap_img);
+	}
 
 	//cout << "total rendering: " << debug_ctr << '\n';
 }
@@ -1410,7 +1414,6 @@ void GameState::update_minimap_tile(Vector2i position, Vector3i tile)
 			}
 			minimap_img.setPixel(position.x + k, position.y + l, Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
 		}
-	minimap_tex.update(pixels, 2, 2, position.x, position.y);
 }
 
 void GameState::check_in_inventory(int id)
