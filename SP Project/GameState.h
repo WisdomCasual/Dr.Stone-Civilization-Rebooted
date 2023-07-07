@@ -343,6 +343,8 @@ private:
 	void deload_map();
 	void initial_stats();
 	void initial_game(string, Vector2f);
+	void cam_movement();
+	void move_cam(float, float);
 	void center_cam(Vector2f);
 	void maps_travel();
 	void destroyANDrestore_objects(Vector2i, bool);

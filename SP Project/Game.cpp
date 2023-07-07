@@ -180,12 +180,12 @@ void Game::play_sfx(int sfx_id)
 	switch (sfx_id) {
 	case 0:
 		click.setVolume(game_volume);
-		click.setPitch(0.6);
+		click.setPitch(0.65 - generate_random_f(0.f, 0.1f));
 		click.play();
 		break;
 	case 1:
 		click.setVolume(game_volume);
-		click.setPitch(0.5);
+		click.setPitch(0.55 - generate_random_f(0.f, 0.1f));
 		click.play();
 		break;
 

@@ -17,8 +17,8 @@ struct Player :
 private:
 
 	//private functions
-	void move_cam(float, float);
 	void player_movement(float,float,float);
+	void updatePos();
 	Vector2f delta_movement();
 
 	//Private variables
