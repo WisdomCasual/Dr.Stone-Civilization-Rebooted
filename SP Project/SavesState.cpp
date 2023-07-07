@@ -75,6 +75,7 @@ void SavesState::update_saves()
 		save_bg.setTextureRect(IntRect(0, saves[i].pressed * 100, 100, 200));
 		save_bg.setPosition(x + saves[i].x * scale, y + saves[i].y * scale);
 		if (save_bg.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			clickable_cursor = true;
 			saves[i].hover = 1;
 			if (Mouse::isButtonPressed(Mouse::Left) && save_bg.getGlobalBounds().contains(clicked_on)) {
 				if(!saves[i].pressed)
@@ -99,31 +100,34 @@ void SavesState::update_saves()
 			saves[i].pressed = 0;
 			saves[i].hover = 0;
 		}
-		del.setPosition(x + saves[i].x * scale, y + (saves[i].y + 115) * scale);
-		if (del.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-			if (Mouse::isButtonPressed(Mouse::Left) && del.getGlobalBounds().contains(clicked_on)) {
-				if(!saves[i].del_pressed)
-					game.play_sfx(0);
-				saves[i].del_pressed = 1;
+		if(!saves[i].empty){
+			del.setPosition(x + saves[i].x * scale, y + (saves[i].y + 115) * scale);
+			if (del.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+				clickable_cursor = true;
+				if (Mouse::isButtonPressed(Mouse::Left) && del.getGlobalBounds().contains(clicked_on)) {
+					if (!saves[i].del_pressed)
+						game.play_sfx(0);
+					saves[i].del_pressed = 1;
+				}
+				else {
+					saves[i].del_hover = 1;
+
+					if (saves[i].del_pressed) {
+						//delete save //////////////////
+						del_save_no = i + 1;
+						string strings_array[] = { "Are you sure that you", "want to delete", '"' + saves[i].name + '"' };
+						states->insert({ ConfirmationID, new ConfirmationState(strings_array, 3, del_save) });
+						states->at(ConfirmationID)->update();
+						saves[i].del_hover = 0;
+					}
+					saves[i].del_pressed = 0;
+				}
+
 			}
 			else {
-				saves[i].del_hover = 1;
-
-				if (saves[i].del_pressed) {
-					//delete save //////////////////
-					del_save_no = i + 1;
-					string strings_array[] = { "Are you sure that you", "want to delete", '"' + saves[i].name + '"'};
-					states->insert({ ConfirmationID, new ConfirmationState(strings_array, 3, del_save) });
-					states->at(ConfirmationID)->update();
-					saves[i].del_hover = 0;
-				}
 				saves[i].del_pressed = 0;
+				saves[i].del_hover = 0;
 			}
-			
-		}
-		else {
-			saves[i].del_pressed = 0;
-			saves[i].del_hover = 0;
 		}
 	}
 }
@@ -226,6 +230,7 @@ void SavesState::update_arrow()
 {
 	arrow.setPosition(x - 180 * scale, y - 120 * scale);
 	if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		clickable_cursor = true;
 		arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		arrow.setScale(scale * 0.8, scale * 0.8);
 		if (Mouse::isButtonPressed(Mouse::Left) && arrow.getGlobalBounds().contains(clicked_on)) {

@@ -71,6 +71,7 @@ void NewSaveState::update_arrow()
 
 	back_arrow.setPosition(x - 112  * scale, y - 104 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		back_arrow.setScale(scale * 1.2, scale * 1.2);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
@@ -107,6 +108,7 @@ void NewSaveState::update_buttons()
 		buttontex.setColor(Color(255, 255, 255, transparency));
 		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
 				if(!confirm.pressed)
 					game.play_sfx(0);
@@ -157,6 +159,7 @@ void NewSaveState::update_characters()
 		characters.setTextureRect({ i * 64 + 16, 6, 31, 50 });
 		characters.setPosition(x - 44 * scale + 64 * scale * i, y + 26 * scale);
 		if (characters.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && characters.getGlobalBounds().contains(clicked_on)) {
 				if(!pressed && selected != i + 1)
 					game.play_sfx(0);
