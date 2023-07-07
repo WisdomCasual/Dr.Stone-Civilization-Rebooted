@@ -107,6 +107,7 @@ void WorldMapState::update_pins()
 				pn->second.text_size = 54 * scale;
 			}
 			pn->second.hover = 1;
+			clickable_cursor = true;
 			if (move && !selected) {
 				moving = pn->first;
 				selected = 1;
@@ -191,7 +192,7 @@ WorldMapState::~WorldMapState()
 
 void WorldMapState::update()
 {
-	window->setMouseCursorVisible(true);
+	active_cursor = true;
 
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 

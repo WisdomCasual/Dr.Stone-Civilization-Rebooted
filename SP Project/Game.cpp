@@ -75,6 +75,35 @@ void Game::initial_sounds()
 	click.setBuffer(click_buff);
 }
 
+void Game::initial_cursor()
+{
+	window->setMouseCursorVisible(false);
+	cursor_scale = VideoMode::getDesktopMode().width / 2200.f;
+	mouse_cursor_tex.loadFromFile("Resources/cursor.png");
+	mouse_cursor.setTexture(mouse_cursor_tex);
+	mouse_cursor.setTextureRect(IntRect(0, 0, 54, 55));
+	mouse_cursor.setOrigin(15, 12);
+}
+
+void Game::update_cursor()
+{
+	mouse_cursor.setPosition(window->mapPixelToCoords(Mouse::getPosition(*window)));
+	mouse_cursor.setScale(cursor_scale, cursor_scale);
+
+	if (clickable_cursor) {
+		if(Mouse::isButtonPressed(Mouse::Left))
+			mouse_cursor.setTextureRect(IntRect(108, 0, 54, 55));
+		else
+			mouse_cursor.setTextureRect(IntRect(54, 0, 54, 55));
+	}
+	else {
+		mouse_cursor.setTextureRect(IntRect(0, 0, 54, 55));
+		if (Mouse::isButtonPressed(Mouse::Left))
+			mouse_cursor.setScale(cursor_scale * 0.95, cursor_scale * 0.95);
+	}
+	clickable_cursor = false;
+}
+
 void Game::erase_states(int exceptions[], int size = 0)
 {
 	map<int, State*> temp; bool skip;
@@ -130,7 +159,7 @@ Game::Game()
 	initial_states();
 	initial_fps();
 	initial_sounds();
-	
+	initial_cursor();
 }
 
 Game::~Game()
@@ -214,6 +243,7 @@ void Game::update_window()
 	if (prev_res != windowbounds || prev_fullscreen != fullscreen)
 		delete window;
 	initial_window();
+	window->setMouseCursorVisible(false);
 
 	for (auto& state : states)
 		state.second->update();
@@ -248,6 +278,8 @@ void Game::update()
 
 	if (exit_game)
 		window->close();
+
+	update_cursor();
 }
 
 void Game::render()
@@ -261,6 +293,9 @@ void Game::render()
 
 	if (fps_active)
 		window->draw(fps_text);
+
+	if(active_cursor)
+		window->draw(mouse_cursor);
 
 	window->display();
 }

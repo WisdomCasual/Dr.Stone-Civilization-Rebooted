@@ -59,6 +59,7 @@ void NewMapState::update_arrow()
 {
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		back_arrow.setScale(scale * 0.36, scale * 0.36);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
@@ -84,34 +85,44 @@ void NewMapState::update_arrow()
 
 void NewMapState::update_slider(slider_info* sliders, int target)
 {
-	if (Mouse::isButtonPressed(Mouse::Left)) {
 
-			tip.setScale(scale / 2.3, scale / 2.3);
-			tip.setTextureRect(tipsleft[sliders[target].color]);
-			tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-			tip.setPosition(x + sliders[target].x * (scale / 2.3), y + sliders[target].y * scale);
-			if (tip.getGlobalBounds().contains(clicked_on))
-				sliders[target].presssed = 1;
+	sliders[target].presssed = 0;
 
+	tip.setScale(scale / 2.3, scale / 2.3);
+	tip.setTextureRect(tipsleft[sliders[target].color]);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+	tip.setPosition(x + sliders[target].x * (scale / 2.3), y + sliders[target].y * scale);
+	if (tip.getGlobalBounds().contains(clicked_on) && Mouse::isButtonPressed(Mouse::Left))
+		sliders[target].presssed = 1;
 
-			tip.setScale(sliderconst / 18 * (scale / 2.3), (scale / 2.3));
-			tip.setTextureRect(mids[3]);
-			tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-			tip.setPosition(x + (sliders[target].x + 9) * (scale / 2.3), y + sliders[target].y * scale);
-			if (tip.getGlobalBounds().contains(clicked_on))
-				sliders[target].presssed = 1;
+	if (tip.getGlobalBounds().contains(mouse_pos))
+		clickable_cursor = true;
 
 
-			tip.setScale(scale / 2.3, scale / 2.3);
-			tip.setTextureRect(tipsright[3]);
-			tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-			tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 2.3), y + sliders[target].y * scale);
-			if (tip.getGlobalBounds().contains(clicked_on))
-				sliders[target].presssed = 1;
-		}
-		else
-			sliders[target].presssed = 0;
+	tip.setScale(sliderconst / 18 * (scale / 2.3), (scale / 2.3));
+	tip.setTextureRect(mids[3]);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+	tip.setPosition(x + (sliders[target].x + 9) * (scale / 2.3), y + sliders[target].y * scale);
+	if (tip.getGlobalBounds().contains(clicked_on) && Mouse::isButtonPressed(Mouse::Left))
+		sliders[target].presssed = 1;
+
+	if (tip.getGlobalBounds().contains(mouse_pos))
+		clickable_cursor = true;
+
+	tip.setScale(scale / 2.3, scale / 2.3);
+	tip.setTextureRect(tipsright[3]);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+	tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 2.3), y + sliders[target].y * scale);
+	if (tip.getGlobalBounds().contains(clicked_on) && Mouse::isButtonPressed(Mouse::Left))
+		sliders[target].presssed = 1;
+
+	if (tip.getGlobalBounds().contains(mouse_pos))
+		clickable_cursor = true;
+
+
 	if (sliders[target].presssed) {
+		clickable_cursor = true;
+
 		float initpos = x + (sliders[target].x + 9) * (scale / 2.3), mxlen = sliderconst * (scale / 2.3), stepsize = mxlen / sliders[target].mx;
 		if (mouse_pos.x < initpos) sliders[target].tipx = initpos;
 		else if (mouse_pos.x > initpos + mxlen) sliders[target].tipx = initpos + mxlen;
@@ -184,6 +195,7 @@ void NewMapState::update_buttons()
 		buttontex.setColor(Color(255, 255, 255, transparency));
 		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
 				if(!confirm.pressed)
 					game.play_sfx(0);
@@ -284,7 +296,6 @@ NewMapState::~NewMapState()
 
 }
 
-
 void NewMapState::update()
 {
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
@@ -342,7 +353,6 @@ void NewMapState::update()
 	else
 		fade_in();
 }
-
 
 void NewMapState::render()
 {

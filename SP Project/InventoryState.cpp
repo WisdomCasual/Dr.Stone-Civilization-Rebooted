@@ -80,7 +80,7 @@ InventoryState::~InventoryState()
 
 void InventoryState::update()
 {
-	window->setMouseCursorVisible(false);
+	active_cursor = false;
 
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
