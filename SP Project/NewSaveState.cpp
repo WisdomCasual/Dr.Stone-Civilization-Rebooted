@@ -70,10 +70,10 @@ void NewSaveState::update_arrow()
 	// add an arrow and position it as a back button
 
 	back_arrow.setPosition(x - 112  * scale, y - 104 * scale);
+	back_arrow.setScale(scale * 1.2, scale * 1.2);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
-		back_arrow.setScale(scale * 1.2, scale * 1.2);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
 			if(!arrow_pressed)
 				game.play_sfx(1);
@@ -93,7 +93,6 @@ void NewSaveState::update_arrow()
 	else {
 		arrow_pressed = 0;
 		back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
-		back_arrow.setScale(scale * 1.2, scale * 1.2);
 	}
 }
 

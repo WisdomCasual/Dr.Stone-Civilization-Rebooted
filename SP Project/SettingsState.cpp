@@ -72,10 +72,10 @@ void SettingsState::update_arrow()
 	// here we save the new settings in the config file
 	// also set the position for the arrow and detect for clicks and add a little animation for the click
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
+	back_arrow.setScale(scale * 0.3, scale * 0.3);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
-		back_arrow.setScale(scale * 0.3, scale * 0.3);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
 			if(!arrow_pressed)
 				game.play_sfx(1);
@@ -104,7 +104,6 @@ void SettingsState::update_arrow()
 	else {
 		arrow_pressed = 0;
 		back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
-		back_arrow.setScale(scale * 0.3, scale * 0.3);
 	}
 }
 

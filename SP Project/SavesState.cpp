@@ -229,10 +229,10 @@ SavesState::~SavesState()
 void SavesState::update_arrow()
 {
 	arrow.setPosition(x - 180 * scale, y - 120 * scale);
+	arrow.setScale(scale * 0.8, scale * 0.8);
 	if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		clickable_cursor = true;
 		arrow.setTextureRect(IntRect(22, 0, 22, 21));
-		arrow.setScale(scale * 0.8, scale * 0.8);
 		if (Mouse::isButtonPressed(Mouse::Left) && arrow.getGlobalBounds().contains(clicked_on)) {
 			if(!arrow_pressed)
 				game.play_sfx(1);
@@ -251,7 +251,6 @@ void SavesState::update_arrow()
 	else {
 		arrow_pressed = 0;
 		arrow.setTextureRect(IntRect(0, 0, 22, 21));
-		arrow.setScale(scale * 0.8, scale * 0.8);
 	}
 }
 

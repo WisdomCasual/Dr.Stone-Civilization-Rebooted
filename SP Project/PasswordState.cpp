@@ -56,10 +56,10 @@ void PasswordState::update_arrow()
 	// giving positon to the back arrow and detecting for clicks
 
 	back_arrow.setPosition(x - 40 * scale, y - (float)8.5 * scale);
+	back_arrow.setScale(scale * 0.4, scale * 0.4);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
-		back_arrow.setScale(scale * 0.4, scale * 0.4);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
 			if(!arrow_pressed)
 				game.play_sfx(1);
@@ -78,7 +78,6 @@ void PasswordState::update_arrow()
 	else {
 		arrow_pressed = 0;
 		back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
-		back_arrow.setScale(scale * 0.4, scale * 0.4);
 	}
 }
 

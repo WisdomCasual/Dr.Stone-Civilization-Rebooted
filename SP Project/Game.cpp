@@ -82,7 +82,7 @@ void Game::initial_cursor()
 	mouse_cursor_tex.loadFromFile("Resources/cursor.png");
 	mouse_cursor.setTexture(mouse_cursor_tex);
 	mouse_cursor.setTextureRect(IntRect(0, 0, 54, 55));
-	mouse_cursor.setOrigin(15, 12);
+	mouse_cursor.setOrigin(15, 5);
 }
 
 void Game::update_cursor()
