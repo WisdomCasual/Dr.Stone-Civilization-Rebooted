@@ -36,6 +36,7 @@ void MainMenuState::update_buttons()
 		buttontex.setTextureRect(IntRect(0,button.pressed * 49, 190, 49));
 		buttontex.setPosition(x+button.x * scale, y+button.y * scale);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
 				if(!button.pressed)
 					game.play_sfx(0);
@@ -76,7 +77,7 @@ void MainMenuState::render_buttons()
 
 MainMenuState::MainMenuState()
 {
-	window->setMouseCursorVisible(true);
+	active_cursor = true;
 
 	initial_textures("mainmenu");
 

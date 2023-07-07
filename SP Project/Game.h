@@ -29,6 +29,9 @@ private:
 	//private variables:
 	RenderWindow* window;
 	VideoMode* videomode;
+	Texture mouse_cursor_tex;
+	float cursor_scale = 1;
+	
 	map<int, State*> states;
 	map<string, Texture*> textures;
 	bool prev_fullscreen = 0;
@@ -43,9 +46,14 @@ private:
 	void initial_fps();
 	void calc_fps();
 	void initial_sounds();
+	void initial_cursor();
+	void update_cursor();
 
 public:
 	//public variables:
+
+	Sprite mouse_cursor;
+
 	Music music;
 	SoundBuffer click_buff;
 	Sound click;

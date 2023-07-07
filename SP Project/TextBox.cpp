@@ -226,4 +226,6 @@ void TextBox::update()
 	else
 		delay = 0;
 
+	if (box.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window))))
+			clickable_cursor = true;
 }

@@ -7,6 +7,7 @@ void PauseState::update_buttons()
 		buttontex.setTextureRect(IntRect(0, buttons[i].pressed * 49, 190, 49));
 		buttontex.setPosition(x + buttons[i].x * scale * 0.33, y + buttons[i].y * scale * 0.33);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
 				if (!buttons[i].pressed) {
 					if(i == 1)
@@ -133,7 +134,7 @@ PauseState::~PauseState()
 
 void PauseState::update()
 {
-	window->setMouseCursorVisible(true);
+	active_cursor = true;
 
 	mouse_pos = Mouse::getPosition(*window);
 

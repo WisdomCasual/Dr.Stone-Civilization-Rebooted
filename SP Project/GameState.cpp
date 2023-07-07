@@ -1364,7 +1364,7 @@ void GameState::quests()
 				quest_idx++;
 			break;
 		case 2:
-			if (quest_location != NPCs.entities[0]->pos) {
+			if (current_map == "Sheraton" && quest_location != NPCs.entities[0]->pos) {
 				quest_location = NPCs.entities[0]->pos;
 			}
 			break;
@@ -1459,7 +1459,7 @@ GameState::~GameState()
 
 void GameState::update()
 {
-	window->setMouseCursorVisible(false);
+	active_cursor = false;
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;

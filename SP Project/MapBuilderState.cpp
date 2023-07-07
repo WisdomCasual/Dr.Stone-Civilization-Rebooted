@@ -74,6 +74,8 @@ MapBuilderState::~MapBuilderState()
 
 	changes.clear();
 	undid_changes.clear();
+
+	window->setMouseCursorVisible(false);
 }
 
 void MapBuilderState::grid(int x_win, int y_win)
@@ -176,6 +178,10 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 
 void MapBuilderState::update()
 {
+	if(states->rbegin()->first == MapBuilderID)
+		window->setMouseCursorVisible(true);
+
+	active_cursor = false;
 	if (prev_win != window->getSize()) {
 		x_scale = window->getSize().x / 1920.0, y_scale = window->getSize().y / 1080.0;
 		global_scale = x_scale, text_scale = y_scale;
@@ -656,6 +662,7 @@ void MapBuilderState::pollevent()
 		case Event::KeyPressed:
 			switch (event.key.code) {
 			case Keyboard::Escape:
+				window->setMouseCursorVisible(false);
 				states->insert(PauseST);
 				states->at(PauseID)->update();
 				return; break;
