@@ -66,7 +66,7 @@ MiniMapState::~MiniMapState()
 
 void MiniMapState::update()
 {
-	window->setMouseCursorVisible(true); ///////////////<------------
+	active_cursor = true; ///////////////<------------
 
 	mouse_pos = Mouse::getPosition(*window);
 	if (prev_win != window->getSize()) {

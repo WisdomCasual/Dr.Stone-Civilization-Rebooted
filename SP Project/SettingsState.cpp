@@ -73,6 +73,7 @@ void SettingsState::update_arrow()
 	// also set the position for the arrow and detect for clicks and add a little animation for the click
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		back_arrow.setScale(scale * 0.3, scale * 0.3);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
@@ -122,6 +123,7 @@ void SettingsState::dev_button()
 	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
 	// detect for clicks
 	if (devbutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		clickable_cursor = true;
 		if (Mouse::isButtonPressed(Mouse::Left) && devbutton.getGlobalBounds().contains(clicked_on)) {
 			if(!button_pressed)
 				game.play_sfx(0);
@@ -159,45 +161,53 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 	// we shouldn't be able to apply changes to specific sliders in specific modes
 	// for example: if fullscreen mode is enabled then resolution slider should be disabled, same with the framelimit.
 	if (!sliders[target].disabled) {
-		if (Mouse::isButtonPressed(Mouse::Left)) {
 
-			/*
-			Here we detect for clicks on the slider and apply changes accordingly,
-			We have a sprite named tip which we overwrite according to the part we are dealing with in the slider.
-			for example the left tip should have a fixed position all the time and just position it according to the current
-			resolution.
-			For the middle part we should scale it according to the mouse position on the x axis.
-			The right tip should be moving also with the mouse position on the x axis
-			Also we detect for clicks on the whole slider so slider should be movable from any part of it and if you press
-			of a random part of the slider the right tip will go there and also the mid will be scaled
-			*/
+		/*
+		Here we detect for clicks on the slider and apply changes accordingly,
+		We have a sprite named tip which we overwrite according to the part we are dealing with in the slider.
+		for example the left tip should have a fixed position all the time and just position it according to the current
+		resolution.
+		For the middle part we should scale it according to the mouse position on the x axis.
+		The right tip should be moving also with the mouse position on the x axis
+		Also we detect for clicks on the whole slider so slider should be movable from any part of it and if you press
+		of a random part of the slider the right tip will go there and also the mid will be scaled
+		*/
+		sliders[target].presssed = 0;
+		
 
-			tip.setScale(scale / 3, scale / 3);
-			tip.setTextureRect(tipsleft[sliders[target].color]);
-			tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-			tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
-			if (tip.getGlobalBounds().contains(clicked_on))
-				sliders[target].presssed = 1;
+		tip.setScale(scale / 3, scale / 3);
+		tip.setTextureRect(tipsleft[sliders[target].color]);
+		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+		tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
+		if (tip.getGlobalBounds().contains(clicked_on))
+			sliders[target].presssed = 1;
 
+		if (tip.getGlobalBounds().contains(mouse_pos))
+			clickable_cursor = true;
 
-			tip.setScale(sliderconst / 18 * (scale / 3), (scale / 3));
-			tip.setTextureRect(mids[3]);
-			tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-			tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
-			if (tip.getGlobalBounds().contains(clicked_on))
-				sliders[target].presssed = 1;
+		tip.setScale(sliderconst / 18 * (scale / 3), (scale / 3));
+		tip.setTextureRect(mids[3]);
+		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+		tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
+		if (tip.getGlobalBounds().contains(clicked_on) && Mouse::isButtonPressed(Mouse::Left))
+			sliders[target].presssed = 1;
 
+		if (tip.getGlobalBounds().contains(mouse_pos))
+			clickable_cursor = true;
 
-			tip.setScale(scale / 3, scale / 3);
-			tip.setTextureRect(tipsright[3]);
-			tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-			tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3), y + sliders[target].y * scale);
-			if (tip.getGlobalBounds().contains(clicked_on))
-				sliders[target].presssed = 1;
-		}
-		else
-			sliders[target].presssed = 0;
+		tip.setScale(scale / 3, scale / 3);
+		tip.setTextureRect(tipsright[3]);
+		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+		tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3), y + sliders[target].y * scale);
+		if (tip.getGlobalBounds().contains(clicked_on) && Mouse::isButtonPressed(Mouse::Left))
+			sliders[target].presssed = 1;
+
+		if (tip.getGlobalBounds().contains(mouse_pos))
+			clickable_cursor = true;
+
+			
 		if (sliders[target].presssed) {
+			clickable_cursor = true;
 			// make sure that the slider doesn't pass it's boundries
 			float initpos = x + (sliders[target].x + 9) * (scale / 3), mxlen = sliderconst * (scale / 3), stepsize = mxlen / sliders[target].mx;
 			if (mouse_pos.x < initpos) sliders[target].tipx = initpos;
@@ -346,6 +356,7 @@ void SettingsState::update_checkbox(int i)
 
 	checkbox.setPosition(x + checkboxes[i].x * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale);
 	if (checkbox.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		clickable_cursor = true;
 		if (Mouse::isButtonPressed(Mouse::Left) && checkbox.getGlobalBounds().contains(clicked_on)) {
 			if (!checkboxes[i].pressed) {
 				if(checkboxes[i].checked)
@@ -460,7 +471,7 @@ SettingsState::~SettingsState()
 
 void SettingsState::update()
 {
-	window->setMouseCursorVisible(true);
+	active_cursor = true;
 
 	//get real time mouse position and store it in a variable
 

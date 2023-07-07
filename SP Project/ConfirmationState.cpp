@@ -53,6 +53,7 @@ void ConfirmationState::update_buttons()
 	for (int i = 0; i < 2; i++) {
 		buttontex.setPosition(x + buttons[i].x * scale, y + buttons[i].y * scale);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
 				if (!buttons[i].pressed) {
 					if(i)
@@ -135,7 +136,7 @@ ConfirmationState::~ConfirmationState()
 
 void ConfirmationState::update()
 {	
-	window->setMouseCursorVisible(true);
+	active_cursor = true;
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
 	if (prev_win != window->getSize()) {

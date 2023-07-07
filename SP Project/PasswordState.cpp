@@ -57,6 +57,7 @@ void PasswordState::update_arrow()
 
 	back_arrow.setPosition(x - 40 * scale, y - (float)8.5 * scale);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
 		back_arrow.setScale(scale * 0.4, scale * 0.4);
 		if (Mouse::isButtonPressed(Mouse::Left) && back_arrow.getGlobalBounds().contains(clicked_on)) {
@@ -93,6 +94,7 @@ void PasswordState::update_buttons()
 			buttontex.setColor(Color(255, 255, 255, transparency));
 		buttontex.setPosition(x + confirm.x * scale / 3.5, y + confirm.y * scale / 3.5);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
+			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
 				if(!confirm.pressed)
 					game.play_sfx(0);
