@@ -134,6 +134,12 @@ namespace globalvar {
         return (rando > mx) ? mx : rando;
     }
 
+    inline float generate_random_f(float mn = 0, float mx = FLT_MAX - 1) {
+        uniform_real_distribution<float> dist(mn, mx);
+        float rando = dist(mt);
+        return rando;
+    }
+
     struct nod {
         int itm;
         struct nod* link = NULL, * back_link = NULL;

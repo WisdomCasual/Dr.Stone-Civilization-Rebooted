@@ -154,8 +154,8 @@ void NewSaveState::update_characters()
 {
 	//characters update
 	for (int i = 0; i < 3; i++) {
-		characters.setTextureRect({ i * 64,0,64,64 });
-		characters.setPosition(x - 60 * scale + 60 * scale * i, y + 20 * scale);
+		characters.setTextureRect({ i * 64 + 16, 6, 31, 50 });
+		characters.setPosition(x - 44 * scale + 64 * scale * i, y + 26 * scale);
 		if (characters.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			if (Mouse::isButtonPressed(Mouse::Left) && characters.getGlobalBounds().contains(clicked_on)) {
 				if(!pressed && selected != i + 1)
@@ -180,8 +180,8 @@ void NewSaveState::render_characters()
 {
 	//charaters render
 	for (int i = 0; i < 3; i++) {
-		characters.setTextureRect({ i * 64,0,64,64 });
-		characters.setPosition(x - 60 * scale + 60 * scale * i, y + 20 * scale);
+		characters.setTextureRect({ i * 64 + 16, 6, 31, 50 });
+		characters.setPosition(x - 44 * scale + 64 * scale * i, y + 26 * scale);
 		if (i + 1 == selected)
 		{
 			characters.setColor(Color( 255, 255, 255, transparency));

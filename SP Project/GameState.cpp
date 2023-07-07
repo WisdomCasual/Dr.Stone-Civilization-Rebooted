@@ -871,6 +871,28 @@ void GameState::initial_game(string current_map, Vector2f player_pos)
 
 }
 
+void GameState::cam_movement()
+{
+	Vector2f camera_movement = { ((player_entity->getRelativePos().x + map_x - win_x / scale / 2.f) * 1.3f) * dt / (win_x / win_y),
+								 ((player_entity->getRelativePos().y + map_y - win_y / scale / 2.f) * 1.3f) * dt };
+	if (size_x * 16 * scale > win_x)
+		move_cam(camera_movement.x, 0);
+	if (size_y * 16 * scale > win_y)
+		move_cam(0, camera_movement.y);
+}
+
+void GameState::move_cam(float x_movement, float y_movement)
+{
+	if (map_x - x_movement <= 0 && map_x - x_movement >= -(size_x * 16 - win_x / scale)) {
+		map_x -= x_movement;
+		x_offset = -map_x / 16;
+	}
+	if (map_y - y_movement <= 0 && map_y - y_movement >= -(size_y * 16 - win_y / scale)) {
+		map_y -= y_movement;
+		y_offset = -map_y / 16;
+	}
+}
+
 void GameState::center_cam(Vector2f player_pos)
 {
 	map_x = -(player_pos.x - win_x / 2 / scale);
@@ -896,7 +918,7 @@ void GameState::center_cam(Vector2f player_pos)
 
 	x_offset = -map_x / 16, y_offset = -map_y / 16;
 
-	player_entity->setPosition((player_pos.x + map_x) * scale, (player_pos.y + map_y) * scale);
+	player_entity->setPosition(player_pos.x, player_pos.y);
 }
 
 void GameState::maps_travel()
@@ -1477,6 +1499,7 @@ void GameState::update()
 	if (fps_active)
 		fps_text.setString(fps_text.getString() + "\tCoordinates " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
 
+	cam_movement();
 
 	//entity spawning                *******FIX RANDOM DAMAGE WITH ENEMY SPAWNING*****
 	spawn_cd += dt;

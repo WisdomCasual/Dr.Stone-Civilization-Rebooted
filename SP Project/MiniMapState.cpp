@@ -75,28 +75,30 @@ void MiniMapState::update()
 		x = win_x / 2, y = win_y / 2;
 		x_pic = minimap.getLocalBounds().width;
 		y_pic = minimap.getLocalBounds().height;
-		if (win_x / x_pic < win_y / y_pic) scale = win_x / x_pic;
-		else scale = win_y / y_pic;
+		if (win_x / x_pic < win_y / y_pic) map_scale = win_x / x_pic;
+		else map_scale = win_y / y_pic;
+		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
+		else scale = win_y / 304.5;
 		/////////////////////////////////////////////////////////
 
 		tint.setSize({ win_x, win_y });
 		minimap.setPosition(x, y);
-		minimap.setScale(scale * 0.8, scale * 0.8);
+		minimap.setScale(map_scale * 0.8, map_scale * 0.8);
 
 		player_pointer.setRadius(1.5 * scale);
 		player_pointer.setOrigin(0.75 * scale, 0.75 * scale);
-		player_pointer.setPosition(x - (x_pic / 2 - player_position.x / 8.0) * scale * 0.8, y - (y_pic / 2 - player_position.y / 8.0) * scale * 0.8);
+		player_pointer.setPosition(x - (x_pic / 2 - player_position.x / 8.0) * map_scale * 0.8, y - (y_pic / 2 - player_position.y / 8.0) * map_scale * 0.8);
 
 		waypoint_pointer.setRadius(1.5 * scale);
 		waypoint_pointer.setOrigin(0.75 * scale, 0.75 * scale);
 
 		quest_pointer.setRadius(1.5 * scale);
 		quest_pointer.setOrigin(0.75 * scale, 0.75 * scale);
-		quest_pointer.setPosition(x - (x_pic / 2 - quest_location.x / 8.0) * scale * 0.8, y - (y_pic / 2 - quest_location.y / 8.0) * scale * 0.8);
+		quest_pointer.setPosition(x - (x_pic / 2 - quest_location.x / 8.0) * map_scale * 0.8, y - (y_pic / 2 - quest_location.y / 8.0) * map_scale * 0.8);
 
 	}
 	if(waypoint.x > -1)
-		waypoint_pointer.setPosition(x - (x_pic / 2 - waypoint.x) * scale * 0.8, y - (y_pic / 2 - waypoint.y) * scale * 0.8);
+		waypoint_pointer.setPosition(x - (x_pic / 2 - waypoint.x) * map_scale * 0.8, y - (y_pic / 2 - waypoint.y) * map_scale * 0.8);
 
 	if (exit) {
 		if (fade_out()) {
@@ -114,7 +116,7 @@ void MiniMapState::render()
 {
 	window->draw(tint);
 	text.setFillColor(Color(255, 255, 255, transparency));
-	draw_text("Press M to exit", x, y + (y_pic / 2 * scale * 0.9), scale * 12);
+	draw_text("Press M to exit", x, y + (y_pic / 2 * map_scale * 0.9), scale * 16);
 	window->draw(minimap);
 
 	if(quest_location.x > -1)
@@ -150,8 +152,8 @@ void MiniMapState::pollevent()
 			switch (event.mouseButton.button) {
 			case Mouse::Left:
 				clicked_on = window->mapPixelToCoords(Mouse::getPosition(*window));
-				waypoint.x = (clicked_on.x - (x - (x_pic * scale * 0.4))) / (scale * 0.8);
-				waypoint.y = (clicked_on.y - (y - (y_pic * scale * 0.4))) / (scale * 0.8);
+				waypoint.x = (clicked_on.x - (x - (x_pic * map_scale * 0.4))) / (map_scale * 0.8);
+				waypoint.y = (clicked_on.y - (y - (y_pic * map_scale * 0.4))) / (map_scale * 0.8);
 				if (!(waypoint.x >= 0 && waypoint.x <= minimap.getLocalBounds().width && waypoint.y >= 0 && waypoint.y <= minimap.getLocalBounds().height))
 					waypoint = { -1, -1 };
 				break;

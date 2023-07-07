@@ -49,7 +49,7 @@ Entity::~Entity()
 
 Vector2f Entity::getRelativePos()
 {
-	return (Vector2f(-map_x + getPosition().x / scale, -map_y + getPosition().y / scale));
+	return pos;
 }
 
 void Entity::change_state(int new_state)
