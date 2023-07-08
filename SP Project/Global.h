@@ -128,16 +128,14 @@ namespace globalvar {
 		return Vector2f(V.x * cos(V.y), V.x * sin(V.y));
 	} //magnitude, direction
 
-    inline int generate_random(float mn = 0, float mx = FLT_MAX-1) {
-        uniform_real_distribution<float> dist(mn, mx+1);
-        int rando = dist(mt);
-        return (rando > mx) ? mx : rando;
+    inline int generate_random(float mn = 0, float mx = FLT_MAX) {
+        uniform_real_distribution<float> dist(mn, mx);
+        return roundf(dist(mt));
     }
 
     inline float generate_random_f(float mn = 0, float mx = FLT_MAX - 1) {
         uniform_real_distribution<float> dist(mn, mx);
-        float rando = dist(mt);
-        return rando;
+        return dist(mt);
     }
 
     struct nod {

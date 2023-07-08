@@ -209,12 +209,12 @@ void Game::play_sfx(int sfx_id)
 	switch (sfx_id) {
 	case 0:
 		click.setVolume(game_volume);
-		click.setPitch(0.65 - generate_random_f(0.f, 0.1f));
+		click.setPitch(generate_random_f(0.55f, 0.65f));
 		click.play();
 		break;
 	case 1:
 		click.setVolume(game_volume);
-		click.setPitch(0.55 - generate_random_f(0.f, 0.1f));
+		click.setPitch(generate_random_f(0.45f, 0.55f));
 		click.play();
 		break;
 
