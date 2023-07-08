@@ -61,6 +61,7 @@ void GameState::save()
 		//save static map
 		map_ofs << size_x << ' ' << size_y << '\n';
 		map_ofs << respawn_point.x << ' ' << respawn_point.y << '\n';
+		map_ofs << waypoint_position.x << ' ' << waypoint_position.y << '\n';
 
 		for (int i = 0; i < size_x; i++)
 			for (int j = 0; j < size_y; j++) {
@@ -411,6 +412,7 @@ void GameState::load_initial_map(string map_name)
 	}
 
 	initial_entities();
+	waypoint_position = { -1, -1 };
 	minimap_tex.loadFromImage(minimap_img);
 }
 
@@ -423,6 +425,8 @@ void GameState::load_saved_map(string map_name)
 		ifs >> size_x >> size_y;
 
 		ifs >> respawn_point.x >> respawn_point.y;
+
+		ifs >> waypoint_position.x >> waypoint_position.y;
 
 		static_map = new render_tile * [size_x];
 
