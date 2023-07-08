@@ -88,7 +88,7 @@ void Game::initial_cursor()
 void Game::update_cursor()
 {
 	mouse_cursor.setPosition(window->mapPixelToCoords(Mouse::getPosition(*window)));
-	mouse_cursor.setScale(cursor_scale, cursor_scale);
+	mouse_cursor.setScale(cursor_scale, cursor_scale);  
 
 	if (clickable_cursor) {
 		if(Mouse::isButtonPressed(Mouse::Left))
