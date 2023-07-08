@@ -1713,6 +1713,10 @@ void GameState::pollevent()
 			case Keyboard::F11:
 				fullscreen = !fullscreen;
 				game.update_window();
+				if (!shader.loadFromFile("VertexShader.shader", "FragmentShader.shader")) {
+					cout << "Couldn't reload shaders\n";
+				}
+				shader.setUniform("ratio", win_x / win_y);
 				break;
 			case Keyboard::Num1:
 				player_entity->change_state(4);

@@ -1,13 +1,12 @@
-#version 330 compatibility
-
-layout(location = 0) in vec4 position;
+#version 130
+precision mediump float;
 out vec4 vert_pos;
 
 void main()
 {
     // transform the vertex position
-	vert_pos = gl_ModelViewProjectionMatrix * position;
-    gl_Position = gl_ModelViewProjectionMatrix * position;
+	vert_pos = gl_ModelViewProjectionMatrix * gl_Vertex;
+    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
     // transform the texture coordinates
     gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
