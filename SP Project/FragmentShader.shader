@@ -1,5 +1,5 @@
-#version 330 compatibility
-
+#version 130
+precision mediump float;
 
 struct light {
 	vec2 position;
@@ -8,8 +8,6 @@ struct light {
 };
 
 in vec4 vert_pos;
-
-layout(location = 0) out vec4 FragColor;
 
 uniform sampler2D texture;
 
@@ -24,6 +22,7 @@ void main()
 {
 	vec2 lightToFrag;
 	vec3 color_intensity;
+	color_intensity = vec3(0, 0, 0);
 	float vecLength;
 
 	for (int i = 0; i < lightsCount; i++) {
@@ -44,6 +43,6 @@ void main()
 
     // multiply it by the color and lighting
 
-	FragColor = gl_Color * pixel * (clamp(ambient_light + vec4(color_intensity.r, color_intensity.g, color_intensity.b, 1), 0, 1));
+	gl_FragColor = gl_Color * pixel * (clamp(ambient_light + vec4(color_intensity.r, color_intensity.g, color_intensity.b, 1), 0, 1));
 
 }
