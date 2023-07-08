@@ -1016,7 +1016,7 @@ void GameState::render_static_map()
 			for (auto map_tile = static_map[i][j].layers; map_tile != tile_end; map_tile++) {
 				tile.setTexture(*tile_sheets[map_tile->z]);
 				tile.setTextureRect(IntRect(map_tile->x * 16, map_tile->y * 16, 16, 16));
-				tile.setPosition(map_x * scale + (16 * scale * i), map_y * scale + (16 * scale * j));
+				tile.setPosition(round(map_x * scale) + (16 * scale * i), round(map_y * scale) + (16 * scale * j));
 				window->draw(tile, &shader);
 			}
 			if (!static_map[i][j].destruction_time) {
@@ -1024,7 +1024,7 @@ void GameState::render_static_map()
 					update_minimap_tile(Vector2i(i * 2, j * 2), *tile_end);
 				tile.setTexture(*tile_sheets[tile_end->z]);
 				tile.setTextureRect(IntRect(tile_end->x * 16, tile_end->y * 16, 16, 16));
-				tile.setPosition(map_x * scale + (16 * scale * i), map_y * scale + (16 * scale * j));
+				tile.setPosition(round(map_x * scale) + (16 * scale * i), round(map_y * scale) + (16 * scale * j));
 				window->draw(tile, &shader);
 			}
 			else if (tile_props[tile_end->z].properties[tile_end->x][tile_end->y].props & 32 && game_time - static_map[i][j].destruction_time > 300 && game_time - static_map[i][j].time > 5) {
@@ -1118,7 +1118,7 @@ void GameState::render_entities()
 				for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
 					tile.setTexture(*tile_sheets[dynamic_map.at[i->second.tile].at[j].tile.z]);
 					tile.setTextureRect(IntRect(dynamic_map.at[i->second.tile].at[j].tile.x * 16, dynamic_map.at[i->second.tile].at[j].tile.y * 16, 16, 16));
-					tile.setPosition(map_x * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.x), map_y * scale + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.y));
+					tile.setPosition(round(map_x * scale) + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.x), round(map_y * scale) + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.y));
 					window->draw(tile, &shader);
 					if (dynamic_update_minimap)
 						update_minimap_tile(Vector2i(dynamic_map.at[i->second.tile].at[j].position.x * 2, dynamic_map.at[i->second.tile].at[j].position.y * 2), dynamic_map.at[i->second.tile].at[j].tile);
