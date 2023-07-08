@@ -28,7 +28,7 @@ void Player::player_movement(float x_movement,float y_movement,float velocity)
 
 void Player::updatePos()
 {
-	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
+	entity_sprite.setPosition(round(map_x * scale) + pos.x * scale, round(map_y * scale) + pos.y * scale);
 }
 
 Vector2f Player::delta_movement()

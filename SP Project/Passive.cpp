@@ -63,7 +63,7 @@ void Passive::damaged(Color& original, float& delay)
 
 void Passive::updatePos()
 {
-	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
+	entity_sprite.setPosition(round(map_x * scale) + pos.x * scale, round(map_y * scale) + pos.y * scale);
 }
 
 bool Passive::legal_direction(Vector2f tile_pos, short dx, short dy)

@@ -46,6 +46,6 @@ void Animation::update(float scale)
 
 void Animation::render(Shader* shader)
 {
-	animation_sprite.setPosition((pos.x + map_x) * prev_scale, (pos.y + map_y) * prev_scale);
+	animation_sprite.setPosition(round(map_x * prev_scale) + pos.x * prev_scale, round(map_y * prev_scale) + pos.y * prev_scale);
 	window->draw(animation_sprite, shader);
 }

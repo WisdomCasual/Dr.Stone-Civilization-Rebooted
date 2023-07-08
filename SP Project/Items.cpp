@@ -51,7 +51,7 @@ void Items::update()
 		entity_sprite.setScale(scale, scale);
 
 	}
-	entity_sprite.setPosition((pos.x + map_x) * scale, (pos.y + map_y) * scale);
+	entity_sprite.setPosition(round(map_x * scale) + pos.x * scale, round(map_y * scale) + pos.y * scale);
 
 	
     intersect();
