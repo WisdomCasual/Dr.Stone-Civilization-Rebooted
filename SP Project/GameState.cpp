@@ -532,6 +532,7 @@ void GameState::load_saved_map(string map_name)
 		ifs >> count;
 
 		for (int i = 0; i < count; i++) {
+			//cout << "you thought it was passive, but it was me, DIO\n";
 			ifs >> id;
 			//cout << id << '\n';
 			ifs >> pos.x >> pos.y;
@@ -545,11 +546,11 @@ void GameState::load_saved_map(string map_name)
 
 
 		ifs >> count;
-
 		for (int i = 0; i < count; i++) {
+			//cout << "you thought it was passive, and you are goddamn right\n";
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
-			passive.add(enemy_spawn(id), pos);
+			passive.add(passive_spawn(id), pos);
 			ifs >> passive.entities[i]->despawn_timer ;
 			ifs >> passive.entities[i]->health ;
 			ifs >> passive.entities[i]->persistant ;
@@ -805,17 +806,10 @@ void GameState::deload_map()
 	dynamic_map.delete_all();
 
 
-	while (items.curr_idx)
-		items.rem_ove(items.curr_idx - 1);
-
-	while (enemies.curr_idx)
-		enemies.rem_ove(enemies.curr_idx - 1);
-
-	while (passive.curr_idx)
-		passive.rem_ove(passive.curr_idx - 1);
-
-	while (NPCs.curr_idx)
-		NPCs.rem_ove(NPCs.curr_idx - 1);
+	items.clear();
+	enemies.clear();
+	passive.clear();
+	NPCs.clear();
 
 	destructable_count = 0;
 	delete[] destructable_objects;
