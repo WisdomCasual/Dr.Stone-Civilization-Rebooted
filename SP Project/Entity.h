@@ -221,8 +221,6 @@ public:
 	FloatRect hit_range, Entity_Hitbox;
 	Vector2f movement = { 0,0 };
 	float cooldown = 0;
-	Color original = entity_sprite.getColor();
-	Color og_player_color;
 	float stun = 0;
 	//RectangleShape test;
 	float Lag = 0;
@@ -244,7 +242,7 @@ public:
 	void action(int);
 	void direction(Vector2f, bool moving = true);
 	virtual void knockback(Vector2f ,float) {};
-	virtual void damaged(Color&, float&, Sprite&) {};
+	virtual void damaged() {};
 	virtual void setID(short) {};
 	virtual void setVisArray(short***, bool*, short new_find_size_x = 50, short new_find_size_y = 50) {};
 	virtual void update() = 0;

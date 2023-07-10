@@ -18,7 +18,7 @@ private:
 public:
 	~Passive();
 	void passive_knockback(Vector2f, float);
-	void damaged(Color&, float&);
+	void damaged();
 	void updatePos();
 	bool legal_direction(Vector2f, short, short);
 	void stateMachine();

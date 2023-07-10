@@ -54,11 +54,15 @@ void Passive::passive_knockback(Vector2f direction, float velocity)
 	move_speed = 1;
 }
 
-void Passive::damaged(Color& original, float& delay)
+void Passive::damaged()
 {
-	original = entity_sprite.getColor();
-	entity_sprite.setColor(Color(original.r, original.g - 100, original.b - 100));
-	delay = 0.4;
+	random_num = generate_random(0, 2);
+	sounds[random_num].setVolume(game_volume);
+	sounds[random_num].setPosition((pos.x - player_entity.getRelativePos().x) / 4, (pos.y - player_entity.getRelativePos().y) / 4, 0);
+	sounds[random_num].play();
+
+	entity_sprite.setColor(Color(255, 155, 155));
+	stun = 0.4;
 }
 
 void Passive::updatePos()
@@ -169,7 +173,7 @@ void Passive::update()
 	if (player_entity.hit_range.intersects(Entity_Hitbox)) {
 		if (cooldown<=0) {
 			passive_knockback(Vector2f(player_entity.current_direction), 120);
-			damaged(original, stun);
+			damaged();
 			player_entity.combat_tag = combat_status_time;
 			action_state = 1;
 			switch_delay = 0;
@@ -184,7 +188,7 @@ void Passive::update()
 	if (cooldown)cooldown -= dt;
 	//cout << health << endl;
 	if (stun <= 0) {
-		entity_sprite.setColor(Color(original));
+		entity_sprite.setColor(Color(255, 255, 255));
 		knockback_ve = 0;
 		stateMachine();
 	}

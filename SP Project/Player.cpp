@@ -53,11 +53,10 @@ void Player::knockback(Vector2f direction,float v) {
 	knockback_v = v;
 }
 
-void Player::damaged(Color& original, float& delay, Sprite& Entity)
+void Player::damaged()
 {
-	original = Entity.getColor();
-	Entity.setColor(Color(original.r, 155, 155));
-	delay = 0.4;
+	entity_sprite.setColor(Color(255, 155, 155));
+	stun = 0.4;
 }
 
 void Player::Hitbox_align(int animation)
@@ -273,10 +272,6 @@ void Player::update()
 		delay += dt;
 	}
 	/////////////////////HitBox Stuff//////////////////////
-	if (fake_constructor) {
-		fake_constructor = 0;
-		og_player_color = entity_sprite.getColor();
-	}
 
 	updatePos();
 
@@ -297,7 +292,7 @@ void Player::update()
 	if (stun <= 0) {
 		//cout << "here\n";
 		//cout << stun << endl;
-		entity_sprite.setColor(Color(og_player_color));
+		entity_sprite.setColor(Color(255, 255, 255));
 		knockback_v = 0;
 	}
 	else if (stun > 0) {

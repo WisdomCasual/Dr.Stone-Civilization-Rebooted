@@ -24,7 +24,7 @@ public:
 	~Enemy();
 	void is_there();
 	void enemy_knockback(Vector2f, float);
-	void damaged(Color&,float&,Sprite&);
+	void damaged();
 	void updatePos();
 	bool visionLines(Entity&);
 	bool entityFound(Entity&);
