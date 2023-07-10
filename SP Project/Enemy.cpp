@@ -36,6 +36,11 @@ void Enemy::enemy_knockback(Vector2f direction, float velocity)
 
 void Enemy::damaged()
 {
+	random_num = generate_random(3, 5);
+	sounds[random_num].setVolume(game_volume);
+	sounds[random_num].setPosition((pos.x - player_entity.getRelativePos().x) / 16.f, (pos.y - player_entity.getRelativePos().y) / 16.f, 0);
+	sounds[random_num].play();
+
 	entity_sprite.setColor(Color(255, 155, 155));
 	stun = 0.4;
 	//cout << stun << endl;
@@ -44,6 +49,21 @@ void Enemy::damaged()
 void Enemy::updatePos()
 {
 	entity_sprite.setPosition(round(map_x * scale) + pos.x * scale, round(map_y * scale) + pos.y * scale);
+}
+
+void Enemy::makeNoise()
+{
+	if (noise_delay > 3) {
+		if (!generate_random(0, 2)) {
+			random_num = generate_random(0, 2);
+			sounds[random_num].setVolume(game_volume);
+			sounds[random_num].setPosition((pos.x - player_entity.getRelativePos().x) / 16.f, (pos.y - player_entity.getRelativePos().y) / 16.f, 0);
+			sounds[random_num].play();
+		}
+		noise_delay = 0;
+	}
+	else
+		noise_delay += dt;
 }
 
 bool Enemy::visionLines(Entity& target)
@@ -588,6 +608,8 @@ void Enemy::update()
 		delay += dt;
 	}
 
+	makeNoise();
+
 	////////////////////PLayer Combat////////////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.hit_range.left << '\t' << player_entity.hit_range.top<<endl;
@@ -614,6 +636,11 @@ void Enemy::update()
 			player_entity.knockback(Vector2f(current_direction), 150);
 			hit_cooldown = 0.8;
 			player_entity.health -= damage;
+
+			random_num = generate_random(6, 8);
+			sounds[random_num].setVolume(game_volume);
+			sounds[random_num].setPosition((pos.x - player_entity.getRelativePos().x) / 16.f, (pos.y - player_entity.getRelativePos().y) / 16.f, 0);
+			sounds[random_num].play();
 		}
 	}
 	if (player_entity.health <= 0) {

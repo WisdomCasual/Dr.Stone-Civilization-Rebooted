@@ -534,7 +534,6 @@ void GameState::load_saved_map(string map_name)
 		for (int i = 0; i < count; i++) {
 			//cout << "you thought it was passive, but it was me, DIO\n";
 			ifs >> id;
-			//cout << id << '\n';
 			ifs >> pos.x >> pos.y;
 			enemies.add(enemy_spawn(id), pos);
 			ifs >> enemies.entities[i]->aStarID ;
@@ -669,6 +668,12 @@ void GameState::load_entities(float player_relative_y_pos)
 
 	enemy_stats[0].textures[0]->loadFromFile("textures/game/entities/enemies/lion.png");
 
+	enemy_stats[0].buffers_count = 9;
+	enemy_stats[0].soundbuffers = new SoundBuffer * [enemy_stats[0].buffers_count];
+
+	for (int i = 0; i < enemy_stats[0].buffers_count; i++)
+		enemy_stats[0].soundbuffers[i] = &sound_buffers[24 + i];
+
 	enemy_stats[0].states_no = 1;
 	enemy_stats[0].animations[0] = new animation[4];
 	enemy_stats[0].animations[0][0] = { 4, {0, 146, 48, 49}, {24,48}, {24,24} }; //back
@@ -687,8 +692,13 @@ void GameState::load_entities(float player_relative_y_pos)
 	enemy_stats[1].textures = new Texture * [enemy_stats[1].textures_count];
 	enemy_stats[1].textures[0] = new Texture;
 
-
 	enemy_stats[1].textures[0]->loadFromFile("textures/game/entities/enemies/tiger.png");
+
+	enemy_stats[1].buffers_count = 9;
+	enemy_stats[1].soundbuffers = new SoundBuffer * [enemy_stats[1].buffers_count];
+
+	for (int i = 0; i < enemy_stats[1].buffers_count; i++)
+		enemy_stats[1].soundbuffers[i] = &sound_buffers[33 + i];
 
 	enemy_stats[1].animations[0] = new animation[4];
 	enemy_stats[1].animations[0][0] = { 4, {0, 149, 48, 46}, {23,46}, {24,23} }; //back

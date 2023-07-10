@@ -56,13 +56,28 @@ void Passive::passive_knockback(Vector2f direction, float velocity)
 
 void Passive::damaged()
 {
-	random_num = generate_random(0, 2);
+	random_num = generate_random(3, 5);
 	sounds[random_num].setVolume(game_volume);
-	sounds[random_num].setPosition((pos.x - player_entity.getRelativePos().x) / 4, (pos.y - player_entity.getRelativePos().y) / 4, 0);
+	sounds[random_num].setPosition((pos.x - player_entity.getRelativePos().x) / 16.f, (pos.y - player_entity.getRelativePos().y) / 16.f, 0);
 	sounds[random_num].play();
 
 	entity_sprite.setColor(Color(255, 155, 155));
 	stun = 0.4;
+}
+
+void Passive::makeNoise()
+{
+	if (noise_delay > 3) {
+		if (!generate_random(0, 2)) {
+			random_num = generate_random(0, 2);
+			sounds[random_num].setVolume(game_volume);
+			sounds[random_num].setPosition((pos.x - player_entity.getRelativePos().x) / 16.f, (pos.y - player_entity.getRelativePos().y) / 16.f, 0);
+			sounds[random_num].play();
+		}
+		noise_delay = 0;
+	}
+	else
+		noise_delay += dt;
 }
 
 void Passive::updatePos()
@@ -166,6 +181,9 @@ void Passive::update()
 		}
 		delay += dt;
 	}
+
+	makeNoise();
+
 	/////////////////////HitBox Stuff//////////////////////
 	/////////////WARNING TOUCH AT YOUR OWN RISK////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
