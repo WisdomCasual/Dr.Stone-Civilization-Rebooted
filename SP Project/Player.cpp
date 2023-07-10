@@ -229,11 +229,14 @@ void Player::setHealth(short new_health)
 Vector2i Player::block_interaction()
 {
 	if (interact) {
-		short new_tile_x = getRelativePos().x / 16.f + current_direction.x, new_tile_y = getRelativePos().y / 16.f + current_direction.y;
-		if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {
-			interact = 0;
-			//cout << "a";
-			return Vector2i(new_tile_x, new_tile_y);
+		for (int i = 0; i < 2; i++) {
+		short new_tile_x = getRelativePos().x / 16.f + i * current_direction.x, new_tile_y = getRelativePos().y / 16.f + i * current_direction.y;
+			if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {
+				interact = 0;
+				//cout << "a";
+				return Vector2i(new_tile_x, new_tile_y);
+			}
+
 		}
 	}
 	return Vector2i(-1, -1);
@@ -312,9 +315,11 @@ void Player::update()
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
 	if(!active_action&&stun<=0)
 		player_movement(movement.x, movement.y, entity_stats.base_movement_speed);
-	short new_tile_x = getRelativePos().x / 16.f + current_direction.x, new_tile_y = getRelativePos().y / 16.f + current_direction.y;
-	if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {
-		interaction_notification();
+	for (int i = 0; i < 2; i++) {
+		short new_tile_x = getRelativePos().x / 16.f + i * current_direction.x, new_tile_y = getRelativePos().y / 16.f + i * current_direction.y;
+		if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {
+			interaction_notification();
+		}
 	}
 }
 
