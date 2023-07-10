@@ -34,11 +34,10 @@ void Enemy::enemy_knockback(Vector2f direction, float velocity)
 	//cout << knockback_de.x<<" "<<knockback_de.y << " " << knockback_ve << endl;
 }
 
-void Enemy::damaged(Color& original,float& delay,Sprite& Entity)
+void Enemy::damaged()
 {
-	original = Entity.getColor();
-	Entity.setColor(Color(original.r, 155, 155));
-	delay = 0.4;
+	entity_sprite.setColor(Color(255, 155, 155));
+	stun = 0.4;
 	//cout << stun << endl;
 }
 
@@ -596,7 +595,7 @@ void Enemy::update()
 		if (cooldown<=0) {
 			enemy_knockback(Vector2f(player_entity.current_direction), 120);
 			//cout << player_entity.current_move << endl;
-			damaged(original,stun,entity_sprite);
+			damaged();
 			cooldown = 1;
 			player_entity.combat_tag = combat_status_time;
 			health -= player_entity.damage;
@@ -608,7 +607,7 @@ void Enemy::update()
 	if (hit_range.intersects(player_entity.Entity_Hitbox) || entity_sprite.getGlobalBounds().intersects(FloatRect(player_entity.getPosition().x - player_entity.current_hitbox.x * scale / 2, player_entity.getPosition().y - player_entity.current_hitbox.y * scale / 2, player_entity.current_hitbox.x * scale, player_entity.current_hitbox.y * scale))) {
 		if (player_entity.cooldown <= 0&&hit_cooldown<=0) {
 			player_entity.current_frame = 0;
-			player_entity.damaged(player_entity.og_player_color, player_entity.stun, player_entity.entity_sprite);
+			player_entity.damaged();
 			player_entity.cooldown = 0.6;
 			player_entity.combat_tag = combat_status_time;
 			player_entity.knockback(curr_movement,150);
@@ -623,7 +622,7 @@ void Enemy::update()
 	hit_cooldown -= dt*(hit_cooldown>0);
 	if (health <= 0) despawn = 1;
 	if (stun <= 0) {
-		entity_sprite.setColor(Color(original));
+		entity_sprite.setColor(Color(255, 255, 255));
 		//cout << stun << endl;
 		knockback_ve = 0;
 		stateMachine();

@@ -22,7 +22,6 @@ private:
 	Vector2f delta_movement();
 
 	//Private variables
-	bool fake_constructor = 1;
 
 	base_stats* object_stats, **destructable_objects;
 	short *item_drops, * item_drops_count;
@@ -34,7 +33,7 @@ public:
 	~Player();
 
 	void knockback(Vector2f,float);
-	void damaged(Color&, float&, Sprite&);
+	void damaged();
 	void Hitbox_align(int);
 	void setObjectStats(base_stats*, base_stats**, short*, short*);
 	virtual void setPosition(float, float);

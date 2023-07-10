@@ -705,8 +705,13 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[0].textures = new Texture * [passive_stats[0].textures_count];
 	passive_stats[0].textures[0] = new Texture;
 
-
 	passive_stats[0].textures[0]->loadFromFile("textures/game/entities/passive/cow.png");
+
+	passive_stats[0].buffers_count = 6;
+	passive_stats[0].soundbuffers = new SoundBuffer * [passive_stats[0].buffers_count];
+
+	for (int i = 0; i < passive_stats[0].buffers_count; i++)
+		passive_stats[0].soundbuffers[i] = &sound_buffers[18 + i];
 
 	passive_stats[0].animations[0] = new animation[4];
 	passive_stats[0].animations[0][0] = { 4, {0,164,48, 56}, {29,51}, {24,27} }; //back
@@ -724,6 +729,14 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[1].textures[0] = new Texture;
 
 	passive_stats[1].textures[0]->loadFromFile("textures/game/entities/passive/sheep.png");
+
+	passive_stats[1].buffers_count = 6;
+	passive_stats[1].soundbuffers = new SoundBuffer * [passive_stats[1].buffers_count];
+
+	for (int i = 0; i < 3; i++) {
+		passive_stats[1].soundbuffers[i] = &sound_buffers[15 + i];
+		passive_stats[1].soundbuffers[i + 3] = &sound_buffers[15 + i];
+	}
 
 	passive_stats[1].animations[0] = new animation[5];
 	passive_stats[1].animations[0][0] = { 4, {0,154,48,46}, {24,42}, {29,22} }; //back
