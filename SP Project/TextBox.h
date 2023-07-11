@@ -17,6 +17,8 @@ private:
 	bool isActive = 0, selected = 0, cursor = 0, mode = 0, *submit_bool = nullptr;
 	Text inputted_text, placeholder_text;
 	Sprite box;
+	SoundBuffer keypress_buff, enterpress_buff;
+	Sound keypress, enterpress;
 
 
 
