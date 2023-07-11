@@ -7,6 +7,10 @@ TextBox::TextBox()
 	inputted_text.setFont(font);
 	inputted_text.setCharacterSize(40*scale);
 	inputted_text.setPosition(position);
+	keypress_buff.loadFromFile("Audio/UI/keypress.ogg");
+	keypress.setBuffer(keypress_buff);
+	enterpress_buff.loadFromFile("Audio/UI/ENTER.ogg");
+	enterpress.setBuffer(enterpress_buff);
 }
 
 void TextBox::setTargetString(string& target_string)
@@ -66,7 +70,7 @@ void TextBox::text_poll(Event event)
 	case Event::MouseButtonPressed:
 		if (event.mouseButton.button == Mouse::Left) {
 			if (box.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
-				if(!isActive)
+				if (!isActive)
 					game.play_sfx(0);
 				isActive = 1;
 			}
@@ -81,7 +85,9 @@ void TextBox::text_poll(Event event)
 	case Event::TextEntered:
 		if (isActive) {
 			if (event.text.unicode == 13) {
-				game.play_sfx(0);
+				enterpress.setVolume(game_volume);
+				enterpress.setPitch(generate_random_f(0.8f, 0.9f));
+				enterpress.play();
 				submit();
 				isActive = 0;
 			}
@@ -103,6 +109,9 @@ void TextBox::text_poll(Event event)
 					pw_string.clear();
 					selected = 0;
 				}
+				keypress.setVolume(game_volume);
+				keypress.setPitch(generate_random_f(0.95f, 1.f));
+				keypress.play();
 				input_string += event.text.unicode;
 				pw_string += '*';
 			}
