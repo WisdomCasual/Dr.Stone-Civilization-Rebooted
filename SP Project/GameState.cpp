@@ -140,6 +140,7 @@ void GameState::save()
 			map_ofs << enemies.entities[i]->id << ' ';
 			map_ofs << enemies.entities[i]->pos.x << ' ' << enemies.entities[i]->pos.y << ' ';
 			map_ofs << enemies.entities[i]->aStarID << ' ';
+			map_ofs << enemies.entities[i]->current_move << ' ';
 			map_ofs << enemies.entities[i]->despawn_timer << ' ';
 			map_ofs << enemies.entities[i]->health << ' ';
 			map_ofs << enemies.entities[i]->persistant << ' ';
@@ -153,6 +154,7 @@ void GameState::save()
 		for (int i = 0; i < passive.curr_idx; i++) {
 			map_ofs << passive.entities[i]->id << ' ';
 			map_ofs << passive.entities[i]->pos.x << ' ' << passive.entities[i]->pos.y << ' ';
+			map_ofs << passive.entities[i]->current_move << ' ';
 			map_ofs << passive.entities[i]->despawn_timer << ' ';
 			map_ofs << passive.entities[i]->health << ' ';
 			map_ofs << passive.entities[i]->persistant << ' ';
@@ -165,6 +167,7 @@ void GameState::save()
 		for (int i = 0; i < NPCs.curr_idx; i++) {
 			map_ofs << NPCs.entities[i]->id << ' ';
 			map_ofs << NPCs.entities[i]->pos.x << ' ' << NPCs.entities[i]->pos.y << ' ';
+			map_ofs << NPCs.entities[i]->current_move << ' ';
 			map_ofs << NPCs.entities[i]->despawn_timer << ' ';
 			map_ofs << NPCs.entities[i]->health << ' ';
 			map_ofs << NPCs.entities[i]->persistant << ' ';
@@ -537,6 +540,7 @@ void GameState::load_saved_map(string map_name)
 			ifs >> pos.x >> pos.y;
 			enemies.add(enemy_spawn(id), pos);
 			ifs >> enemies.entities[i]->aStarID ;
+			ifs >> enemies.entities[i]->current_move;
 			ifs >> enemies.entities[i]->despawn_timer ;
 			ifs >> enemies.entities[i]->health ;
 			ifs >> enemies.entities[i]->persistant ;
@@ -550,11 +554,11 @@ void GameState::load_saved_map(string map_name)
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
 			passive.add(passive_spawn(id), pos);
+			ifs >> passive.entities[i]->current_move;
 			ifs >> passive.entities[i]->despawn_timer ;
 			ifs >> passive.entities[i]->health ;
 			ifs >> passive.entities[i]->persistant ;
 		}
-
 
 
 
@@ -564,6 +568,7 @@ void GameState::load_saved_map(string map_name)
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
 			NPCs.add(default_npc(id), pos);
+			ifs >> NPCs.entities[i]->current_move;
 			ifs >> NPCs.entities[i]->despawn_timer ;
 			ifs >> NPCs.entities[i]->health ;
 			ifs >> NPCs.entities[i]->persistant ;
@@ -666,6 +671,11 @@ void GameState::load_entities(float player_relative_y_pos)
 	enemy_stats[0].textures = new Texture * [enemy_stats[0].textures_count];
 	enemy_stats[0].textures[0] = new Texture;
 
+	enemy_stats[0].item_drop_count = 2;
+	enemy_stats[0].item_drops = new int[enemy_stats[0].item_drop_count];
+	enemy_stats[0].item_drops[0] = 6;
+	enemy_stats[0].item_drops[1] = 6;
+
 	enemy_stats[0].textures[0]->loadFromFile("textures/game/entities/enemies/lion.png");
 
 	enemy_stats[0].buffers_count = 9;
@@ -688,6 +698,12 @@ void GameState::load_entities(float player_relative_y_pos)
 	enemy_stats[1].base_movement_speed = 80;
 	enemy_stats[1].states_no = 1;
 	enemy_stats[1].base_animation_speed = 12;
+
+	enemy_stats[1].item_drop_count = 2;
+	enemy_stats[1].item_drops = new int[enemy_stats[1].item_drop_count];
+	enemy_stats[1].item_drops[0] = 6;
+	enemy_stats[1].item_drops[1] = 6;
+
 	enemy_stats[1].textures_count = 1;
 	enemy_stats[1].textures = new Texture * [enemy_stats[1].textures_count];
 	enemy_stats[1].textures[0] = new Texture;
@@ -712,6 +728,13 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[0].base_movement_speed = 80;
 	passive_stats[0].states_no = 1;
 	passive_stats[0].base_animation_speed = 12;
+
+	passive_stats[0].item_drop_count = 3;
+	passive_stats[0].item_drops = new int[passive_stats[0].item_drop_count];
+	passive_stats[0].item_drops[0] = 2;
+	passive_stats[0].item_drops[1] = 6;
+	passive_stats[0].item_drops[2] = 6;
+
 	passive_stats[0].textures_count = 1;
 	passive_stats[0].textures = new Texture * [passive_stats[0].textures_count];
 	passive_stats[0].textures[0] = new Texture;
@@ -735,6 +758,13 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[1].base_movement_speed = 80;
 	passive_stats[1].states_no = 1;
 	passive_stats[1].base_animation_speed = 12;
+
+	passive_stats[1].item_drop_count = 3;
+	passive_stats[1].item_drops = new int[passive_stats[1].item_drop_count];
+	passive_stats[1].item_drops[0] = 3;
+	passive_stats[1].item_drops[1] = 4;
+	passive_stats[1].item_drops[2] = 4;
+
 	passive_stats[1].textures_count = 1;
 	passive_stats[1].textures = new Texture * [passive_stats[1].textures_count];
 	passive_stats[1].textures[0] = new Texture;
@@ -862,6 +892,20 @@ void GameState::initial_stats()
 	object_stats[2].idx = 2;
 	object_stats[2].drops_no = 1;
 	object_stats[2].item_drops[0] = 1;
+
+	/////// small plant //////////
+	object_stats[3].health = 1;
+	object_stats[3].idx = 3;
+	object_stats[3].drops_no = 1;
+	object_stats[3].item_drops[0] = 7;
+
+	/////// big plant //////////
+	object_stats[4].health = 3;
+	object_stats[4].idx = 4;
+	object_stats[4].drops_no = 3;
+	object_stats[4].item_drops[0] = 7;
+	object_stats[4].item_drops[1] = 7;
+	object_stats[4].item_drops[2] = 7;
 }
 
 void GameState::initial_game(string current_map, Vector2f player_pos)
@@ -1572,7 +1616,11 @@ void GameState::update()
 				enemies.entities[i]->update();
 		}
 		if(enemies.entities[i]->despawn) {
-			effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+			if (enemies.entities[i]->health <= 0) {
+				effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+				for (int j = 0; j < enemies.entities[i]->entity_stats.item_drop_count; j++)
+					items.add(item_spawn(enemies.entities[i]->entity_stats.item_drops[j]), enemies.entities[i]->getRelativePos(), 0, 300.0);
+			}
 			enemies.rem_ove(i);
 		}
 	}
@@ -1583,8 +1631,12 @@ void GameState::update()
 				passive.entities[i]->update();
 		}
 		if(passive.entities[i]->despawn) {
-			effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
-			passive.rem_ove(i);
+			if (passive.entities[i]->health <= 0) {
+				effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+				for (int j = 0; j < passive.entities[i]->entity_stats.item_drop_count; j++)
+					items.add(item_spawn(passive.entities[i]->entity_stats.item_drops[j]), passive.entities[i]->getRelativePos(), 0, 300.0);
+			}
+				passive.rem_ove(i);
 		}
 	}
 
@@ -1594,7 +1646,6 @@ void GameState::update()
 				NPCs.entities[i]->update();
 		}
 		if(NPCs.entities[i]->despawn) {
-			effects.add({ 400,0,100,100 }, 20, { int(NPCs.entities[i]->getRelativePos().x) , int(NPCs.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 			NPCs.rem_ove(i);
 		}
 	}

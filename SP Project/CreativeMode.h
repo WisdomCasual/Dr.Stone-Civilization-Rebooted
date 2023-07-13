@@ -35,9 +35,9 @@ private:
 	Color& highlight_color;
 
 	//Destroyable Obejects
-	const short objects_num = 3;
-	const string object_names[3] = {"Tree", "Big Stone", "Small Stone" };
-	const short tool[3] = { 2, 1, 1 };
+	const short objects_num = 5;
+	const string object_names[5] = {"Tree", "Big Stone", "Small Stone", "Small Plant", "Big Plant"};
+	const short tool[5] = { 2, 1, 1, 4, 4 };
 	int object_type_delay = 0;
 	Text object_type_text;
 

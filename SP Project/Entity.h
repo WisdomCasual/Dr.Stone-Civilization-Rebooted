@@ -21,6 +21,8 @@ struct entity {
 	SoundBuffer** soundbuffers = nullptr;
 	short max_health = 100, base_damage = 10, base_movement_speed = 100, states_no = 0, textures_count = 0, buffers_count = 0;
 	float scale_const = 1, base_animation_speed = 16.6667f;
+	int* item_drops = nullptr, item_drop_count = 0;
+
 
 	bool is_player = 0;
 	~entity() {
@@ -42,6 +44,9 @@ struct entity {
 
 		if (soundbuffers != nullptr)
 			delete[] soundbuffers;
+
+		if (item_drops != nullptr)
+			delete[] item_drops;
 	}
 };
 

@@ -86,7 +86,7 @@ namespace globalvar {
     inline random_device real_randomness;
     inline mt19937 mt(real_randomness());
 
-    inline string item_names[50] = {"Wood", "Stone"};
+    inline string item_names[50] = {"Wood", "Stone", "Raw Beef", "Raw Lamb", "Wool", "Berries", "Leather", "Plants"};
 
 	inline const int dx[4] = { 1, -1, 0, 0 };
 	inline const int dy[4] = { 0, 0, 1, -1};
