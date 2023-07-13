@@ -93,6 +93,9 @@ void TextBox::text_poll(Event event)
 			}
 
 			if (event.text.unicode == 8 && !input_string.empty()) {
+				keypress.setVolume(game_volume);
+				keypress.setPitch(generate_random_f(0.8f, 0.85f));
+				keypress.play();
 				if(selected) { 
 					input_string.clear();
 					pw_string.clear();
