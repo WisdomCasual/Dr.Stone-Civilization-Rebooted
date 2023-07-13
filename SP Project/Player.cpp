@@ -115,7 +115,7 @@ void Player::use_tool()
 			sounds[random_num].setVolume(game_volume);
 			sounds[random_num].play();
 		}
-		else if (state == 2 || state == 1) { // axe / pickaxe
+		else if (state == 2 || state == 1 || state == 4) { // axe / pickaxe / hand pickup
 			mine();
 			action(1);
 		}
