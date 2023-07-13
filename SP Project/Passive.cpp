@@ -192,7 +192,6 @@ void Passive::update()
 		if (cooldown<=0) {
 			passive_knockback(Vector2f(player_entity.current_direction), 120);
 			damaged();
-			player_entity.combat_tag = combat_status_time;
 			action_state = 1;
 			switch_delay = 0;
 			motion_delay = 2;
