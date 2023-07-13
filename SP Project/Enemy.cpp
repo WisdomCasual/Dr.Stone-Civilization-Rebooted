@@ -619,7 +619,6 @@ void Enemy::update()
 			//cout << player_entity.current_move << endl;
 			damaged();
 			cooldown = 1;
-			player_entity.combat_tag = combat_status_time;
 			health -= player_entity.damage;
 		}
 	}
