@@ -1344,8 +1344,8 @@ void GameState::block_interactions_list(Vector2i interaction_tile)
 void GameState::DayLightCycle()
 {
 	int count = 0;
-	for (auto i = light_sources.lower_bound(-map_y - 160); i != light_sources.end() && i->first <= -map_y + win_y / scale + 160; i++) {
-		if (i->second.position.x > -map_x - 160 && i->second.position.x < -map_x + win_x / scale + 160) {
+	for (auto i = light_sources.lower_bound(-map_y - 176); i != light_sources.end() && i->first <= -map_y + win_y / scale + 176; i++) {
+		if (i->second.position.x > -map_x - 176 && i->second.position.x < -map_x + win_x / scale + 176) {
 			if(i->second.day_light)
 				shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(light_level, light_level, light_level));
 			else
