@@ -32,27 +32,27 @@ bool MainMenuState::fade_out()
 
 void MainMenuState::update_buttons()
 {
-	for (auto& button : buttons) {
-		buttontex.setTextureRect(IntRect(0,button.pressed * 49, 190, 49));
-		buttontex.setPosition(x+button.x * scale, y+button.y * scale);
+	for (int i = 0; i < 3; i++) {
+		buttontex.setTextureRect(IntRect(0,buttons[i].pressed * 49, 190, 49));
+		buttontex.setPosition(x+buttons[i].x * scale, y+buttons[i].y * scale);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
-				if(!button.pressed)
+				if(!buttons[i].pressed)
 					game.play_sfx(0);
-				button.pressed = 1;
+				buttons[i].pressed = 1;
 			}
 			else {
-				if (button.pressed) {
-					button.execute = 1;
+				if (buttons[i].pressed) {
+					*buttons[i].execute = 1;
 				}
-				button.pressed = 0; 
+				buttons[i].pressed = 0; 
 			}
-			button.hover = 1;
+			buttons[i].hover = 1;
 		}
 		else {
-			button.pressed = 0;
-			button.hover = 0;
+			buttons[i].pressed = 0;
+			buttons[i].hover = 0;
 		}
 	}
 }
@@ -61,14 +61,14 @@ void MainMenuState::render_buttons()
 {
 	buttontex.setScale(scale, scale);
 	text.setCharacterSize(25.69*scale);
-	for (auto& button : buttons) {
-		buttontex.setTextureRect(IntRect(0, button.pressed * 49, 190, 49));
-		buttontex.setPosition(x+button.x*scale, y+button.y * scale);
-		text.setString(button.txt);
+	for (int i = 0; i < 3; i++) {
+		buttontex.setTextureRect(IntRect(0, buttons[i].pressed * 49, 190, 49));
+		buttontex.setPosition(x+buttons[i].x*scale, y+buttons[i].y * scale);
+		text.setString(buttons[i].txt);
 		FloatRect bounds=text.getLocalBounds();
 		text.setOrigin(bounds.width / 2.0, bounds.top+bounds.height / 2.0);
-		text.setPosition(x + button.x * scale, (button.pressed) ? y + button.y * scale + 2 * scale : y + button.y * scale - 2 * scale);
-		if (button.hover)text.setFillColor(Color(255, 255, 255, transparency));
+		text.setPosition(x + buttons[i].x * scale, (buttons[i].pressed) ? y + buttons[i].y * scale + 2 * scale : y + buttons[i].y * scale - 2 * scale);
+		if (buttons[i].hover)text.setFillColor(Color(255, 255, 255, transparency));
 		else text.setFillColor(Color(226,211,195, transparency));
 		window->draw(buttontex);
 		window->draw(text);
@@ -90,9 +90,16 @@ MainMenuState::MainMenuState()
 
 	text.setFont(font);
 
-	buttons.push_back({ "Play",0,0, play});
-	buttons.push_back({ "Settings",0,64, settings});
-	buttons.push_back({ "Exit" ,0,128, exit});
+	buttons[0].txt = "Play";
+	buttons[0].execute = &play;
+
+	buttons[1].txt = "Settings";
+	buttons[1].y = 64;
+	buttons[1].execute = &settings;
+
+	buttons[2].txt = "Exit";
+	buttons[2].y = 128;
+	buttons[2].execute = &exit;
 }
 
 MainMenuState::~MainMenuState()
