@@ -278,6 +278,8 @@ void Player::update()
 
 	updatePos();
 
+	combat_tag -= dt;
+
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	if (Lag >= 0.4) {
 		hit_range = { -10,-10,1,1 };

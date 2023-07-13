@@ -1582,18 +1582,6 @@ void GameState::update()
 
 	maps_travel();
 
-	if (player_entity->combat_tag <= 0 && player_entity->health < player_stats.max_health && heal_delay >= 2) {
-		heal_delay = 0;
-		player_entity->health += 10;
-	}
-	else {
-		if(player_entity->combat_tag > 0)
-			player_entity->combat_tag -= dt;
-		else
-			heal_delay += dt;
-	}
-	health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
-
 	if (destroy_object_location.x >= 0) {
 		destroyANDrestore_objects(destroy_object_location, 1);
 		destroy_object_location = { -1, -1};
@@ -1748,6 +1736,7 @@ void GameState::render()
 				window->draw(tool_icons[i]);
 			window->draw(hotbar_selection);
 		}
+		health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
 		window->draw(health_indicator);
 		if (EnableMiniMap)
 			render_minimap();
@@ -1812,7 +1801,7 @@ void GameState::pollevent()
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(255, 255, 255));
 				break;
 			case Keyboard::E:
-				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count)});
+				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count, &player_entity->health, player_entity->entity_stats.max_health, &player_entity->combat_tag)});
 				states->at(InventoryID)->update();
 				break;
 			case Keyboard::M:

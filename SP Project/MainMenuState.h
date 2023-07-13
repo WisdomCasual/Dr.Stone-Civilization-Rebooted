@@ -20,11 +20,11 @@ private:
 	struct button{
 		string txt;
 		int x = 0, y = 0;
-		bool& execute;
+		bool* execute = nullptr;
 		int pressed = 0;
 		bool hover = 0;
-	};
-	vector<button> buttons;
+	} buttons[3];
+
 	Vector2f clicked_on = { -1, -1 };
 	Vector2u prev_win = { 0, 0 };
 	bool play = 0, settings = 0, exit = 0;

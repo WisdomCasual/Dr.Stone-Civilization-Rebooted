@@ -87,6 +87,7 @@ namespace globalvar {
     inline mt19937 mt(real_randomness());
 
     inline string item_names[50] = {"Wood", "Stone", "Raw Beef", "Raw Lamb", "Wool", "Berries", "Leather", "Plants"};
+    inline float healing_value[50] = { 0,      0,       0.5,        0.5,       0,       0.5,        0,         0    };
 
 	inline const int dx[4] = { 1, -1, 0, 0 };
 	inline const int dy[4] = { 0, 0, 1, -1};
@@ -211,20 +212,20 @@ namespace globalvar {
                 delete node;
                 return 1;
             }
-
-            for (; node != NULL; node = node->link) {
-                if (node->itm == element) {
-                    found = 1;
-                    if (node->link != NULL)
-                        node->link->back_link = node->back_link;
-                    if (node->back_link != NULL)
-                        node->back_link->link = node->link;
-                    size--;
-                    delete node;
-                    break;
+            else {
+                for (; node != NULL; node = node->link) {
+                    if (node->itm == element) {
+                        found = 1;
+                        if (node->link != NULL)
+                            node->link->back_link = node->back_link;
+                        if (node->back_link != NULL)
+                            node->back_link->link = node->link;
+                        size--;
+                        delete node;
+                        break;
+                    }
                 }
             }
-
             if (size == 1) {
                 first->link = NULL, first->back_link = NULL, last = NULL;
             }
