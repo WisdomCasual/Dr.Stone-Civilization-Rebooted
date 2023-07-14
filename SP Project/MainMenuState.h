@@ -13,10 +13,10 @@ struct MainMenuState :public State
 {
 private:
 	//variables
-	float scale = 0, transparency = 0;	
+	float scale = 0, transparency = 0, splash_scale = 1, splash_increment = 0.03;
 	int x=0, y=0;
 	Sprite buttontex,logo;
-	Text text;
+	Text splash;
 	struct button{
 		string txt;
 		int x = 0, y = 0;
