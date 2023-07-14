@@ -94,7 +94,7 @@ void TextBox::text_poll(Event event)
 
 			if (event.text.unicode == 8 && !input_string.empty()) {
 				keypress.setVolume(game_volume);
-				keypress.setPitch(generate_random_f(0.7f, 0.8f));
+				keypress.setPitch(generate_random_f(0.8f, 0.9f));
 				keypress.play();
 				if(selected) { 
 					input_string.clear();
@@ -113,7 +113,7 @@ void TextBox::text_poll(Event event)
 					selected = 0;
 				}
 				keypress.setVolume(game_volume);
-				keypress.setPitch(generate_random_f(0.8f, 0.9f));
+				keypress.setPitch(generate_random_f(0.9f, 1.f));
 				keypress.play();
 				input_string += event.text.unicode;
 				pw_string += '*';
@@ -213,7 +213,7 @@ void TextBox::update()
 	inputted_text.setString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 	bound_y = inputted_text.getLocalBounds().top + inputted_text.getLocalBounds().height / 2.0;
 	inputted_text.setString(*display_string);
-	placeholder_text.setOrigin(placeholder_text.getLocalBounds().width / 2.0, placeholder_text.getLocalBounds().height / 2.0);
+	placeholder_text.setOrigin(placeholder_text.getLocalBounds().left + placeholder_text.getLocalBounds().width / 2.0, placeholder_text.getLocalBounds().top + placeholder_text.getLocalBounds().height / 2.0);
 	box_x_bound = box.getGlobalBounds().width * 0.8, text_x_bound = inputted_text.getGlobalBounds().width;
 	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
 	inputted_text.setOrigin(inputted_text.getLocalBounds().left + inputted_text.getLocalBounds().width / 2.0, bound_y);
