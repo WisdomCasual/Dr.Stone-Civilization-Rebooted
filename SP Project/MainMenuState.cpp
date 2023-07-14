@@ -165,12 +165,6 @@ void MainMenuState::update()
 			states->insert(SavesST);
 			states->at(SavesID)->update();
 
-			if (states->find(BackgroundID) != states->end()) {
-				states->insert(BackgroundST);
-				states->at(BackgroundID)->update();
-			}
-
-
 			int exceptions[] = { SavesID , BackgroundID };
 			game.erase_states(exceptions, 2);
 			return;
@@ -181,11 +175,6 @@ void MainMenuState::update()
 			settings = 0;
 			states->insert(SettingsST);
 			states->at(SettingsID)->update();
-
-			if (states->find(BackgroundID) != states->end()) {
-				states->insert(BackgroundST);
-				states->at(BackgroundID)->update();
-			}
 
 			int exceptions[] = { SettingsID , BackgroundID };
 			game.erase_states(exceptions, 2);

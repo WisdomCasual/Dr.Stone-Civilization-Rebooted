@@ -46,17 +46,20 @@
 #define DialogueID 12
 #define DialogueST { 12, new DialogueState}
 
-#define PauseID 13
-#define PauseST { 13, new PauseState }
+#define TradingID 13
+#define TradingST { 13, new TradingState}
 
-#define SettingsID 14
-#define SettingsST { 14, new SettingsState }
+#define PauseID 14
+#define PauseST { 14, new PauseState }
 
-#define PasswordID 15
-#define PasswordST { 15, new PasswordState }
+#define SettingsID 15
+#define SettingsST { 15, new SettingsState }
 
-#define ConfirmationID 16
-#define ConfirmationST { 16, new ConfirmationState }
+#define PasswordID 16
+#define PasswordST { 16, new PasswordState }
+
+#define ConfirmationID 17
+#define ConfirmationST { 17, new ConfirmationState }
 
 #define TestGroundID 50
 #define TestGroundST { 50, new TestGroundState }

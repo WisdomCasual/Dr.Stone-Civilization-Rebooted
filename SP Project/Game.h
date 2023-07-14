@@ -16,6 +16,7 @@
 #include"GameState.h"
 #include"InventoryState.h"
 #include "MiniMapState.h"
+#include "TradingState.h"
 
 #include"Global.h"
 using namespace globalvar;

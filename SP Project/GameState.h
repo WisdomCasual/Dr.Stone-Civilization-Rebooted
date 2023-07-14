@@ -11,6 +11,7 @@
 #include"Animation.h"
 #include"DialogueState.h"
 #include "InventoryState.h"
+#include "TradingState.h"
 
 //eneimies = 0, items = 1, passive = 2, NPC = 3
 
@@ -28,6 +29,8 @@ struct GameState : public State
 {
 private:
 	//variables:
+	
+	TradingInfo trading_test; //<-- FOR TESTING (WILL BE REMOVED)
 
 	bool no_update = 0;
 	dialogue death_message[2] = { {"Senku: " ,"Well, this is unfortunate:\n/E1you're about to die", 0, 1}, {"Senku: " ,"Press F to respawn..\n/E2Better luck next time!", 1, 1} };

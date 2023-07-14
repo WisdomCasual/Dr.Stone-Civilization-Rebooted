@@ -839,6 +839,95 @@ void GameState::load_entities(float player_relative_y_pos)
 
 	player_entity->change_state(4);
 
+
+
+
+	//////////set NPC trades /////////////////
+
+
+	/////////////////////FOR TESTING //////////////////////////////////////
+
+
+	//FOLLOW THE SAME TEMPLATE TO ADD TRADES (PRESS T to test it out)
+
+	//initializing info:
+	trading_test.dialogue = "My name is Senku and if you need anything related to science, I can 1 billion percent do it";//<--- just write the dialogue in one string (splitting is automatic)
+	trading_test.NPC_ID = 0;        //<---- write the NPC ID to get the pic (rn only senku is avilable (ID = 0) )
+	trading_test.trades_count = 5;  //<---- number of trades
+	trading_test.trading_menu = new TradingMenu[trading_test.trades_count]; //<-- just creates the array (it deletes itself, no need for worring about delete[])
+
+	//initializing trades:
+	trading_test.trading_menu[0].item_name = "Pickaxe";     //<--- name of the trade (CURRENT NAMES AND INGREDIENTS ARE JUST RANDOM)
+	trading_test.trading_menu[0].ingredients_count = 2;     //<--- number of ingredient for the trade [0] (UP TO 3 ONLY)
+
+	trading_test.trading_menu[0].ingredients[0].ID = 0;     //<--- ingredient 1 ID [0]
+	trading_test.trading_menu[0].ingredients[0].count = 3;     //<--- ingredient 1 count [0]
+	trading_test.trading_menu[0].ingredients[1].ID = 1;        //<--- ingredient 2 ID [1]
+	trading_test.trading_menu[0].ingredients[1].count = 2;     //<--- ingredient 2 count [1]
+
+	trading_test.trading_menu[0].result.ID = 4;                //<--- the item you get from the trade's ID 
+	trading_test.trading_menu[0].result.count = 1;             //<--- count of items you'll get
+
+	//////////continue the rest of the trades the same way:
+
+	trading_test.trading_menu[1].item_name = "Axe";
+	trading_test.trading_menu[1].ingredients_count = 3;
+
+	trading_test.trading_menu[1].ingredients[0].ID = 0;
+	trading_test.trading_menu[1].ingredients[0].count = 3;
+	trading_test.trading_menu[1].ingredients[1].ID = 1;
+	trading_test.trading_menu[1].ingredients[1].count = 2;
+	trading_test.trading_menu[1].ingredients[2].ID = 5;
+	trading_test.trading_menu[1].ingredients[2].count = 47;
+
+	trading_test.trading_menu[1].result.ID = 4;
+	trading_test.trading_menu[1].result.count = 3;
+
+	trading_test.trading_menu[2].item_name = "someme";
+	trading_test.trading_menu[2].ingredients_count = 3;
+
+	trading_test.trading_menu[2].ingredients[0].ID = 0;
+	trading_test.trading_menu[2].ingredients[0].count = 3;
+	trading_test.trading_menu[2].ingredients[1].ID = 7;
+	trading_test.trading_menu[2].ingredients[1].count = 2;
+	trading_test.trading_menu[2].ingredients[2].ID = 5;
+	trading_test.trading_menu[2].ingredients[2].count = 47;
+
+	trading_test.trading_menu[2].result.ID = 5;
+	trading_test.trading_menu[2].result.count = 1;
+
+
+	trading_test.trading_menu[3].item_name = "Axrere";
+	trading_test.trading_menu[3].ingredients_count = 3;
+
+	trading_test.trading_menu[3].ingredients[0].ID = 0;
+	trading_test.trading_menu[3].ingredients[0].count = 3;
+	trading_test.trading_menu[3].ingredients[1].ID = 1;
+	trading_test.trading_menu[3].ingredients[1].count = 2;
+	trading_test.trading_menu[3].ingredients[2].ID = 5;
+	trading_test.trading_menu[3].ingredients[2].count = 47;
+
+	trading_test.trading_menu[3].result.ID = 4;
+	trading_test.trading_menu[3].result.count = 5;
+
+	trading_test.trading_menu[4].item_name = "AERErER";
+	trading_test.trading_menu[4].ingredients_count = 3;
+
+	trading_test.trading_menu[4].ingredients[0].ID = 0;
+	trading_test.trading_menu[4].ingredients[0].count = 3;
+	trading_test.trading_menu[4].ingredients[1].ID = 1;
+	trading_test.trading_menu[4].ingredients[1].count = 2;
+	trading_test.trading_menu[4].ingredients[2].ID = 5;
+	trading_test.trading_menu[4].ingredients[2].count = 12;
+
+	trading_test.trading_menu[4].result.ID = 4;
+	trading_test.trading_menu[4].result.count = 1;
+
+
+
+
+
+
 }
 
 void GameState::deload_map()
@@ -1805,6 +1894,14 @@ void GameState::pollevent()
 				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count, &player_entity->health, player_entity->entity_stats.max_health, &player_entity->combat_tag)});
 				states->at(InventoryID)->update();
 				break;
+
+			case Keyboard::T:
+				/////////////////////////////////////////FOR TESTING ///////////////////////////////////////////////
+				states->insert({ TradingID, new TradingState(&inventory_order, inventory_count, trading_test) });
+				states->at(TradingID)->update();
+				break;
+
+
 			case Keyboard::M:
 				states->insert({ MiniMapID, new MiniMapState(minimap_tex, player_entity->getRelativePos(), waypoint_position, quest_location) });
 				states->at(MiniMapID)->update();
