@@ -9,6 +9,8 @@ void MainMenuState::fade_in()
 		else
 			transparency += 800 * dt;
 		buttontex.setColor(Color(255, 255, 255, transparency));
+		splash.setFillColor(Color(splash.getFillColor().r, splash.getFillColor().g, splash.getFillColor().b, transparency));
+		splash.setOutlineColor(Color(splash.getOutlineColor().r, splash.getOutlineColor().g, splash.getOutlineColor().b, transparency));
 		logo.setColor(Color(255, 255, 255, transparency));
 	}
 }
@@ -22,6 +24,8 @@ bool MainMenuState::fade_out()
 			transparency -= 1500 * dt;
 
 		buttontex.setColor(Color(255, 255, 255, transparency));
+		splash.setFillColor(Color(splash.getFillColor().r, splash.getFillColor().g, splash.getFillColor().b, transparency));
+		splash.setOutlineColor(Color(splash.getOutlineColor().r, splash.getOutlineColor().g, splash.getOutlineColor().b, transparency));
 		logo.setColor(Color(255, 255, 255, transparency));
 
 		return false;
@@ -86,9 +90,13 @@ MainMenuState::MainMenuState()
 	buttontex.setOrigin(190/2,49/2);
 
 	logo.setTexture(*textures[1]);
-	logo.setOrigin(2280/2,772/2);
+	logo.setOrigin(logo.getLocalBounds().width / 2, logo.getLocalBounds().height / 2);
 
-	text.setFont(font);
+	splash.setFont(font);
+	splash.setString("Civilization Rebooted");
+	splash.setRotation(345.f);
+	splash.setFillColor(Color(average_color.x, average_color.y, average_color.z));
+	splash.setOutlineColor(Color(average_outline_color.x, average_outline_color.y, average_outline_color.z));
 
 	buttons[0].txt = "Play";
 	buttons[0].execute = &play;
@@ -116,15 +124,35 @@ void MainMenuState::update()
 		if (win_x / 390.0 < win_y / 390.0) scale = win_x / 390.0;
 		else scale = win_y / 390.0;
 		
-		logo.setPosition(x, y - 110 * scale);
+		if (win_x > 1280) {
+			scale *= 0.8;
+			logo.setPosition(x, y - 135 * scale);
+			splash.setPosition(x + 60 * scale, y - 115 * scale);
+		}
+		else {
+			logo.setPosition(x, y - 110 * scale);
+			splash.setPosition(x + 60 * scale, y - 90 * scale);
+		}
 
-		if (win_x > 1280) scale *= 0.8;
-
-		logo.setScale(scale * 0.13, scale * 0.13);
+		logo.setScale(scale * .8f, scale * .8f);
+		splash.setCharacterSize(40 * scale);
+		splash.setOutlineThickness(1.5f * scale);
 	}
 
 
 	update_buttons();
+
+	if (splash_increment > 0 && splash_scale + splash_increment * dt > 1.03f) {
+		splash_increment = -splash_increment;
+	}
+	else if (splash_increment < 0 && splash_scale + splash_increment * dt < 0.98f) {
+		splash_increment = -splash_increment;
+	}
+
+	splash_scale += splash_increment * dt;
+
+	splash.setScale(splash_scale, splash_scale);
+	splash.setOrigin(splash.getLocalBounds().left + splash.getLocalBounds().width / 2.f, splash.getLocalBounds().top + splash.getLocalBounds().height / 2.f);
 
 	if (exit) {
 		exit = 0;
@@ -172,6 +200,7 @@ void MainMenuState::render()
 {
 	render_buttons();
 	window->draw(logo);
+	window->draw(splash);
 }
 
 void MainMenuState::pollevent()

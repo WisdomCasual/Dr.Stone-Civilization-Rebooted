@@ -76,6 +76,7 @@ namespace globalvar {
     inline double game_time = 0;
     inline short quest_idx = -1, game_volume = 100, music_volume = 100;
     inline string character_name;
+    inline Vector3f average_color = { 0, 0, 0 }, average_outline_color = { 0, 0, 0 };
 
 	inline Font font;
 	inline Text fps_text, text;
