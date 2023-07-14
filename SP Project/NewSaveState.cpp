@@ -250,7 +250,7 @@ NewSaveState::NewSaveState(int save_no)
 	// initializing the text box's text LoL
 
 	txt_box.initializeTextBox(test_str, *textures[2], "Enter name", Vector2f(win_x / 2.0, (win_y / 2) + 5 * scale), scale * 1.2);
-	txt_box.setLimit(162);
+	txt_box.setLimit(165);
 	buttontex.setTexture(*textures[4]);
 	buttontex.setTextureRect(IntRect(0, 0, 108, 49));
 	buttontex.setOrigin(108 / 2, 49 / 2);
