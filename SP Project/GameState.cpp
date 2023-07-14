@@ -732,7 +732,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[0].item_drop_count = 3;
 	passive_stats[0].item_drops = new int[passive_stats[0].item_drop_count];
 	passive_stats[0].item_drops[0] = 2;
-	passive_stats[0].item_drops[1] = 6;
+	passive_stats[0].item_drops[1] = 2;
 	passive_stats[0].item_drops[2] = 6;
 
 	passive_stats[0].textures_count = 1;
@@ -759,11 +759,12 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[1].states_no = 1;
 	passive_stats[1].base_animation_speed = 12;
 
-	passive_stats[1].item_drop_count = 3;
+	passive_stats[1].item_drop_count = 4;
 	passive_stats[1].item_drops = new int[passive_stats[1].item_drop_count];
 	passive_stats[1].item_drops[0] = 3;
-	passive_stats[1].item_drops[1] = 4;
+	passive_stats[1].item_drops[1] = 3;
 	passive_stats[1].item_drops[2] = 4;
+	passive_stats[1].item_drops[3] = 4;
 
 	passive_stats[1].textures_count = 1;
 	passive_stats[1].textures = new Texture * [passive_stats[1].textures_count];
