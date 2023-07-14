@@ -117,6 +117,9 @@
     <ClCompile Include="MiniMapState.cpp">
       <Filter>cpps\States</Filter>
     </ClCompile>
+    <ClCompile Include="TradingState.cpp">
+      <Filter>cpps\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -195,6 +198,9 @@
       <Filter>Header Files\Entity Headers</Filter>
     </ClInclude>
     <ClInclude Include="MiniMapState.h">
+      <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="TradingState.h">
       <Filter>Header Files\State Headers</Filter>
     </ClInclude>
   </ItemGroup>

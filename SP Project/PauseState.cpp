@@ -191,13 +191,14 @@ void PauseState::update()
 		else if (states->find(WorldMapID) != states->end())
 			states->at(WorldMapID)->save();
 
-		states->insert(MainMenuST);
-		states->at(MainMenuID)->update();
-
 		if (states->find(BackgroundID) == states->end()) {
 			states->insert(BackgroundST);
 			states->at(BackgroundID)->update();
 		}
+
+		states->insert(MainMenuST);
+		states->at(MainMenuID)->update();
+
 
 		int exceptions[] = { MainMenuID , BackgroundID};
 		game.erase_states(exceptions, 2);

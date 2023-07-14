@@ -53,17 +53,21 @@ void Enemy::updatePos()
 
 void Enemy::makeNoise()
 {
-	if (noise_delay > 3) {
+	if (noise_delay > 1.5) {
 		if (!generate_random(0, 2)) {
 			random_num = generate_random(0, 2);
 			sounds[random_num].setVolume(game_volume);
-			sounds[random_num].setPosition((pos.x - player_entity.getRelativePos().x) / 16.f, (pos.y - player_entity.getRelativePos().y) / 16.f, 0);
 			sounds[random_num].play();
 		}
 		noise_delay = 0;
 	}
 	else
 		noise_delay += dt;
+
+	//directional sound
+	for (int i = 0; i < 9; i++)
+		if (sounds[i].getStatus())
+			sounds[i].setPosition((pos.x - player_entity.getRelativePos().x) / 24.f, (pos.y - player_entity.getRelativePos().y) / 24.f, 0);
 }
 
 bool Enemy::visionLines(Entity& target)

@@ -96,16 +96,11 @@ void InventoryState::update_buttons()
 
 void InventoryState::render_buttons()
 {
-	consumebutton.setScale(scale, scale);
-	text.setCharacterSize(25.69 * scale);
 	for (int i = (item_offset ? item_offset - 1 : item_offset); i < inventory_order->size && i < item_offset + 10; i++) {
 		if (healing_value[buttons[i].item_id]) {
 			consumebutton.setTextureRect(IntRect(buttons[i].pressed * 45, 0, 45, 49));
 			consumebutton.setPosition(panel.getPosition().x + 180 * scale, buttons[i].y);
 
-
-			if (buttons[i].hover) text.setFillColor(Color(255, 255, 255));
-			else text.setFillColor(Color(226, 211, 195));
 			window->draw(consumebutton);
 
 			if (buttons[i].hover)
