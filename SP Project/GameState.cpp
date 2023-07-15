@@ -357,7 +357,7 @@ void GameState::load_initial_map(string map_name)
 							pre_disabled_objects[pre_disabled_count] = { i, j };
 							pre_disabled_count++;
 						}
-						if (layer_prop & 32) {
+						if (layer_prop & 32 && tile_props[tle.z].properties[tle.x][tle.y].object_type > -1) {
 							static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
 							static_map[i][j].object_ID = destructable_count;
 							temp_destructable[destructable_count] = tile_props[tle.z].properties[tle.x][tle.y].object_type;
@@ -820,7 +820,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	NPC_stats[0].states_no = 1;
 	NPC_stats[0].base_animation_speed = 12;
 	NPC_stats[0].textures_count = 1;
-	NPC_stats[0].textures = new Texture * [passive_stats[1].textures_count];
+	NPC_stats[0].textures = new Texture * [NPC_stats[0].textures_count];
 	NPC_stats[0].textures[0] = new Texture;
 
 	NPC_stats[0].textures[0]->loadFromFile("textures/game/entities/NPCs/senku.png");
@@ -1715,12 +1715,12 @@ void GameState::update()
 			if (enemies.entities[i]->action_state != 0 || entity_in_range(enemies.entities[i]->pos, entity_update_distance))
 				enemies.entities[i]->update();
 			if(enemies.entities[i]->got_hit)
-				effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+				effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 		}
 		else {
 			if (enemies.entities[i]->health <= 0) {
 				poof_pop.play();
-				effects.add({ 0, 0, 256, 256 }, 22, { (int)enemies.entities[i]->getRelativePos().x, (int)enemies.entities[i]->getRelativePos().y}, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
+				effects.add({ 0, 0, 256, 256 }, 22, { (int)enemies.entities[i]->getRelativePos().x, (int)enemies.entities[i]->getRelativePos().y + 2}, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
 				for (int j = 0; j < enemies.entities[i]->entity_stats.item_drop_count; j++)
 					items.add(item_spawn(enemies.entities[i]->entity_stats.item_drops[j]), enemies.entities[i]->getRelativePos(), 0, 300.0);
 			}
@@ -1733,11 +1733,11 @@ void GameState::update()
 			if (passive.entities[i]->action_state != 0 || entity_in_range(passive.entities[i]->pos, entity_update_distance))
 				passive.entities[i]->update();
 			if (passive.entities[i]->got_hit)
-				effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+				effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 		}
 		else {
 			if (passive.entities[i]->health <= 0) {
-				effects.add({ 0, 0, 256, 256 }, 22, { (int)passive.entities[i]->getRelativePos().x, (int)passive.entities[i]->getRelativePos().y}, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
+				effects.add({ 0, 0, 256, 256 }, 22, { (int)passive.entities[i]->getRelativePos().x, (int)passive.entities[i]->getRelativePos().y + 2 }, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
 				poof_pop.play();
 				for (int j = 0; j < passive.entities[i]->entity_stats.item_drop_count; j++)
 					items.add(item_spawn(passive.entities[i]->entity_stats.item_drops[j]), passive.entities[i]->getRelativePos(), 0, 300.0);
