@@ -44,7 +44,7 @@ private:
 	Shader shader;
 	entity player_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
 	Player* player_entity = nullptr;
-	Sound item_pickup_sound;
+	Sound item_pickup_sound, poof_pop;
 
 	string current_map;
 	int character_id, save_num, current_quest;

@@ -310,6 +310,8 @@ void NewMapState::update()
 
 		///////////////////////////////////
 
+		initialize_sliders();
+
 		tint.setSize({ win_x, win_y });
 
 		tissue.setScale(scale * 0.13, scale * 0.13);
@@ -388,7 +390,6 @@ void NewMapState::pollevent()
 			case Keyboard::F11:
 				fullscreen = !fullscreen;
 				game.update_window();
-				initialize_sliders();
 				break;
 			}
 			break;
