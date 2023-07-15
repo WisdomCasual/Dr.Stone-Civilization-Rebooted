@@ -357,7 +357,7 @@ void GameState::load_initial_map(string map_name)
 							pre_disabled_objects[pre_disabled_count] = { i, j };
 							pre_disabled_count++;
 						}
-						if (layer_prop & 32) {
+						if (layer_prop & 32 && tile_props[tle.z].properties[tle.x][tle.y].object_type > -1) {
 							static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
 							static_map[i][j].object_ID = destructable_count;
 							temp_destructable[destructable_count] = tile_props[tle.z].properties[tle.x][tle.y].object_type;
