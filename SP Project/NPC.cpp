@@ -111,7 +111,42 @@ void NPC::start_dialogue(dialogue* curr_dialogue, short n)
 void NPC::type_behaviour()
 {
 	switch (npc_type) {
-		default: {
+		case 2:             //petrefied
+			entity_sprite.setColor(Color(0, 0, 0, 255));
+			break;
+		case 3: {  //wandering
+			entity_sprite.setColor(Color(255, 255, 255, 255));
+			motion_delay += dt;
+
+			if (motion_delay >= move_for && will_move) {
+				will_move = 0;
+				direction({ 0, 0 });
+			}
+			if (motion_delay >= 4) {
+				move_speed = entity_stats.base_movement_speed / 2;
+				motion_delay = 0;
+				will_move = generate_random(0, 3);
+				move_for = generate_random(3, 4);
+				if (will_move) {
+					theta = (generate_random(0, 7)) * 45;
+					direction({ 0, 0 });
+					curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+					for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
+						theta += 45;
+						curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+					}
+				}
+			}
+			if (game_time - despawn_timer > time_to_despawn) {
+				npc_type = 5;           //MAP
+				will_move = 0;
+				setPosition(npc_houses[id].x, npc_houses[id].y);
+				return;
+			}
+			break;
+
+		}
+		default: {          //path following (standing still if no path)
 			short curr_tile_x = short(getRelativePos().x / 16), curr_tile_y = short(getRelativePos().y / 16), new_tile_x, new_tile_y;
 			if (static_map[curr_tile_x][curr_tile_y].tile_props & 3840) {
 				if (dist.x == 0.f && dist.y == 0.f) {
@@ -190,13 +225,13 @@ void NPC::update_looks()
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin); ///////////////
 }
 
+void NPC::initialize_NPC(string* map, in_order* order, unsigned short* count)
+{
+	travel_map = map, inventory_order = order, inventory_count = count;
+}
+
 void NPC::update()
 {
-	if (game_time - despawn_timer > time_to_despawn && !persistant) {
-			despawn = 1;
-			return;
-		}
-	despawn_timer = game_time;
 	if (in_dialogue) {
 		states->insert({ DialogueID,new DialogueState(curr_dialogue,{0, 140}, 1, curr_dialogue_num) });
 		states->at(DialogueID)->update();
@@ -218,48 +253,117 @@ void NPC::update()
 	updatePos();
 	type_behaviour();
 	player_collision_check();
+	despawn_timer = game_time;
 	if (magnitude(player_entity.getRelativePos() - getRelativePos()) <= 48) {
-		player_entity.interaction_notification("Talk");
+		string interaction_message;
+		switch (npc_type) {
+			case 2:
+				interaction_message = "save";
+				break;
+			default:
+				interaction_message = "talk";
+		}
+		player_entity.interaction_notification(interaction_message);
 
 		if (player_entity.interact) {
 			player_entity.interact = 0;
 			switch (npc_type) {
-				case 1: {
+				case 1: {      //quest
 					switch (quest_idx) {
-						case 1: {
-							dialogue not_enough[1] = { {"Senku", "What are you doing here? Go get me the resources", 0, 1} };
-							start_dialogue(not_enough, 1);
-							break;
+						if (id == 0) {      //Senku
+							case 1: {
+								dialogue not_enough[1] = { {"Senku", "What are you doing here? Go get me the resources", 0, 1} };
+								start_dialogue(not_enough, 1);
+								break;
+							}
+							case 2: {
+								dialogue enough[2] = { {"Senku", "Great work! You can go now, await further orders", 2, 1}, {character_name, "You got it", 1, 2} };
+								start_dialogue(enough, 2);
+								quest_idx++;
+								npc_type = 0;
+								break;
+							}
 						}
-						case 2: {
-							dialogue enough[2] = { {"Senku", "Great work! You can go now, await further orders", 2, 1}, {character_name, "You got it", 1, 2} };
-							start_dialogue(enough, 2);
-							quest_idx++;
-							npc_type = 0;
-							break;
-						}
+
+
 					}
 				}
-					
+
+				case 2: { //petrified
+					short saved_dialogue_size = 0;
+					dialogue* saved_dialogue;
+					switch (id) {
+					default: {
+						saved_dialogue_size = 1;
+						saved_dialogue = new dialogue[1];
+						saved_dialogue[0] = { "Slave" ,"Thank you for saving me!", 1, 2 };
+					}
+
+					}
+					start_dialogue(saved_dialogue, saved_dialogue_size);
+					delete[] saved_dialogue;
+					npc_type = 3;     //wandering
+
 					break;
+				}
+				case 5: { ///MAP
+					states->insert({ 9, new WorldMapState(*travel_map) });
+					states->at(WorldMapID)->update();
+
+					break;
+				}
 				default: {
-				single_dialogue[0] = npc_dialogues[generate_random(0, dialogues_num-1)];
-				start_dialogue(single_dialogue, 1);
+					single_dialogue[0] = npc_dialogues[generate_random(0, dialogues_num-1)];
+					start_dialogue(single_dialogue, 1);
 				}
 			}
 		}
 	}
 	if (will_move) {
-		Vector2f movement = { (abs(dt * move_speed * curr_movement.x) < abs(dist.x)) ? dt * move_speed * curr_movement.x : dist.x,
-							(abs(dt * move_speed * curr_movement.y) < abs(dist.y)) ? dt * move_speed * curr_movement.y : dist.y }, prev_hitbox = current_hitbox;;
-		if (legal_direction((movement) / 16.f, roundf(curr_movement.x), roundf(curr_movement.y)) && !collide_with_player(dt * move_speed * curr_movement)) {
-			dist.x -= movement.x, dist.y -= movement.y;
-			move(movement);
+		switch (npc_type) {
+			case 3: {        //wandering
+				short dir[2] = { 45, -45 };
+				bool legal_x, legal_y;
+				if (stun > 0) {
+					legal_x = legal_tile({ dt * move_speed * curr_movement.x, 0 }),
+						legal_y = legal_tile({ 0, dt * move_speed * curr_movement.y });
+				}
+				else {
+					legal_x = legal_direction({ dt * move_speed * curr_movement.x, 0 }, (short)round(curr_movement.x), (short)round(curr_movement.y)),
+						legal_y = legal_direction({ 0, dt * move_speed * curr_movement.y }, (short)round(curr_movement.x), (short)round(curr_movement.y));
+				}
+				if (legal_x)
+					move({ dt * move_speed * curr_movement.x, 0 });
+				if (legal_y)
+					move({ 0, dt * move_speed * curr_movement.y });
+				if (stun <= 0) {
+					if (legal_x || legal_y)
+						direction({ roundf(curr_movement.x), roundf(curr_movement.y) });
+				}
+				if ((!legal_x || !legal_y) && stun <= 0) {
+					short move_offset = dir[generate_random(0, 1)];
+					theta += move_offset;
+					curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+					for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
+						theta += move_offset;
+						curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
+					}
+				}
+				break;
+			}
+			default: {
+				Vector2f movement = { (abs(dt * move_speed * curr_movement.x) < abs(dist.x)) ? dt * move_speed * curr_movement.x : dist.x,
+									(abs(dt * move_speed * curr_movement.y) < abs(dist.y)) ? dt * move_speed * curr_movement.y : dist.y }, prev_hitbox = current_hitbox;;
+				if (legal_direction((movement) / 16.f, roundf(curr_movement.x), roundf(curr_movement.y)) && !collide_with_player(dt * move_speed * curr_movement)) {
+					dist.x -= movement.x, dist.y -= movement.y;
+					move(movement);
 
-			direction(curr_movement);
+					direction(curr_movement);
+				}
+				else
+					current_hitbox = prev_hitbox;
+			}
 		}
-		else
-			current_hitbox = prev_hitbox;
 	}
 
 }
