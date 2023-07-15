@@ -255,6 +255,7 @@ public:
 	virtual void set_dialogue(dialogue*, short) {};
 	virtual Vector2i block_interaction() { return Vector2i(); };
 	virtual void interaction_notification(string interaction_type = "Interact") {};
+	virtual void initialize_NPC(string* map, in_order* order, unsigned short* count) {};
 	void render(Shader*);
 
 };
