@@ -112,10 +112,10 @@ void NPC::type_behaviour()
 {
 	switch (npc_type) {
 		case 2:             //petrefied
-			entity_sprite.setColor(Color(0, 0, 0, 255));
+			change_state(1);
 			break;
 		case 3: {  //wandering
-			entity_sprite.setColor(Color(255, 255, 255, 255));
+			change_state(0);
 			motion_delay += dt;
 
 			if (motion_delay >= move_for && will_move) {
@@ -140,6 +140,7 @@ void NPC::type_behaviour()
 			if (game_time - despawn_timer > time_to_despawn) {
 				npc_type = 5;           //MAP
 				will_move = 0;
+				direction({ 0.f, 0.f });
 				setPosition(npc_houses[id].x, npc_houses[id].y);
 				return;
 			}
