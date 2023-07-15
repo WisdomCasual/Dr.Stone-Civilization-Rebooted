@@ -200,7 +200,7 @@ private:
 	struct dynamic_objects {
 
 		int size = 1, curr_idx = 0, layer = 0;
-		float* destruction_time = nullptr,* time = nullptr;
+		double* destruction_time = nullptr,* time = nullptr;
 		Vector2i core_location = { -1, -1 };
 		entity_object* at = nullptr; //dynamic array of objects
 
@@ -371,8 +371,8 @@ private:
 	void move_cam(float, float);
 	void center_cam(Vector2f);
 	void maps_travel();
-	void destroyANDrestore_objects(Vector2i, bool);
-	void bigbang(Vector2i, bool destroy = 0);
+	void destroyANDrestore_objects(Vector2i, bool, bool ToEternityAndByound = 0, Vector2i check_tile = {-10, -10});
+	void bigbang(Vector2i, bool destroy = 0, bool ToEternityAndByound = 0);
 	void render_static_map();
 	void render_entities();
 	void check_in_inventory(int);

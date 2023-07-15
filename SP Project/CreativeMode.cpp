@@ -95,11 +95,15 @@ void CreativeMode::selected()
 	}
 	else if (active_highlight & 1) {
 		short prev_priority = tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props;
-		if (prev_priority & 1 && prev_priority & 32) {
+
+		if (prev_priority & 1 && prev_priority & 32 && prev_priority & 128) {
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 161;
+		}
+		else if (prev_priority & 1 && prev_priority & 32) {
 			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 160;
 		}
 		else if (prev_priority & 1 && prev_priority & 128) {
-			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 129;
+			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 32;
 		}
 		else if (prev_priority & 1)
 			tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= 32;
@@ -152,8 +156,13 @@ void CreativeMode::highlight()
 				sidewindow->draw(highlight_rect);
 			}
 			else if (active_highlight & 1) {
-
-				if (prop & 32) {
+				if (prop & 32 && prop & 128) {
+					highlight_color = Color(255, 255, 255, 80);
+					highlight_rect.setFillColor(highlight_color);
+					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+					sidewindow->draw(highlight_rect);
+				}
+				else if (prop & 32) {
 					highlight_color = Color(250, 120, 0, 80);
 					highlight_rect.setFillColor(highlight_color);
 					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
