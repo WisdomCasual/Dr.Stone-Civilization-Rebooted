@@ -353,7 +353,7 @@ void MapBuilderState::draw_tools()
 					if (!(Keyboard::isKeyPressed(Keyboard::LAlt) && brush_size > 1)) {
 						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++) {
 							if (i < 0) continue;
-							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
+							for (int j = point_on_line.y; j < point_on_line.y + brush_size && j < size_y; j++) {
 								if (j < 0) continue;
 								changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j]; //<--store tiles before changes	
 								changes.atBack()->size++;
@@ -365,7 +365,7 @@ void MapBuilderState::draw_tools()
 					else {
 						for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++) {
 							if (i < 0) continue;
-							for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
+							for (int j = point_on_line.y; j < point_on_line.y + brush_size && j < size_y; j++) {
 								if (j < 0) continue;
 								rand_spray = generate_random(0, spread_chances[spread_chance]);
 								changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j]; //<--store tiles before changes	

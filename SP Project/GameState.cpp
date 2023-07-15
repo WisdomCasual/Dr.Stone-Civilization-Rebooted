@@ -577,7 +577,8 @@ void GameState::load_saved_map(string map_name)
 		for (int i = 0; i < count; i++) {
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
-			NPCs.add(default_npc(id), pos);
+			NPCs.add(spawn_npc(id), pos);
+			npc_initalize;
 			ifs >> NPCs.entities[i]->current_move;
 			ifs >> NPCs.entities[i]->despawn_timer ;
 			ifs >> NPCs.entities[i]->health ;
@@ -813,22 +814,22 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[2].animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {64,82} }; //left
 	passive_stats[2].animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
-	NPC_stats.animations = new animation * [1];
-	NPC_stats.scale_const = 0.65;
-	NPC_stats.base_movement_speed = 80;
-	NPC_stats.states_no = 1;
-	NPC_stats.base_animation_speed = 12;
-	NPC_stats.textures_count = 1;
-	NPC_stats.textures = new Texture * [passive_stats[1].textures_count];
-	NPC_stats.textures[0] = new Texture;
+	NPC_stats[0].animations = new animation * [1];
+	NPC_stats[0].scale_const = 0.65;
+	NPC_stats[0].base_movement_speed = 80;
+	NPC_stats[0].states_no = 1;
+	NPC_stats[0].base_animation_speed = 12;
+	NPC_stats[0].textures_count = 1;
+	NPC_stats[0].textures = new Texture * [NPC_stats[0].textures_count];
+	NPC_stats[0].textures[0] = new Texture;
 
-	NPC_stats.textures[0]->loadFromFile("textures/game/entities/NPCs/senku.png");
+	NPC_stats[0].textures[0]->loadFromFile("textures/game/entities/NPCs/senku.png");
 
-	NPC_stats.animations[0] = new animation[4];
-	NPC_stats.animations[0][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
-	NPC_stats.animations[0][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
-	NPC_stats.animations[0][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
-	NPC_stats.animations[0][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
+	NPC_stats[0].animations[0] = new animation[4];
+	NPC_stats[0].animations[0][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
+	NPC_stats[0].animations[0][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
+	NPC_stats[0].animations[0][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
+	NPC_stats[0].animations[0][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
 
 	item_stats.textures_count = 1;
 	item_stats.textures = new Texture * [item_stats.textures_count];
@@ -1506,7 +1507,8 @@ void GameState::initial_entities()
 	}
 
 	else if (current_map == "Sheraton") {
-		NPCs.add(default_npc(0), { 968, 712 }, npc_details(1, 10, 1));
+		NPCs.add(spawn_npc(0), { 968, 712 }, npc_details(1, 10, 2));
+		npc_initalize;
 	}
 }
 

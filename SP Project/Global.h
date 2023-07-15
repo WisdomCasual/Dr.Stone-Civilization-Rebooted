@@ -96,6 +96,8 @@ namespace globalvar {
 	inline const int dx[4] = { 1, -1, 0, 0 };
 	inline const int dy[4] = { 0, 0, 1, -1};
 
+    inline const Vector2f npc_houses[] = {{800.f, 800.f}};
+
     inline float blackining = 0;
 
 	struct dialogue {
