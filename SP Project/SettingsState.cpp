@@ -489,6 +489,8 @@ void SettingsState::update()
 
 		/////// Do Not touch;
 
+		settings_intializer();
+
 		tint.setSize({ win_x, win_y });
 
 		panel.setPosition(x, y);
@@ -590,7 +592,6 @@ void SettingsState::pollevent()
 				fullscreen = !fullscreen; 
 				checkboxes[0].checked = fullscreen;
 				game.update_window();
-				settings_intializer();
 				break;
 			}
 			break;

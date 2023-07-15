@@ -186,7 +186,7 @@ void GameState::initial_sounds()
 	string audio_name;
 	ifstream ifs("Audio/Game Sounds/soundnames.ini");
 	if (ifs.is_open()) {
-		SoundBuffer temp_buffers[100];
+		SoundBuffer temp_buffers[150];
 		int sounds_count = 0;
 		while (!ifs.eof()) {
 			getline(ifs, audio_name);
@@ -825,6 +825,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	item_stats.textures[0] = new Texture;
 
 	item_pickup_sound.setBuffer(sound_buffers[14]);
+	poof_pop.setBuffer(sound_buffers[42]);
 
 	item_stats.textures[0]->loadFromFile("textures/game/item drops.png");
 
@@ -1121,6 +1122,7 @@ void GameState::destroyANDrestore_objects(Vector2i target_tile, bool destroy)
 				else if (static_map[check_area.x][check_area.y].tile_props & 32) {
 					if (!dx[i] && !dy[j])
 						bigbang(check_area, 1);
+					poof_pop.play();
 					effects.add({ 0, 0, 256, 256 }, 22, { target_tile.x * 16 + 8 , target_tile.y * 16 + 8 }, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
 				}
 				else if (static_map[check_area.x][check_area.y].tile_props & 1)
@@ -1698,6 +1700,7 @@ void GameState::update()
 		}
 		else {
 			if (enemies.entities[i]->health <= 0) {
+				poof_pop.play();
 				effects.add({ 0, 0, 256, 256 }, 22, { (int)enemies.entities[i]->getRelativePos().x, (int)enemies.entities[i]->getRelativePos().y}, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
 				for (int j = 0; j < enemies.entities[i]->entity_stats.item_drop_count; j++)
 					items.add(item_spawn(enemies.entities[i]->entity_stats.item_drops[j]), enemies.entities[i]->getRelativePos(), 0, 300.0);
@@ -1716,6 +1719,7 @@ void GameState::update()
 		else {
 			if (passive.entities[i]->health <= 0) {
 				effects.add({ 0, 0, 256, 256 }, 22, { (int)passive.entities[i]->getRelativePos().x, (int)passive.entities[i]->getRelativePos().y}, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
+				poof_pop.play();
 				for (int j = 0; j < passive.entities[i]->entity_stats.item_drop_count; j++)
 					items.add(item_spawn(passive.entities[i]->entity_stats.item_drops[j]), passive.entities[i]->getRelativePos(), 0, 300.0);
 			}
@@ -1806,6 +1810,7 @@ void GameState::update()
 				inventory_order.add(items.entities[i]->id);
 			inventory_count[items.entities[i]->id]+= items.entities[i]->health;
 			// despawn item
+			item_pickup_sound.setPitch(generate_random_f(0.7, 0.9));
 			items.rem_ove(i);
 			i--;
 			

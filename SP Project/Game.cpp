@@ -217,7 +217,6 @@ void Game::play_sfx(int sfx_id)
 		click.setPitch(generate_random_f(0.45f, 0.55f));
 		click.play();
 		break;
-
 	}
 }
 
