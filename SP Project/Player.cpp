@@ -170,14 +170,11 @@ void Player::mine()
 
 	if (destroy_location.x > -10) {
 		for (int i = 0; i < 3; i++)
-			if (core_location.x == -10) {
-				for (int j = 1; j < 4; j++)
-					if (static_map[destroy_location.x + dx[i]][destroy_location.y + dy[j]].tile_props & 32) {
-						core_location = { destroy_location.x + dx[i], destroy_location.y + dy[j] };
-						break;
-					}
-			}
-			else break;
+			for (int j = 1; j < 4; j++)
+				if (static_map[destroy_location.x + dx[i]][destroy_location.y + dy[j]].tile_props & 32) {
+					core_location = { destroy_location.x + dx[i], destroy_location.y + dy[j] };
+					break;
+				}
 
 		if (static_map[core_location.x][core_location.y].tool_type == state) {
 			if (state == 2) {

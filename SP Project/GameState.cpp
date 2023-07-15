@@ -291,6 +291,8 @@ void GameState::load_initial_map(string map_name)
 	bool** vis[4];
 	short layer_prop = 0;
 
+	Vector2i pre_disabled_objects[200];
+	short pre_disabled_count = 0;
 
 	ifs.seekg(ios::beg);
 
@@ -351,6 +353,10 @@ void GameState::load_initial_map(string map_name)
 						}
 					}
 					else {
+						if (layer_prop & 32 && layer_prop & 128) {
+							pre_disabled_objects[pre_disabled_count] = { i, j };
+							pre_disabled_count++;
+						}
 						if (layer_prop & 32) {
 							static_map[i][j].tool_type = tile_props[tle.z].properties[tle.x][tle.y].tool_type;
 							static_map[i][j].object_ID = destructable_count;
@@ -413,6 +419,10 @@ void GameState::load_initial_map(string map_name)
 		if (size_x)
 			delete[] temp_front[i];
 	}
+
+
+	for (int i = 0; i < pre_disabled_count; i++)
+		destroyANDrestore_objects(pre_disabled_objects[i], true, true);
 
 	initial_entities();
 	waypoint_position = { -1, -1 };
@@ -1094,54 +1104,61 @@ void GameState::maps_travel()
 		black_in();
 }
 
-void GameState::destroyANDrestore_objects(Vector2i target_tile, bool destroy)
+void GameState::destroyANDrestore_objects(Vector2i core_location, bool destroy, bool ToEternityAndByound, Vector2i check_tile)
 {
-	for (int i = 0; i < 3; i++)
-		for (int j = 1; j < 4; j++) {
-			Vector2i check_area{ target_tile.x + dx[i], target_tile.y + dy[j] };
-			if (destroy) {
-				if (static_map[check_area.x][check_area.y].tile_props & 16) {
-					for (int j = 0; j < dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].curr_idx; j++) {
-						Uint8 pixels[16];
-						for (int k = 0; k < 2; k++)
-							for (int l = 0; l < 2; l++) {
-								pixels[(k + 2 * l) * 4] = base_minimap.getPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l).r; // red
-								pixels[(k + 2 * l) * 4 + 1] = base_minimap.getPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l).g; // green
-								pixels[(k + 2 * l) * 4 + 2] = base_minimap.getPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l).b; // blue
-								pixels[(k + 2 * l) * 4 + 3] = base_minimap.getPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l).a; // alpha
-								minimap_img.setPixel(dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2 + l, Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
-							}
-						minimap_tex.update(pixels, 2, 2, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.x * 2, dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].at[j].position.y * 2);
+	if (check_tile.x == -10)
+		check_tile = core_location;
+	if (destroy) {
+		if (static_map[check_tile.x][check_tile.y].tile_props & 16) {
+			for (int j = 0; j < dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].curr_idx; j++) {
+				Uint8 pixels[16];
+				for (int k = 0; k < 2; k++)
+					for (int l = 0; l < 2; l++) {
+						pixels[(k + 2 * l) * 4] = base_minimap.getPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l).r; // red
+						pixels[(k + 2 * l) * 4 + 1] = base_minimap.getPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l).g; // green
+						pixels[(k + 2 * l) * 4 + 2] = base_minimap.getPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l).b; // blue
+						pixels[(k + 2 * l) * 4 + 3] = base_minimap.getPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l).a; // alpha
+						minimap_img.setPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l, Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
 					}
-					dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].core_location = target_tile;
-					static_map[target_tile.x][target_tile.y].destruction_time = game_time;
-					dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].destruction_time = &static_map[target_tile.x][target_tile.y].destruction_time;
-					dynamic_map.at[static_map[check_area.x][check_area.y].dynamic_idx].time = &static_map[target_tile.x][target_tile.y].time;
-					dynamic_update_minimap = 2;
-				}
-				else if (static_map[check_area.x][check_area.y].tile_props & 32) {
-					if (!dx[i] && !dy[j])
-						bigbang(check_area, 1);
-					poof_pop.play();
-					effects.add({ 0, 0, 256, 256 }, 22, { target_tile.x * 16 + 8 , target_tile.y * 16 + 8 }, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
-				}
-				else if (static_map[check_area.x][check_area.y].tile_props & 1)
-					bigbang(check_area, 1);
+				minimap_tex.update(pixels, 2, 2, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2);
 			}
-			else {
-				if (static_map[check_area.x][check_area.y].destruction_time)
-					bigbang(check_area, 0);
+			dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].core_location = core_location;
+			static_map[core_location.x][core_location.y].destruction_time = game_time;
+			dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].destruction_time = &static_map[core_location.x][core_location.y].destruction_time;
+			dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].time = &static_map[core_location.x][core_location.y].time;
+			dynamic_update_minimap = 2;
+		}
+		else if (static_map[check_tile.x][check_tile.y].tile_props & 32) {
+			bigbang(check_tile, 1, ToEternityAndByound);
+			if (!ToEternityAndByound) {
+				poof_pop.play();
+				effects.add({ 0, 0, 256, 256 }, 22, { core_location.x * 16 + 8 , core_location.y * 16 + 8 }, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
 			}
 		}
+		else if (static_map[check_tile.x][check_tile.y].tile_props & 1)
+			bigbang(check_tile, 1, ToEternityAndByound);
+	}
+	else {
+		if (static_map[check_tile.x][check_tile.y].destruction_time)
+			bigbang(check_tile, 0, ToEternityAndByound);
+	}
+
+	for (int i = 0; i < 4; i++)
+		if (destroy && static_map[check_tile.x + dx[i]][check_tile.y + dy[i]].tile_props & 1) {
+				if (!static_map[check_tile.x + dx[i]][check_tile.y + dy[i]].destruction_time)
+					destroyANDrestore_objects(core_location, destroy, ToEternityAndByound, { check_tile.x + dx[i], check_tile.y + dy[i] });
+		}
+		else if(!destroy && static_map[check_tile.x + dx[i]][check_tile.y + dy[i]].destruction_time)
+			destroyANDrestore_objects(core_location, destroy, ToEternityAndByound, { check_tile.x + dx[i], check_tile.y + dy[i] });
 }
 
-void GameState::bigbang(Vector2i target_tile, bool destroy)
+void GameState::bigbang(Vector2i target_tile, bool destroy, bool ToEternityAndByound)
 {
 	short last = static_map[target_tile.x][target_tile.y].size - 1;
 	Vector3i last_tile = static_map[target_tile.x][target_tile.y].layers[last];
 	static_map[target_tile.x][target_tile.y].tile_props ^= tile_props[last_tile.z].properties[last_tile.x][last_tile.y].props;
 	if (destroy) {
-		static_map[target_tile.x][target_tile.y].destruction_time = game_time;
+		static_map[target_tile.x][target_tile.y].destruction_time = ToEternityAndByound ? DBL_MAX : game_time;
 
 		Uint8 pixels[16];
 		for (int k = 0; k < 2; k++)

@@ -152,7 +152,11 @@ void MapBuilderState::render_tiles(int x_win, int y_win, int priority)
 			for (int j = (y_offset > 0) ? y_offset : 0; j < (y_win + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
 				if (tiles[i][j].last_vis.x > -1) {
 					highlight_rect.setPosition(x + (16 * scale * i), y + (16 * scale * j));
-					if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 32) {
+					if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 32 && tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 128) {
+						highlight_rect.setFillColor(Color(255, 255, 255, 80));
+						window->draw(highlight_rect);
+					}
+					else if (tile_props[tiles[i][j].last_vis.z].properties[tiles[i][j].last_vis.x][tiles[i][j].last_vis.y].props & 32) {
 						highlight_rect.setFillColor(Color(250, 120, 0, 80));
 						window->draw(highlight_rect);
 					}
