@@ -188,12 +188,14 @@ void Passive::update()
 
 	makeNoise();
 
+	got_hit = false;
+
 	/////////////////////HitBox Stuff//////////////////////
 	/////////////WARNING TOUCH AT YOUR OWN RISK////////////
 	Entity_Hitbox = { getRelativePos().x - current_hitbox.x / 2,getRelativePos().y - current_hitbox.y / 2,current_hitbox.x,current_hitbox.y };
 	//cout << Entity_Hitbox.left << '\t' << Entity_Hitbox.top << '\t' << player_entity.hit_range.left << '\t' << player_entity.hit_range.top<<endl;
 	if (player_entity.hit_range.intersects(Entity_Hitbox)) {
-		if (cooldown<=0) {
+		if (cooldown <= 0) {
 			passive_knockback(Vector2f(player_entity.current_direction), 120);
 			damaged();
 			action_state = 1;
@@ -201,6 +203,7 @@ void Passive::update()
 			motion_delay = 2;
 			cooldown = 1;
 			health -= player_entity.damage;
+			got_hit = true;
 		}
 	}
 	if (health <= 0) {
