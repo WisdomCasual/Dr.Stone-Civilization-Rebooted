@@ -1121,6 +1121,7 @@ void GameState::destroyANDrestore_objects(Vector2i target_tile, bool destroy)
 				else if (static_map[check_area.x][check_area.y].tile_props & 32) {
 					if (!dx[i] && !dy[j])
 						bigbang(check_area, 1);
+					effects.add({ 0, 0, 256, 256 }, 22, { target_tile.x * 16 + 8 , target_tile.y * 16 + 8 }, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
 				}
 				else if (static_map[check_area.x][check_area.y].tile_props & 1)
 					bigbang(check_area, 1);
@@ -1692,10 +1693,12 @@ void GameState::update()
 		if (!enemies.entities[i]->despawn) {
 			if (enemies.entities[i]->action_state != 0 || entity_in_range(enemies.entities[i]->pos, entity_update_distance))
 				enemies.entities[i]->update();
-		}
-		if(enemies.entities[i]->despawn) {
-			if (enemies.entities[i]->health <= 0) {
+			if(enemies.entities[i]->got_hit)
 				effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+		}
+		else {
+			if (enemies.entities[i]->health <= 0) {
+				effects.add({ 0, 0, 256, 256 }, 22, { (int)enemies.entities[i]->getRelativePos().x, (int)enemies.entities[i]->getRelativePos().y}, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
 				for (int j = 0; j < enemies.entities[i]->entity_stats.item_drop_count; j++)
 					items.add(item_spawn(enemies.entities[i]->entity_stats.item_drops[j]), enemies.entities[i]->getRelativePos(), 0, 300.0);
 			}
@@ -1707,10 +1710,12 @@ void GameState::update()
 		if (!passive.entities[i]->despawn) {
 			if (passive.entities[i]->action_state != 0 || entity_in_range(passive.entities[i]->pos, entity_update_distance))
 				passive.entities[i]->update();
-		}
-		if(passive.entities[i]->despawn) {
-			if (passive.entities[i]->health <= 0) {
+			if (passive.entities[i]->got_hit)
 				effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+		}
+		else {
+			if (passive.entities[i]->health <= 0) {
+				effects.add({ 0, 0, 256, 256 }, 22, { (int)passive.entities[i]->getRelativePos().x, (int)passive.entities[i]->getRelativePos().y}, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
 				for (int j = 0; j < passive.entities[i]->entity_stats.item_drop_count; j++)
 					items.add(item_spawn(passive.entities[i]->entity_stats.item_drops[j]), passive.entities[i]->getRelativePos(), 0, 300.0);
 			}

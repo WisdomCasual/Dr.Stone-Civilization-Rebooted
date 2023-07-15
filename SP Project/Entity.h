@@ -23,7 +23,6 @@ struct entity {
 	float scale_const = 1, base_animation_speed = 16.6667f;
 	int* item_drops = nullptr, item_drop_count = 0;
 
-
 	bool is_player = 0;
 	~entity() {
 		
@@ -217,7 +216,7 @@ public:
 
 	FloatRect entity_hitbox;
 
-	bool despawn = 0, persistant = 0, interact = 0;
+	bool despawn = 0, persistant = 0, interact = 0, got_hit = 0;
 	double despawn_timer = game_time;
 	const double time_to_despawn;
 	short state = 0, action_state = 0, health = 100, damage = 10, aStarID = 1, npc_type = 0 ;
