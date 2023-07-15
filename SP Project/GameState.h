@@ -15,8 +15,9 @@
 
 //eneimies = 0, items = 1, passive = 2, NPC = 3
 
-#define npc_details(persistant, despawn_time, type) persistant, despawn_time, type
-#define default_npc(id) 3, NPC_stats, 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
+#define npc_details(persistant, despawn_time, type) persistant, despawn_time, type        //npc type: 0 = wandering, 1 = quest, 2 = petrified, 3 = wandering
+#define npc_initalize NPCs.entities[NPCs.curr_idx-1]->initialize_NPC(&travel_map, &inventory_order, inventory_count);
+#define spawn_npc(id) 3, NPC_stats[id], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
 
 #define enemy_spawn(id) 0, enemy_stats[id], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
 #define passive_spawn(id) 2, passive_stats[id], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
@@ -42,7 +43,7 @@ private:
 	///////////////////////////
 
 	Shader shader;
-	entity player_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats;
+	entity player_stats, item_stats, enemy_stats[5], passive_stats[5], NPC_stats[5];
 	Player* player_entity = nullptr;
 	Sound item_pickup_sound, poof_pop;
 
@@ -112,6 +113,7 @@ private:
 					case 3:
 						entities[curr_idx] = new NPC(entity_stats, has_legs, static_map, tile_props_ptr, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player, persistant, time_to_despawn, id);
 						entities[curr_idx]->set_type(npc_type);
+						
 						switch (id) {
 							default:
 								dialogue test[] = { {name, "Are you willing to help save the world?",3}};
