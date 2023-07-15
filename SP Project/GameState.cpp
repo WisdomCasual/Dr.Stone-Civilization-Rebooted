@@ -172,6 +172,8 @@ void GameState::save()
 			map_ofs << NPCs.entities[i]->health << ' ';
 			map_ofs << NPCs.entities[i]->persistant << ' ';
 			map_ofs << NPCs.entities[i]->npc_type << ' ';
+			map_ofs << NPCs.entities[i]->NPC_curr_movement.x << ' ' << NPCs.entities[i]->NPC_curr_movement.y <<' ';
+			map_ofs << NPCs.entities[i]->NPC_prev_tile_x << ' ' << NPCs.entities[i]->NPC_prev_tile_y <<' ';
 		}
 
 		map_ofs << '\n';
@@ -549,11 +551,11 @@ void GameState::load_saved_map(string map_name)
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
 			enemies.add(enemy_spawn(id), pos);
-			ifs >> enemies.entities[i]->aStarID ;
-			ifs >> enemies.entities[i]->current_move;
-			ifs >> enemies.entities[i]->despawn_timer ;
-			ifs >> enemies.entities[i]->health ;
-			ifs >> enemies.entities[i]->persistant ;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->aStarID ;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->current_move;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->despawn_timer ;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->health ;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->persistant ;
 		}
 
 
@@ -564,10 +566,10 @@ void GameState::load_saved_map(string map_name)
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
 			passive.add(passive_spawn(id), pos);
-			ifs >> passive.entities[i]->current_move;
-			ifs >> passive.entities[i]->despawn_timer ;
-			ifs >> passive.entities[i]->health ;
-			ifs >> passive.entities[i]->persistant ;
+			ifs >> passive.entities[passive.curr_idx - 1]->current_move;
+			ifs >> passive.entities[passive.curr_idx - 1]->despawn_timer ;
+			ifs >> passive.entities[passive.curr_idx - 1]->health ;
+			ifs >> passive.entities[passive.curr_idx - 1]->persistant ;
 		}
 
 
@@ -579,11 +581,13 @@ void GameState::load_saved_map(string map_name)
 			ifs >> pos.x >> pos.y;
 			NPCs.add(spawn_npc(id), pos);
 			npc_initalize;
-			ifs >> NPCs.entities[i]->current_move;
-			ifs >> NPCs.entities[i]->despawn_timer ;
-			ifs >> NPCs.entities[i]->health ;
-			ifs >> NPCs.entities[i]->persistant ;
-			ifs >> NPCs.entities[i]->npc_type ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->current_move;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->despawn_timer ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->health ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->persistant ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->npc_type ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->NPC_curr_movement.x >> NPCs.entities[i]->NPC_curr_movement.y;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->NPC_prev_tile_x >> NPCs.entities[i]->NPC_prev_tile_y;
 		}
 
 	}
@@ -814,22 +818,26 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[2].animations[0][2] = { 4, {0 , 1 * 128, 128, 128}, {47,17}, {64,82} }; //left
 	passive_stats[2].animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
-	NPC_stats[0].animations = new animation * [1];
+	NPC_stats[0].animations = new animation * [2];
 	NPC_stats[0].scale_const = 0.65;
 	NPC_stats[0].base_movement_speed = 80;
 	NPC_stats[0].states_no = 1;
 	NPC_stats[0].base_animation_speed = 12;
-	NPC_stats[0].textures_count = 1;
+	NPC_stats[0].textures_count = 2;
 	NPC_stats[0].textures = new Texture * [NPC_stats[0].textures_count];
 	NPC_stats[0].textures[0] = new Texture;
+	NPC_stats[0].textures[1] = new Texture;
 
 	NPC_stats[0].textures[0]->loadFromFile("textures/game/entities/NPCs/senku.png");
+	NPC_stats[0].textures[1]->loadFromFile("textures/game/entities/NPCs/senku_petrified.png");
 
-	NPC_stats[0].animations[0] = new animation[4];
-	NPC_stats[0].animations[0][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
-	NPC_stats[0].animations[0][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
-	NPC_stats[0].animations[0][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
-	NPC_stats[0].animations[0][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
+	for (int i = 0; i < 2; i++) {
+		NPC_stats[0].animations[i] = new animation[4];
+		NPC_stats[0].animations[i][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
+		NPC_stats[0].animations[i][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
+		NPC_stats[0].animations[i][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
+		NPC_stats[0].animations[i][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
+	}
 
 	item_stats.textures_count = 1;
 	item_stats.textures = new Texture * [item_stats.textures_count];
@@ -1507,7 +1515,7 @@ void GameState::initial_entities()
 	}
 
 	else if (current_map == "Sheraton") {
-		NPCs.add(spawn_npc(0), { 968, 712 }, npc_details(1, 10, 2));
+		NPCs.add(spawn_npc(0), { 968, 712 }, npc_details(1, 10, 1));
 		npc_initalize;
 	}
 }
