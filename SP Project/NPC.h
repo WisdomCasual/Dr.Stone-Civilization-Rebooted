@@ -6,12 +6,12 @@ struct NPC :
 {
 	using::Entity::Entity;
 private:
-	Vector2f  curr_movement = { 0.f, 0.f }, dist = { 0, 0 };
+	Vector2f dist = { 0, 0 };
 	bool will_move = 0, in_dialogue = 0;
 	float motion_delay = 4.f, move_speed = 100.f, switch_delay = 0.f, motion_cd = 0.f, theta = 0.f;
 	dialogue* npc_dialogues = nullptr, single_dialogue[1] = {}, * curr_dialogue = nullptr;
 	string *travel_map = nullptr;
-	short dialogues_num, curr_dialogue_num = 0, prev_tile_x = -1, prev_tile_y = -1;
+	short dialogues_num, curr_dialogue_num = 0;
 	in_order *inventory_order = nullptr;
 	unsigned short *inventory_count = nullptr;
 
