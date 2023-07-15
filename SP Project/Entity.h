@@ -208,6 +208,9 @@ public:
 	sheet_properties* tile_props;
 	Sound* sounds = nullptr;
 
+	Vector2f NPC_curr_movement = {0.f, 0.f};
+	short NPC_prev_tile_x = -1, NPC_prev_tile_y = -1;
+
 	float combat_tag = 0.f;
 	float combat_status_time = 5.0f;
 

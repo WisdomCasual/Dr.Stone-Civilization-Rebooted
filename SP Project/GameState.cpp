@@ -172,6 +172,8 @@ void GameState::save()
 			map_ofs << NPCs.entities[i]->health << ' ';
 			map_ofs << NPCs.entities[i]->persistant << ' ';
 			map_ofs << NPCs.entities[i]->npc_type << ' ';
+			map_ofs << NPCs.entities[i]->NPC_curr_movement.x << ' ' << NPCs.entities[i]->NPC_curr_movement.y <<' ';
+			map_ofs << NPCs.entities[i]->NPC_prev_tile_x << ' ' << NPCs.entities[i]->NPC_prev_tile_y <<' ';
 		}
 
 		map_ofs << '\n';
@@ -549,11 +551,11 @@ void GameState::load_saved_map(string map_name)
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
 			enemies.add(enemy_spawn(id), pos);
-			ifs >> enemies.entities[i]->aStarID ;
-			ifs >> enemies.entities[i]->current_move;
-			ifs >> enemies.entities[i]->despawn_timer ;
-			ifs >> enemies.entities[i]->health ;
-			ifs >> enemies.entities[i]->persistant ;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->aStarID ;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->current_move;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->despawn_timer ;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->health ;
+			ifs >> enemies.entities[enemies.curr_idx - 1]->persistant ;
 		}
 
 
@@ -564,10 +566,10 @@ void GameState::load_saved_map(string map_name)
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
 			passive.add(passive_spawn(id), pos);
-			ifs >> passive.entities[i]->current_move;
-			ifs >> passive.entities[i]->despawn_timer ;
-			ifs >> passive.entities[i]->health ;
-			ifs >> passive.entities[i]->persistant ;
+			ifs >> passive.entities[passive.curr_idx - 1]->current_move;
+			ifs >> passive.entities[passive.curr_idx - 1]->despawn_timer ;
+			ifs >> passive.entities[passive.curr_idx - 1]->health ;
+			ifs >> passive.entities[passive.curr_idx - 1]->persistant ;
 		}
 
 
@@ -579,11 +581,13 @@ void GameState::load_saved_map(string map_name)
 			ifs >> pos.x >> pos.y;
 			NPCs.add(spawn_npc(id), pos);
 			npc_initalize;
-			ifs >> NPCs.entities[i]->current_move;
-			ifs >> NPCs.entities[i]->despawn_timer ;
-			ifs >> NPCs.entities[i]->health ;
-			ifs >> NPCs.entities[i]->persistant ;
-			ifs >> NPCs.entities[i]->npc_type ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->current_move;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->despawn_timer ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->health ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->persistant ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->npc_type ;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->NPC_curr_movement.x >> NPCs.entities[i]->NPC_curr_movement.y;
+			ifs >> NPCs.entities[NPCs.curr_idx - 1]->NPC_prev_tile_x >> NPCs.entities[i]->NPC_prev_tile_y;
 		}
 
 	}
@@ -1511,7 +1515,7 @@ void GameState::initial_entities()
 	}
 
 	else if (current_map == "Sheraton") {
-		NPCs.add(spawn_npc(0), { 968, 712 }, npc_details(1, 10, 2));
+		NPCs.add(spawn_npc(0), { 968, 712 }, npc_details(1, 10, 1));
 		npc_initalize;
 	}
 }
