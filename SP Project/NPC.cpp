@@ -326,9 +326,9 @@ void NPC::update()
 						saved_dialogue_size = 1;
 						saved_dialogue = new dialogue[1];
 						if(id == 1)
-							saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 5 };
-						else
 							saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 6 };
+						else
+							saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 7 };
 					}
 
 					}

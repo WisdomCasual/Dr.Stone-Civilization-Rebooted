@@ -129,7 +129,7 @@ private:
 							break;
 						}
 						case 3: {
-							dialogue test[] = { {"Kaseki", "If you need to go anywhere, just come meet me near my ship!",0,5} };
+							dialogue test[] = { {"Ryusui", "If you need to go anywhere, just come meet me near my ship!",0, 7} };
 							entities[curr_idx]->set_dialogue(test, 1);
 							break;
 						}
