@@ -1539,16 +1539,16 @@ void GameState::quests()
 			if (quest_dialogue != nullptr)
 				delete[] quest_dialogue;
 			quest_dialogue = new dialogue[10];
-			quest_dialogue[0] = { character_name, "Since that day I don't know what happened, That beam appeared out of no where...", 1, 2};
-			quest_dialogue[1] = { character_name, "Since then I feel like I have been sleeping and fully emersed in my thoughts for years.", 1, 2 };
-			quest_dialogue[2] = { character_name, "I want to wake up now, I want to check on my family and friends.", 1, 2 };
-			quest_dialogue[3] = { character_name, "Are they alright?...", 1, 2 };
-			quest_dialogue[4] = { character_name, "I MUST..", 1, 2 };
-			quest_dialogue[5] = { character_name, "WAKE UP..", 1, 2 };
-			quest_dialogue[6] = { character_name, "NOW..", 1, 2 };
-			quest_dialogue[7] = { character_name, "WAKE UP..", 1, 2 };
-			quest_dialogue[8] = { character_name, "MY BODY..", 1, 2 };
-			quest_dialogue[9] = { character_name, "RESPOND..", 1, 2 };
+			quest_dialogue[0] = { character_name, "Since that day I don't know what happened, That beam appeared out of no where...", 0, short(1 + character_id)};
+			quest_dialogue[1] = { character_name, "Since then I feel like I have been sleeping and fully emersed in my thoughts for years.", 0, short(1 + character_id) };
+			quest_dialogue[2] = { character_name, "I want to wake up now, I want to check on my family and friends.", 0, short(1 + character_id) };
+			quest_dialogue[3] = { character_name, "Are they alright?...", 0, short(1 + character_id) };
+			quest_dialogue[4] = { character_name, "I MUST..", 0, short(1 + character_id) };
+			quest_dialogue[5] = { character_name, "WAKE UP..", 0, short(1 + character_id) };
+			quest_dialogue[6] = { character_name, "NOW..", 0, short(1 + character_id) };
+			quest_dialogue[7] = { character_name, "WAKE UP..", 0, short(1 + character_id) };
+			quest_dialogue[8] = { character_name, "MY BODY..", 0, short(1 + character_id) };
+			quest_dialogue[9] = { character_name, "RESPOND..", 0, short(1 + character_id) };
 			quest_dialogue_num = 10;
 
 			states->insert({ DialogueID,new DialogueState(quest_dialogue,{0, 140}, 1, quest_dialogue_num) });
