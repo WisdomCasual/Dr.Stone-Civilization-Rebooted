@@ -249,7 +249,7 @@ TradingState::TradingState(in_order* inventory_order, unsigned short* inventory_
 	button_text.setFont(font);
 	button_text.setString("Get");
 
-	pic_tex.loadFromFile("textures/dialogue/" + to_string(trading_info.NPC_ID) + ".png");
+	pic_tex.loadFromFile("textures/dialogue/" + trading_info.texture_name + ".png");
 	pic.setTexture(pic_tex);
 	pic.setTextureRect({ 0, 0, 320, 300 });
 	pic.setOrigin(320 / 2.f, 300 / 2.f);
