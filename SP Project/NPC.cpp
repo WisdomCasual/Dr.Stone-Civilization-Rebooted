@@ -138,7 +138,8 @@ void NPC::type_behaviour()
 				}
 			}
 			if (game_time - despawn_timer > time_to_despawn) {
-				npc_type = 5;           //MAP
+
+				npc_type = (id == 3) ? 5 : 4;           //MAP  /  trader
 				will_move = 0;
 				direction({ 0.f, 0.f });
 				switch (id) {
@@ -293,7 +294,7 @@ void NPC::update()
 						if (id == 1) {      //Senku
 							case 4: {
 								if (inventory_count[0] >= 12 && inventory_count[1] >= 8) {
-									dialogue enough[2] = { {"Kaseki", "Great work! You can go now, await further orders", 2, 1}, {character_name, "You got it", 1, 2} };
+									dialogue enough[2] = { {"Kaseki", "Great work! You can go now, await further orders", 0, 5}, {character_name, "You got it", 0, 1 + player_character_id} };
 									start_dialogue(enough, 2);
 									quest_idx++;
 									inventory_count[0] -= 12, inventory_count[1] -= 8;
@@ -302,7 +303,7 @@ void NPC::update()
 									npc_type = 0;
 								}
 								else {
-									dialogue not_enough[1] = { {"Kaseki", "What are you doing here? Go get me the resources", 0, 1} };
+									dialogue not_enough[1] = { {"Kaseki", "What are you doing here? Go get me the resources", 0, 5} };
 									start_dialogue(not_enough, 1);
 								}
 								break;
@@ -321,7 +322,10 @@ void NPC::update()
 					default: {
 						saved_dialogue_size = 1;
 						saved_dialogue = new dialogue[1];
-						saved_dialogue[0] = { "???" ,"Thank you for saving me!", 1, 2 };
+						if(id == 1)
+							saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 5 };
+						else
+							saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 6 };
 					}
 
 					}
