@@ -1,6 +1,7 @@
 #pragma once
 #include"State.h"
 
+#include "TradingState.h";
 #include"Global.h"
 using namespace globalvar;
 
@@ -258,7 +259,7 @@ public:
 	virtual void set_dialogue(dialogue*, short) {};
 	virtual Vector2i block_interaction() { return Vector2i(); };
 	virtual void interaction_notification(string interaction_type = "Interact") {};
-	virtual void initialize_NPC(string* map, in_order* order, unsigned short* count) {};
+	virtual void initialize_NPC(string* map, in_order* order, unsigned short* count, short, Vector2f*, TradingInfo*) {};
 	void render(Shader*);
 
 };
