@@ -927,28 +927,31 @@ void GameState::load_entities(float player_relative_y_pos)
 	//FOLLOW THE SAME TEMPLATE TO ADD TRADES (PRESS T to test it out)
 
 	//initializing info:
-	trading_test.dialogue = "My name is Senku and if you need anything related to science, I can 1 billion percent do it";//<--- just write the dialogue in one string (splitting is automatic)
-	trading_test.texture_name = "senku";        //<---- write the NPC name to get the pic
-	trading_test.trades_count = 1;  //<---- number of trades
+	trading_test.dialogue = "I'm Francois, and I can cook the best food there is now .. and 3700 years ago";//<--- just write the dialogue in one string (splitting is automatic)
+	trading_test.texture_name = "francois";        //<---- write the NPC name to get the pic
+	trading_test.trades_count = 2;  //<---- number of trades
 	trading_test.trading_menu = new TradingMenu[trading_test.trades_count]; //<-- just creates the array (it deletes itself, no need for worring about delete[])
 
 	//initializing trades:
-	trading_test.trading_menu[0].item_name = "Wool";     //<--- name of the trade (CURRENT NAMES AND INGREDIENTS ARE JUST RANDOM)
-	trading_test.trading_menu[0].ingredients_count = 2;     //<--- number of ingredient for the trade [0] (UP TO 3 ONLY)
+	trading_test.trading_menu[0].item_name = "Cooked Beef";     //<--- name of the trade (CURRENT NAMES AND INGREDIENTS ARE JUST RANDOM)
+	trading_test.trading_menu[0].ingredients_count = 1;     //<--- number of ingredient for the trade [0] (UP TO 3 ONLY)
 
-	trading_test.trading_menu[0].ingredients[0].ID = 0;     //<--- ingredient 1 ID [0]
-	trading_test.trading_menu[0].ingredients[0].count = 3;     //<--- ingredient 1 count [0]
-	trading_test.trading_menu[0].ingredients[1].ID = 1;        //<--- ingredient 2 ID [1]
-	trading_test.trading_menu[0].ingredients[1].count = 2;     //<--- ingredient 2 count [1]
+	trading_test.trading_menu[0].ingredients[0].ID = 2;     //<--- ingredient 1 ID [0]
+	trading_test.trading_menu[0].ingredients[0].count = 1;     //<--- ingredient 1 count [0]
 
-	trading_test.trading_menu[0].result.ID = 4;                //<--- the item you get from the trade's ID 
+	trading_test.trading_menu[0].result.ID = 8;                //<--- the item you get from the trade's ID 
 	trading_test.trading_menu[0].result.count = 1;             //<--- count of items you'll get
 
 	//////////continue the rest of the trades the same way:
 
+	trading_test.trading_menu[1].item_name = "Cooked Lamb";     //<--- name of the trade (CURRENT NAMES AND INGREDIENTS ARE JUST RANDOM)
+	trading_test.trading_menu[1].ingredients_count = 1;     //<--- number of ingredient for the trade [0] (UP TO 3 ONLY)
 
+	trading_test.trading_menu[1].ingredients[0].ID = 3;     //<--- ingredient 1 ID [0]
+	trading_test.trading_menu[1].ingredients[0].count = 1;     //<--- ingredient 1 count [0]
 
-
+	trading_test.trading_menu[1].result.ID = 9;                //<--- the item you get from the trade's ID 
+	trading_test.trading_menu[1].result.count = 1;             //<--- count of items you'll get
 
 
 }

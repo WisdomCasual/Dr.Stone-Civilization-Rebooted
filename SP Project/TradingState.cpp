@@ -201,7 +201,7 @@ void TradingState::set_dialogue_lines()
 	text.setCharacterSize(55 * scale);
 	text.setOrigin(0, 0);
 	text.setPosition(0, 0);
-	for (auto c : trading_info.dialogue) {
+	for (auto &c : trading_info.dialogue) {
 		if (c == ' ') {
 			if (output_strings[lines - 1].size())
 				text.setString(output_strings[lines - 1] + " " + next_word);
@@ -220,6 +220,19 @@ void TradingState::set_dialogue_lines()
 		else
 			next_word += c;
 	}
+	if (output_strings[lines - 1].size())
+		text.setString(output_strings[lines - 1] + " " + next_word);
+	else
+		text.setString(next_word);
+
+	if (text.findCharacterPos(output_strings[lines - 1].size() - 1).x < 340 * scale)
+		output_strings[lines - 1] += " " + next_word;
+	else {
+		lines++;
+		output_strings[lines - 1] += next_word;
+	}
+
+	next_word.clear();
 }
 
 TradingState::TradingState(in_order* inventory_order, unsigned short* inventory_count, TradingInfo& trading_info)

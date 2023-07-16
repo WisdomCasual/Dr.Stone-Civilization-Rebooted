@@ -207,7 +207,7 @@ void NewSaveState::add_save()
 		ofs << (int)selected << '\n';           // <-- selected character ID
 		ofs << 0 << '\n';                       // <-- current quest
 		ofs << "Doz World" << '\n';              // <-- current map
-		ofs << 80 << ' ' << 80<< '\n';       // <-- current position
+		ofs << 300 << ' ' << 160 << '\n';       // <-- current position
 		ofs << -1 << '\n';                      // <-- current health
 		ofs << 0.0 << '\n';                     // <-- current game time
 		ofs << 0.1 << ' ' << 0.01 << '\n';      // <-- current light level - time increments

@@ -90,8 +90,8 @@ namespace globalvar {
     inline random_device real_randomness;
     inline mt19937 mt(real_randomness());
 
-    inline string item_names[50] = {"Wood", "Stone", "Raw Beef", "Raw Lamb", "Wool", "Berries", "Leather", "Plants"};
-    inline float healing_value[50] = { 0,      0,       0.5,        0.5,       0,       0.5,        0,         0    };
+    inline string item_names[50] = {"Wood", "Stone", "Raw Beef", "Raw Lamb", "Wool", "Berries", "Leather", "Plants", "Cooked Beef", "Cooked Lamb" };
+    inline float healing_value[50] = { 0,      0,       0.5,        0.5,       0,       0.5,        0,         0    ,     1       ,        1      };
 
 	inline const int dx[4] = { 1, -1, 0, 0 };
 	inline const int dy[4] = { 0, 0, 1, -1};
