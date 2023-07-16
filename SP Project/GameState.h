@@ -98,7 +98,7 @@ private:
 			}
 		}
 
-		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, int id, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 10.0, short npc_type = 0, string name = "NPC") {
+		void add(short type, entity& entity_stats, bool has_legs, render_tile**& static_map, sheet_properties* tile_props_ptr, float& map_x, float& map_y, int& size_x, int& size_y, float& x_offset, float& y_offset, Vector2i& destroy_object_location, Entity* player, int id, Vector2f initial_position = { 800, 800 }, bool persistant = 0, double time_to_despawn = 30.0, short npc_type = 0, string name = "NPC") {
 			if (curr_idx < limit) {
 				switch (type) {
 					case 0:
@@ -118,9 +118,25 @@ private:
 						entities[curr_idx]->set_type(npc_type);
 						
 						switch (id) {
-							default:
-								dialogue test[] = { {name, "Are you willing to help save the world?",3}};
-								entities[curr_idx]->set_dialogue(test, 1);
+						case 0: {
+							dialogue test[] = { {"Senku", "Are you willing to help save the world?",3} };
+							entities[curr_idx]->set_dialogue(test, 1);
+							break;
+						}
+						case 2: {
+							dialogue test[] = { {"Francois", "Thanks for the help earlier!",0,6} };
+							entities[curr_idx]->set_dialogue(test, 1);
+							break;
+						}
+						case 3: {
+							dialogue test[] = { {"Kaseki", "If you need to go anywhere, just come meet me near my ship!",0,5} };
+							entities[curr_idx]->set_dialogue(test, 1);
+							break;
+						}
+						default: {
+							dialogue test[] = { {name, "Are you willing to help save the world?",3} };
+							entities[curr_idx]->set_dialogue(test, 1);
+						}
 						}
 						break;
 				}

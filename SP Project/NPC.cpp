@@ -137,12 +137,15 @@ void NPC::type_behaviour()
 					}
 				}
 			}
-			if (game_time - despawn_timer > time_to_despawn) {
+			if (game_time - despawn_timer > time_to_despawn/3.f) {
 
 				npc_type = (id == 3) ? 5 : 4;           //MAP  /  trader
 				will_move = 0;
 				direction({ 0.f, 0.f });
 				switch (id) {
+				case 3:
+					setPosition(3704.f, 456.f);
+					break;
 					default:
 						setPosition(800.f, 800.f);
 				}

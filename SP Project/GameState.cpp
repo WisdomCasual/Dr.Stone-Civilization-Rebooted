@@ -1448,8 +1448,8 @@ bool GameState::entity_in_range(Vector2f cords, short offset)
 void GameState::block_interactions_list(Vector2i interaction_tile)
 {
 	//cout << interaction_tile.x << ' ' << interaction_tile.y << '\n';
-	if (current_map == "Sheraton") {
-		if (interaction_tile.x == 46 && (interaction_tile.y == 25 || interaction_tile.y == 26)) {
+	if (current_map == "Japan") {
+		if ((interaction_tile.x == 14 || interaction_tile.x == 15) && (interaction_tile.y == 13)) {
 			travel_map = "Doz World";
 		}
 		else if (interaction_tile.x == 26 && interaction_tile.y == 19) {
@@ -1459,8 +1459,8 @@ void GameState::block_interactions_list(Vector2i interaction_tile)
 	}
 	else if (current_map == "Doz World") {
 		if (interaction_tile.x >= 22 && interaction_tile.x <= 26 && interaction_tile.y == 29) {
-			travel_map = "Sheraton";
-			travel_location = { 746.f, 426.f };
+			travel_map = "Japan";
+			travel_location = { 250.f, 236.f };
 		}
 	}
 }
@@ -1519,14 +1519,16 @@ void GameState::initial_entities()
 		enemies.entities[enemies.curr_idx - 1]->setScale(0.35);
 	}
 
-	else if (current_map == "Sheraton") {
-		NPCs.add(spawn_npc(0), { 968, 712 }, npc_details(1, 10, 0));
-		npc_initalize;
-		NPCs.add(spawn_npc(1), { 968, 776 }, npc_details(1, 10, 1));
+	if (current_map == "Japan") {
+		NPCs.add(spawn_npc(1), { 648, 776 }, npc_details(1, 10, 1));
 		npc_initalize;
 		NPCs.add(spawn_npc(2), { 968, 680 }, npc_details(1, 10, 4));
 		npc_initalize;
-		NPCs.add(spawn_npc(3), { 904, 712 }, npc_details(1, 10, 2));
+		NPCs.add(spawn_npc(3), { 904, 872 }, npc_details(1, 10, 2));
+		npc_initalize;
+	}
+	else if (current_map == "Doz World") {
+		NPCs.add(spawn_npc(0), { 128, 112}, npc_details(1, 10, 0));
 		npc_initalize;
 	}
 }
@@ -1797,6 +1799,8 @@ void GameState::update()
 
 	for (int i = 0; i < NPCs.curr_idx; i++) {
 		if (!NPCs.entities[i]->despawn) {
+			if (NPCs.entities[i]->npc_type == 3 && game_time - NPCs.entities[i]->despawn_timer > NPCs.entities[i]->time_to_despawn / 3.f)
+				NPCs.entities[i]->update();
 			npc_id_to_idx[NPCs.entities[i]->id] = i;
 			if (NPCs.entities[i]->action_state != 0 || entity_in_range(NPCs.entities[i]->pos, entity_update_distance))
 				NPCs.entities[i]->update();
