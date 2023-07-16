@@ -303,8 +303,10 @@ void MapBuilderState::draw_tools()
 					changes.add(change{ { selected_tile.x , selected_tile.y }, { selected_tile.x + wdth, selected_tile.y + hght } });
 					changes.atBack()->tiles = new Tile[wdth * hght];
 
-					for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x && i1 < size_x; i1++, i2++)
+					for (int i1 = start_x, i2 = selected_tile.x; i1 < start_x + wdth && i2 < size_x && i1 < size_x; i1++, i2++) {
+						if (i2 < 0) continue;
 						for (int j1 = start_y, j2 = selected_tile.y; j1 < start_y + hght && j2 < size_y && j1 < size_y; j1++, j2++) {
+							if (j2 < 0) continue;
 
 							changes.atBack()->tiles[changes.atBack()->size] = tiles[i2][j2]; //<--store tiles before changes	
 							changes.atBack()->size++;
@@ -317,6 +319,7 @@ void MapBuilderState::draw_tools()
 									tiles[i2][j2].layer[layer] = new_tile->second;
 							}
 						}
+					}
 					drawn_map_selection = 1;
 				}
 			}
@@ -444,7 +447,7 @@ void MapBuilderState::erase_tools()
 
 					for (int i = point_on_line.x; i < point_on_line.x + brush_size && i < size_x; i++) {
 						if (i < 0) continue;
-						for (int j = point_on_line.y; j < point_on_line.y + brush_size && i < size_y; j++) {
+						for (int j = point_on_line.y; j < point_on_line.y + brush_size && j < size_y; j++) {
 							if (j < 0) continue;
 							changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j]; //<--store tiles before changes	
 							changes.atBack()->size++;
