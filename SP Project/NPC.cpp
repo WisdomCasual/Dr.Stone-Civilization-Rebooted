@@ -141,12 +141,31 @@ void NPC::type_behaviour()
 				npc_type = 5;           //MAP
 				will_move = 0;
 				direction({ 0.f, 0.f });
-				setPosition(npc_houses[id].x, npc_houses[id].y);
+				switch (id) {
+					default:
+						setPosition(800.f, 800.f);
+				}
 				return;
 			}
 			break;
 
 		}
+		//case 1: {  //quest
+		//	switch (quest_idx) {
+		//		case 4: {
+		//			if (id == 0) {
+		//				if (inventory_count[0] >= 12 && inventory_count[1] >= 8) {
+		//					*quest_location = getRelativePos();
+		//					
+		//				}
+		//				else {
+		//					quest_location->x = -1.f;
+		//				}
+		//			}
+		//				
+		//		}
+		//	}
+		//}
 		default: {          //path following (standing still if no path)
 			short curr_tile_x = short(getRelativePos().x / 16), curr_tile_y = short(getRelativePos().y / 16), new_tile_x, new_tile_y;
 			if (static_map[curr_tile_x][curr_tile_y].tile_props & 3840) {
@@ -226,9 +245,9 @@ void NPC::update_looks()
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin); ///////////////
 }
 
-void NPC::initialize_NPC(string* map, in_order* order, unsigned short* count)
+void NPC::initialize_NPC(string* map, in_order* order, unsigned short* count, short character_id, Vector2f *quest_location, TradingInfo* trade)
 {
-	travel_map = map, inventory_order = order, inventory_count = count;
+	travel_map = map, inventory_order = order, inventory_count = count, player_character_id = character_id, this->quest_location = quest_location, this->trade = trade;
 }
 
 void NPC::update()
@@ -271,23 +290,28 @@ void NPC::update()
 			switch (npc_type) {
 				case 1: {      //quest
 					switch (quest_idx) {
-						if (id == 0) {      //Senku
-							case 1: {
-								dialogue not_enough[1] = { {"Senku", "What are you doing here? Go get me the resources", 0, 1} };
-								start_dialogue(not_enough, 1);
-								break;
-							}
-							case 2: {
-								dialogue enough[2] = { {"Senku", "Great work! You can go now, await further orders", 2, 1}, {character_name, "You got it", 1, 2} };
-								start_dialogue(enough, 2);
-								quest_idx++;
-								npc_type = 0;
+						if (id == 1) {      //Senku
+							case 4: {
+								if (inventory_count[0] >= 12 && inventory_count[1] >= 8) {
+									dialogue enough[2] = { {"Kaseki", "Great work! You can go now, await further orders", 2, 1}, {character_name, "You got it", 1, 2} };
+									start_dialogue(enough, 2);
+									quest_idx++;
+									inventory_count[0] -= 12, inventory_count[1] -= 8;
+									if (!inventory_count[0]) inventory_order->erase(0);
+									if (!inventory_count[1]) inventory_order->erase(1);
+									npc_type = 0;
+								}
+								else {
+									dialogue not_enough[1] = { {"Kaseki", "What are you doing here? Go get me the resources", 0, 1} };
+									start_dialogue(not_enough, 1);
+								}
 								break;
 							}
 						}
 
 
 					}
+					break;
 				}
 
 				case 2: { //petrified
@@ -297,7 +321,7 @@ void NPC::update()
 					default: {
 						saved_dialogue_size = 1;
 						saved_dialogue = new dialogue[1];
-						saved_dialogue[0] = { "Slave" ,"Thank you for saving me!", 1, 2 };
+						saved_dialogue[0] = { "???" ,"Thank you for saving me!", 1, 2 };
 					}
 
 					}
@@ -305,6 +329,11 @@ void NPC::update()
 					delete[] saved_dialogue;
 					npc_type = 3;     //wandering
 
+					break;
+				}
+				case 4: {        //trading
+					states->insert({ TradingID, new TradingState(inventory_order, inventory_count, *trade) });
+					states->at(TradingID)->update();
 					break;
 				}
 				case 5: { ///MAP
