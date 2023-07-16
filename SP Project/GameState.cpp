@@ -872,7 +872,7 @@ void GameState::load_entities(float player_relative_y_pos)
 
 	//initializing info:
 	trading_test.dialogue = "My name is Senku and if you need anything related to science, I can 1 billion percent do it";//<--- just write the dialogue in one string (splitting is automatic)
-	trading_test.NPC_ID = 0;        //<---- write the NPC ID to get the pic (rn only senku is avilable (ID = 0) )
+	trading_test.texture_name = "senku";        //<---- write the NPC name to get the pic
 	trading_test.trades_count = 5;  //<---- number of trades
 	trading_test.trading_menu = new TradingMenu[trading_test.trades_count]; //<-- just creates the array (it deletes itself, no need for worring about delete[])
 
