@@ -1,24 +1,24 @@
 #include "GameState.h"
 #include "MiniMapState.h"
 
-void GameState::black_in()
+void GameState::black_in(float fade_speed)
 {
 	if (blackining > 0) {
-		if (blackining - 500 * dt < 0)
+		if (blackining - fade_speed * dt < 0)
 			blackining = 0;
 		else
-			blackining -= 500 * dt;
+			blackining -= fade_speed * dt;
 		blackscreen.setFillColor(Color(0, 0, 0, blackining));
 	}
 }
 
-bool GameState::black_out()
+bool GameState::black_out(float fade_speed)
 {
 	if (blackining < 255) {
-		if (blackining + 500 * dt > 255)
+		if (blackining + fade_speed * dt > 255)
 			blackining = 255;
 		else
-			blackining += 500 * dt;
+			blackining += fade_speed * dt;
 		blackscreen.setFillColor(Color(0, 0, 0, blackining));
 		return false;
 	}
@@ -124,7 +124,7 @@ void GameState::save()
 		map_ofs << '\n';
 
 		map_ofs << light_sources.size() << '\n';
-		for (auto light : light_sources) {
+		for (auto const &light : light_sources) {
 			map_ofs << light.second.color.x << ' ' << light.second.color.y << ' ' << light.second.color.z << ' ';
 			map_ofs << light.second.intensity << ' ';
 			map_ofs << light.second.position.x << ' ' << light.second.position.y << ' ';
@@ -838,6 +838,62 @@ void GameState::load_entities(float player_relative_y_pos)
 		NPC_stats[0].animations[i][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
 		NPC_stats[0].animations[i][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
 	}
+	NPC_stats[1].animations = new animation * [2];
+	NPC_stats[1].scale_const = 0.65;
+	NPC_stats[1].base_movement_speed = 80;
+	NPC_stats[1].states_no = 1;
+	NPC_stats[1].base_animation_speed = 12;
+	NPC_stats[1].textures_count = 2;
+	NPC_stats[1].textures = new Texture * [NPC_stats[1].textures_count];
+	NPC_stats[1].textures[0] = new Texture;
+	NPC_stats[1].textures[1] = new Texture;
+
+	NPC_stats[1].textures[0]->loadFromFile("textures/game/entities/NPCs/kaseki.png");
+
+
+		NPC_stats[1].animations[0] = new animation[4];
+		NPC_stats[1].animations[0][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
+		NPC_stats[1].animations[0][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
+		NPC_stats[1].animations[0][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
+		NPC_stats[1].animations[0][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
+
+	NPC_stats[2].animations = new animation * [1];
+	NPC_stats[2].scale_const = 0.65;
+	NPC_stats[2].base_movement_speed = 80;
+	NPC_stats[2].states_no = 1;
+	NPC_stats[2].base_animation_speed = 12;
+	NPC_stats[2].textures_count = 1;
+	NPC_stats[2].textures = new Texture * [NPC_stats[2].textures_count];
+	NPC_stats[2].textures[0] = new Texture;
+
+	NPC_stats[2].textures[0]->loadFromFile("textures/game/entities/NPCs/francois.png");
+
+		NPC_stats[2].animations[0] = new animation[4];
+		NPC_stats[2].animations[0][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
+		NPC_stats[2].animations[0][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
+		NPC_stats[2].animations[0][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
+		NPC_stats[2].animations[0][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
+
+		NPC_stats[3].animations = new animation * [2];
+		NPC_stats[3].scale_const = 0.65;
+		NPC_stats[3].base_movement_speed = 80;
+		NPC_stats[3].states_no = 1;
+		NPC_stats[3].base_animation_speed = 12;
+		NPC_stats[3].textures_count = 2;
+		NPC_stats[3].textures = new Texture * [NPC_stats[0].textures_count];
+		NPC_stats[3].textures[0] = new Texture;
+		NPC_stats[3].textures[1] = new Texture;
+
+		NPC_stats[3].textures[0]->loadFromFile("textures/game/entities/NPCs/Ryusui.png");
+		NPC_stats[3].textures[1]->loadFromFile("textures/game/entities/NPCs/Ryusui_petrified.png");
+
+		for (int i = 0; i < 2; i++) {
+			NPC_stats[3].animations[i] = new animation[4];
+			NPC_stats[3].animations[i][0] = { 9, {0, 8 * 64, 64, 64}, {30,14}, {32,48} }; //back
+			NPC_stats[3].animations[i][1] = { 9, {0, 11 * 64, 64, 64}, {30,14}, {32,48} }; //right
+			NPC_stats[3].animations[i][2] = { 9, {0, 9 * 64, 64, 64}, {30,14}, {32,48} }; //left
+			NPC_stats[3].animations[i][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
+		}
 
 	item_stats.textures_count = 1;
 	item_stats.textures = new Texture * [item_stats.textures_count];
@@ -873,11 +929,11 @@ void GameState::load_entities(float player_relative_y_pos)
 	//initializing info:
 	trading_test.dialogue = "My name is Senku and if you need anything related to science, I can 1 billion percent do it";//<--- just write the dialogue in one string (splitting is automatic)
 	trading_test.texture_name = "senku";        //<---- write the NPC name to get the pic
-	trading_test.trades_count = 5;  //<---- number of trades
+	trading_test.trades_count = 1;  //<---- number of trades
 	trading_test.trading_menu = new TradingMenu[trading_test.trades_count]; //<-- just creates the array (it deletes itself, no need for worring about delete[])
 
 	//initializing trades:
-	trading_test.trading_menu[0].item_name = "Pickaxe";     //<--- name of the trade (CURRENT NAMES AND INGREDIENTS ARE JUST RANDOM)
+	trading_test.trading_menu[0].item_name = "Wool";     //<--- name of the trade (CURRENT NAMES AND INGREDIENTS ARE JUST RANDOM)
 	trading_test.trading_menu[0].ingredients_count = 2;     //<--- number of ingredient for the trade [0] (UP TO 3 ONLY)
 
 	trading_test.trading_menu[0].ingredients[0].ID = 0;     //<--- ingredient 1 ID [0]
@@ -889,59 +945,6 @@ void GameState::load_entities(float player_relative_y_pos)
 	trading_test.trading_menu[0].result.count = 1;             //<--- count of items you'll get
 
 	//////////continue the rest of the trades the same way:
-
-	trading_test.trading_menu[1].item_name = "Axe";
-	trading_test.trading_menu[1].ingredients_count = 3;
-
-	trading_test.trading_menu[1].ingredients[0].ID = 0;
-	trading_test.trading_menu[1].ingredients[0].count = 3;
-	trading_test.trading_menu[1].ingredients[1].ID = 1;
-	trading_test.trading_menu[1].ingredients[1].count = 2;
-	trading_test.trading_menu[1].ingredients[2].ID = 5;
-	trading_test.trading_menu[1].ingredients[2].count = 47;
-
-	trading_test.trading_menu[1].result.ID = 4;
-	trading_test.trading_menu[1].result.count = 3;
-
-	trading_test.trading_menu[2].item_name = "someme";
-	trading_test.trading_menu[2].ingredients_count = 3;
-
-	trading_test.trading_menu[2].ingredients[0].ID = 0;
-	trading_test.trading_menu[2].ingredients[0].count = 3;
-	trading_test.trading_menu[2].ingredients[1].ID = 7;
-	trading_test.trading_menu[2].ingredients[1].count = 2;
-	trading_test.trading_menu[2].ingredients[2].ID = 5;
-	trading_test.trading_menu[2].ingredients[2].count = 47;
-
-	trading_test.trading_menu[2].result.ID = 5;
-	trading_test.trading_menu[2].result.count = 1;
-
-
-	trading_test.trading_menu[3].item_name = "Axrere";
-	trading_test.trading_menu[3].ingredients_count = 3;
-
-	trading_test.trading_menu[3].ingredients[0].ID = 0;
-	trading_test.trading_menu[3].ingredients[0].count = 3;
-	trading_test.trading_menu[3].ingredients[1].ID = 1;
-	trading_test.trading_menu[3].ingredients[1].count = 2;
-	trading_test.trading_menu[3].ingredients[2].ID = 5;
-	trading_test.trading_menu[3].ingredients[2].count = 47;
-
-	trading_test.trading_menu[3].result.ID = 4;
-	trading_test.trading_menu[3].result.count = 5;
-
-	trading_test.trading_menu[4].item_name = "AERErER";
-	trading_test.trading_menu[4].ingredients_count = 3;
-
-	trading_test.trading_menu[4].ingredients[0].ID = 0;
-	trading_test.trading_menu[4].ingredients[0].count = 3;
-	trading_test.trading_menu[4].ingredients[1].ID = 1;
-	trading_test.trading_menu[4].ingredients[1].count = 2;
-	trading_test.trading_menu[4].ingredients[2].ID = 5;
-	trading_test.trading_menu[4].ingredients[2].count = 12;
-
-	trading_test.trading_menu[4].result.ID = 4;
-	trading_test.trading_menu[4].result.count = 1;
 
 
 
@@ -1101,7 +1104,7 @@ void GameState::center_cam(Vector2f player_pos)
 void GameState::maps_travel()
 {
 	if (!travel_map.empty()) {
-		if (black_out()) {
+		if (quest_idx != 1 && quest_idx != 2 && black_out()) {
 			save();
 			// maybe add time zone changes
 			initial_game(travel_map, travel_location);
@@ -1109,8 +1112,10 @@ void GameState::maps_travel()
 			travel_location = { -1, -1 };
 		}
 	}
-	else
-		black_in();
+	else {
+		if(quest_idx != 1 && quest_idx != 2)
+			black_in();
+	}
 }
 
 void GameState::destroyANDrestore_objects(Vector2i core_location, bool destroy, bool ToEternityAndByound, Vector2i check_tile)
@@ -1515,7 +1520,13 @@ void GameState::initial_entities()
 	}
 
 	else if (current_map == "Sheraton") {
-		NPCs.add(spawn_npc(0), { 968, 712 }, npc_details(1, 10, 1));
+		NPCs.add(spawn_npc(0), { 968, 712 }, npc_details(1, 10, 0));
+		npc_initalize;
+		NPCs.add(spawn_npc(1), { 968, 776 }, npc_details(1, 10, 1));
+		npc_initalize;
+		NPCs.add(spawn_npc(2), { 968, 680 }, npc_details(1, 10, 4));
+		npc_initalize;
+		NPCs.add(spawn_npc(3), { 904, 712 }, npc_details(1, 10, 2));
 		npc_initalize;
 	}
 }
@@ -1527,44 +1538,71 @@ void GameState::quests()
 		case 0:
 			if (quest_dialogue != nullptr)
 				delete[] quest_dialogue;
-			quest_dialogue = new dialogue[11];
-			quest_dialogue[0] = { "???", "Hey, you, wake up..\n/E2You've been sleeping for too long..", 0, 1};
-			quest_dialogue[1] = { "???", "3700 years to be precise..", 0, 1 };
-			quest_dialogue[2] = { character_name, "Where.. Am I..?", 0, 2 };
-			quest_dialogue[3] = { character_name, "Who.. Are you?..", 0, 2 };
-			quest_dialogue[4] = { "Senku", "My name is Senku, and this is earth 3700 years after the petrification incident", 2, 1 };
-			quest_dialogue[5] = { character_name, "You can call me " + character_name + ", nice meeting yo-", 0, 2};
-			quest_dialogue[6] = { "Senku", "Listen, " + character_name + ", It's not time for introduciton, /E3I need your help to restore the civilization right now", 2, 1};
-			quest_dialogue[7] = { character_name, "I'm all ears, what do I need to do right now?", 0, 2 };
-			quest_dialogue[8] = { "Senku", "Good, now..\nI've already supplied you with some basic tools, so now I want you to gather a few matterials", 2, 1 };
-			quest_dialogue[9] = { "Senku", "For now we need some wood (5 to be precise), which you can gather from trees using your axe.. as well as a bit of stone (3 to be precise) which you can mine using the pickaxe I supplied you with.\nAnd when you're done come meet me", 2, 1 };
-			quest_dialogue[10] = { character_name, "Roger that, I'll be right back", 0, 2 };
-			quest_dialogue_num = 11;
+			quest_dialogue = new dialogue[10];
+			quest_dialogue[0] = { character_name, "Since that day I don't know what happened, That beam appeared out of no where...", 1, 2};
+			quest_dialogue[1] = { character_name, "Since then I feel like I have been sleeping and fully emersed in my thoughts for years.", 1, 2 };
+			quest_dialogue[2] = { character_name, "I want to wake up now, I want to check on my family and friends.", 1, 2 };
+			quest_dialogue[3] = { character_name, "Are they alright?...", 1, 2 };
+			quest_dialogue[4] = { character_name, "I MUST..", 1, 2 };
+			quest_dialogue[5] = { character_name, "WAKE UP..", 1, 2 };
+			quest_dialogue[6] = { character_name, "NOW..", 1, 2 };
+			quest_dialogue[7] = { character_name, "WAKE UP..", 1, 2 };
+			quest_dialogue[8] = { character_name, "MY BODY..", 1, 2 };
+			quest_dialogue[9] = { character_name, "RESPOND..", 1, 2 };
+			quest_dialogue_num = 10;
 
 			states->insert({ DialogueID,new DialogueState(quest_dialogue,{0, 140}, 1, quest_dialogue_num) });
 			states->at(DialogueID)->update();
 			quest_idx++;
+			blackining = 255, blink_delay = 1.f;
 			break;
 
 		case 1:
-			if (quest_location != Vector2f(968.f, 968.f)) {
-				quest_location = Vector2f(968.f, 968.f);
+			player_entity->stun = 1000;
+			blink_delay += dt;
+			if (blink_delay >= 1.f) {
+				float blink_val = (blink_delay < 2.25f) ? 12.f * (1+blink_count) * blink_delay + 25 * blink_count: 250 - (blink_count >= 2) * 200;
+				black_in(int(blink_val));
+				//cout << blink_val << '\n';
+				if (!blackining) quest_idx+= (blink_count < 2) ? 1 : 2;
 			}
-			if (inventory_count[0] >= 5 && inventory_count[1] >= 3)
-				quest_idx++;
 			break;
 		case 2:
-			if (current_map == "Sheraton" && quest_location != NPCs.entities[0]->pos) {
-				quest_location = NPCs.entities[0]->pos;
+			//cout << blackining <<'\n';
+			player_entity->stun = 1000;
+			if (black_out(500 - blink_count * 125)) {
+				quest_idx--, blink_count++, blink_delay = 0;
 			}
 			break;
 		case 3:
-			inventory_count[0] -= 5, inventory_count[1] -= 3;
-			check_in_inventory(0);
-			check_in_inventory(1);
+			if (quest_dialogue != nullptr)
+				delete[] quest_dialogue;
+			quest_dialogue = new dialogue[6];
+			quest_dialogue[0] = {"Senku" ,"Hey, Are you okay?!...", 0, 1};
+			quest_dialogue[1] = {"Senku", "Don't panic I will explain everything now...", 0, 1 };
+			quest_dialogue[2] = {"Senku", "3700 years ago earth was hit by a huge disaster, a green beam covered all of earth and resulted in all of humanity getting petrified.", 0, 1 };
+			quest_dialogue[3] = {"Senku", "Don't mind the details right now about how I got up from petrification. You'll know everything eventually, now let's just get you started.", 0, 1 };
+			quest_dialogue[4] = {"Senku", "First things first, I have provided you with stone tools to make collecting items doable...", 0, 1 };
+			quest_dialogue[5] = {"Senku", "I want you to gather some wood (12 pieces) and stone (8 pieces) and then go to Kaseki and hand him the materials and he'll get the rest done", 0, 1 };
+			quest_dialogue_num = 6;
+
+			states->insert({ DialogueID,new DialogueState(quest_dialogue,{0, 140}, 1, quest_dialogue_num) });
+			states->at(DialogueID)->update();
+			player_entity->stun = 0;
 			quest_idx++;
-			current_quest++;
 			break;
+		case 4:
+			if (inventory_count[0] >= 12 && inventory_count[1] >= 8) {
+				quest_location = NPCs.entities[npc_id_to_idx[1]]->pos;
+
+			}
+			else {
+				quest_location.x = -1.f;
+			}
+			break;
+		case 5:
+			destroyANDrestore_objects({ 40, 46 }, 0);
+			quest_idx++;
 		default:
 			quest_location.x = -1.f;
 	}
@@ -1644,6 +1682,9 @@ GameState::~GameState()
 
 	if (sound_buffers != nullptr)
 		delete[] sound_buffers;
+
+	if (quest_dialogue != nullptr)
+		delete[] quest_dialogue;
 }
 
 void GameState::update()
@@ -1756,6 +1797,7 @@ void GameState::update()
 
 	for (int i = 0; i < NPCs.curr_idx; i++) {
 		if (!NPCs.entities[i]->despawn) {
+			npc_id_to_idx[NPCs.entities[i]->id] = i;
 			if (NPCs.entities[i]->action_state != 0 || entity_in_range(NPCs.entities[i]->pos, entity_update_distance))
 				NPCs.entities[i]->update();
 		}
@@ -1932,11 +1974,6 @@ void GameState::pollevent()
 				states->at(InventoryID)->update();
 				break;
 
-			case Keyboard::T:
-				/////////////////////////////////////////FOR TESTING ///////////////////////////////////////////////
-				states->insert({ TradingID, new TradingState(&inventory_order, inventory_count, trading_test) });
-				states->at(TradingID)->update();
-				break;
 
 
 			case Keyboard::M:

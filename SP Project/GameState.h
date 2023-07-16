@@ -16,7 +16,7 @@
 //eneimies = 0, items = 1, passive = 2, NPC = 3
 
 #define npc_details(persistant, despawn_time, type) persistant, despawn_time, type        //npc type: 0 = wandering, 1 = quest, 2 = petrified, 3 = wandering
-#define npc_initalize NPCs.entities[NPCs.curr_idx-1]->initialize_NPC(&travel_map, &inventory_order, inventory_count);
+#define npc_initalize NPCs.entities[NPCs.curr_idx-1]->initialize_NPC(&travel_map, &inventory_order, inventory_count, character_id, &quest_location, &trading_test);
 #define spawn_npc(id) 3, NPC_stats[id], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
 
 #define enemy_spawn(id) 0, enemy_stats[id], 1, static_map, tile_props, map_x, map_y, size_x, size_y, x_offset, y_offset, destroy_object_location, player_entity, id
@@ -58,6 +58,9 @@ private:
 				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
 
 	const short number_of_enemies = 2, number_of_passives = 2;
+
+	short blink_count = 0;
+	float blink_delay = 0;
 
 
 
@@ -349,15 +352,15 @@ private:
 	Vector2f travel_location = { -1, -1 };
 	short item_drops[5], item_drops_count = -1;
 	in_order inventory_order;
-	unsigned short inventory_count[50]{};
+	unsigned short inventory_count[50]{}, npc_id_to_idx[50] = {};
 
 	int sounds_no = 0;
 	SoundBuffer* sound_buffers = nullptr;
 
 
 	//private functions:
-	void black_in();
-	bool black_out();
+	void black_in(float fade_speed = 500.f);
+	bool black_out(float fade_speed = 500.f);
 	void initial_sounds();
 	void load_game();
 	void set_textures();

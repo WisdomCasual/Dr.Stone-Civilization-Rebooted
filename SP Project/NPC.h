@@ -6,14 +6,15 @@ struct NPC :
 {
 	using::Entity::Entity;
 private:
-	Vector2f dist = { 0, 0 };
+	Vector2f dist = { 0, 0 }, *quest_location;
 	bool will_move = 0, in_dialogue = 0;
 	float motion_delay = 4.f, move_speed = 100.f, switch_delay = 0.f, motion_cd = 0.f, theta = 0.f;
 	dialogue* npc_dialogues = nullptr, single_dialogue[1] = {}, * curr_dialogue = nullptr;
 	string *travel_map = nullptr;
-	short dialogues_num, curr_dialogue_num = 0;
+	short dialogues_num, curr_dialogue_num = 0, player_character_id = 0;
 	in_order *inventory_order = nullptr;
 	unsigned short *inventory_count = nullptr;
+	TradingInfo* trade;
 
 	//private functions
 	void player_collision_check();
@@ -29,6 +30,6 @@ public:
 	void type_behaviour();
 	void path_follow(short , short , short , short , short , short );
 	void update_looks();
-	void initialize_NPC(string*, in_order*, unsigned short*);
+	void initialize_NPC(string*, in_order*, unsigned short*, short, Vector2f*, TradingInfo*);
 	void update();
 };
