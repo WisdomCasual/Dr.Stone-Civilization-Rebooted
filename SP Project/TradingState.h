@@ -23,7 +23,7 @@ struct TradingInfo {
         if (trading_menu != nullptr)
             delete[] trading_menu;
     }
-    short NPC_ID = 0, trades_count = 0;
+    string texture_name; short trades_count = 0;
     String dialogue;
     TradingMenu* trading_menu = nullptr;
 };
