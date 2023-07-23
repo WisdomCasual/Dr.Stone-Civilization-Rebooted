@@ -606,6 +606,7 @@ void GameState::search_front(int x, int y, int layr, Vector3i*** temp_front, boo
 		if (new_x < size_x && new_y < size_y && new_x >= 0 && new_y >= 0 && temp_front[layr][new_x][new_y].x && !vis[layr][new_x][new_y]) {
 			temp_front[layr][new_x][new_y].x--;
 			dynamic_map.at[idx].add({Vector2f(new_x, new_y), temp_front[layr][new_x][new_y] });
+			dynamic_map.at[idx].height += (!dx[i]) * abs(dy[i]);
 			search_front(new_x, new_y, layr, temp_front, vis, idx);
 		}
 	}
@@ -1121,7 +1122,17 @@ void GameState::maps_travel()
 	}
 }
 
-void GameState::destroyANDrestore_objects(Vector2i core_location, bool destroy, bool ToEternityAndByound, Vector2i check_tile)
+void GameState::destroyANDrestore_objects(Vector2i core_location, bool destroy, bool ToEternityAndByound)
+{
+	object_height = 1;
+	destroyANDrestore(core_location, destroy, ToEternityAndByound);
+	if (destroy && !ToEternityAndByound) {
+		poof_pop.play();
+		effects.add({ 0, 0, 256, 256 }, 22, { core_location.x * 16 + 8 , core_location.y * 16 + 8 }, "Poof", sqrtf(object_height / 6.f), Color(255, 255, 255, 255), 0, map_x, map_y);
+	}
+}
+
+void GameState::destroyANDrestore(Vector2i core_location, bool destroy, bool ToEternityAndByound, Vector2i check_tile)
 {
 	if (check_tile.x == -10)
 		check_tile = core_location;
@@ -1144,29 +1155,24 @@ void GameState::destroyANDrestore_objects(Vector2i core_location, bool destroy, 
 			dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].destruction_time = &static_map[core_location.x][core_location.y].destruction_time;
 			dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].time = &static_map[core_location.x][core_location.y].time;
 			dynamic_update_minimap = 2;
+			object_height += dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].height - 1;
 		}
-		else if (static_map[check_tile.x][check_tile.y].tile_props & 32) {
-			bigbang(check_tile, 1, ToEternityAndByound);
-			if (!ToEternityAndByound) {
-				poof_pop.play();
-				effects.add({ 0, 0, 256, 256 }, 22, { core_location.x * 16 + 8 , core_location.y * 16 + 8 }, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
-			}
-		}
-		else if (static_map[check_tile.x][check_tile.y].tile_props & 1)
+		else if (static_map[check_tile.x][check_tile.y].tile_props & 1 || static_map[check_tile.x][check_tile.y].tile_props & 32)
 			bigbang(check_tile, 1, ToEternityAndByound);
 	}
 	else {
 		if (static_map[check_tile.x][check_tile.y].destruction_time)
 			bigbang(check_tile, 0, ToEternityAndByound);
 	}
-
 	for (int i = 0; i < 4; i++)
 		if (destroy && static_map[check_tile.x + dx[i]][check_tile.y + dy[i]].tile_props & 1) {
-				if (!static_map[check_tile.x + dx[i]][check_tile.y + dy[i]].destruction_time)
-					destroyANDrestore_objects(core_location, destroy, ToEternityAndByound, { check_tile.x + dx[i], check_tile.y + dy[i] });
+			if (!static_map[check_tile.x + dx[i]][check_tile.y + dy[i]].destruction_time) {
+				destroyANDrestore(core_location, destroy, ToEternityAndByound, { check_tile.x + dx[i], check_tile.y + dy[i] });
+				object_height += (!dx[i]) * abs(dy[i]);
+			}
 		}
 		else if(!destroy && static_map[check_tile.x + dx[i]][check_tile.y + dy[i]].destruction_time)
-			destroyANDrestore_objects(core_location, destroy, ToEternityAndByound, { check_tile.x + dx[i], check_tile.y + dy[i] });
+			destroyANDrestore(core_location, destroy, ToEternityAndByound, { check_tile.x + dx[i], check_tile.y + dy[i] });
 }
 
 void GameState::bigbang(Vector2i target_tile, bool destroy, bool ToEternityAndByound)
