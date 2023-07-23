@@ -54,7 +54,7 @@ private:
 	float spawn_cd = 0;
 	short spawn_type = 0, left_bound, right_bound, up_bound, down_bound, screen_length, screen_height, spawn_x, spawn_y, spawn_total;         // if %2 = 1 then enemy, else then passive
 	const float def_spawn_cd = 3.0;
-	const short spawn_dist = 6, entity_render_distance = 5 * 16, object_render_distance = 3 * 16, entity_update_distance = 30 * 16,
+	const short spawn_dist = 6, entity_render_distance = 5 * 16, object_render_distance = 6 * 16, entity_update_distance = 30 * 16,
 				obj_up_offset = 7 * 16, obj_down_offset = 0, obj_left_offset = 2 * 16, obj_right_offest = 2 * 16;   //distance in pixels
 
 	const short number_of_enemies = 2, number_of_passives = 2;
@@ -220,7 +220,7 @@ private:
 
 	struct dynamic_objects {
 
-		int size = 1, curr_idx = 0, layer = 0;
+		int size = 1, curr_idx = 0, layer = 0, height = 1;
 		double* destruction_time = nullptr,* time = nullptr;
 		Vector2i core_location = { -1, -1 };
 		entity_object* at = nullptr; //dynamic array of objects
@@ -355,6 +355,7 @@ private:
 	float x_offset = 0, y_offset = 0; //<-- offset from upper left corner of the screen to upper left corner of the map
 	short destructable_count = 0;
 	Vector2i destroy_object_location = { -1, -1 };
+	int object_height = 0;
 	float map_x = 0, map_y = 0;
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, torch_intensity = 0.6, torch_delta = 0.2;
 	RectangleShape blackscreen;
@@ -392,8 +393,9 @@ private:
 	void move_cam(float, float);
 	void center_cam(Vector2f);
 	void maps_travel();
-	void destroyANDrestore_objects(Vector2i, bool, bool ToEternityAndByound = 0, Vector2i check_tile = {-10, -10});
-	void bigbang(Vector2i, bool destroy = 0, bool ToEternityAndByound = 0);
+	void destroyANDrestore_objects(Vector2i, bool, bool ToEternityAndByound = 0);
+	void destroyANDrestore(Vector2i, bool, bool ToEternityAndByound, Vector2i check_tile = { -10, -10 });
+	void bigbang(Vector2i, bool, bool);
 	void render_static_map();
 	void render_entities();
 	void check_in_inventory(int);
