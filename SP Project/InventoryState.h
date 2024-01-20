@@ -5,7 +5,7 @@
 #include"Global.h"
 using namespace globalvar;
 
-class InventoryState : public State
+struct InventoryState : public State
 {
 private:
 

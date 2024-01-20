@@ -28,7 +28,7 @@ struct Game
 {
 private:
 	//private variables:
-	RenderWindow* window;
+	RenderWindow* window = nullptr;
 	VideoMode* videomode;
 	Texture mouse_cursor_tex;
 	float cursor_scale = 1;

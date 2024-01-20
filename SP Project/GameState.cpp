@@ -75,9 +75,8 @@ void GameState::save()
 			}
 		map_ofs << '\n';
 
+
 		map_ofs << dynamic_map.curr_idx << '\n';
-
-
 
 		for (int i = 0; i < dynamic_map.curr_idx; i++) {
 
@@ -1112,6 +1111,7 @@ void GameState::maps_travel()
 			save();
 			// maybe add time zone changes
 			initial_game(travel_map, travel_location);
+			cout << "we got here captain\n";
 			travel_map.clear();
 			travel_location = { -1, -1 };
 		}
@@ -1477,8 +1477,9 @@ void GameState::block_interactions_list(Vector2i interaction_tile)
 void GameState::DayLightCycle()
 {
 	int count = 0;
-	for (auto i = light_sources.lower_bound(-map_y - 176); i != light_sources.end() && i->first <= -map_y + win_y / scale + 176; i++) {
-		if (i->second.position.x > -map_x - 176 && i->second.position.x < -map_x + win_x / scale + 176) {
+	const int viewDist = 13;
+	for (auto i = light_sources.lower_bound(-map_y - (viewDist * 10 * scale)); i != light_sources.end() && i->first <= -map_y + win_y / scale + (viewDist * 10 * scale); i++) {
+		if (i->second.position.x > -map_x - (viewDist * 10 * scale) && i->second.position.x < -map_x + win_x / scale + (viewDist * 10 * scale)) {
 			if(i->second.day_light)
 				shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(light_level, light_level, light_level));
 			else

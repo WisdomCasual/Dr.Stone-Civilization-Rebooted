@@ -2,33 +2,36 @@
 void Game::initial_window()
 {
 	//gets window properties from "config/window.ini";
-	if (prev_res != windowbounds || prev_fullscreen != fullscreen) {
-		ifstream ifs("config/window.ini");
-		if (ifs.is_open()) {
-			getline(ifs, title);
-			ifs >> windowbounds.width >> windowbounds.height;
-			ifs >> framelimit;
-			ifs >> fullscreen;
-			ifs >> vsync;
-			ifs >> game_volume;
-			ifs >> music_volume;
-		}
-		ifs.close();
-
-		if (fullscreen)
-			this->window = new RenderWindow(VideoMode::getDesktopMode(), title, Style::Fullscreen);
-		else
-			this->window = new RenderWindow(windowbounds, title, Style::Titlebar | Style::Close);
-
-		prev_res = windowbounds;
-		prev_fullscreen = fullscreen;
+	ifstream ifs("config/window.ini");
+	if (ifs.is_open()) {
+		getline(ifs, title);
+		ifs >> windowbounds.width >> windowbounds.height;
+		ifs >> framelimit;
+		ifs >> fullscreen;
+		ifs >> vsync;
+		ifs >> game_volume;
+		ifs >> music_volume;
 	}
-	if (vsync) {
+	ifs.close();
+
+	if(window != nullptr)
+		delete window;
+
+	if (fullscreen)
+		this->window = new RenderWindow(VideoMode::getDesktopMode(), title, Style::Fullscreen);
+	else
+		this->window = new RenderWindow(windowbounds, title);
+	prev_res = windowbounds;
+	prev_fullscreen = fullscreen;
+
+	if (vsync)
 		this->window->setFramerateLimit(0);	
-	}
 	else
 		this->window->setFramerateLimit(framelimit);
+
 	this->window->setVerticalSyncEnabled(vsync);
+
+	window->setMouseCursorVisible(false);
 
 	globalvar::window = this->window;
 	initial_icon();
@@ -239,10 +242,15 @@ void Game::update_window()
 {
 	save();
 
-	if (prev_res != windowbounds || prev_fullscreen != fullscreen)
-		delete window;
-	initial_window();
-	window->setMouseCursorVisible(false);
+	if (prev_res != windowbounds) {
+		window->setSize({ windowbounds.width, windowbounds.height });
+		prev_res = windowbounds;
+		sf::FloatRect visibleArea(0, 0, windowbounds.width, windowbounds.height);
+		window->setView(sf::View(visibleArea));
+	}
+
+	if(prev_fullscreen != fullscreen)
+		initial_window();
 
 	for (auto& state : states)
 		state.second->update();
@@ -273,10 +281,16 @@ void Game::update()
 	play_music();
 
 	if (!states.empty())
-		this->states.rbegin()->second->update();
+		prev(this->states.end())->second->update();
 
 	if (exit_game)
 		window->close();
+
+	windowbounds.width = window->getSize().x;
+	windowbounds.height = window->getSize().y;
+
+	if (prev_res != windowbounds)
+		update_window();
 
 	update_cursor();
 }
