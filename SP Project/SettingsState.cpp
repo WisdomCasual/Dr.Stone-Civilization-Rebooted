@@ -87,16 +87,6 @@ void SettingsState::update_arrow()
 			// go back to previous state and apply the changes 
 			if (arrow_pressed) {
 				arrow_pressed = 0;
-				// set the new resolution and framelimit
-				game.windowbounds = resolutions[resolution];
-				game.framelimit = framelimit_values[framelimit];
-				//deletes the current window and draws a new window 
-
-				if(framelimit != prev_framelimit || resolution != prev_resolution)
-					game.update_window();
-				else
-					game.save();
-
 				exit = true;
 			}
 		}
@@ -171,14 +161,12 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 		Also we detect for clicks on the whole slider so slider should be movable from any part of it and if you press
 		of a random part of the slider the right tip will go there and also the mid will be scaled
 		*/
-		sliders[target].presssed = 0;
 		
-
 		tip.setScale(scale / 3, scale / 3);
 		tip.setTextureRect(tipsleft[sliders[target].color]);
 		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
 		tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
-		if (tip.getGlobalBounds().contains(clicked_on))
+		if (tip.getGlobalBounds().contains(mouse_pos) && Mouse::isButtonPressed(Mouse::Left))
 			sliders[target].presssed = 1;
 
 		if (tip.getGlobalBounds().contains(mouse_pos))
@@ -188,7 +176,7 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 		tip.setTextureRect(mids[3]);
 		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
 		tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
-		if (tip.getGlobalBounds().contains(clicked_on) && Mouse::isButtonPressed(Mouse::Left))
+		if (tip.getGlobalBounds().contains(mouse_pos) && Mouse::isButtonPressed(Mouse::Left))
 			sliders[target].presssed = 1;
 
 		if (tip.getGlobalBounds().contains(mouse_pos))
@@ -198,7 +186,7 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 		tip.setTextureRect(tipsright[3]);
 		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
 		tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3), y + sliders[target].y * scale);
-		if (tip.getGlobalBounds().contains(clicked_on) && Mouse::isButtonPressed(Mouse::Left))
+		if (tip.getGlobalBounds().contains(mouse_pos) && Mouse::isButtonPressed(Mouse::Left))
 			sliders[target].presssed = 1;
 
 		if (tip.getGlobalBounds().contains(mouse_pos))
@@ -206,18 +194,27 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 
 			
 		if (sliders[target].presssed) {
+			sliders[target].presssed = 0;
+			sliders[target].released = 1;
 			clickable_cursor = true;
 			// make sure that the slider doesn't pass it's boundries
 			float initpos = x + (sliders[target].x + 9) * (scale / 3), mxlen = sliderconst * (scale / 3), stepsize = mxlen / sliders[target].mx;
 			if (mouse_pos.x < initpos) sliders[target].tipx = initpos;
-			else if (mouse_pos.x > initpos + mxlen) sliders[target].tipx = initpos + mxlen;
-			else
-			{
+			else if (mouse_pos.x > initpos + mxlen) {
+				sliders[target].tipx = initpos + mxlen;
+			}
+			else {
 				sliders[target].tipx = initpos + (sliders[target].mx - round((initpos + mxlen - mouse_pos.x) / stepsize)) * stepsize;
 			}
 
 			*sliders[target].linker = round(((sliders[target].tipx - x) / (scale / 3) - sliders[target].x - 9) / sliderconst * sliders[target].mx);
 			sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 3));
+		}
+		else {
+			if (sliders[target].released) {
+				sliders[target].released = 0;
+				game.save();
+			}
 		}
 	}
 }
@@ -242,9 +239,10 @@ void SettingsState::render_slider(int target)
 	
 	// first we check if the slider was disabled if so, we change it's color to a dimmer color.
 
-	color = tip.getColor();
 	if (sliders[target].disabled)
-		tip.setColor(Color(color.r-100, color.g-100, color.b-100, transparency));
+		tip.setColor(Color(155, 155, 155, transparency));
+	else
+		tip.setColor(Color(255, 255, 255, transparency));
 	
 	// here we just draw and position every part of the slider
 
@@ -285,9 +283,6 @@ void SettingsState::render_slider(int target)
 		slider_text.setString(sliders[target].txt[*sliders[target].linker]);
 	slider_text.setPosition(x + (sliders[target].x + 9 + sliderconst + 15) * (scale / 3), y + (sliders[target].y - 4) * scale);
 	window->draw(slider_text);
-
-	// ?? 
-	tip.setColor(color);
 }
 
 void SettingsState::settings_intializer()
@@ -367,14 +362,22 @@ void SettingsState::update_checkbox(int i)
 		}
 		else {
 			if (checkboxes[i].pressed) {
-				if (checkboxes[i].checked)
-					checkboxes[i].execute = 0;
-				else
-					checkboxes[i].execute = 1;
-				checkboxes[i].checked = !checkboxes[i].checked;
 				checkboxes[i].pressed = 0;
-				game.update_window();
+				checkboxes[i].released = 1;
+
+				if (checkboxes[i].checked)
+					*checkboxes[i].execute = 0;
+				else
+					*checkboxes[i].execute = 1;
+
+				checkboxes[i].checked = !checkboxes[i].checked;
 				settings_intializer();
+			}
+			else {
+				if (checkboxes[i].released) {
+					checkboxes[i].released = 0;
+					game.save();
+				}
 			}
 		}
 		checkboxes[i].hover = 1;
@@ -449,8 +452,11 @@ SettingsState::SettingsState(bool bg_fade)
 
 	tip.setTexture(*textures[0]);
 
-	checkboxes[0].checked = fullscreen;
-	checkboxes[1].checked = vsync;
+	checkboxes[0] = { 0, -25, "VSync    ", &vsync_box };
+	checkboxes[1] = { -100, -25, "Fullscreen", &fullscreen_box };
+
+	checkboxes[0].checked = vsync_box;
+	checkboxes[1].checked = fullscreen_box;
 
 	checkbox.setTexture(*textures[2]);
 	checkbox.setTextureRect(IntRect(0, 0, 45, 49));
@@ -512,6 +518,35 @@ void SettingsState::update()
 		sliders[1].disabled = 1;
 	else
 		sliders[1].disabled = 0;
+
+	if (vsync_box != vsync) {
+		vsync = vsync_box;
+		if (vsync)
+			window->setFramerateLimit(0);
+		else
+			window->setFramerateLimit(game.framelimit);
+		window->setVerticalSyncEnabled(vsync);
+	}
+	if (fullscreen_box != fullscreen) {
+		fullscreen = fullscreen_box;
+		game.update_window();
+	}
+
+	if (!Mouse::isButtonPressed(Mouse::Left)) {
+		if (framelimit != prev_framelimit) {
+			prev_framelimit = framelimit;
+			game.framelimit = framelimit_values[framelimit];
+			window->setFramerateLimit(game.framelimit);
+		}
+		if (resolution != prev_resolution) {
+			prev_resolution = resolution;
+			game.windowbounds = resolutions[resolution];
+			game.update_window();
+			VideoMode screen = VideoMode::getDesktopMode();
+			Vector2i windowPos = { int(screen.width / 2 - game.windowbounds.width / 2), int(screen.height / 2 - game.windowbounds.height / 2) };
+			window->setPosition(windowPos);
+		}
+	}
 
 	// a for loop to update all sliders and checkboxes and also the dev button
 

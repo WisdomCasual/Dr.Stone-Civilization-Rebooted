@@ -175,8 +175,7 @@ void InventoryState::update()
 		prev_win = window->getSize();
 		win_x = window->getSize().x, win_y = window->getSize().y;
 		x = win_x / 2, y = win_y / 2;
-		if (win_x / 1920.0 > win_y / 1080.0) scale = win_x / 1920.0;
-		else scale = win_y / 1080.0;
+		scale = win_y / 1080.0;
 
 		/////////////////////
 

@@ -33,11 +33,10 @@ private:
     RectangleShape tint;
     float x = 0, y = 0;
     float win_x = 0, win_y = 0, scale = 1, previous_scale = 1, transparency = 0, darkness = 0;
-    bool button_pressed = 0, arrow_pressed = 0, dev_button_active = 1, exit = 0, bg_fade = 1;
-    Vector2f mouse_pos = { 0,0 };	
+    bool button_pressed = 0, arrow_pressed = 0, dev_button_active = 1, exit = 0, bg_fade = 1, vsync_box = vsync, fullscreen_box = fullscreen;
+    Vector2f mouse_pos = { 0,0 };
     Vector2u prev_win = { 0, 0 };
     Sprite tip;
-    Color color;
     int save_framelimit = 120, save_volume = 100, save_music = 100;
 
     short resolution = resnum, framelimit = framelimnum, prev_resolution = resnum, prev_framelimit = framelimnum;
@@ -58,7 +57,7 @@ private:
         string* txt = nullptr;
         short int tipx = 0;
         float midscale = 1;
-        bool presssed = 0, disabled = 0;
+        bool presssed = 0, disabled = 0, released = 0;
 
         //initiate positions of sliders and assign them to their objective variables
 
@@ -69,9 +68,9 @@ private:
     struct CheckBox {
         short int x = 0, y = 0;
         string name = "";
-        bool& execute;
-        bool checked = 0, hover = 0, pressed = 0;
-    }checkboxes[2] = { {-100, -25, "Fullscreen", fullscreen}, {0, -25, "VSync    ", vsync} };
+        bool* execute;
+        bool checked = 0, hover = 0, pressed = 0, released = 0;
+    } checkboxes[2];
 
 
 
