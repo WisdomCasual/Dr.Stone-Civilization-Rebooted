@@ -253,7 +253,7 @@ NewMapState::NewMapState()
 	x = win_x / 2, y = win_y / 2;
 	if (win_x / 150.0 < win_y / 150.0) scale = win_x / 150.0;
 	else scale = win_y / 150.0;
-	if (win_x > 1280) scale *= 0.75;
+	if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
 
 	initial_textures("newmap");
 
@@ -306,7 +306,7 @@ void NewMapState::update()
 		if (win_x / 150.0 < win_y / 150.0) scale = win_x / 150.0;
 		else scale = win_y / 150.0;
 
-		if (win_x > 1280) scale *= 0.75;
+		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
 
 		///////////////////////////////////
 

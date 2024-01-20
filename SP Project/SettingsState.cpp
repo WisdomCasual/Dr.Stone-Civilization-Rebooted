@@ -104,10 +104,11 @@ void SettingsState::dev_button()
 	if (scale != previous_scale) {
 		previous_scale = scale;
 		devbutton.setScale(scale * 0.2, scale * 0.2);
-		devbutton.setPosition(x + 35 * scale, y + 35 * scale);
 		devtext.setCharacterSize(4.45 * scale);
 		devtext.setOrigin(devtext.getLocalBounds().width / 2.0, devtext.getLocalBounds().top + devtext.getLocalBounds().height / 2.0);
 	}
+
+	devbutton.setPosition(x + 35 * scale, y + 35 * scale);
 	devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
 	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
 	// detect for clicks
@@ -288,12 +289,13 @@ void SettingsState::render_slider(int target)
 void SettingsState::settings_intializer()
 {
 	//read current settings
-	if (window->getSize().x / 120.0 < window->getSize().y / 120.0) scale = window->getSize().x / 120.0;
-	else scale = window->getSize().y / 120.0;
-	x = window->getSize().x;
-	y = window->getSize().y / 2;
-	if (x > 1280) scale *= 0.75;
-	x /= 2;
+	prev_win = window->getSize();
+	win_x = window->getSize().x, win_y = window->getSize().y;
+	x = win_x / 2, y = win_y / 2;
+	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
+	else scale = win_y / 120.0;
+
+	if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
 
 	//initialize resolution data
 	for (int i = 0; i < resnum; i++) {
@@ -465,8 +467,6 @@ SettingsState::SettingsState(bool bg_fade)
 	checkmark.setTexture(*textures[0]);
 	checkmark.setTextureRect(checkMark);
 	checkmark.setOrigin(16 / 2, 15 / 2);
-
-	settings_intializer();
 }
 
 SettingsState::~SettingsState()
@@ -483,17 +483,7 @@ void SettingsState::update()
 	mouse_pos = window->mapPixelToCoords(Mouse::getPosition(*window));
 
 	if (prev_win != window->getSize()) {
-		// we always store the last window reslution in a variable and compare it with the current one
-		// if there is a difference we get the new resolution and update our scale accordingly
-		// also the variables for the window size the screen mid point
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
-		if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
-		else scale = win_y / 120.0;
-		if (win_x > 1280) scale *= 0.75;
-
-		/////// Do Not touch;
 
 		settings_intializer();
 
@@ -586,8 +576,6 @@ void SettingsState::update()
 
 void SettingsState::render()
 {
-
-	// drawing the whole settings 
 
 	window->draw(tint);
 	window->draw(panel);

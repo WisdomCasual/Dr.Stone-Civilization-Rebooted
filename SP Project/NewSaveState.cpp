@@ -245,7 +245,7 @@ NewSaveState::NewSaveState(int save_no)
 
 	win_x = window->getSize().x, win_y = window->getSize().y;
 	scale = min(win_x / 1920.0, win_y / 1080.0);
-	if (win_x > 1280) scale *= 0.75;
+	if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
 
 	// initializing the text box's text LoL
 
@@ -288,7 +288,7 @@ void NewSaveState::update()
 		if (win_x / 450.0 < win_y / 450.0) scale = win_x / 450.0;
 		else scale = win_y / 450.0;
 
-		if (win_x > 1280) scale *= 0.75;
+		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
 		////////////////////
 
 		tissue.setScale(scale * 0.4, scale * 0.4); 

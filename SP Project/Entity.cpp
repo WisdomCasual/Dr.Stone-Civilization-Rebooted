@@ -101,11 +101,11 @@ bool Entity::legal_tile(Vector2f movement, Vector2f curr_hitbox)
 	current_hitbox = (curr_hitbox.x == -1.f) ? entity_stats.animations[state][current_move].hitbox_rect: curr_hitbox;
 	current_hitbox *= entity_stats.scale_const;
 
-	int x_cords[2] = { floor((getRelativePos().x - current_hitbox.x / 2.f + movement.x) / 16.f)
-					, floor((getRelativePos().x + current_hitbox.x / 2.f + movement.x) / 16.f) },
+	int x_cords[2] = { (int)floor((getRelativePos().x - current_hitbox.x / 2.f + movement.x) / 16.f)
+					, (int)floor((getRelativePos().x + current_hitbox.x / 2.f + movement.x) / 16.f) },
 
-		y_cords[2] = { floor((getRelativePos().y - current_hitbox.y / 2.f + movement.y) / 16.f)
-					 , floor((getRelativePos().y + current_hitbox.y / 2.f + movement.y) / 16.f) };
+		y_cords[2] = { (int)floor((getRelativePos().y - current_hitbox.y / 2.f + movement.y) / 16.f)
+					 , (int)floor((getRelativePos().y + current_hitbox.y / 2.f + movement.y) / 16.f) };
 
 	Vector2i hitbox_checker;
 	for (int i = 0; i < 2; i++) {
