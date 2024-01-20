@@ -1,7 +1,6 @@
 #pragma once
 #include"State.h"
-
-#include "TradingState.h";
+#include"TradingState.h";
 #include"Global.h"
 using namespace globalvar;
 

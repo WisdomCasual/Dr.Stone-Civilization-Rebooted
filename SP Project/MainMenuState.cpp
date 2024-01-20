@@ -124,7 +124,7 @@ void MainMenuState::update()
 		if (win_x / 390.0 < win_y / 390.0) scale = win_x / 390.0;
 		else scale = win_y / 390.0;
 		
-		if (win_x > 1280) {
+		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) {
 			scale *= 0.8;
 			logo.setPosition(x, y - 135 * scale);
 			splash.setPosition(x + 60 * scale, y - 115 * scale);

@@ -11,6 +11,7 @@ void NotificationState::render_strings()
 	}
 
 }
+
 void NotificationState::update_velocity()
 {
 	float pos_y = notification_BG.getPosition().y;
@@ -38,6 +39,7 @@ void NotificationState::update_velocity()
 	}
 
 }
+
 NotificationState::NotificationState()
 {
 	scale = min(window->getSize().x / 350.0, window->getSize().y / 350.0);
@@ -54,7 +56,6 @@ NotificationState::~NotificationState()
 {
 }
 
-
 void NotificationState::pollevent()
 {
 	prev(prev(states->end()))->second->pollevent();
@@ -66,10 +67,13 @@ void NotificationState::update()
 		prev_win = window->getSize();
 		y_pos /= pos_scale;
 		win_x = window->getSize().x, win_y = window->getSize().y;
+
 		if (win_x / 350.0 < win_y / 350.0) scale = win_x / 350.0;
 		else scale = win_y / 350.0;
 		pos_scale = scale;
-		if (win_x > 1280) scale *= 0.75;
+
+		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
+
 		notification_BG.setScale(scale*.8, scale*.8);
 		x_pos = win_x - 10 * pos_scale;
 		y_pos *= pos_scale;
