@@ -1478,8 +1478,8 @@ void GameState::DayLightCycle()
 {
 	int count = 0;
 	const int viewDist = 13;
-	for (auto i = light_sources.lower_bound(-map_y - (viewDist * 10 * scale)); i != light_sources.end() && i->first <= -map_y + win_y / scale + (viewDist * 10 * scale); i++) {
-		if (i->second.position.x > -map_x - (viewDist * 10 * scale) && i->second.position.x < -map_x + win_x / scale + (viewDist * 10 * scale)) {
+	for (auto i = light_sources.lower_bound(-map_y - (viewDist * 16 * scale)); i != light_sources.end() && i->first <= -map_y + win_y / scale + (viewDist * 16 * scale); i++) {
+		if (i->second.position.x > -map_x - (viewDist * 16 * scale) && i->second.position.x < -map_x + win_x / scale + (viewDist * 16 * scale)) {
 			if(i->second.day_light)
 				shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(light_level, light_level, light_level));
 			else
