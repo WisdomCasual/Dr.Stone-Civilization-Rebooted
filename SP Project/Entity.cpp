@@ -10,10 +10,6 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 	despawn_timer = game_time;
 	tile_props = tile_props_ptr;
 
-	win_x = window->getSize().x, win_y = window->getSize().y;
-	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
-	else scale = win_y / 304.5;
-	//cout << "here1\n";
 	if (!has_legs) {
 		entity_sprite.setTexture(*entity_stats.textures[state]);
 		entity_sprite.setTextureRect(IntRect(id * 16, 0, 16, 16));

@@ -532,6 +532,7 @@ void SettingsState::update()
 			prev_resolution = resolution;
 			game.windowbounds = resolutions[resolution];
 			game.update_window();
+			game.save();
 			VideoMode screen = VideoMode::getDesktopMode();
 			Vector2i windowPos = { int(screen.width / 2 - game.windowbounds.width / 2), int(screen.height / 2 - game.windowbounds.height / 2) };
 			window->setPosition(windowPos);
@@ -612,8 +613,9 @@ void SettingsState::pollevent()
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
 			case Keyboard::F11:
-				fullscreen = !fullscreen; 
-				checkboxes[0].checked = fullscreen;
+				fullscreen = !fullscreen;
+				fullscreen_box = fullscreen;
+				checkboxes[1].checked = fullscreen_box;
 				game.update_window();
 				break;
 			}

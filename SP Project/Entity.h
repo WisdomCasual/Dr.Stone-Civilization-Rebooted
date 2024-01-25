@@ -192,7 +192,7 @@ public:
 	Entity& player_entity ;
 	Sprite entity_sprite;
 	render_tile**& static_map;
-	float delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = 1, win_x = 0, win_y = 0;
+	float delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = -1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
 	float& x_offset, & y_offset;
 	short current_move = 3, current_frame = 0, prev_state = -1;
@@ -252,7 +252,7 @@ public:
 	virtual void damaged() {};
 	virtual void setID(short) {};
 	virtual void setVisArray(short***, bool*, short new_find_size_x = 50, short new_find_size_y = 50) {};
-	virtual void update() = 0;
+	virtual void update(float scale) = 0;
 	virtual void pollevent();
 	virtual void set_type(short) {};
 	virtual void set_dialogue(dialogue*, short) {};

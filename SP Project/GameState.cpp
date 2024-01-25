@@ -1056,21 +1056,21 @@ void GameState::initial_game(string current_map, Vector2f player_pos)
 
 void GameState::cam_movement()
 {
-	Vector2f camera_movement = { ((player_entity->getRelativePos().x + map_x - win_x / scale / 2.f) * 1.3f) * dt / (win_x / win_y),
-								 ((player_entity->getRelativePos().y + map_y - win_y / scale / 2.f) * 1.3f) * dt };
-	if (size_x * 16 * scale > win_x)
+	Vector2f camera_movement = { ((player_entity->getRelativePos().x + map_x - win_x / (scale * z_scale) / 2.f) * 1.3f) * dt / (win_x / win_y),
+								 ((player_entity->getRelativePos().y + map_y - win_y / (scale * z_scale) / 2.f) * 1.3f) * dt };
+	if (size_x * 16 * (scale * z_scale) > win_x)
 		move_cam(camera_movement.x, 0);
-	if (size_y * 16 * scale > win_y)
+	if (size_y * 16 * (scale * z_scale) > win_y)
 		move_cam(0, camera_movement.y);
 }
 
 void GameState::move_cam(float x_movement, float y_movement)
 {
-	if (map_x - x_movement <= 0 && map_x - x_movement >= -(size_x * 16 - win_x / scale)) {
+	if (map_x - x_movement <= 0 && map_x - x_movement >= -(size_x * 16 - win_x / (scale * z_scale))) {
 		map_x -= x_movement;
 		x_offset = -map_x / 16;
 	}
-	if (map_y - y_movement <= 0 && map_y - y_movement >= -(size_y * 16 - win_y / scale)) {
+	if (map_y - y_movement <= 0 && map_y - y_movement >= -(size_y * 16 - win_y / (scale * z_scale))) {
 		map_y -= y_movement;
 		y_offset = -map_y / 16;
 	}
@@ -1078,26 +1078,26 @@ void GameState::move_cam(float x_movement, float y_movement)
 
 void GameState::center_cam(Vector2f player_pos)
 {
-	map_x = -(player_pos.x - win_x / 2 / scale);
-	map_y = -(player_pos.y - win_y / 2 / scale);
+	map_x = -(player_pos.x - win_x / 2 / (scale * z_scale));
+	map_y = -(player_pos.y - win_y / 2 / (scale * z_scale));
 
-	if (size_x * 16 * scale > win_x) {
+	if (size_x * 16 * (scale * z_scale) > win_x) {
 		if (-map_x < 0)
 			map_x = 0;
-		else if (-map_x > size_x * 16 - win_x / scale)
-			map_x = -(size_x * 16 - win_x / scale);
+		else if (-map_x > size_x * 16 - win_x / (scale * z_scale))
+			map_x = -(size_x * 16 - win_x / (scale * z_scale));
 	}
 	else
-		map_x = x/ scale - size_x * 8;
+		map_x = x/ (scale * z_scale) - size_x * 8;
 
-	if (size_y * 16 * scale > win_y) {
+	if (size_y * 16 * (scale * z_scale) > win_y) {
 		if (-map_y < 0)
 			map_y = 0;
-		else if (-map_y > size_y * 16 - win_y / scale)
-			map_y = -(size_y * 16 - win_y / scale);
+		else if (-map_y > size_y * 16 - win_y / (scale * z_scale))
+			map_y = -(size_y * 16 - win_y / (scale * z_scale));
 	}
 	else
-		map_y = y / scale - size_y * 8;
+		map_y = y / (scale * z_scale) - size_y * 8;
 
 	x_offset = -map_x / 16, y_offset = -map_y / 16;
 
@@ -1111,7 +1111,6 @@ void GameState::maps_travel()
 			save();
 			// maybe add time zone changes
 			initial_game(travel_map, travel_location);
-			cout << "we got here captain\n";
 			travel_map.clear();
 			travel_location = { -1, -1 };
 		}
@@ -1202,15 +1201,15 @@ void GameState::bigbang(Vector2i target_tile, bool destroy, bool ToEternityAndBy
 
 void GameState::render_static_map()
 {
-	tile.setScale(scale, scale);
-	for (int i = (x_offset > 0) ? x_offset : 0; i < (win_x + ((x_offset + 1) * 16 * scale)) / (16 * scale) && i < size_x; i++)
-		for (int j = (y_offset > 0) ? y_offset : 0; j < (win_y + ((y_offset + 1) * 16 * scale)) / (16 * scale) && j < size_y; j++) {
+	tile.setScale((scale * z_scale), (scale * z_scale));
+	for (int i = (x_offset > 0) ? x_offset : 0; i < (win_x + ((x_offset + 1) * 16 * (scale * z_scale))) / (16 * (scale * z_scale)) && i < size_x; i++)
+		for (int j = (y_offset > 0) ? y_offset : 0; j < (win_y + ((y_offset + 1) * 16 * (scale * z_scale))) / (16 * (scale * z_scale)) && j < size_y; j++) {
 			auto tile_end = static_map[i][j].layers + static_map[i][j].size - 1;
 
 			for (auto map_tile = static_map[i][j].layers; map_tile != tile_end; map_tile++) {
 				tile.setTexture(*tile_sheets[map_tile->z]);
 				tile.setTextureRect(IntRect(map_tile->x * 16, map_tile->y * 16, 16, 16));
-				tile.setPosition(round(map_x * scale) + (16 * scale * i), round(map_y * scale) + (16 * scale * j));
+				tile.setPosition(round(map_x * (scale * z_scale)) + (16 * (scale * z_scale) * i), round(map_y * (scale * z_scale)) + (16 * (scale * z_scale) * j));
 				window->draw(tile, &shader);
 			}
 			if (!static_map[i][j].destruction_time) {
@@ -1218,7 +1217,7 @@ void GameState::render_static_map()
 					update_minimap_tile(Vector2i(i * 2, j * 2), *tile_end);
 				tile.setTexture(*tile_sheets[tile_end->z]);
 				tile.setTextureRect(IntRect(tile_end->x * 16, tile_end->y * 16, 16, 16));
-				tile.setPosition(round(map_x * scale) + (16 * scale * i), round(map_y * scale) + (16 * scale * j));
+				tile.setPosition(round(map_x * (scale * z_scale)) + (16 * (scale * z_scale) * i), round(map_y * (scale * z_scale)) + (16 * (scale * z_scale) * j));
 				window->draw(tile, &shader);
 			}
 			else if (tile_props[tile_end->z].properties[tile_end->x][tile_end->y].props & 32 && game_time - static_map[i][j].destruction_time > 300 && game_time - static_map[i][j].time > 5) {
@@ -1238,9 +1237,9 @@ void GameState::render_entities()
 	for (int i = 0; i < enemies.curr_idx; i++) {
 		if (enemies.entities[i] != nullptr &&
 			enemies.entities[i]->pos.y >= -map_y - entity_render_distance &&
-			enemies.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			enemies.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / (scale * z_scale) &&
 			enemies.entities[i]->pos.x >= -map_x - entity_render_distance &&
-			enemies.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			enemies.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)) {
 			if (enemies.entities[i]->despawn)
 				continue;
 			dynamic_rendering.insert({ enemies.entities[i]->getRelativePos().y, {-1, enemies.entities[i]} });
@@ -1250,9 +1249,9 @@ void GameState::render_entities()
 	for (int i = 0; i < items.curr_idx; i++) {
 		if (items.entities[i] != nullptr &&
 			items.entities[i]->pos.y >= -map_y - entity_render_distance &&
-			items.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			items.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / (scale * z_scale) &&
 			items.entities[i]->pos.x >= -map_x - entity_render_distance &&
-			items.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			items.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)) {
 			if (items.entities[i]->despawn)
 				continue;
 			dynamic_rendering.insert({ items.entities[i]->getRelativePos().y, {-1, items.entities[i]} });
@@ -1262,9 +1261,9 @@ void GameState::render_entities()
 	for (int i = 0; i < passive.curr_idx; i++) {
 		if (passive.entities[i] != nullptr &&
 			passive.entities[i]->pos.y >= -map_y - entity_render_distance &&
-			passive.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			passive.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / (scale * z_scale) &&
 			passive.entities[i]->pos.x >= -map_x - entity_render_distance &&
-			passive.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			passive.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)) {
 			if (passive.entities[i]->despawn)
 				continue;
 			dynamic_rendering.insert({ passive.entities[i]->pos.y, {-1, passive.entities[i]} });
@@ -1274,9 +1273,9 @@ void GameState::render_entities()
 	for (int i = 0; i < NPCs.curr_idx; i++) {
 		if (NPCs.entities[i] != nullptr &&
 			NPCs.entities[i]->pos.y >= -map_y - entity_render_distance &&
-			NPCs.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			NPCs.entities[i]->pos.y <= -map_y + entity_render_distance + win_y / (scale * z_scale) &&
 			NPCs.entities[i]->pos.x >= -map_x - entity_render_distance &&
-			NPCs.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			NPCs.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)) {
 			if (NPCs.entities[i]->despawn)
 				continue;
 			dynamic_rendering.insert({ NPCs.entities[i]->pos.y, {-1, NPCs.entities[i]} });
@@ -1286,9 +1285,9 @@ void GameState::render_entities()
 	//render effects
 	for (int i = 0; i < effects.curr_idx; i++) {
 		if (effects.animations[i]->pos.y >= -map_y - entity_render_distance &&
-			effects.animations[i]->pos.y <= -map_y + entity_render_distance + win_y / scale &&
+			effects.animations[i]->pos.y <= -map_y + entity_render_distance + win_y / (scale * z_scale) &&
 			effects.animations[i]->pos.x >= -map_x - entity_render_distance &&
-			effects.animations[i]->pos.x <= -map_x + entity_render_distance + win_x / scale) {
+			effects.animations[i]->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)) {
 			if (effects.animations[i]->despawn)
 				continue;
 			dynamic_rendering.insert({ (float)effects.animations[i]->pos.y, {-1, nullptr, effects.animations[i]} });
@@ -1298,12 +1297,12 @@ void GameState::render_entities()
 	//int debug_ctr = 0;
 	//cout << "total entities/objects: " << dynamic_rendering.size() << '\n';
 	for (auto i = dynamic_rendering.lower_bound(-map_y - min(entity_render_distance, object_render_distance) - 32.f);
-		i != dynamic_rendering.end() && i->first <= -map_y + max(short(obj_up_offset + object_render_distance), entity_render_distance) + 32.f + win_y / scale; ) {
+		i != dynamic_rendering.end() && i->first <= -map_y + max(short(obj_up_offset + object_render_distance), entity_render_distance) + 32.f + win_y / (scale * z_scale); ) {
 		
 		if (i->second.tile != -1) {
 			if (dynamic_map.at[i->second.tile].at[0].position.x*16 < -map_x - obj_right_offest - object_render_distance ||
-				dynamic_map.at[i->second.tile].at[0].position.x*16 > -map_x + obj_left_offset + object_render_distance + win_x / scale ||
-				i->first < -map_y - object_render_distance - obj_down_offset || i->first > -map_y + object_render_distance + obj_up_offset + win_y/scale) {
+				dynamic_map.at[i->second.tile].at[0].position.x*16 > -map_x + obj_left_offset + object_render_distance + win_x / (scale * z_scale) ||
+				i->first < -map_y - object_render_distance - obj_down_offset || i->first > -map_y + object_render_distance + obj_up_offset + win_y/(scale * z_scale)) {
 				i++;
 				continue;
 			}
@@ -1312,7 +1311,7 @@ void GameState::render_entities()
 				for (int j = 0; j < dynamic_map.at[i->second.tile].curr_idx; j++) {
 					tile.setTexture(*tile_sheets[dynamic_map.at[i->second.tile].at[j].tile.z]);
 					tile.setTextureRect(IntRect(dynamic_map.at[i->second.tile].at[j].tile.x * 16, dynamic_map.at[i->second.tile].at[j].tile.y * 16, 16, 16));
-					tile.setPosition(round(map_x * scale) + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.x), round(map_y * scale) + (16 * scale * dynamic_map.at[i->second.tile].at[j].position.y));
+					tile.setPosition(round(map_x * (scale * z_scale)) + (16 * (scale * z_scale) * dynamic_map.at[i->second.tile].at[j].position.x), round(map_y * (scale * z_scale)) + (16 * (scale * z_scale) * dynamic_map.at[i->second.tile].at[j].position.y));
 					window->draw(tile, &shader);
 					if (dynamic_update_minimap)
 						update_minimap_tile(Vector2i(dynamic_map.at[i->second.tile].at[j].position.x * 2, dynamic_map.at[i->second.tile].at[j].position.y * 2), dynamic_map.at[i->second.tile].at[j].tile);
@@ -1403,7 +1402,7 @@ void GameState::entity_spawning()
 {
 	if (DoEntitySpawning) {
 		//cout << "not my lucky day\n";
-		screen_length = win_x / (16 * scale), screen_height = win_y / (16 * scale);
+		screen_length = win_x / (16 * (scale * z_scale)), screen_height = win_y / (16 * (scale * z_scale));
 		short spawn_rect_x = screen_length + spawn_dist, spawn_rect_y = screen_height + spawn_dist;
 		spawn_total = generate_random(0, (spawn_rect_x * 2 + spawn_rect_y * 2)-1);
 		if (spawn_total > 2 * spawn_rect_x + spawn_rect_y) {
@@ -1435,11 +1434,11 @@ void GameState::entity_spawning()
 		if (valid_spawn) {
 			if (light_level <= 0.4) {
 				enemies.add(enemy_spawn(generate_random(0, number_of_enemies-1)), {16.f * spawn_x, 16.f * spawn_y});
-				enemies.entities[enemies.curr_idx - 1]->update();
+				enemies.entities[enemies.curr_idx - 1]->update((scale * z_scale));
 			}
 			else {
 				passive.add(passive_spawn(generate_random(0, number_of_passives-1)), { 16.f * spawn_x, 16.f * spawn_y });
-				passive.entities[passive.curr_idx - 1]->update();
+				passive.entities[passive.curr_idx - 1]->update((scale * z_scale));
 
 			}
 		}
@@ -1449,9 +1448,9 @@ void GameState::entity_spawning()
 bool GameState::entity_in_range(Vector2f cords, short offset)
 {
 	return(cords.y >= -map_y - entity_render_distance &&
-		cords.y <= -map_y + entity_render_distance + win_y / scale &&
+		cords.y <= -map_y + entity_render_distance + win_y / (scale * z_scale) &&
 		cords.x >= -map_x - entity_render_distance &&
-		cords.x <= -map_x + entity_render_distance + win_x / scale);
+		cords.x <= -map_x + entity_render_distance + win_x / (scale * z_scale));
 }
 
 void GameState::block_interactions_list(Vector2i interaction_tile)
@@ -1478,14 +1477,16 @@ void GameState::DayLightCycle()
 {
 	int count = 0;
 	const int viewDist = 13;
-	for (auto i = light_sources.lower_bound(-map_y - (viewDist * 16 * scale)); i != light_sources.end() && i->first <= -map_y + win_y / scale + (viewDist * 16 * scale); i++) {
-		if (i->second.position.x > -map_x - (viewDist * 16 * scale) && i->second.position.x < -map_x + win_x / scale + (viewDist * 16 * scale)) {
+
+	shader.setUniform("scale", scale * z_scale);
+	for (auto i = light_sources.lower_bound(-map_y - (viewDist * 16 * (scale * z_scale))); i != light_sources.end() && i->first <= -map_y + win_y / (scale * z_scale) + (viewDist * 16 * (scale * z_scale)); i++) {
+		if (i->second.position.x > -map_x - (viewDist * 16 * (scale * z_scale)) && i->second.position.x < -map_x + win_x / (scale * z_scale) + (viewDist * 16 * (scale * z_scale))) {
 			if(i->second.day_light)
 				shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(light_level, light_level, light_level));
 			else
 				shader.setUniform("lights[" + to_string(count) + "].color", i->second.color);
-			shader.setUniform("lights[" + to_string(count) + "].position", (i->second.position + Vector2f(map_x, map_y)) * scale);
-			shader.setUniform("lights[" + to_string(count) + "].intensity", i->second.intensity);
+			shader.setUniform("lights[" + to_string(count) + "].position", (i->second.position + Vector2f(map_x, map_y)) * (scale * z_scale));
+			shader.setUniform("lights[" + to_string(count) + "].intensity", i->second.intensity * (scale * z_scale));
 			count++;
 		}
 	}
@@ -1498,9 +1499,9 @@ void GameState::DayLightCycle()
 
 		torch_intensity += torch_delta * dt;
 
-		shader.setUniform("lights[" + to_string(count) + "].position", (player_entity->getRelativePos() + Vector2f(map_x, map_y)) * scale);
+		shader.setUniform("lights[" + to_string(count) + "].position", (player_entity->getRelativePos() + Vector2f(map_x, map_y)) * (scale * z_scale));
 		shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(0.95, 0.92, 0.7));
-		shader.setUniform("lights[" + to_string(count) + "].intensity", torch_intensity);
+		shader.setUniform("lights[" + to_string(count) + "].intensity", torch_intensity * (scale * z_scale));
 		count++;
 	}
 
@@ -1518,8 +1519,6 @@ void GameState::DayLightCycle()
 	else
 		shader.setUniform("ambient_light", Glsl::Vec4(constant_light_level, constant_light_level, constant_light_level + 0.1, 1.0));
 	shader.setUniform("lightsCount", count);
-
-	//cout << light_level << '\n';
 }
 
 void GameState::initial_entities()
@@ -1774,7 +1773,7 @@ void GameState::update()
 	for (int i = 0; i < enemies.curr_idx; i++) {
 		if (!enemies.entities[i]->despawn) {
 			if (enemies.entities[i]->action_state != 0 || entity_in_range(enemies.entities[i]->pos, entity_update_distance))
-				enemies.entities[i]->update();
+				enemies.entities[i]->update((scale * z_scale));
 			if(enemies.entities[i]->got_hit)
 				effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 		}
@@ -1792,7 +1791,7 @@ void GameState::update()
 	for (int i = 0; i < passive.curr_idx; i++) {
 		if (!passive.entities[i]->despawn) {
 			if (passive.entities[i]->action_state != 0 || entity_in_range(passive.entities[i]->pos, entity_update_distance))
-				passive.entities[i]->update();
+				passive.entities[i]->update((scale * z_scale));
 			if (passive.entities[i]->got_hit)
 				effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
 		}
@@ -1810,10 +1809,10 @@ void GameState::update()
 	for (int i = 0; i < NPCs.curr_idx; i++) {
 		if (!NPCs.entities[i]->despawn) {
 			if (NPCs.entities[i]->npc_type == 3 && game_time - NPCs.entities[i]->despawn_timer > NPCs.entities[i]->time_to_despawn / 3.f)
-				NPCs.entities[i]->update();
+				NPCs.entities[i]->update((scale * z_scale));
 			npc_id_to_idx[NPCs.entities[i]->id] = i;
 			if (NPCs.entities[i]->action_state != 0 || entity_in_range(NPCs.entities[i]->pos, entity_update_distance))
-				NPCs.entities[i]->update();
+				NPCs.entities[i]->update((scale * z_scale));
 		}
 		if(NPCs.entities[i]->despawn) {
 			NPCs.rem_ove(i);
@@ -1830,7 +1829,7 @@ void GameState::update()
 	}
 	if (!player_entity->despawn) {
 		no_update = 0;
-		player_entity->update();
+		player_entity->update((scale * z_scale));
 	}
 	else {
 		if (!no_update) {
@@ -1876,7 +1875,7 @@ void GameState::update()
 			i--;
 		}
 		else
-			effects.animations[i]->update(scale);
+			effects.animations[i]->update((scale * z_scale));
 	}
 
 	player_entity->interact = 0;
@@ -1900,7 +1899,7 @@ void GameState::update()
 		}
 		else{
 			if(entity_in_range(items.entities[i]->pos, entity_update_distance))
-				items.entities[i]->update();
+				items.entities[i]->update((scale * z_scale));
 		}
 		
 	}

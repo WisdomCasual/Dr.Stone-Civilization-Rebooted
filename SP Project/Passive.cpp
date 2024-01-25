@@ -154,18 +154,15 @@ void Passive::stateMachine()
 	}
 }
 
-void Passive::update()
+void Passive::update(float scale)
 {
 	if (game_time - despawn_timer > time_to_despawn && !persistant) {
 		despawn = 1;
 		return;
 	}
 	despawn_timer = game_time;
-	if (prev_win != window->getSize()) {
-		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
-		else scale = win_y / 304.5;
+	if (this->scale != scale) {
+		this->scale = scale;
 		////////////////
 		entity_sprite.setScale(scale * entity_stats.scale_const, scale * entity_stats.scale_const);
 	}

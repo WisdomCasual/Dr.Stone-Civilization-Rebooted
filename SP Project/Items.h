@@ -13,7 +13,7 @@ public:
      ~Items();
     void move();
     void intersect();
-    void update();
+    void update(float scale);
     void pollevent();
 };
 
