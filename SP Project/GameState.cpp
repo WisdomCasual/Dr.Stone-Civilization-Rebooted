@@ -1739,6 +1739,9 @@ void GameState::update()
 		shader.setUniform("ratio", win_x / win_y);
 	}
 
+	if (z_scale > 0.6)
+		z_scale -= 0.4f * dt;
+
 	if (fps_active)
 		fps_text.setString(fps_text.getString() + "\tCoordinates " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
 
