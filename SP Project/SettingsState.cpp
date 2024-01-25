@@ -212,8 +212,10 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 			sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 3.f));
 		}
 		else {
-			if (sliders[target].released)
+			if (sliders[target].released) {
 				sliders[target].released = 0;
+				save();
+			}
 		}
 	}
 }
@@ -374,8 +376,10 @@ void SettingsState::update_checkbox(int i)
 				settings_intializer();
 			}
 			else {
-				if (checkboxes[i].released)
+				if (checkboxes[i].released) {
 					checkboxes[i].released = 0;
+					save();
+				}
 			}
 		}
 		checkboxes[i].hover = 1;
@@ -410,10 +414,23 @@ void SettingsState::render_checkbox(int i)
 }
 
 void SettingsState::save() {
+	ifstream ifs("config/window.ini");
+	int width, height;
+	if(resolution == resnum) {
+		if (ifs.is_open()) {
+			string s;
+			getline(ifs, s);
+			ifs >> width >> height;
+			ifs.close();
+		}
+	}
+	else
+		width = resolutions[resolution].width, height = resolutions[resolution].height;
+
 	ofstream ofs("config/window.ini");
 	if (ofs.is_open()) {
 		ofs << game.title << '\n';
-		ofs << resolutions[resolution].width << ' ' << resolutions[resolution].height << '\n';
+		ofs << width << ' ' << height << '\n';
 		ofs << game.framelimit << '\n';
 		ofs << fullscreen << '\n';
 		ofs << vsync << '\n';
@@ -526,12 +543,10 @@ void SettingsState::update()
 		else
 			window->setFramerateLimit(game.framelimit);
 		window->setVerticalSyncEnabled(vsync);
-		save();
 	}
 	if (fullscreen_box != fullscreen) {
 		fullscreen = fullscreen_box;
 		game.update_window();
-		save();
 	}
 
 	if (!Mouse::isButtonPressed(Mouse::Left)) {
@@ -539,7 +554,6 @@ void SettingsState::update()
 			prev_framelimit = framelimit;
 			game.framelimit = framelimit_values[framelimit];
 			window->setFramerateLimit(game.framelimit);
-			save();
 		}
 		if (resolution != prev_resolution) {
 			prev_resolution = resolution;
@@ -548,7 +562,6 @@ void SettingsState::update()
 			VideoMode screen = VideoMode::getDesktopMode();
 			Vector2i windowPos = { int(screen.width / 2 - game.windowbounds.width / 2), int(screen.height / 2 - game.windowbounds.height / 2) };
 			window->setPosition(windowPos);
-			save();
 		}
 	}
 

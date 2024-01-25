@@ -27,6 +27,9 @@ bool GameState::black_out(float fade_speed)
 
 void GameState::save()
 {
+
+
+
 	ofstream ofs("Saves/Save " + to_string(save_num + 1) + "/Save.dat", ofstream::out, ofstream::trunc);
 
 	if (ofs.is_open()) {
@@ -1741,7 +1744,7 @@ void GameState::update()
 
 	cam_movement();
 
-	//entity spawning                *******FIX RANDOM DAMAGE WITH ENEMY SPAWNING*****
+	//entity spawning
 	spawn_cd += dt;
 	if (spawn_cd >= def_spawn_cd) {
 		spawn_cd = 0;
