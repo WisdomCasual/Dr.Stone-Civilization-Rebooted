@@ -39,8 +39,8 @@ void State::initial_tile_sheets(string file)
 			temp_textures[num] =  new Texture;
 			temp_textures[num]->loadFromFile("textures/" + file + "/" + tex + ".png");
 
-			x_size = ceil(temp_textures[num]->getSize().x / 16.0);
-			y_size = ceil(temp_textures[num]->getSize().y / 16.0);
+			x_size = (int)ceil(temp_textures[num]->getSize().x / 16.0);
+			y_size = (int)ceil(temp_textures[num]->getSize().y / 16.0);
 
 			tile_props[num].x_size = x_size;
 			tile_props[num].y_size = y_size;
@@ -104,7 +104,7 @@ Vector2f State::delta_movement()
 	if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
 		velocity.y++;
 	if (0 != velocity.x && 0 != velocity.y)
-		velocity.x *= 0.707, velocity.y *= 0.707;
+		velocity.x *= 0.707f, velocity.y *= 0.707f;
 	return velocity;
 }
 

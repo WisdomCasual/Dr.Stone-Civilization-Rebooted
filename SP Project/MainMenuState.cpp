@@ -8,10 +8,10 @@ void MainMenuState::fade_in()
 			transparency = 255;
 		else
 			transparency += 800 * dt;
-		buttontex.setColor(Color(255, 255, 255, transparency));
-		splash.setFillColor(Color(splash.getFillColor().r, splash.getFillColor().g, splash.getFillColor().b, transparency));
-		splash.setOutlineColor(Color(splash.getOutlineColor().r, splash.getOutlineColor().g, splash.getOutlineColor().b, transparency));
-		logo.setColor(Color(255, 255, 255, transparency));
+		buttontex.setColor(Color(255, 255, 255, (int)transparency));
+		splash.setFillColor(Color(splash.getFillColor().r, splash.getFillColor().g, splash.getFillColor().b, (int)transparency));
+		splash.setOutlineColor(Color(splash.getOutlineColor().r, splash.getOutlineColor().g, splash.getOutlineColor().b, (int)transparency));
+		logo.setColor(Color(255, 255, 255, (int)transparency));
 	}
 }
 
@@ -23,10 +23,10 @@ bool MainMenuState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		buttontex.setColor(Color(255, 255, 255, transparency));
-		splash.setFillColor(Color(splash.getFillColor().r, splash.getFillColor().g, splash.getFillColor().b, transparency));
-		splash.setOutlineColor(Color(splash.getOutlineColor().r, splash.getOutlineColor().g, splash.getOutlineColor().b, transparency));
-		logo.setColor(Color(255, 255, 255, transparency));
+		buttontex.setColor(Color(255, 255, 255, (int)transparency));
+		splash.setFillColor(Color(splash.getFillColor().r, splash.getFillColor().g, splash.getFillColor().b, (int)transparency));
+		splash.setOutlineColor(Color(splash.getOutlineColor().r, splash.getOutlineColor().g, splash.getOutlineColor().b, (int)transparency));
+		logo.setColor(Color(255, 255, 255, (int)transparency));
 
 		return false;
 	}
@@ -64,16 +64,16 @@ void MainMenuState::update_buttons()
 void MainMenuState::render_buttons()
 {
 	buttontex.setScale(scale, scale);
-	text.setCharacterSize(25.69*scale);
+	text.setCharacterSize(int(25.69f * scale));
 	for (int i = 0; i < 3; i++) {
 		buttontex.setTextureRect(IntRect(0, buttons[i].pressed * 49, 190, 49));
 		buttontex.setPosition(x+buttons[i].x*scale, y+buttons[i].y * scale);
 		text.setString(buttons[i].txt);
 		FloatRect bounds=text.getLocalBounds();
-		text.setOrigin(bounds.width / 2.0, bounds.top+bounds.height / 2.0);
+		text.setOrigin(bounds.width / 2.f, bounds.top+bounds.height / 2.f);
 		text.setPosition(x + buttons[i].x * scale, (buttons[i].pressed) ? y + buttons[i].y * scale + 2 * scale : y + buttons[i].y * scale - 2 * scale);
-		if (buttons[i].hover)text.setFillColor(Color(255, 255, 255, transparency));
-		else text.setFillColor(Color(226,211,195, transparency));
+		if (buttons[i].hover)text.setFillColor(Color(255, 255, 255, (int)transparency));
+		else text.setFillColor(Color(226,211,195, (int)transparency));
 		window->draw(buttontex);
 		window->draw(text);
 	}
@@ -95,8 +95,8 @@ MainMenuState::MainMenuState()
 	splash.setFont(font);
 	splash.setString("Civilization Rebooted");
 	splash.setRotation(345.f);
-	splash.setFillColor(Color(average_color.x, average_color.y, average_color.z));
-	splash.setOutlineColor(Color(average_outline_color.x, average_outline_color.y, average_outline_color.z));
+	splash.setFillColor(Color((Uint8)average_color.x, (Uint8)average_color.y, (Uint8)average_color.z));
+	splash.setOutlineColor(Color((Uint8)average_outline_color.x, (Uint8)average_outline_color.y, (Uint8)average_outline_color.z));
 
 	buttons[0].txt = "Play";
 	buttons[0].execute = &play;
@@ -119,23 +119,23 @@ void MainMenuState::update()
 {
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		float win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
-		if (win_x / 390.0 < win_y / 390.0) scale = win_x / 390.0;
-		else scale = win_y / 390.0;
+		float win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+		x = win_x / 2.f, y = win_y / 2.f;
+		if (win_x / 390.f < win_y / 390.f) scale = win_x / 390.f;
+		else scale = win_y / 390.f;
 		
 		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) {
-			scale *= 0.8;
-			logo.setPosition(x, y - 135 * scale);
-			splash.setPosition(x + 60 * scale, y - 115 * scale);
+			scale *= 0.8f;
+			logo.setPosition((float)x, y - 135 * scale);
+			splash.setPosition((float)x + 60 * scale, y - 115 * scale);
 		}
 		else {
-			logo.setPosition(x, y - 110 * scale);
+			logo.setPosition((float)x, y - 110.f * scale);
 			splash.setPosition(x + 60 * scale, y - 90 * scale);
 		}
 
-		logo.setScale(scale * .8f, scale * .8f);
-		splash.setCharacterSize(40 * scale);
+		logo.setScale(scale * 0.8f, scale * 0.8f);
+		splash.setCharacterSize(int(40.f * scale));
 		splash.setOutlineThickness(1.5f * scale);
 	}
 

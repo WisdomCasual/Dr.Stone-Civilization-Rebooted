@@ -1,9 +1,8 @@
 #pragma once
-#include "State.h"
-
+#include"State.h"
 #include"Global.h"
-using namespace globalvar;
 
+using namespace globalvar;
 using namespace std;
 using namespace sf;
 

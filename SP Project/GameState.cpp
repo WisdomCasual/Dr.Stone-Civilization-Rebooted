@@ -8,7 +8,7 @@ void GameState::black_in(float fade_speed)
 			blackining = 0;
 		else
 			blackining -= fade_speed * dt;
-		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		blackscreen.setFillColor(Color(0, 0, 0, (int)blackining));
 	}
 }
 
@@ -19,7 +19,7 @@ bool GameState::black_out(float fade_speed)
 			blackining = 255;
 		else
 			blackining += fade_speed * dt;
-		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		blackscreen.setFillColor(Color(0, 0, 0, (int)blackining));
 		return false;
 	}
 	return true;
@@ -265,7 +265,7 @@ void GameState::set_textures()
 	waypoint_pointer.setFillColor(Color(0, 0, 255, 255));
 	quest_pointer.setFillColor(Color(255, 200, 0, 255));
 
-	health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
+	health_indicator.setTextureRect(IntRect(0, int(ceil(player_entity->health * 10 / player_stats.max_health) * 100), 590, 100));
 	health_indicator.setOrigin(0, health_indicator.getLocalBounds().height / 2);
 	health_indicator.setTexture(*textures[5]);
 
@@ -336,17 +336,17 @@ void GameState::load_initial_map(string map_name)
 						else intensity = 0.5f;
 						if (tle.y == 16) {
 							if (tle.x < 3)
-								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), intensity) });
+								light_sources.insert({ j * 16.f + 8.f, light(Vector2f(i * 16.f + 8.f, j * 16.f + 8.f), Vector3f(1.f, 1.f, 1.f), intensity) });
 							else if (tle.x < 6)
-								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 0.5), intensity) });
+								light_sources.insert({ j * 16.f + 8.f, light(Vector2f(i * 16.f + 8.f, j * 16.f + 8.f), Vector3f(1.f, 1.f, 0.5f), intensity) });
 							else if (tle.x < 9)
-								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 0.5, 0.5), intensity) });
+								light_sources.insert({ j * 16.f + 8.f, light(Vector2f(i * 16.f + 8.f, j * 16.f + 8.f), Vector3f(1.f, 0.5f, 0.5f), intensity) });
 							else if (tle.x < 12)
-								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 0.5, 1), intensity) });
+								light_sources.insert({ j * 16.f + 8.f, light(Vector2f(i * 16.f + 8.f, j * 16.f + 8.f), Vector3f(0.5f, 0.5f, 1.f), intensity) });
 							else if (tle.x < 15)
-								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(0.5, 1, 0.5), intensity) });
+								light_sources.insert({ j * 16.f + 8.f, light(Vector2f(i * 16.f + 8.f, j * 16.f + 8.f), Vector3f(0.5f, 1.f, 0.5f), intensity) });
 							else if (tle.x == 15)
-								light_sources.insert({ j * 16.0 + 8.0, light(Vector2f(i * 16.0 + 8.0, j * 16.0 + 8.0), Vector3f(1, 1, 1), 0.5, true) });
+								light_sources.insert({ j * 16.f + 8.f, light(Vector2f(i * 16.f + 8.f, j * 16.f + 8.f), Vector3f(1.f, 1.f, 1.f), 0.5f, true) });
 						}
 						if (tle.y == 17 && tle.z == 3) {
 							if (tle.x == 0)
@@ -367,7 +367,7 @@ void GameState::load_initial_map(string map_name)
 						if (layer_prop & 16) { // front core
 							update_minimap_tile(Vector2i(i * 2, j * 2), tle);
 							dynamic_objects objct;
-							objct.add({ Vector2f(i, j), tle });
+							objct.add({ Vector2f((float)i, (float)j), tle });
 							objct.layer = layr;
 							dynamic_map.add(objct);
 							dynamic_rendering.insert({ float((j + 1) * 16), {short(dynamic_map.curr_idx - 1), nullptr} });
@@ -404,7 +404,7 @@ void GameState::load_initial_map(string map_name)
 	ifs.close();
 
 	for (int i = 0; i < dynamic_map.curr_idx; i++) {
-		search_front(dynamic_map.at[i].at[0].position.x, dynamic_map.at[i].at[0].position.y, dynamic_map.at[i].layer, temp_front, vis, i);
+		search_front((int)dynamic_map.at[i].at[0].position.x, (int)dynamic_map.at[i].at[0].position.y, dynamic_map.at[i].layer, temp_front, vis, i);
 	}
 
 	destructable_objects = new base_stats[destructable_count];
@@ -485,7 +485,7 @@ void GameState::load_saved_map(string map_name)
 				dynamic_map.at[i].destruction_time = &static_map[dynamic_map.at[i].core_location.x][dynamic_map.at[i].core_location.y].destruction_time;
 			}
 			if(!dynamic_map.at[i].destruction_time)
-				update_minimap_tile(Vector2i(temp_pos.x * 2, temp_pos.y * 2), temp_tile);
+				update_minimap_tile(Vector2i((int)temp_pos.x * 2, (int)temp_pos.y * 2), temp_tile);
 			static_map[(int)temp_pos.x][(int)temp_pos.y].dynamic_idx = i;
 		}
 
@@ -500,7 +500,7 @@ void GameState::load_saved_map(string map_name)
 				ifs >> temp_tile.x >> temp_tile.y >> temp_tile.z;
 				dynamic_map.at[i].add({ temp_pos, temp_tile });
 				if(!dynamic_map.at[i].destruction_time)
-					update_minimap_tile(Vector2i(temp_pos.x * 2, temp_pos.y * 2), temp_tile);
+					update_minimap_tile(Vector2i((int)temp_pos.x * 2, (int)temp_pos.y * 2), temp_tile);
 			}
 		}
 
@@ -523,7 +523,7 @@ void GameState::load_saved_map(string map_name)
 		for (int i = 0; i < count; i++) {
 			ifs >> id;
 			ifs >> pos.x >> pos.y;
-			items.add(item_spawn(id), pos, 0, 300.0);
+			items.add(item_spawn(id), pos, 0, 300.f);
 			ifs >> items.entities[items.curr_idx - 1]->despawn_timer;
 			items.entities[items.curr_idx - 1]->interact = 1;
 			ifs >> items.entities[items.curr_idx - 1]->health;
@@ -604,7 +604,7 @@ void GameState::search_front(int x, int y, int layr, Vector3i*** temp_front, boo
 		int new_x = x + dx[i], new_y = y + dy[i];
 		if (new_x < size_x && new_y < size_y && new_x >= 0 && new_y >= 0 && temp_front[layr][new_x][new_y].x && !vis[layr][new_x][new_y]) {
 			temp_front[layr][new_x][new_y].x--;
-			dynamic_map.at[idx].add({Vector2f(new_x, new_y), temp_front[layr][new_x][new_y] });
+			dynamic_map.at[idx].add({Vector2f((float)new_x, (float)new_y), temp_front[layr][new_x][new_y] });
 			dynamic_map.at[idx].height += (!dx[i]) * abs(dy[i]);
 			search_front(new_x, new_y, layr, temp_front, vis, idx);
 		}
@@ -636,8 +636,8 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_stats.animations = new animation * [5]({});
 	player_stats.states_no = 4;
 	player_stats.base_movement_speed = 130;
-	player_stats.scale_const = 0.65;
-	player_stats.base_animation_speed = 16.6;
+	player_stats.scale_const = 0.65f;
+	player_stats.base_animation_speed = 16.6f;
 	player_stats.textures_count = 5;
 	player_stats.textures = new Texture*[player_stats.textures_count];
 	player_stats.base_damage = 25;
@@ -679,7 +679,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	//animals
 	//lion
 	enemy_stats[0].animations = new animation * [1];
-	enemy_stats[0].scale_const = 0.85;
+	enemy_stats[0].scale_const = 0.85f;
 	enemy_stats[0].base_movement_speed = 80;
 	enemy_stats[0].base_animation_speed = 12;
 	enemy_stats[0].textures_count = 1;
@@ -709,7 +709,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	// Tiger
 
 	enemy_stats[1].animations = new animation * [1];
-	enemy_stats[1].scale_const = 0.85;
+	enemy_stats[1].scale_const = 0.85f;
 	enemy_stats[1].base_movement_speed = 80;
 	enemy_stats[1].states_no = 1;
 	enemy_stats[1].base_animation_speed = 12;
@@ -739,7 +739,7 @@ void GameState::load_entities(float player_relative_y_pos)
 
 	//Cow
 	passive_stats[0].animations = new animation * [1];
-	passive_stats[0].scale_const = 0.85;
+	passive_stats[0].scale_const = 0.85f;
 	passive_stats[0].base_movement_speed = 80;
 	passive_stats[0].states_no = 1;
 	passive_stats[0].base_animation_speed = 12;
@@ -769,7 +769,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[0].animations[0][3] = { 4, {0,0,48,65}, {30,52}, {24,37} }; //front
 	//Sheep
 	passive_stats[1].animations = new animation * [1];
-	passive_stats[1].scale_const = 0.85;
+	passive_stats[1].scale_const = 0.85f;
 	passive_stats[1].base_movement_speed = 80;
 	passive_stats[1].states_no = 1;
 	passive_stats[1].base_animation_speed = 12;
@@ -802,10 +802,10 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[1].animations[0][3] = { 4, {0,0,48,55}, {24,40}, {29,33} }; //front
 	//Lama
 	passive_stats[2].animations = new animation * [1];
-	passive_stats[2].scale_const = 0.7;
+	passive_stats[2].scale_const = 0.7f;
 	passive_stats[2].base_movement_speed = 80;
 	passive_stats[2].states_no = 1;
-	passive_stats[2].base_animation_speed = 16.6;
+	passive_stats[2].base_animation_speed = 16.6f;
 	passive_stats[2].textures_count = 1;
 	passive_stats[2].textures = new Texture * [passive_stats[2].textures_count];
 	passive_stats[2].textures[0] = new Texture;
@@ -819,7 +819,7 @@ void GameState::load_entities(float player_relative_y_pos)
 	passive_stats[2].animations[0][3] = { 4, {0, 2 * 128, 128, 128}, {26,62}, {64,62} }; //front
 
 	NPC_stats[0].animations = new animation * [2];
-	NPC_stats[0].scale_const = 0.65;
+	NPC_stats[0].scale_const = 0.65f;
 	NPC_stats[0].base_movement_speed = 80;
 	NPC_stats[0].states_no = 1;
 	NPC_stats[0].base_animation_speed = 12;
@@ -839,7 +839,7 @@ void GameState::load_entities(float player_relative_y_pos)
 		NPC_stats[0].animations[i][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
 	}
 	NPC_stats[1].animations = new animation * [2];
-	NPC_stats[1].scale_const = 0.65;
+	NPC_stats[1].scale_const = 0.65f;
 	NPC_stats[1].base_movement_speed = 80;
 	NPC_stats[1].states_no = 1;
 	NPC_stats[1].base_animation_speed = 12;
@@ -858,7 +858,7 @@ void GameState::load_entities(float player_relative_y_pos)
 		NPC_stats[1].animations[0][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
 
 	NPC_stats[2].animations = new animation * [1];
-	NPC_stats[2].scale_const = 0.65;
+	NPC_stats[2].scale_const = 0.65f;
 	NPC_stats[2].base_movement_speed = 80;
 	NPC_stats[2].states_no = 1;
 	NPC_stats[2].base_animation_speed = 12;
@@ -875,7 +875,7 @@ void GameState::load_entities(float player_relative_y_pos)
 		NPC_stats[2].animations[0][3] = { 9, {0, 10 * 64, 64, 64}, {30,14}, {32,48} }; //front
 
 		NPC_stats[3].animations = new animation * [2];
-		NPC_stats[3].scale_const = 0.65;
+		NPC_stats[3].scale_const = 0.65f;
 		NPC_stats[3].base_movement_speed = 80;
 		NPC_stats[3].states_no = 1;
 		NPC_stats[3].base_animation_speed = 12;
@@ -1141,13 +1141,13 @@ void GameState::destroyANDrestore(Vector2i core_location, bool destroy, bool ToE
 				Uint8 pixels[16];
 				for (int k = 0; k < 2; k++)
 					for (int l = 0; l < 2; l++) {
-						pixels[(k + 2 * l) * 4] = base_minimap.getPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l).r; // red
-						pixels[(k + 2 * l) * 4 + 1] = base_minimap.getPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l).g; // green
-						pixels[(k + 2 * l) * 4 + 2] = base_minimap.getPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l).b; // blue
-						pixels[(k + 2 * l) * 4 + 3] = base_minimap.getPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l).a; // alpha
-						minimap_img.setPixel(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l, Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
+						pixels[(k + 2 * l) * 4] = base_minimap.getPixel(int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k), int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l)).r; // red
+						pixels[(k + 2 * l) * 4 + 1] = base_minimap.getPixel(int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k), int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l)).g; // green
+						pixels[(k + 2 * l) * 4 + 2] = base_minimap.getPixel(int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k), int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l)).b; // blue
+						pixels[(k + 2 * l) * 4 + 3] = base_minimap.getPixel(int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k), int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l)).a; // alpha
+						minimap_img.setPixel(int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2 + k), int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2 + l), Color(pixels[(k + 2 * l) * 4], pixels[(k + 2 * l) * 4 + 1], pixels[(k + 2 * l) * 4 + 2], pixels[(k + 2 * l) * 4 + 3]));
 					}
-				minimap_tex.update(pixels, 2, 2, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2, dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2);
+				minimap_tex.update(pixels, 2, 2, int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.x * 2), int(dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].at[j].position.y * 2));
 			}
 			dynamic_map.at[static_map[check_tile.x][check_tile.y].dynamic_idx].core_location = core_location;
 			static_map[core_location.x][core_location.y].destruction_time = game_time;
@@ -1202,8 +1202,8 @@ void GameState::bigbang(Vector2i target_tile, bool destroy, bool ToEternityAndBy
 void GameState::render_static_map()
 {
 	tile.setScale((scale * z_scale), (scale * z_scale));
-	for (int i = (x_offset > 0) ? x_offset : 0; i < (win_x + ((x_offset + 1) * 16 * (scale * z_scale))) / (16 * (scale * z_scale)) && i < size_x; i++)
-		for (int j = (y_offset > 0) ? y_offset : 0; j < (win_y + ((y_offset + 1) * 16 * (scale * z_scale))) / (16 * (scale * z_scale)) && j < size_y; j++) {
+	for (int i = (x_offset > 0) ? (int)x_offset : 0; i < (win_x + ((x_offset + 1) * 16 * (scale * z_scale))) / (16 * (scale * z_scale)) && i < size_x; i++)
+		for (int j = (y_offset > 0) ? (int)y_offset : 0; j < (win_y + ((y_offset + 1) * 16 * (scale * z_scale))) / (16 * (scale * z_scale)) && j < size_y; j++) {
 			auto tile_end = static_map[i][j].layers + static_map[i][j].size - 1;
 
 			for (auto map_tile = static_map[i][j].layers; map_tile != tile_end; map_tile++) {
@@ -1314,7 +1314,7 @@ void GameState::render_entities()
 					tile.setPosition(round(map_x * (scale * z_scale)) + (16 * (scale * z_scale) * dynamic_map.at[i->second.tile].at[j].position.x), round(map_y * (scale * z_scale)) + (16 * (scale * z_scale) * dynamic_map.at[i->second.tile].at[j].position.y));
 					window->draw(tile, &shader);
 					if (dynamic_update_minimap)
-						update_minimap_tile(Vector2i(dynamic_map.at[i->second.tile].at[j].position.x * 2, dynamic_map.at[i->second.tile].at[j].position.y * 2), dynamic_map.at[i->second.tile].at[j].tile);
+						update_minimap_tile(Vector2i((int)dynamic_map.at[i->second.tile].at[j].position.x * 2, (int)dynamic_map.at[i->second.tile].at[j].position.y * 2), dynamic_map.at[i->second.tile].at[j].tile);
 				}
 			}
 			else if (game_time - *dynamic_map.at[i->second.tile].destruction_time > 300 && game_time - *dynamic_map.at[i->second.tile].time > 5) {
@@ -1364,23 +1364,23 @@ void GameState::render_entities()
 
 void GameState::update_minimap()
 {
-	int minimap_player_pos_x = player_entity->getRelativePos().x / 8 , minimap_player_pos_y = player_entity->getRelativePos().y / 8;
+	int minimap_player_pos_x = (int)player_entity->getRelativePos().x / 8 , minimap_player_pos_y = (int)player_entity->getRelativePos().y / 8;
 	int minimap_x = minimap_player_pos_x - 48, minimap_y = minimap_player_pos_y - 48;
 	minimap_x = (minimap_x < 0) ? 0 : (minimap_x > size_x * 2 - 98) ? size_x * 2 - 98 : minimap_x;
 	minimap_y = (minimap_y < 0) ? 0 : (minimap_y > size_y * 2 - 98) ? size_y * 2 - 98 : minimap_y;
 	minimap.setTextureRect(IntRect(minimap_x, minimap_y, 96, 96));
-	player_pointer.setPosition(win_x - 52 * scale + (minimap_player_pos_x - minimap_x - 48) * 0.8 * scale, 52 * scale + (minimap_player_pos_y - minimap_y - 48) * 0.8 * scale);
+	player_pointer.setPosition(win_x - 52 * scale + (minimap_player_pos_x - minimap_x - 48) * 0.8f * scale, 52 * scale + (minimap_player_pos_y - minimap_y - 48) * 0.8f * scale);
 
 	if (waypoint_position.x > -1) {
 		int waypoint_minimap_pos_x = clamp<int>((int)waypoint_position.x - minimap_x - 48, -48, 48);
 		int waypoint_minimap_pos_y = clamp<int>((int)waypoint_position.y - minimap_y - 48, -48, 48);
-		waypoint_pointer.setPosition(win_x - 52 * scale + waypoint_minimap_pos_x * 0.8 * scale, 52 * scale + waypoint_minimap_pos_y * 0.8 * scale);
+		waypoint_pointer.setPosition(win_x - 52 * scale + waypoint_minimap_pos_x * 0.8f * scale, 52 * scale + waypoint_minimap_pos_y * 0.8f * scale);
 	}
 
 	if (quest_location.x > -1) {
-		int quest_minimap_pos_x = clamp<int> (quest_location.x / 8 - minimap_x - 48, -48, 48);
-		int quest_minimap_pos_y = clamp<int> (quest_location.y / 8 - minimap_y - 48, -48, 48);
-		quest_pointer.setPosition(win_x - 52 * scale + quest_minimap_pos_x * 0.8 * scale, 52 * scale + quest_minimap_pos_y * 0.8 * scale);
+		int quest_minimap_pos_x = clamp<int>(int(quest_location.x / 8 - minimap_x - 48), -48, 48);
+		int quest_minimap_pos_y = clamp<int>(int(quest_location.y / 8 - minimap_y - 48), -48, 48);
+		quest_pointer.setPosition(win_x - 52 * scale + quest_minimap_pos_x * 0.8f * scale, 52 * scale + quest_minimap_pos_y * 0.8f * scale);
 	}
 }
 
@@ -1402,9 +1402,9 @@ void GameState::entity_spawning()
 {
 	if (DoEntitySpawning) {
 		//cout << "not my lucky day\n";
-		screen_length = win_x / (16 * (scale * z_scale)), screen_height = win_y / (16 * (scale * z_scale));
+		screen_length = short(win_x / (16 * (scale * z_scale))), screen_height = short(win_y / (16 * (scale * z_scale)));
 		short spawn_rect_x = screen_length + spawn_dist, spawn_rect_y = screen_height + spawn_dist;
-		spawn_total = generate_random(0, (spawn_rect_x * 2 + spawn_rect_y * 2)-1);
+		spawn_total = generate_random(0, float(spawn_rect_x * 2 + spawn_rect_y * 2 - 1));
 		if (spawn_total > 2 * spawn_rect_x + spawn_rect_y) {
 			spawn_x = 0, spawn_y = 2 * spawn_rect_y - (spawn_total - 2 * spawn_rect_x);
 		}
@@ -1418,7 +1418,7 @@ void GameState::entity_spawning()
 			spawn_x = spawn_total, spawn_y = 0;
 		}
 
-		spawn_x += x_offset - spawn_dist/2.f, spawn_y += y_offset - spawn_dist/2.f;
+		spawn_x += short(x_offset - spawn_dist / 2.f), spawn_y += short(y_offset - spawn_dist / 2.f);
 
 		bool valid_spawn = 1;
 
@@ -1433,11 +1433,11 @@ void GameState::entity_spawning()
 
 		if (valid_spawn) {
 			if (light_level <= 0.4) {
-				enemies.add(enemy_spawn(generate_random(0, number_of_enemies-1)), {16.f * spawn_x, 16.f * spawn_y});
+				enemies.add(enemy_spawn(generate_random(0, float(number_of_enemies - 1))), { 16.f * spawn_x, 16.f * spawn_y });
 				enemies.entities[enemies.curr_idx - 1]->update((scale * z_scale));
 			}
 			else {
-				passive.add(passive_spawn(generate_random(0, number_of_passives-1)), { 16.f * spawn_x, 16.f * spawn_y });
+				passive.add(passive_spawn(generate_random(0, float(number_of_passives - 1))), { 16.f * spawn_x, 16.f * spawn_y });
 				passive.entities[passive.curr_idx - 1]->update((scale * z_scale));
 
 			}
@@ -1492,32 +1492,32 @@ void GameState::DayLightCycle()
 	}
 	if (player_entity->state == 0) {
 		
-		if (torch_intensity > 0.7)
-			torch_delta -= 0.2;
-		else if (torch_intensity < 0.6)
-			torch_delta = 0.2;
+		if (torch_intensity > 0.7f)
+			torch_delta -= 0.2f;
+		else if (torch_intensity < 0.6f)
+			torch_delta = 0.2f;
 
 		torch_intensity += torch_delta * dt;
 
 		shader.setUniform("lights[" + to_string(count) + "].position", (player_entity->getRelativePos() + Vector2f(map_x, map_y)) * (scale * z_scale));
-		shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(0.95, 0.92, 0.7));
+		shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(0.95f, 0.92f, 0.7f));
 		shader.setUniform("lights[" + to_string(count) + "].intensity", torch_intensity * (scale * z_scale));
 		count++;
 	}
 
 	light_level += day_increment * dt;
-	if (light_level < 0.1) {
-		light_level = 0.1;
-		day_increment = 0.01;
+	if (light_level < 0.1f) {
+		light_level = 0.1f;
+		day_increment = 0.01f;
 	}
-	else if (light_level > 1) {
-		light_level = 1;
-		day_increment = -0.01;
+	else if (light_level > 1.f) {
+		light_level = 1.f;
+		day_increment = -0.01f;
 	}
 	if(DoDayLightCycle)
-		shader.setUniform("ambient_light", Glsl::Vec4(light_level, light_level, (light_level + 0.2 < 1 ? light_level + 0.2 : 1), 1.0));
+		shader.setUniform("ambient_light", Glsl::Vec4(light_level, light_level, (light_level + 0.2f < 1.f ? light_level + 0.2f : 1.f), 1.f));
 	else
-		shader.setUniform("ambient_light", Glsl::Vec4(constant_light_level, constant_light_level, constant_light_level + 0.1, 1.0));
+		shader.setUniform("ambient_light", Glsl::Vec4(constant_light_level, constant_light_level, constant_light_level + 0.1f, 1.f));
 	shader.setUniform("lightsCount", count);
 }
 
@@ -1525,7 +1525,7 @@ void GameState::initial_entities()
 {
 	if (current_map == "maze") {
 		enemies.add(enemy_spawn(1), { 488.f, 1624.f }, 1);
-		enemies.entities[enemies.curr_idx - 1]->setScale(0.35);
+		enemies.entities[enemies.curr_idx - 1]->setScale(0.35f);
 	}
 
 	if (current_map == "Japan") {
@@ -1573,15 +1573,14 @@ void GameState::quests()
 			blink_delay += dt;
 			if (blink_delay >= 1.f) {
 				float blink_val = (blink_delay < 2.25f) ? 12.f * (1+blink_count) * blink_delay + 25 * blink_count: 250 - (blink_count >= 2) * 200;
-				black_in(int(blink_val));
-				//cout << blink_val << '\n';
+				black_in(blink_val);
 				if (!blackining) quest_idx+= (blink_count < 2) ? 1 : 2;
 			}
 			break;
 		case 2:
 			//cout << blackining <<'\n';
 			player_entity->stun = 1000;
-			if (black_out(500 - blink_count * 125)) {
+			if (black_out(500.f - blink_count * 125.f)) {
 				quest_idx--, blink_count++, blink_delay = 0;
 			}
 			break;
@@ -1632,8 +1631,8 @@ void GameState::update_minimap_tile(Vector2i position, Vector3i tile)
 			pixels[(k + 2 * l) * 4 + 3] = minimap_img.getPixel(position.x + k, position.y + l).a; // alpha
 
 			tile_color = tile_sheets_img[tile.z].getPixel(tile.x * 16 + 5 + k * 6, tile.y * 16 + 5 + l * 6);
-			old_alpha = (float)pixels[(k + 2 * l) * 4 + 3] / 255.0, tile_alpha = (float)tile_color.a / 255.0;
-			sum_alpha = 1.0 - (1.0 - tile_alpha) * (1.0 - old_alpha);
+			old_alpha = int((float)pixels[(k + 2 * l) * 4 + 3] / 255.f), tile_alpha = int((float)tile_color.a / 255.f);
+			sum_alpha = int(1.f - (1.f - tile_alpha) * (1.f - old_alpha));
 			pixels[(k + 2 * l) * 4 + 3] = sum_alpha * 255;
 			if (sum_alpha) {
 				pixels[(k + 2 * l) * 4]     = tile_color.r * tile_alpha / sum_alpha + pixels[(k + 2 * l) * 4] * old_alpha * (1 - tile_alpha) / sum_alpha;
@@ -1662,10 +1661,10 @@ GameState::GameState(int save_num)
 {
 	this->save_num = save_num;
 
-	win_x = window->getSize().x, win_y = window->getSize().y;
+	win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
 
-	if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
-	else scale = win_y / 304.5;
+	if (win_x / 540.f < win_y / 304.5f) scale = win_x / 540.f;
+	else scale = win_y / 304.5f;
 
 	if (!shader.loadFromFile("VertexShader.shader", "FragmentShader.shader")) {
 		cout << "Couldn't load shaders\n";
@@ -1703,36 +1702,36 @@ void GameState::update()
 	active_cursor = false;
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
-		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
-		else scale = win_y / 304.5;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+		x = win_x / 2.f, y = win_y / 2.f;
+		if (win_x / 540.f < win_y / 304.5f) scale = win_x / 540.f;
+		else scale = win_y / 304.5f;
 		/////////////////////
 		center_cam(player_entity->getRelativePos());
-		hotbar.setScale(scale * 0.1, scale * 0.1);
-		hotbar.setPosition(win_x/2, win_y - 20 * scale);
-		hotbar_selection.setScale(scale * 0.1, scale * 0.1);
-		health_indicator.setPosition(20 * scale , 20 * scale);
-		health_indicator.setScale(scale * 0.15, scale * 0.15);
+		hotbar.setScale(scale * 0.1f, scale * 0.1f);
+		hotbar.setPosition(win_x / 2.f, win_y - 20.f * scale);
+		hotbar_selection.setScale(scale * 0.1f, scale * 0.1f);
+		health_indicator.setPosition(20.f * scale , 20.f * scale);
+		health_indicator.setScale(scale * 0.15f, scale * 0.15f);
 		blackscreen.setSize({ win_x, win_y });
 		for (int i = 0; i < 4; i++) {
-			tool_icons[i].setPosition(win_x / 2 + 3*scale, win_y - 20 * scale);
-			tool_icons[i].setScale(scale * 0.1, scale * 0.1);
+			tool_icons[i].setPosition(win_x / 2.f + 3.f * scale, win_y - 20.f * scale);
+			tool_icons[i].setScale(scale * 0.1f, scale * 0.1f);
 		}
-		hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
-		minimap_frame.setPosition(win_x - 52 * scale,52 * scale);
-		minimap_frame.setScale(scale * 0.96, scale * 0.96);
-		minimap.setPosition(win_x - 52 * scale, 52 * scale);
-		minimap.setScale(scale * 0.8, scale * 0.8);
+		hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
+		minimap_frame.setPosition(win_x - 52.f * scale, 52.f * scale);
+		minimap_frame.setScale(scale * 0.96f, scale * 0.96f);
+		minimap.setPosition(win_x - 52.f * scale, 52.f * scale);
+		minimap.setScale(scale * 0.8f, scale * 0.8f);
 
-		player_pointer.setRadius(1.5 * scale);
-		player_pointer.setOrigin(0.75 * scale, 0.75 * scale);
+		player_pointer.setRadius(1.5f * scale);
+		player_pointer.setOrigin(0.75f * scale, 0.75f * scale);
 
-		waypoint_pointer.setRadius(1.5 * scale);
-		waypoint_pointer.setOrigin(0.75 * scale, 0.75 * scale);
+		waypoint_pointer.setRadius(1.5f * scale);
+		waypoint_pointer.setOrigin(0.75f * scale, 0.75f * scale);
 
-		quest_pointer.setRadius(1.5 * scale);
-		quest_pointer.setOrigin(0.75 * scale, 0.75 * scale);
+		quest_pointer.setRadius(1.5f * scale);
+		quest_pointer.setOrigin(0.75f * scale, 0.75f * scale);
 
 		shader.setUniform("ratio", win_x / win_y);
 	}
@@ -1775,14 +1774,14 @@ void GameState::update()
 			if (enemies.entities[i]->action_state != 0 || entity_in_range(enemies.entities[i]->pos, entity_update_distance))
 				enemies.entities[i]->update((scale * z_scale));
 			if(enemies.entities[i]->got_hit)
-				effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+				effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9f, Color(136, 8, 8, 240), 0, map_x, map_y);
 		}
 		else {
 			if (enemies.entities[i]->health <= 0) {
 				poof_pop.play();
-				effects.add({ 0, 0, 256, 256 }, 22, { (int)enemies.entities[i]->getRelativePos().x, (int)enemies.entities[i]->getRelativePos().y + 2}, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
+				effects.add({ 0, 0, 256, 256 }, 22, { (int)enemies.entities[i]->getRelativePos().x, (int)enemies.entities[i]->getRelativePos().y + 2}, "Poof", 0.5f, Color(255, 255, 255, 255), 0, map_x, map_y);
 				for (int j = 0; j < enemies.entities[i]->entity_stats.item_drop_count; j++)
-					items.add(item_spawn(enemies.entities[i]->entity_stats.item_drops[j]), enemies.entities[i]->getRelativePos(), 0, 300.0);
+					items.add(item_spawn(enemies.entities[i]->entity_stats.item_drops[j]), enemies.entities[i]->getRelativePos(), 0, 300.f);
 			}
 			enemies.rem_ove(i);
 		}
@@ -1793,14 +1792,14 @@ void GameState::update()
 			if (passive.entities[i]->action_state != 0 || entity_in_range(passive.entities[i]->pos, entity_update_distance))
 				passive.entities[i]->update((scale * z_scale));
 			if (passive.entities[i]->got_hit)
-				effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9, Color(136, 8, 8, 240), 0, map_x, map_y);
+				effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9f, Color(136, 8, 8, 240), 0, map_x, map_y);
 		}
 		else {
 			if (passive.entities[i]->health <= 0) {
-				effects.add({ 0, 0, 256, 256 }, 22, { (int)passive.entities[i]->getRelativePos().x, (int)passive.entities[i]->getRelativePos().y + 2 }, "Poof", 0.5, Color(255, 255, 255, 255), 0, map_x, map_y);
+				effects.add({ 0, 0, 256, 256 }, 22, { (int)passive.entities[i]->getRelativePos().x, (int)passive.entities[i]->getRelativePos().y + 2 }, "Poof", 0.5f, Color(255, 255, 255, 255), 0, map_x, map_y);
 				poof_pop.play();
 				for (int j = 0; j < passive.entities[i]->entity_stats.item_drop_count; j++)
-					items.add(item_spawn(passive.entities[i]->entity_stats.item_drops[j]), passive.entities[i]->getRelativePos(), 0, 300.0);
+					items.add(item_spawn(passive.entities[i]->entity_stats.item_drops[j]), passive.entities[i]->getRelativePos(), 0, 300.f);
 			}
 				passive.rem_ove(i);
 		}
@@ -1845,7 +1844,7 @@ void GameState::update()
 			player_entity->despawn = false;
 			player_entity->stun = 0;
 			player_entity->change_state(3);
-			hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (3 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+			hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12) * scale * 0.1f + (3 - player_entity->state) * 248 * scale * 0.1f, win_y - 20 * scale);
 			tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
 			if (player_entity->state != 3)
 				tool_icons[(2 - player_entity->state)].setColor(Color(255, 255, 255));
@@ -1858,7 +1857,7 @@ void GameState::update()
 			nod* it = inventory_order.first;
 
 			while (it != NULL) {
-				items.add(item_spawn(it->itm), player_entity->getRelativePos(), 0, 300.0);
+				items.add(item_spawn(it->itm), player_entity->getRelativePos(), 0, 300.f);
 				items.entities[items.curr_idx - 1]->health = inventory_count[it->itm];
 				inventory_count[it->itm] = 0;
 				it = it->link;
@@ -1892,7 +1891,7 @@ void GameState::update()
 				inventory_order.add(items.entities[i]->id);
 			inventory_count[items.entities[i]->id]+= items.entities[i]->health;
 			// despawn item
-			item_pickup_sound.setPitch(generate_random_f(0.7, 0.9));
+			item_pickup_sound.setPitch(generate_random_f(0.7f, 0.9f));
 			items.rem_ove(i);
 			i--;
 			
@@ -1918,7 +1917,7 @@ void GameState::render()
 				window->draw(tool_icons[i]);
 			window->draw(hotbar_selection);
 		}
-		health_indicator.setTextureRect(IntRect(0, ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
+		health_indicator.setTextureRect(IntRect(0, (int)ceil(player_entity->health * 10 / player_stats.max_health) * 100, 590, 100));
 		window->draw(health_indicator);
 		if (EnableMiniMap)
 			render_minimap();
@@ -1959,27 +1958,27 @@ void GameState::pollevent()
 				break;
 			case Keyboard::Num1:
 				player_entity->change_state(4);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num2:
 				player_entity->change_state(3);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
 				tool_icons[0].setColor(Color(255, 255, 255)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num3:
 				player_entity->change_state(2);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(255, 255, 255)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num4:
 				player_entity->change_state(1);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(255, 255, 255)), tool_icons[3].setColor(Color(130, 130, 130));
 				break;
 			case Keyboard::Num5:
 				player_entity->change_state(0);
-				hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
 				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(255, 255, 255));
 				break;
 			case Keyboard::E:
@@ -2006,11 +2005,11 @@ void GameState::pollevent()
 				if (player_entity->tool_used_on.x > -1) {
 					Vector3i tile_info = static_map[player_entity->tool_used_on.x/16][player_entity->tool_used_on.y / 16].layers[static_map[player_entity->tool_used_on.x / 16][player_entity->tool_used_on.y / 16].size - 1];
 					Color tile_color = tile_sheets_img[tile_info.z].getPixel(tile_info.x * 16 + 8, tile_info.y * 16 + 6);
-					effects.add({ 0,0,100,100 }, 24, { player_entity->tool_used_on.x , player_entity->tool_used_on.y }, "break_animation", 0.6, tile_color, 0, map_x, map_y);
+					effects.add({ 0,0,100,100 }, 24, { player_entity->tool_used_on.x , player_entity->tool_used_on.y }, "break_animation", 0.6f, tile_color, 0, map_x, map_y);
 					if (item_drops_count != -1) {
 						Vector3i temp;
 						for (int i = 0; i < item_drops_count; i++) {
-							items.add(item_spawn(item_drops[i]), {(float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y}, 0, 300.0);
+							items.add(item_spawn(item_drops[i]), {(float)player_entity->tool_used_on.x , (float)player_entity->tool_used_on.y}, 0, 300.f);
 						}
 						item_drops_count = -1;
 					}
@@ -2033,7 +2032,7 @@ void GameState::pollevent()
 					if (new_state > 4) new_state = 4;
 					else if (new_state < 0) new_state = 0;
 					player_entity->change_state(new_state);
-					hotbar_selection.setPosition(win_x / 2 - (hotbar.getLocalBounds().width / 2 - 12) * scale * 0.1 + (4 - player_entity->state) * 248 * scale * 0.1, win_y - 20 * scale);
+					hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
 					tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
 					if (new_state != 4)
 						tool_icons[(3 - player_entity->state)].setColor(Color(255, 255, 255));

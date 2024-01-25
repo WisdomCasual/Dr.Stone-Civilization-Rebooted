@@ -62,7 +62,7 @@ void Passive::damaged()
 	sounds[random_num].play();
 
 	entity_sprite.setColor(Color(255, 155, 155));
-	stun = 0.4;
+	stun = 0.4f;
 }
 
 void Passive::makeNoise()
@@ -115,7 +115,7 @@ void Passive::stateMachine()
 		if (motion_delay >= 1) {
 			move_speed = entity_stats.base_movement_speed;
 			motion_delay = 0;
-			theta = (generate_random(0, 7)) * 45;
+			theta = (generate_random(0, 7)) * 45.f;
 			will_move = 1;
 			direction({ 0, 0 });
 			curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
@@ -136,12 +136,12 @@ void Passive::stateMachine()
 			direction({ 0, 0 });
 		}
 		if (motion_delay >= 4) {
-			move_speed = entity_stats.base_movement_speed / 2;
+			move_speed = entity_stats.base_movement_speed / 2.f;
 			motion_delay = 0;
 			will_move = generate_random(0, 3);
 			move_for = generate_random(3, 4);
 			if (will_move) {
-				theta = (generate_random(0, 7)) * 45;
+				theta = float(generate_random(0, 7)) * 45;
 				direction({ 0, 0 });
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 				for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {

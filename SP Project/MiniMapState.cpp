@@ -8,17 +8,17 @@ void MiniMapState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		minimap.setColor(Color(255, 255, 255, transparency));
-		player_pointer.setFillColor(Color(255, 0, 0, transparency));
-		waypoint_pointer.setFillColor(Color(0, 0, 255, transparency));
-		quest_pointer.setFillColor(Color(255, 200, 0, transparency));
+		minimap.setColor(Color(255, 255, 255, (int)transparency));
+		player_pointer.setFillColor(Color(255, 0, 0, (int)transparency));
+		waypoint_pointer.setFillColor(Color(0, 0, 255, (int)transparency));
+		quest_pointer.setFillColor(Color(255, 200, 0, (int)transparency));
 
 		if (darkness < 154) {
 			if (darkness + 154 * dt * 6 > 154)
 				darkness = 154;
 			else
 				darkness += 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 	}
 }
@@ -31,17 +31,17 @@ bool MiniMapState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		minimap.setColor(Color(255, 255, 255, transparency));
-		player_pointer.setFillColor(Color(255, 0, 0, transparency));
-		waypoint_pointer.setFillColor(Color(0, 0, 255, transparency));
-		quest_pointer.setFillColor(Color(255, 200, 0, transparency));
+		minimap.setColor(Color(255, 255, 255, (int)transparency));
+		player_pointer.setFillColor(Color(255, 0, 0, (int)transparency));
+		waypoint_pointer.setFillColor(Color(0, 0, 255, (int)transparency));
+		quest_pointer.setFillColor(Color(255, 200, 0, (int)transparency));
 
 		if (darkness > 0) {
 			if (darkness - 154 * dt * 6 < 0)
 				darkness = 0;
 			else
 				darkness -= 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 		return false;
 	}
@@ -71,34 +71,34 @@ void MiniMapState::update()
 	mouse_pos = Mouse::getPosition(*window);
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+		x = win_x / 2.f, y = win_y / 2.f;
 		x_pic = minimap.getLocalBounds().width;
 		y_pic = minimap.getLocalBounds().height;
 		if (win_x / x_pic < win_y / y_pic) map_scale = win_x / x_pic;
 		else map_scale = win_y / y_pic;
-		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
-		else scale = win_y / 304.5;
+		if (win_x / 540.f < win_y / 304.f) scale = win_x / 540.f;
+		else scale = win_y / 304.5f;
 		/////////////////////////////////////////////////////////
 
 		tint.setSize({ win_x, win_y });
 		minimap.setPosition(x, y);
-		minimap.setScale(map_scale * 0.8, map_scale * 0.8);
+		minimap.setScale(map_scale * 0.8f, map_scale * 0.8f);
 
-		player_pointer.setRadius(1.5 * scale);
-		player_pointer.setOrigin(0.75 * scale, 0.75 * scale);
-		player_pointer.setPosition(x - (x_pic / 2 - player_position.x / 8.0) * map_scale * 0.8, y - (y_pic / 2 - player_position.y / 8.0) * map_scale * 0.8);
+		player_pointer.setRadius(1.5f * scale);
+		player_pointer.setOrigin(0.75f * scale, 0.75f * scale);
+		player_pointer.setPosition(x - (x_pic / 2.f - player_position.x / 8.f) * map_scale * 0.8f, y - (y_pic / 2.f - player_position.y / 8.f) * map_scale * 0.8f);
 
-		waypoint_pointer.setRadius(1.5 * scale);
-		waypoint_pointer.setOrigin(0.75 * scale, 0.75 * scale);
+		waypoint_pointer.setRadius(1.5f * scale);
+		waypoint_pointer.setOrigin(0.75f * scale, 0.75f * scale);
 
-		quest_pointer.setRadius(1.5 * scale);
-		quest_pointer.setOrigin(0.75 * scale, 0.75 * scale);
-		quest_pointer.setPosition(x - (x_pic / 2 - quest_location.x / 8.0) * map_scale * 0.8, y - (y_pic / 2 - quest_location.y / 8.0) * map_scale * 0.8);
+		quest_pointer.setRadius(1.5f * scale);
+		quest_pointer.setOrigin(0.75f * scale, 0.75f * scale);
+		quest_pointer.setPosition(x - (x_pic / 2.f - quest_location.x / 8.f) * map_scale * 0.8f, y - (y_pic / 2.f - quest_location.y / 8.f) * map_scale * 0.8f);
 
 	}
 	if(waypoint.x > -1)
-		waypoint_pointer.setPosition(x - (x_pic / 2 - waypoint.x) * map_scale * 0.8, y - (y_pic / 2 - waypoint.y) * map_scale * 0.8);
+		waypoint_pointer.setPosition(x - (x_pic / 2.f - waypoint.x) * map_scale * 0.8f, y - (y_pic / 2.f - waypoint.y) * map_scale * 0.8f);
 
 	if (exit) {
 		if (fade_out()) {
@@ -115,8 +115,8 @@ void MiniMapState::update()
 void MiniMapState::render()
 {
 	window->draw(tint);
-	text.setFillColor(Color(255, 255, 255, transparency));
-	draw_text("Press M to exit", x, y + (y_pic / 2 * map_scale * 0.9), scale * 16);
+	text.setFillColor(Color(255, 255, 255, (int)transparency));
+	draw_text("Press M to exit", x, y + (y_pic / 2 * map_scale * 0.9f), scale * 16);
 	window->draw(minimap);
 
 	if(quest_location.x > -1)
@@ -152,8 +152,8 @@ void MiniMapState::pollevent()
 			switch (event.mouseButton.button) {
 			case Mouse::Left:
 				clicked_on = window->mapPixelToCoords(Mouse::getPosition(*window));
-				waypoint.x = (clicked_on.x - (x - (x_pic * map_scale * 0.4))) / (map_scale * 0.8);
-				waypoint.y = (clicked_on.y - (y - (y_pic * map_scale * 0.4))) / (map_scale * 0.8);
+				waypoint.x = (clicked_on.x - (x - (x_pic * map_scale * 0.4f))) / (map_scale * 0.8f);
+				waypoint.y = (clicked_on.y - (y - (y_pic * map_scale * 0.4f))) / (map_scale * 0.8f);
 				if (!(waypoint.x >= 0 && waypoint.x <= minimap.getLocalBounds().width && waypoint.y >= 0 && waypoint.y <= minimap.getLocalBounds().height))
 					waypoint = { -1, -1 };
 				break;

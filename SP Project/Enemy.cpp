@@ -42,7 +42,7 @@ void Enemy::damaged()
 	sounds[random_num].play();
 
 	entity_sprite.setColor(Color(255, 155, 155));
-	stun = 0.4;
+	stun = 0.4f;
 	//cout << stun << endl;
 }
 
@@ -129,7 +129,7 @@ bool Enemy::visionLines(Entity& target)
 	for (int i = 0; i < 5; i++) {
 		if (for_y[i]) {
 			for (float j = initial_pos[i].y; j < target_pos[i].y; j += 16) {
-				int targ_x = (m[i] * (j - initial_pos[i].y) + initial_pos[i].x) / 16, targ_y = j / 16;
+				int targ_x = int(float(m[i] * (j - initial_pos[i].y) + initial_pos[i].x) / 16.f), targ_y = (int)j / 16;
 				if (targ_x < 0 || targ_x >= size_x || targ_y < 0 || targ_y >= size_y)
 					continue;
 				if (static_map[targ_x][targ_y].tile_props & 64) {
@@ -140,7 +140,7 @@ bool Enemy::visionLines(Entity& target)
 		}
 		else {
 			for (float j = initial_pos[i].x; j < target_pos[i].x; j += 16) {
-				int targ_x = j / 16, targ_y = (m[i] * (j - initial_pos[i].x) + initial_pos[i].y) / 16;
+				int targ_x = (int)j / 16, targ_y = int(float(m[i] * (j - initial_pos[i].x) + initial_pos[i].y) / 16.f);
 				if (targ_x < 0 || targ_x >= size_x || targ_y < 0 || targ_y >= size_y)
 					continue;
 				if (static_map[targ_x][targ_y].tile_props & 64) {
@@ -213,7 +213,7 @@ path_tile* Enemy::aStar(Vector2i target)
 	path_delta = target - mid;
 	bool is_legal = 1;
 	for (int i = 0; i < 4 && is_legal; i++) {
-		is_legal = legal_direction(Vector2f((target.x * 16 + 8), (target.y * 16 + 8)) - getRelativePos(), dx[i], dy[i]);
+		is_legal = legal_direction(Vector2f((target.x * 16.f + 8.f), (target.y * 16.f + 8.f)) - getRelativePos(), dx[i], dy[i]);
 	}
 	if (!is_legal) {
 		bool done = 1;
@@ -229,7 +229,7 @@ path_tile* Enemy::aStar(Vector2i target)
 				max(entity_stats.animations[state][i].hitbox_rect.x * entity_stats.scale_const, entity_stats.animations[state][i].hitbox_rect.y * entity_stats.scale_const));
 		}
 		mx_hitbox = roundf(mx_hitbox / 16.f);
-		for (int k = roundf(mx_hitbox / 2.f); k <= mx_hitbox; k++) {
+		for (int k = (int)roundf(mx_hitbox / 2.f); k <= mx_hitbox; k++) {
 			hitbox_count = 0;
 			found_box = { -1, -1 }, found_empty = { -1, -1 };
 			mn = 1e9;
@@ -251,7 +251,7 @@ path_tile* Enemy::aStar(Vector2i target)
 				my_hitbox = Vector2i(k * dx[i], k * dy[i]);
 
 				new_pos = target + my_hitbox;
-				if (legal_direction(Vector2f((new_pos.x * 16 + 8), (new_pos.y * 16 + 8)) - getRelativePos(), -dx[i], -dy[i]))
+				if (legal_direction(Vector2f((new_pos.x * 16.f + 8.f), (new_pos.y * 16.f + 8.f)) - getRelativePos(), -dx[i], -dy[i]))
 					found_empty = my_hitbox;
 				else
 					hitbox_count++, found_box = my_hitbox;
@@ -259,22 +259,22 @@ path_tile* Enemy::aStar(Vector2i target)
 			bool done = 1;
 			switch (hitbox_count) {
 			case 2:
-				if (!legal_direction(Vector2f(((target.x - found_box.x) * 16 + 8), ((target.y - found_box.y) * 16 + 8)) - getRelativePos(), -found_box.x, -found_box.y)) {
+				if (!legal_direction(Vector2f(((target.x - found_box.x) * 16.f + 8.f), ((target.y - found_box.y) * 16.f + 8.f)) - getRelativePos(), -found_box.x, -found_box.y)) {
 					new_pos = { target.x - found_box.y, target.y - found_box.x };
-					delta_x = abs(new_pos.x - path_start.x),
-						delta_y = abs(new_pos.y - path_start.y);
+					delta_x = (float)abs(new_pos.x - path_start.x),
+					delta_y = (float)abs(new_pos.y - path_start.y);
 					mn = sqrtf(delta_y * delta_y + delta_x * delta_x);
 					mntile = new_pos - path_delta;
 					new_pos = { target.x + found_box.y, target.y + found_box.x };
-					delta_x = abs(new_pos.x - path_start.x),
-						delta_y = abs(new_pos.y - path_start.y);
+					delta_x = (float)abs(new_pos.x - path_start.x),
+					delta_y = (float)abs(new_pos.y - path_start.y);
 					g_temp = sqrtf(delta_y * delta_y + delta_x * delta_x);
 					if (g_temp < mn)
 						mntile = new_pos - path_delta;    //to convert actual tile to astar tile
 				}
 
 				else {
-					if (!legal_direction(Vector2f(((target.x + found_box.y) * 16 + 8), ((target.y + found_box.x) * 16 + 8)) - getRelativePos(), -found_box.y, -found_box.x)) {
+					if (!legal_direction(Vector2f(((target.x + found_box.y) * 16.f + 8.f), ((target.y + found_box.x) * 16.f + 8.f)) - getRelativePos(), -found_box.y, -found_box.x)) {
 						mntile = Vector2i(target.x - found_box.y - found_box.x, target.y - found_box.y - found_box.x) - path_delta;
 						break;
 					}
@@ -335,10 +335,10 @@ path_tile* Enemy::aStar(Vector2i target)
 			float delta_x, delta_y;
 			if (new_x >= 0 && new_x < find_size_x && new_y >= 0 && new_y < find_size_y &&
 				anew_x < size_x && anew_x >= 0 && anew_y >= 0 && anew_y < size_y) {
-				if ((*vis)[new_x][new_y] != aStarID && legal_direction(Vector2f((anew_x * 16 + 8), (anew_y * 16 + 8)) - getRelativePos(), -dx[i], -dy[i]) &&
-					legal_direction(Vector2f((acurr_tile.x * 16 + 8), (acurr_tile.y * 16 + 8)) - getRelativePos(), -dx[i], -dy[i])) {
-						delta_x = abs(new_x - path_start.x),
-							delta_y = abs(new_y - path_start.y);
+				if ((*vis)[new_x][new_y] != aStarID && legal_direction(Vector2f((anew_x * 16.f + 8.f), (anew_y * 16.f + 8.f)) - getRelativePos(), -dx[i], -dy[i]) &&
+					legal_direction(Vector2f((acurr_tile.x * 16.f + 8.f), (acurr_tile.y * 16.f + 8.f)) - getRelativePos(), -dx[i], -dy[i])) {
+						delta_x = (float)abs(new_x - path_start.x),
+						delta_y = (float)abs(new_y - path_start.y);
 						//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
 						g_val = sqrtf(delta_y * delta_y + delta_x * delta_x) + ((*vis)[new_x][new_y] == -1) * 3;
 						(*vis)[new_x][new_y] = aStarID;
@@ -349,18 +349,18 @@ path_tile* Enemy::aStar(Vector2i target)
 		}
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				new_x = curr_tile.x + corners[i],
-				new_y = curr_tile.y + corners[j];
+				new_x = curr_tile.x + (int)corners[i],
+				new_y = curr_tile.y + (int)corners[j];
 				anew_x = new_x + path_delta.x, anew_y = new_y + path_delta.y;
 				float delta_x, delta_y;
 				if (new_x >= 0 && new_x < find_size_x && new_y >= 0 && new_y < find_size_y &&
 					anew_x < size_x && anew_x >= 0 && anew_y >= 0 && anew_y < size_y) {
-					if ((*vis)[new_x][new_y] != aStarID && legal_direction(Vector2f((anew_x * 16 + 8), (anew_y * 16 + 8)) - getRelativePos(), -corners[i], -corners[j]) &&
-						legal_direction(Vector2f((acurr_tile.x * 16 + 8), (acurr_tile.y * 16 + 8)) - getRelativePos(), -corners[i], -corners[j]) &&
-						legal_direction(Vector2f((anew_x * 16 + 8), (acurr_tile.y * 16 + 8)) - getRelativePos(), -corners[i], -corners[j]) &&
-						legal_direction(Vector2f((acurr_tile.x * 16 + 8), (anew_y * 16 + 8)) - getRelativePos(), -corners[i], -corners[j])) {
-							delta_x = abs(new_x - path_start.x),
-							delta_y = abs(new_y - path_start.y);
+					if ((*vis)[new_x][new_y] != aStarID && legal_direction(Vector2f((anew_x * 16.f + 8.f), (anew_y * 16.f + 8.f)) - getRelativePos(), (short)-corners[i], (short)-corners[j]) &&
+						legal_direction(Vector2f((acurr_tile.x * 16.f + 8.f), (acurr_tile.y * 16.f + 8.f)) - getRelativePos(), (short)-corners[i], (short)-corners[j]) &&
+						legal_direction(Vector2f((anew_x * 16.f + 8.f), (acurr_tile.y * 16.f + 8.f)) - getRelativePos(), (short)-corners[i], (short)-corners[j]) &&
+						legal_direction(Vector2f((acurr_tile.x * 16.f + 8.f), (anew_y * 16.f + 8.f)) - getRelativePos(), (short)-corners[i], (short)-corners[j])) {
+							delta_x = (float)abs(new_x - path_start.x),
+							delta_y = (float)abs(new_y - path_start.y);
 							//g_val = max(delta_x, delta_y) + min(delta_x, delta_y) * 0.4142f;
 							g_val = sqrtf(delta_y * delta_y + delta_x * delta_x) + ((*vis)[new_x][new_y] == -1) * 4.2426f;
 							(*vis)[new_x][new_y] = aStarID;
@@ -409,7 +409,7 @@ Vector2f Enemy::pathFollow(path_tile*& mp)
 	}
 	else {
 		temp.x += path_delta.x, temp.y += path_delta.y; //convert to actual path
-		return(Vector2f(temp.x * 16 + 8, temp.y * 16 + 8));
+		return(Vector2f(temp.x * 16.f + 8.f, temp.y * 16.f + 8.f));
 	}
 } //returns actual path (astar path + path_delta)
 
@@ -494,7 +494,7 @@ void Enemy::stateMachine()
 	case 2: {
 		//Last seen state
 		move_speed = entity_stats.base_movement_speed;
-		animation_delay =  (entity_stats.base_animation_speed != 0) ? 1 / entity_stats.base_animation_speed : 0.06;
+		animation_delay =  (entity_stats.base_animation_speed != 0) ? 1.f / entity_stats.base_animation_speed : 0.06f;
 		Vector2f delta_pos = target_tile - getRelativePos();
 		Vector2f compar = { roundf(delta_pos.x), roundf(delta_pos.y) };
 		if ((compar.x == 0 || (delta_pos.x < 0) != (delta_sign.x < 0)) && (compar.y == 0 || (delta_pos.y < 0) != (delta_sign.y < 0))) {
@@ -528,13 +528,13 @@ void Enemy::stateMachine()
 			direction({ 0, 0 });
 		}
 		if (motion_delay >= 4) {
-			move_speed = entity_stats.base_movement_speed / 2;
-			animation_delay = 1 / (entity_stats.base_animation_speed/2);
+			move_speed = entity_stats.base_movement_speed / 2.f;
+			animation_delay = 1 / (entity_stats.base_animation_speed/2.f);
 			motion_delay = 0;
 			will_move = generate_random(0, 3);
 			move_for = 3 + generate_random(0, 1);
 			if (will_move) {
-				theta = (generate_random(0, 7)) * 45;
+				theta = float(generate_random(0, 7)) * 45.f;
 				direction({ 0, 0 });
 				curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 				for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(curr_movement.x), (short)round(curr_movement.y)); i++) {
@@ -633,11 +633,11 @@ void Enemy::update(float scale)
 		if (player_entity.cooldown <= 0&&hit_cooldown<=0) {
 			player_entity.current_frame = 0;
 			player_entity.damaged();
-			player_entity.cooldown = 0.6;
+			player_entity.cooldown = 0.6f;
 			player_entity.combat_tag = combat_status_time;
 			player_entity.knockback(curr_movement,150);
 			player_entity.knockback(Vector2f(current_direction), 150);
-			hit_cooldown = 0.8;
+			hit_cooldown = 0.8f;
 			player_entity.health -= damage;
 
 			random_num = generate_random(6, 8);

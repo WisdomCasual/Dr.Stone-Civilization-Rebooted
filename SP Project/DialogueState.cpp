@@ -9,16 +9,16 @@ void DialogueState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		box.setColor(Color(255, 255, 255, transparency));
-		pic.setColor(Color(255, 255, 255, transparency));
-		output_text.setFillColor(Color(255, 255, 255, transparency));
+		box.setColor(Color(255, 255, 255, (int)transparency));
+		pic.setColor(Color(255, 255, 255, (int)transparency));
+		output_text.setFillColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness < 154) {
 			if (darkness + 154 * dt * 6 > 154)
 				darkness = 154;
 			else
 				darkness += 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 	}
 }
@@ -31,16 +31,16 @@ bool DialogueState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		box.setColor(Color(255, 255, 255, transparency));
-		pic.setColor(Color(255, 255, 255, transparency));
-		output_text.setFillColor(Color(255, 255, 255, transparency));
+		box.setColor(Color(255, 255, 255, (int)transparency));
+		pic.setColor(Color(255, 255, 255, (int)transparency));
+		output_text.setFillColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness > 0) {
 			if (darkness - 154 * dt * 6 < 0)
 				darkness = 0;
 			else
 				darkness -= 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 		return false;
 	}
@@ -55,7 +55,7 @@ DialogueState::DialogueState(dialogue* dialogues, Vector2f offset, float scale_c
 	output_text.setFont(font);
 	setDialogue(dialogues, dialogues_number);
 	box.setTexture(*textures[0]);
-	lim = box.getLocalBounds().height * 0.9 / 30;
+	lim = int(box.getLocalBounds().height * 0.9f / 30.f);
 }
 
 DialogueState::~DialogueState()
@@ -75,7 +75,7 @@ void DialogueState::setTexture(Texture& box_texture)
 {
 	box.setTexture(box_texture);
 	box.setScale(scale * 4, scale * 4);
-	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
+	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.f, box.getLocalBounds().top + box.getLocalBounds().height / 2.f);
 	box.setPosition(position);
 }
 
@@ -88,26 +88,26 @@ void DialogueState::setPosition(const Vector2f new_position)
 {
 	position = new_position;
 	output_text.setString(y_string);
-	text_y_bound = output_text.getLocalBounds().top + output_text.getLocalBounds().height / 2.0;
-	text_x_offset = position.x + (box_bounds.width * scale * scale_const / 3.9);
+	text_y_bound = output_text.getLocalBounds().top + output_text.getLocalBounds().height / 2.f;
+	text_x_offset = position.x + (box_bounds.width * scale * scale_const / 3.9f);
 	text_y_offset = position.y + (box_bounds.height * scale * scale_const / 5.f);
-	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
+	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.f, box.getLocalBounds().top + box.getLocalBounds().height / 2.f);
 	box.setPosition(position);
-	pic.setOrigin(pic.getLocalBounds().left + pic.getLocalBounds().width / 2, pic.getLocalBounds().top + pic.getLocalBounds().height / 2);
-	pic.setPosition(Vector2f (position.x - box_bounds.width * scale * scale_const / 1.4, position.y));
+	pic.setOrigin(pic.getLocalBounds().left + pic.getLocalBounds().width / 2.f, pic.getLocalBounds().top + pic.getLocalBounds().height / 2.f);
+	pic.setPosition(Vector2f (position.x - box_bounds.width * scale * scale_const / 1.4f, position.y));
 }
 
 void DialogueState::render_text()
 {
-	float init_line = (0.5 - lines / 2.0), dis = 30 * scale;
+	float init_line = (0.5f - lines / 2.f), dis = 30 * scale;
 	for (int i = 0; i < lines; i++, init_line++) {
 		output_text.setString(y_string);
-		text_y_bound = output_text.getLocalBounds().top + output_text.getLocalBounds().height / 2;
+		text_y_bound = output_text.getLocalBounds().top + output_text.getLocalBounds().height / 2.f;
 		if (!add_idx && i == lines - 1)
 			output_text.setString(output_strings[i].substr(0, output_strings[i].size()-1));
 		else
 			output_text.setString(output_strings[i]);
-		output_text.setOrigin(output_text.getLocalBounds().left + output_text.getLocalBounds().width / 2.0, text_y_bound);
+		output_text.setOrigin(output_text.getLocalBounds().left + output_text.getLocalBounds().width / 2.f, text_y_bound);
 		output_text.setPosition(Vector2f(text_x_offset, (text_y_offset) + init_line * dis));
 		if (!add_idx && i == lines - 1)
 			output_text.setString(output_strings[i]);
@@ -181,7 +181,7 @@ void DialogueState::commands()
 			}
 			for (auto i = expression_str.rbegin(); i != expression_str.rend(); i++)
 				expression_num = expression_num * 10 +  *i - '0';
-			char_idx += expression_str.size()-1;
+			char_idx += (int)expression_str.size() - 1;
 			set_expression(expression_num);
 			return;
 	}
@@ -191,15 +191,15 @@ void DialogueState::update()
 {
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
 		x = win_x / 2, y = win_y / 2;
-		if (win_x / 1080.0 < win_y / 609) scale = win_x / 1080.0;
-		else scale = win_y / 609;
+		if (win_x / 1080.f < win_y / 609.f) scale = win_x / 1080.f;
+		else scale = win_y / 609.f;
 		/////////////////////
 		position = { x + offset.x * scale,  win_y - offset.y * scale };
-		output_text.setCharacterSize(40 * scale * scale_const);
-		pic.setScale(scale / 1.6 * scale_const, scale / 1.6 * scale_const);
-		box.setScale(scale * 2 * scale_const, scale * 2 * scale_const);
+		output_text.setCharacterSize(int(40.f * scale * scale_const));
+		pic.setScale(scale / 1.6f * scale_const, scale / 1.6f * scale_const);
+		box.setScale(scale * 2.f * scale_const, scale * 2.f * scale_const);
 		tint.setSize({ win_x, win_y });
 	}
 
@@ -223,8 +223,8 @@ void DialogueState::update()
 			reminder_idx = (char_idx < dialogues[dialogue_idx].text.size()) ? char_idx : 0;
 			return;
 		}
-		while (delay >= 0.08) {
-			delay -= 0.08;
+		while (delay >= 0.08f) {
+			delay -= 0.08f;
 			if (char_idx < dialogues[dialogue_idx].text.size()) {
 				write_text();
 			}
@@ -238,8 +238,8 @@ void DialogueState::update()
 			output_strings[lines - 1] += ' ';
 			add_idx = 0;
 		}
-		while (delay >= 0.75) {
-			delay -= 0.75;
+		while (delay >= 0.75f) {
+			delay -= 0.75f;
 			cursor = !cursor;
 			output_strings[lines - 1][output_strings[lines - 1].size() - 1] = (cursor) ? '|' : ' ';
 		}
@@ -254,7 +254,7 @@ void DialogueState::render()
 	window->draw(tint);
 	window->draw(pic);
 	window->draw(box);
-	text.setFillColor(Color(255, 255, 255, transparency));
+	text.setFillColor(Color(255, 255, 255, (int)transparency));
 	draw_text(speaker_text, position.x - 75 * scale * scale_const, position.y - 73 * scale * scale_const, 34 * scale * scale_const);
 	render_text();
 }

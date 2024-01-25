@@ -93,8 +93,8 @@ namespace globalvar {
     inline string item_names[50] = {"Wood", "Stone", "Raw Beef", "Raw Lamb", "Wool", "Berries", "Leather", "Plants", "Cooked Beef", "Cooked Lamb" };
     inline float healing_value[50] = { 0,      0,       0.5,        0.5,       0,       0.5,        0,         0    ,     1       ,        1      };
 
-	inline const int dx[4] = { 1, -1, 0, 0 };
-	inline const int dy[4] = { 0, 0, 1, -1};
+	inline const short dx[4] = { 1, -1, 0, 0 };
+	inline const short dy[4] = { 0, 0, 1, -1};
 
     inline float blackining = 0;
 
@@ -103,12 +103,12 @@ namespace globalvar {
 		short expression = 0, pic = 1; //pic is 1-based, expression is 0-based
 	};
 
-	inline void draw_text(string text_string, int x_pos, int y_pos, float characterSize)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
+	inline void draw_text(string text_string, float x_pos, float y_pos, float characterSize)   //<-- gets window pointer, string, X cord, Y cords, Character size to draw text
 	{
 		//gets window pointer, string, X cord, Y cords, Character size to draw text
 		text.setString(text_string);
-		text.setCharacterSize(characterSize);
-		text.setOrigin(text.getLocalBounds().width / 2.0, text.getLocalBounds().top + text.getLocalBounds().height / 2.0);
+		text.setCharacterSize((unsigned int)characterSize);
+		text.setOrigin(text.getLocalBounds().width / 2.f, text.getLocalBounds().top + text.getLocalBounds().height / 2.f);
 		text.setPosition(x_pos, y_pos);
 		window->draw(text);
 	}
@@ -135,7 +135,7 @@ namespace globalvar {
 
     inline int generate_random(float mn = 0, float mx = FLT_MAX) {
         uniform_real_distribution<float> dist(mn, mx);
-        return roundf(dist(mt));
+        return (int)roundf(dist(mt));
     }
 
     inline float generate_random_f(float mn = 0, float mx = FLT_MAX - 1) {

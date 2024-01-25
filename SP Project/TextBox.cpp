@@ -5,7 +5,7 @@ TextBox::TextBox()
 {
 	//text
 	inputted_text.setFont(font);
-	inputted_text.setCharacterSize(40*scale);
+	inputted_text.setCharacterSize(int(40 * scale));
 	inputted_text.setPosition(position);
 	keypress_buff.loadFromFile("Audio/UI/keypress.ogg");
 	keypress.setBuffer(keypress_buff);
@@ -21,8 +21,8 @@ void TextBox::setTargetString(string& target_string)
 void TextBox::setTexture(Texture& box_texture)
 {
 	box.setTexture(box_texture);
-	box.setScale(scale * 1.5, scale * 1.5);
-	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
+	box.setScale(scale * 1.5f, scale * 1.5f);
+	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.f, box.getLocalBounds().top + box.getLocalBounds().height / 2.f);
 	box.setPosition(position);
 }
 
@@ -53,9 +53,9 @@ void TextBox::setLimit(float limit)
 void TextBox::setScale(const float new_scale)
 {
 	scale = new_scale;
-	box.setScale(scale * 1.5, scale * 1.5);
-	inputted_text.setCharacterSize(40 * scale);
-	placeholder_text.setCharacterSize(40 * scale);
+	box.setScale(scale * 1.5f, scale * 1.5f);
+	inputted_text.setCharacterSize(int(40 * scale));
+	placeholder_text.setCharacterSize(int(40 * scale));
 }
 
 void TextBox::setPlaceholderText(const string placeholder)
@@ -136,7 +136,7 @@ void TextBox::text_poll(Event event)
 				selected = 0;
 
 				inputted_text.setString(input_string);
-				inputted_text.setOrigin(inputted_text.getGlobalBounds().width / 2.0, bound_y);
+				inputted_text.setOrigin(inputted_text.getGlobalBounds().width / 2.f, bound_y);
 				inputted_text.setPosition(position);
 			}
 
@@ -211,20 +211,20 @@ void TextBox::submit()
 void TextBox::update()
 {
 	inputted_text.setString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
-	bound_y = inputted_text.getLocalBounds().top + inputted_text.getLocalBounds().height / 2.0;
+	bound_y = inputted_text.getLocalBounds().top + inputted_text.getLocalBounds().height / 2.f;
 	inputted_text.setString(*display_string);
-	placeholder_text.setOrigin(placeholder_text.getLocalBounds().left + placeholder_text.getLocalBounds().width / 2.0, placeholder_text.getLocalBounds().top + placeholder_text.getLocalBounds().height / 2.0);
-	box_x_bound = box.getGlobalBounds().width * 0.8, text_x_bound = inputted_text.getGlobalBounds().width;
-	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.0, box.getLocalBounds().top + box.getLocalBounds().height / 2.0);
-	inputted_text.setOrigin(inputted_text.getLocalBounds().left + inputted_text.getLocalBounds().width / 2.0, bound_y);
+	placeholder_text.setOrigin(placeholder_text.getLocalBounds().left + placeholder_text.getLocalBounds().width / 2.f, placeholder_text.getLocalBounds().top + placeholder_text.getLocalBounds().height / 2.f);
+	box_x_bound = box.getGlobalBounds().width * 0.8f, text_x_bound = inputted_text.getGlobalBounds().width;
+	box.setOrigin(box.getLocalBounds().left + box.getLocalBounds().width / 2.f, box.getLocalBounds().top + box.getLocalBounds().height / 2.f);
+	inputted_text.setOrigin(inputted_text.getLocalBounds().left + inputted_text.getLocalBounds().width / 2.f, bound_y);
 	setPosition(position);
 	if (selected)
-		inputted_text.setFillColor(Color(0, 0, 255, transparency));
+		inputted_text.setFillColor(Color(0, 0, 255, (int)transparency));
 	else if(isActive)
-		inputted_text.setFillColor(Color(255, 255, 255, transparency));
+		inputted_text.setFillColor(Color(255, 255, 255, (int)transparency));
 	else
-		inputted_text.setFillColor(Color(200, 200, 200, transparency));
-	placeholder_text.setFillColor(Color(177, 146, 114, transparency));
+		inputted_text.setFillColor(Color(200, 200, 200, (int)transparency));
+	placeholder_text.setFillColor(Color(177, 146, 114, (int)transparency));
 	string output_string;
 	if (cursor && isActive) {
 		output_string = *display_string + ((cursor) ? "|" : "");

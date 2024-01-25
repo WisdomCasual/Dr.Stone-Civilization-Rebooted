@@ -9,10 +9,10 @@ void SavesState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		savesBG.setColor(Color(255, 255, 255, transparency));
-		save_bg.setColor(Color(255, 255, 255, transparency));
-		arrow.setColor(Color(255, 255, 255, transparency));
-		charactertex.setColor(Color(255, 255, 255, transparency));
+		savesBG.setColor(Color(255, 255, 255, (int)transparency));
+		save_bg.setColor(Color(255, 255, 255, (int)transparency));
+		arrow.setColor(Color(255, 255, 255, (int)transparency));
+		charactertex.setColor(Color(255, 255, 255, (int)transparency));
 
 
 		if (darkness < 154) {
@@ -20,7 +20,7 @@ void SavesState::fade_in()
 				darkness = 154;
 			else
 				darkness += 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 	}
 }
@@ -33,17 +33,17 @@ bool SavesState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		savesBG.setColor(Color(255, 255, 255, transparency));
-		save_bg.setColor(Color(255, 255, 255, transparency));
-		arrow.setColor(Color(255, 255, 255, transparency));
-		charactertex.setColor(Color(255, 255, 255, transparency));
+		savesBG.setColor(Color(255, 255, 255, (int)transparency));
+		save_bg.setColor(Color(255, 255, 255, (int)transparency));
+		arrow.setColor(Color(255, 255, 255, (int)transparency));
+		charactertex.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness > 0) {
 			if (darkness - 154 * dt * 6 < 0)
 				darkness = 0;
 			else
 				darkness -= 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 		return false;
 	}
@@ -59,7 +59,7 @@ bool SavesState::black_out()
 			blackining = 255;
 		else
 			blackining += 500 * dt;
-		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		blackscreen.setFillColor(Color(0, 0, 0, (int)blackining));
 		return false;
 	}
 	return true;
@@ -67,9 +67,9 @@ bool SavesState::black_out()
 
 void SavesState::update_saves()
 {
-	del.setOrigin(del.getLocalBounds().width / 2.0, del.getLocalBounds().top + del.getLocalBounds().height / 2.0);
+	del.setOrigin(del.getLocalBounds().width / 2.f, del.getLocalBounds().top + del.getLocalBounds().height / 2.f);
 	savesBG.setPosition(x, y);
-	savesBG.setScale(scale * 0.33, scale * 0.33);
+	savesBG.setScale(scale * 0.33f, scale * 0.33f);
 	save_bg.setScale(scale, scale);
 	for (int i = 0; i < 3; i++) {
 		save_bg.setTextureRect(IntRect(0, saves[i].pressed * 100, 100, 200));
@@ -135,10 +135,10 @@ void SavesState::update_saves()
 void SavesState::render_saves()
 {
 	window->draw(savesBG);
-	text.setFillColor(Color(0, 0, 0, transparency));
+	text.setFillColor(Color(0, 0, 0, (int)transparency));
 	draw_text("Choose Save File", x, y - 120 * scale, 20 * scale);
 
-	del.setCharacterSize(16.69 * scale);
+	del.setCharacterSize(int(16.69f * scale));
 	for (int i = 0; i < 3; i++) {
 		if (saves[i].pressed)
 			save_bg.setTextureRect(IntRect(200, 0, 100, 200));
@@ -150,12 +150,12 @@ void SavesState::render_saves()
 		save_bg.setPosition(x + saves[i].x * scale, y + saves[i].y * scale);
 
 		if (saves[i].del_hover)
-			del.setFillColor(Color(255, 0, 0, transparency));
+			del.setFillColor(Color(255, 0, 0, (int)transparency));
 		else 
-			del.setFillColor(Color(164, 0, 0, transparency));
+			del.setFillColor(Color(164, 0, 0, (int)transparency));
 
 		if (saves[i].del_pressed)
-			del.setScale(0.95,0.95);
+			del.setScale(0.95f, 0.95f);
 		else 
 			del.setScale(1, 1);
 
@@ -163,16 +163,16 @@ void SavesState::render_saves()
 		window->draw(save_bg);
 		
 		if (saves[i].empty) {
-			text.setFillColor(Color(0, 0, 0, transparency));
+			text.setFillColor(Color(0, 0, 0, (int)transparency));
 			draw_text("Empty Save", x + saves[i].x * scale, y + saves[i].y * scale, 18 * scale);
 		}
 		else {
-			text.setFillColor(Color(0, 0, 0, transparency));
+			text.setFillColor(Color(0, 0, 0, (int)transparency));
 			draw_text(saves[i].name, x + saves[i].x * scale, y - 70 * scale, 18 * scale);
 			draw_text("Re-Civilization Level:", x + saves[i].x * scale, y + 12 * scale, 12 * scale);
 			draw_text("Progress", x + saves[i].x * scale, y + 65 * scale, 14 * scale);
 			draw_text(to_string(saves[i].progress) + "%", x + saves[i].x * scale, y + 78 * scale, 14 * scale);
-			text.setFillColor(Color(170, 170, 170, transparency));
+			text.setFillColor(Color(170, 170, 170, (int)transparency));
 
 			draw_text(quest_names[saves[i].progress].first_line, x + saves[i].x * scale, y + 30 * scale, 14 * scale);
 			draw_text(quest_names[saves[i].progress].second_line, x + saves[i].x * scale, y + 45 * scale, 14 * scale);
@@ -180,7 +180,7 @@ void SavesState::render_saves()
 		    ////////////place holder/////////
 			charactertex.setTextureRect(IntRect( (saves[i].character_id-1) * 64, 0, 64, 64));
 			charactertex.setPosition(x + saves[i].x * scale, y - 30 * scale);
-			charactertex.setScale(scale * 0.95, scale * 0.95);
+			charactertex.setScale(scale * 0.95f, scale * 0.95f);
 			window->draw(charactertex);
 			/////////////////////
 
@@ -199,13 +199,13 @@ SavesState::SavesState()
 	////////////place holder/////////
 	charactertex.setTexture(*textures[2]);
 	charactertex.setTextureRect(IntRect(0, 0, 64, 64));
-	charactertex.setOrigin(charactertex.getLocalBounds().width / 2.0, charactertex.getLocalBounds().height / 2.0);
+	charactertex.setOrigin(charactertex.getLocalBounds().width / 2.f, charactertex.getLocalBounds().height / 2.f);
 	//////////////
 
 	tint.setSize({ 1920, 1080 });
 
 	savesBG.setTexture(*textures[1]);
-	savesBG.setOrigin(savesBG.getGlobalBounds().width / 2, savesBG.getGlobalBounds().height / 2);
+	savesBG.setOrigin(savesBG.getGlobalBounds().width / 2.f, savesBG.getGlobalBounds().height / 2.f);
 
 	save_bg.setTexture(*textures[0]);
 	save_bg.setTextureRect(IntRect(0,0,100,200));
@@ -229,7 +229,7 @@ SavesState::~SavesState()
 void SavesState::update_arrow()
 {
 	arrow.setPosition(x - 180 * scale, y - 120 * scale);
-	arrow.setScale(scale * 0.8, scale * 0.8);
+	arrow.setScale(scale * 0.8f, scale * 0.8f);
 	if (arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		clickable_cursor = true;
 		arrow.setTextureRect(IntRect(22, 0, 22, 21));
@@ -238,7 +238,7 @@ void SavesState::update_arrow()
 				game.play_sfx(1);
 			arrow_pressed = 1;
 			arrow.setTextureRect(IntRect(44, 0, 22, 21));
-			arrow.setScale(scale * 0.75, scale * 0.75);
+			arrow.setScale(scale * 0.75f, scale * 0.75f);
 		}
 		else {
 			if (arrow_pressed) {
@@ -280,10 +280,10 @@ void SavesState::initial_saves()
 
 void SavesState::update()
 {
-	float win_x = window->getSize().x, win_y = window->getSize().y;
-	x = win_x / 2, y = win_y / 2;
-	scale = min(win_x / 570.0, win_y / 350.0);
-	if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.9;
+	float win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+	x = win_x / 2.f, y = win_y / 2.f;
+	scale = min(win_x / 570.f, win_y / 350.f);
+	if (VideoMode::getDesktopMode().width < win_x * 1.7f || VideoMode::getDesktopMode().height < win_y * 1.7f) scale *= 0.9f;
 
 	tint.setSize({ win_x, win_y });
 	blackscreen.setSize({ win_x, win_y });

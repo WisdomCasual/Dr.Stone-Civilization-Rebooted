@@ -1,6 +1,6 @@
 #include "SettingsState.h"
 // length of slider (mostly used to give the size for the hollow slider)
-#define sliderconst 135.0
+#define sliderconst 135.f
 
 
 void SettingsState::fade_in()
@@ -11,24 +11,24 @@ void SettingsState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		back_arrow.setColor(Color(255, 255, 255, transparency));
-		tip.setColor(Color(255, 255, 255, transparency));
-		slider_text.setFillColor(Color(0, 0, 0, transparency));
-		checkbox.setColor(Color(255, 255, 255, transparency));
-		checkmark.setColor(Color(255, 255, 255, transparency));
+		back_arrow.setColor(Color(255, 255, 255, (int)transparency));
+		tip.setColor(Color(255, 255, 255, (int)transparency));
+		slider_text.setFillColor(Color(0, 0, 0, (int)transparency));
+		checkbox.setColor(Color(255, 255, 255, (int)transparency));
+		checkmark.setColor(Color(255, 255, 255, (int)transparency));
 		if (dev_button_active)
-			devbutton.setColor(Color(255, 255, 255, transparency));
+			devbutton.setColor(Color(255, 255, 255, (int)transparency));
 
 
 		if (bg_fade) {
-			panel.setColor(Color(255, 255, 255, transparency));
-			tissue.setColor(Color(255, 255, 255, transparency));
+			panel.setColor(Color(255, 255, 255, (int)transparency));
+			tissue.setColor(Color(255, 255, 255, (int)transparency));
 			if (darkness < 154) {
 				if (darkness + 154 * dt * 6 > 154)
 					darkness = 154;
 				else
 					darkness += 154 * dt * 6;
-				tint.setFillColor(Color(0, 0, 0, darkness));
+				tint.setFillColor(Color(0, 0, 0, (int)darkness));
 			}
 		}
 	}
@@ -42,23 +42,23 @@ bool SettingsState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		back_arrow.setColor(Color(255, 255, 255, transparency));
-		tip.setColor(Color(255, 255, 255, transparency));
-		slider_text.setFillColor(Color(0, 0, 0, transparency));
-		checkbox.setColor(Color(255, 255, 255, transparency));
-		checkmark.setColor(Color(255, 255, 255, transparency));
+		back_arrow.setColor(Color(255, 255, 255, (int)transparency));
+		tip.setColor(Color(255, 255, 255, (int)transparency));
+		slider_text.setFillColor(Color(0, 0, 0, (int)transparency));
+		checkbox.setColor(Color(255, 255, 255, (int)transparency));
+		checkmark.setColor(Color(255, 255, 255, (int)transparency));
 		if (dev_button_active)
-			devbutton.setColor(Color(255, 255, 255, transparency));
+			devbutton.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (bg_fade) {
-			panel.setColor(Color(255, 255, 255, transparency));
-			tissue.setColor(Color(255, 255, 255, transparency));
+			panel.setColor(Color(255, 255, 255, (int)transparency));
+			tissue.setColor(Color(255, 255, 255, (int)transparency));
 			if (darkness > 0) {
 				if (darkness - 154 * dt * 6 < 0)
 					darkness = 0;
 				else
 					darkness -= 154 * dt * 6;
-				tint.setFillColor(Color(0, 0, 0, darkness));
+				tint.setFillColor(Color(0, 0, 0, (int)darkness));
 			}
 		}
 		return false;
@@ -72,7 +72,7 @@ void SettingsState::update_arrow()
 	// here we save the new settings in the config file
 	// also set the position for the arrow and detect for clicks and add a little animation for the click
 	back_arrow.setPosition(x - 35 * scale, y - 35 * scale);
-	back_arrow.setScale(scale * 0.3, scale * 0.3);
+	back_arrow.setScale(scale * 0.3f, scale * 0.3f);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
@@ -81,7 +81,7 @@ void SettingsState::update_arrow()
 				game.play_sfx(1);
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
-			back_arrow.setScale(scale * 0.27, scale * 0.27);
+			back_arrow.setScale(scale * 0.27f, scale * 0.27f);
 		}
 		else {
 			// go back to previous state and apply the changes 
@@ -103,13 +103,13 @@ void SettingsState::dev_button()
 	// Positioning the button and it's text
 	if (scale != previous_scale) {
 		previous_scale = scale;
-		devbutton.setScale(scale * 0.2, scale * 0.2);
-		devtext.setCharacterSize(4.45 * scale);
-		devtext.setOrigin(devtext.getLocalBounds().width / 2.0, devtext.getLocalBounds().top + devtext.getLocalBounds().height / 2.0);
+		devbutton.setScale(scale * 0.2f, scale * 0.2f);
+		devtext.setCharacterSize(int(4.45f * scale));
+		devtext.setOrigin(devtext.getLocalBounds().width / 2.f, devtext.getLocalBounds().top + devtext.getLocalBounds().height / 2.f);
 	}
 
 	devbutton.setPosition(x + 35 * scale, y + 35 * scale);
-	devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2 * scale);
+	devtext.setPosition(x + 35 * scale, y + 35 * scale - 2 * 0.2f * scale);
 	devbutton.setTextureRect(IntRect(0, 0, 45, 49));
 	// detect for clicks
 	if (devbutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
@@ -118,14 +118,14 @@ void SettingsState::dev_button()
 			if(!button_pressed)
 				game.play_sfx(0);
 			button_pressed = 1;
-			devtext.setPosition(x + 35 * scale, y + 35.4 * scale);
+			devtext.setPosition(x + 35 * scale, y + 35.4f * scale);
 			devbutton.setTextureRect(IntRect(45, 0, 45, 49));
 		}
 		else {
 			if (button_pressed) {
 				// pushing the password state 
 				button_pressed = 0;
-				devtext.setFillColor(Color(200, 200, 200, transparency));
+				devtext.setFillColor(Color(200, 200, 200, (int)transparency));
 
 				states->insert(PasswordST);
 				states->at(PasswordID)->update();
@@ -135,13 +135,13 @@ void SettingsState::dev_button()
 				return;
 			}
 			devbutton.setTextureRect(IntRect(0, 0, 45, 49));
-			devtext.setPosition(x + 35 * scale, y + 34.6 * scale);
+			devtext.setPosition(x + 35 * scale, y + 34.6f * scale);
 		}
-		devtext.setFillColor(Color(255, 255, 255, transparency));
+		devtext.setFillColor(Color(255, 255, 255, (int)transparency));
 	}
 	else {
 		button_pressed = 0;
-		devtext.setFillColor(Color(200, 200, 200, transparency));
+		devtext.setFillColor(Color(200, 200, 200, (int)transparency));
 	}
 }
 
@@ -163,30 +163,30 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 		of a random part of the slider the right tip will go there and also the mid will be scaled
 		*/
 		
-		tip.setScale(scale / 3, scale / 3);
+		tip.setScale(scale / 3.f, scale / 3.f);
 		tip.setTextureRect(tipsleft[sliders[target].color]);
-		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-		tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
+		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.f);
+		tip.setPosition(x + sliders[target].x * (scale / 3.f), y + sliders[target].y * scale);
 		if (tip.getGlobalBounds().contains(mouse_pos) && Mouse::isButtonPressed(Mouse::Left))
 			sliders[target].presssed = 1;
 
 		if (tip.getGlobalBounds().contains(mouse_pos))
 			clickable_cursor = true;
 
-		tip.setScale(sliderconst / 18 * (scale / 3), (scale / 3));
+		tip.setScale(sliderconst / 18.f * (scale / 3.f), (scale / 3.f));
 		tip.setTextureRect(mids[3]);
-		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-		tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
+		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.f);
+		tip.setPosition(x + (sliders[target].x + 9) * (scale / 3.f), y + sliders[target].y * scale);
 		if (tip.getGlobalBounds().contains(mouse_pos) && Mouse::isButtonPressed(Mouse::Left))
 			sliders[target].presssed = 1;
 
 		if (tip.getGlobalBounds().contains(mouse_pos))
 			clickable_cursor = true;
 
-		tip.setScale(scale / 3, scale / 3);
+		tip.setScale(scale / 3.f, scale / 3.f);
 		tip.setTextureRect(tipsright[3]);
-		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-		tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3), y + sliders[target].y * scale);
+		tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.f);
+		tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3.f), y + sliders[target].y * scale);
 		if (tip.getGlobalBounds().contains(mouse_pos) && Mouse::isButtonPressed(Mouse::Left))
 			sliders[target].presssed = 1;
 
@@ -199,23 +199,21 @@ void SettingsState::update_slider(slider_info* sliders, int target)
 			sliders[target].released = 1;
 			clickable_cursor = true;
 			// make sure that the slider doesn't pass it's boundries
-			float initpos = x + (sliders[target].x + 9) * (scale / 3), mxlen = sliderconst * (scale / 3), stepsize = mxlen / sliders[target].mx;
-			if (mouse_pos.x < initpos) sliders[target].tipx = initpos;
+			float initpos = x + (sliders[target].x + 9) * (scale / 3.f), mxlen = sliderconst * (scale / 3.f), stepsize = mxlen / sliders[target].mx;
+			if (mouse_pos.x < initpos) sliders[target].tipx = (short)initpos;
 			else if (mouse_pos.x > initpos + mxlen) {
-				sliders[target].tipx = initpos + mxlen;
+				sliders[target].tipx = short(initpos + mxlen);
 			}
 			else {
-				sliders[target].tipx = initpos + (sliders[target].mx - round((initpos + mxlen - mouse_pos.x) / stepsize)) * stepsize;
+				sliders[target].tipx = short(initpos + (sliders[target].mx - round((initpos + mxlen - mouse_pos.x) / stepsize)) * stepsize);
 			}
 
-			*sliders[target].linker = round(((sliders[target].tipx - x) / (scale / 3) - sliders[target].x - 9) / sliderconst * sliders[target].mx);
-			sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 3));
+			*sliders[target].linker = (short)round(((sliders[target].tipx - x) / (scale / 3.f) - sliders[target].x - 9) / sliderconst * sliders[target].mx);
+			sliders[target].midscale = (sliders[target].tipx - initpos) / (18 * (scale / 3.f));
 		}
 		else {
-			if (sliders[target].released) {
+			if (sliders[target].released)
 				sliders[target].released = 0;
-				game.save();
-			}
 		}
 	}
 }
@@ -224,16 +222,16 @@ void SettingsState::render_slider(int target)
 {
 	//background
 	// the left tip wasn't rendered because it'll never appear in any case (Hollow slider/background)
-	tip.setScale(sliderconst / 18 * (scale / 3), (scale / 3));
+	tip.setScale(sliderconst / 18.f * (scale / 3.f), (scale / 3.f));
 	tip.setTextureRect(mids[3]);
-	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-	tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.f);
+	tip.setPosition(x + (sliders[target].x + 9) * (scale / 3.f), y + sliders[target].y * scale);
 	window->draw(tip);
 
-	tip.setScale(scale / 3, scale / 3);
+	tip.setScale(scale / 3.f, scale / 3.f);
 	tip.setTextureRect(tipsright[3]);
-	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-	tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3), y + sliders[target].y * scale);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.f);
+	tip.setPosition(x + (sliders[target].x + 9 + sliderconst) * (scale / 3.f), y + sliders[target].y * scale);
 	window->draw(tip);
 
 	//foreground
@@ -241,48 +239,48 @@ void SettingsState::render_slider(int target)
 	// first we check if the slider was disabled if so, we change it's color to a dimmer color.
 
 	if (sliders[target].disabled)
-		tip.setColor(Color(155, 155, 155, transparency));
+		tip.setColor(Color(155, 155, 155, (int)transparency));
 	else
-		tip.setColor(Color(255, 255, 255, transparency));
+		tip.setColor(Color(255, 255, 255, (int)transparency));
 	
 	// here we just draw and position every part of the slider
 
-	tip.setScale(scale / 3, scale / 3);
+	tip.setScale(scale / 3.f, scale / 3.f);
 	tip.setTextureRect(tipsleft[sliders[target].color]);
-	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-	tip.setPosition(x + sliders[target].x * (scale / 3), y + sliders[target].y * scale);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.f);
+	tip.setPosition(x + sliders[target].x * (scale / 3.f), y + sliders[target].y * scale);
 	window->draw(tip);
 
-	tip.setScale(sliders[target].midscale * (scale / 3), (scale / 3));
+	tip.setScale(sliders[target].midscale * (scale / 3.f), (scale / 3.f));
 	tip.setTextureRect(mids[sliders[target].color]);
-	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
-	tip.setPosition(x + (sliders[target].x + 9) * (scale / 3), y + sliders[target].y * scale);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.f);
+	tip.setPosition(x + (sliders[target].x + 9) * (scale / 3.f), y + sliders[target].y * scale);
 	window->draw(tip);
 
-	tip.setScale(scale / 3, scale / 3);
+	tip.setScale(scale / 3.f, scale / 3.f);
 	tip.setTextureRect(tipsright[sliders[target].color]);
-	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.0);
+	tip.setOrigin(tip.getLocalBounds().left, tip.getLocalBounds().top + tip.getLocalBounds().height / 2.f);
 	tip.setPosition(sliders[target].tipx, y + sliders[target].y * scale);
 
 	window->draw(tip);
 
 	// add the slider functionality name on top of the slider 
 
-	slider_text.setCharacterSize(5.5 * scale);
+	slider_text.setCharacterSize(int(5.5f * scale));
 	slider_text.setString(sliders[target].name);
 	slider_text.setPosition(x + sliders[target].x * (scale / 3), y + (sliders[target].y - 11) * scale);
 	window->draw(slider_text);
 
 	// add some text to the right side of the slider to show it's current value (game sound, framelimit, etc...)
 
-	slider_text.setCharacterSize(5 * scale);
+	slider_text.setCharacterSize(int(5 * scale));
 	if (sliders[target].text_type == 0)
 		slider_text.setString(to_string(*sliders[target].linker));
 	else if (sliders[target].text_type == 1)
 		slider_text.setString(to_string(*sliders[target].linker) + "%");
 	else
 		slider_text.setString(sliders[target].txt[*sliders[target].linker]);
-	slider_text.setPosition(x + (sliders[target].x + 9 + sliderconst + 15) * (scale / 3), y + (sliders[target].y - 4) * scale);
+	slider_text.setPosition(x + (sliders[target].x + 9 + sliderconst + 15) * (scale / 3.f), y + (sliders[target].y - 4) * scale);
 	window->draw(slider_text);
 }
 
@@ -290,12 +288,12 @@ void SettingsState::settings_intializer()
 {
 	//read current settings
 	prev_win = window->getSize();
-	win_x = window->getSize().x, win_y = window->getSize().y;
-	x = win_x / 2, y = win_y / 2;
-	if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
-	else scale = win_y / 120.0;
+	win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+	x = win_x / 2.f, y = win_y / 2.f;
+	if (win_x / 120.f < win_y / 120.f) scale = win_x / 120.f;
+	else scale = win_y / 120.f;
 
-	if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
+	if (VideoMode::getDesktopMode().width < win_x * 1.7f || VideoMode::getDesktopMode().height < win_y * 1.7f) scale *= 0.75f;
 
 	//initialize resolution data
 	for (int i = 0; i < resnum; i++) {
@@ -337,9 +335,9 @@ void SettingsState::settings_intializer()
 	//intiliazie slider positions
 	float percentage = 1;
 	for (int i = 0; i < 4; i++) {
-		percentage = (*sliders[i].linker < sliders[i].mx) ? *sliders[i].linker / (float)sliders[i].mx : 1.0;
-		sliders[i].tipx = x + (sliders[i].x + 9 + percentage * sliderconst) * (scale / 3);
-		sliders[i].midscale = (sliders[i].tipx - (x + (sliders[i].x + 9) * (scale / 3))) / (18 * (scale / 3));
+		percentage = (*sliders[i].linker < sliders[i].mx) ? *sliders[i].linker / (float)sliders[i].mx : 1.f;
+		sliders[i].tipx = short(x + (sliders[i].x + 9 + percentage * sliderconst) * (scale / 3.f));
+		sliders[i].midscale = (sliders[i].tipx - (x + (sliders[i].x + 9) * (scale / 3.f))) / (18 * (scale / 3.f));
 	}
 }
 
@@ -347,10 +345,10 @@ void SettingsState::settings_intializer()
 
 void SettingsState::update_checkbox(int i)
 {
-	checkbox.setScale(scale / 8.0, scale / 8.0);
-	checkmark.setScale(scale/ 3.5, scale / 3.5);
+	checkbox.setScale(scale / 8.f, scale / 8.f);
+	checkmark.setScale(scale/ 3.5f, scale / 3.5f);
 
-	checkbox.setPosition(x + checkboxes[i].x * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale);
+	checkbox.setPosition(x + checkboxes[i].x * (scale / 3.f) + (45 / 2.f) * (scale / 8.f), y + checkboxes[i].y * scale);
 	if (checkbox.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		clickable_cursor = true;
 		if (Mouse::isButtonPressed(Mouse::Left) && checkbox.getGlobalBounds().contains(clicked_on)) {
@@ -376,10 +374,8 @@ void SettingsState::update_checkbox(int i)
 				settings_intializer();
 			}
 			else {
-				if (checkboxes[i].released) {
+				if (checkboxes[i].released)
 					checkboxes[i].released = 0;
-					game.save();
-				}
 			}
 		}
 		checkboxes[i].hover = 1;
@@ -392,12 +388,12 @@ void SettingsState::update_checkbox(int i)
 
 void SettingsState::render_checkbox(int i)
 {
-	checkbox.setPosition(x + checkboxes[i].x * (scale / 3) + (45/2) * (scale/8.0), y + checkboxes[i].y * scale);
-	checkmark.setPosition(x + checkboxes[i].x * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale - 2 * (scale / 8.0));
+	checkbox.setPosition(x + checkboxes[i].x * (scale / 3.f) + (45 / 2.f) * (scale/8.f), y + checkboxes[i].y * scale);
+	checkmark.setPosition(x + checkboxes[i].x * (scale / 3.f) + (45 / 2.f) * (scale / 8.f), y + checkboxes[i].y * scale - 2 * (scale / 8.f));
 
 	if (checkboxes[i].pressed){
 		checkbox.setTextureRect(IntRect(45, 0, 45, 49));
-		checkmark.setPosition(x + checkboxes[i].x * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale + 2 * (scale / 8.0));
+		checkmark.setPosition(x + checkboxes[i].x * (scale / 3.f) + (45 / 2.f) * (scale / 8.f), y + checkboxes[i].y * scale + 2 * (scale / 8.f));
 	}
 	else if (checkboxes[i].hover){
 		checkbox.setTextureRect(IntRect(0, 0, 45, 49));
@@ -410,7 +406,21 @@ void SettingsState::render_checkbox(int i)
 	if(checkboxes[i].checked)
 		window->draw(checkmark);
 
-	draw_text(checkboxes[i].name, x + (checkboxes[i].x + 40) * (scale / 3) + (45 / 2) * (scale / 8.0), y + checkboxes[i].y * scale, 5.5 * scale);
+	draw_text(checkboxes[i].name, x + (checkboxes[i].x + 40) * (scale / 3.f) + (45 / 2.f) * (scale / 8.f), y + checkboxes[i].y * scale, 5.5f * scale);
+}
+
+void SettingsState::save() {
+	ofstream ofs("config/window.ini");
+	if (ofs.is_open()) {
+		ofs << game.title << '\n';
+		ofs << resolutions[resolution].width << ' ' << resolutions[resolution].height << '\n';
+		ofs << game.framelimit << '\n';
+		ofs << fullscreen << '\n';
+		ofs << vsync << '\n';
+		ofs << game_volume << ' ';
+		ofs << music_volume << '\n';
+		ofs.close();
+	}
 }
 
 SettingsState::SettingsState(bool bg_fade)
@@ -490,10 +500,10 @@ void SettingsState::update()
 		tint.setSize({ win_x, win_y });
 
 		panel.setPosition(x, y);
-		panel.setScale(scale * 0.17, scale * 0.17);
+		panel.setScale(scale * 0.17f, scale * 0.17f);
 
 		tissue.setPosition(x, y);
-		tissue.setScale(scale * 0.13, scale * 0.13);
+		tissue.setScale(scale * 0.13f, scale * 0.13f);
 
 	}
 
@@ -516,10 +526,12 @@ void SettingsState::update()
 		else
 			window->setFramerateLimit(game.framelimit);
 		window->setVerticalSyncEnabled(vsync);
+		save();
 	}
 	if (fullscreen_box != fullscreen) {
 		fullscreen = fullscreen_box;
 		game.update_window();
+		save();
 	}
 
 	if (!Mouse::isButtonPressed(Mouse::Left)) {
@@ -527,15 +539,16 @@ void SettingsState::update()
 			prev_framelimit = framelimit;
 			game.framelimit = framelimit_values[framelimit];
 			window->setFramerateLimit(game.framelimit);
+			save();
 		}
 		if (resolution != prev_resolution) {
 			prev_resolution = resolution;
 			game.windowbounds = resolutions[resolution];
 			game.update_window();
-			game.save();
 			VideoMode screen = VideoMode::getDesktopMode();
 			Vector2i windowPos = { int(screen.width / 2 - game.windowbounds.width / 2), int(screen.height / 2 - game.windowbounds.height / 2) };
 			window->setPosition(windowPos);
+			save();
 		}
 	}
 
@@ -571,7 +584,6 @@ void SettingsState::update()
 	else
 		fade_in();
 
-
 	update_arrow();
 }
 
@@ -587,8 +599,8 @@ void SettingsState::render()
 	}
 
 	window->draw(back_arrow);
-	text.setFillColor(Color(0, 0, 0, transparency));
-	draw_text("Settings", x, y - 35 * scale, 6.5 * scale);
+	text.setFillColor(Color(0, 0, 0, (int)transparency));
+	draw_text("Settings", x, y - 35 * scale, 6.5f * scale);
 
 	// for loops to render the sliders and checkboxex
 

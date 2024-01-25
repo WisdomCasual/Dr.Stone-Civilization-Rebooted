@@ -1,5 +1,5 @@
 #include "NPC.h"
-#include "DIALOGUESTATE.H"
+#include "DialogueState.h"
 
 void NPC::player_collision_check()
 {
@@ -98,7 +98,7 @@ void NPC::start_dialogue(dialogue* curr_dialogue, short n)
 	curr_dialogue_num = n;
 
 	Vector2f dialogue_dir = (player_entity.getRelativePos() - getRelativePos()) / magnitude(player_entity.getRelativePos() - getRelativePos()), prev_hitbox = current_hitbox;
-	if (legal_direction({0,0}, roundf(dialogue_dir.x), roundf(dialogue_dir.y)) && !collide_with_player({0, 0})) {
+	if (legal_direction({0,0}, (short)roundf(dialogue_dir.x), (short)roundf(dialogue_dir.y)) && !collide_with_player({0, 0})) {
 		direction(Vector2f(roundf(dialogue_dir.x), roundf(dialogue_dir.y)));
 		update_looks();
 	}
@@ -123,12 +123,12 @@ void NPC::type_behaviour()
 				direction({ 0, 0 });
 			}
 			if (motion_delay >= 4) {
-				move_speed = entity_stats.base_movement_speed / 2;
+				move_speed = entity_stats.base_movement_speed / 2.f;
 				motion_delay = 0;
 				will_move = generate_random(0, 3);
 				move_for = generate_random(3, 4);
 				if (will_move) {
-					theta = (generate_random(0, 7)) * 45;
+					theta = float(generate_random(0, 7)) * 45;
 					direction({ 0, 0 });
 					NPC_curr_movement = Vector2f(cos(theta * PI / 180), sin(theta * PI / 180));
 					for (int i = 0; i < 7 && !legal_direction(Vector2f(0.f, 0.f), (short)round(NPC_curr_movement.x), (short)round(NPC_curr_movement.y)); i++) {
@@ -176,7 +176,7 @@ void NPC::type_behaviour()
 				if (dist.x == 0.f && dist.y == 0.f) {
 					if (motion_cd <= 0) {
 						if (static_map[curr_tile_x][curr_tile_y].tile_props & 3072) {
-							path_follow(curr_tile_x, curr_tile_y, -NPC_curr_movement.x, -NPC_curr_movement.y, NPC_prev_tile_x, NPC_prev_tile_y);
+							path_follow(curr_tile_x, curr_tile_y, (short)-NPC_curr_movement.x, (short)-NPC_curr_movement.y, NPC_prev_tile_x, NPC_prev_tile_y);
 						}
 						else {
 							for (int i = 0; i < 4; i++) {
@@ -218,9 +218,9 @@ void NPC::path_follow(short curr_tile_x, short curr_tile_y, short dx, short dy, 
 	}
 	travel_x = new_tile_x + dx * j, travel_y = new_tile_y + dy * j;
 	NPC_prev_tile_x = travel_x - 2 * dx, NPC_prev_tile_y = travel_y - 2 * dy;
-	dist.x = (travel_x - new_tile_x) * 16, dist.y = (travel_y - new_tile_y) * 16;
+	dist.x = (travel_x - new_tile_x) * 16.f, dist.y = (travel_y - new_tile_y) * 16.f;
 	direction(NPC_curr_movement);
-	move_speed = entity_stats.base_movement_speed / 2;
+	move_speed = entity_stats.base_movement_speed / 2.f;
 	will_move = 1;
 	//cout << dist_x << ' ' << dist_y << '\n';
 
@@ -318,15 +318,14 @@ void NPC::update(float scale)
 					short saved_dialogue_size = 0;
 					dialogue* saved_dialogue;
 					switch (id) {
-					default: {
-						saved_dialogue_size = 1;
-						saved_dialogue = new dialogue[1];
-						if(id == 1)
-							saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 6 };
-						else
-							saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 7 };
-					}
-
+						default: {
+							saved_dialogue_size = 1;
+							saved_dialogue = new dialogue[1];
+							if(id == 1)
+								saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 6 };
+							else
+								saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 7 };
+						}
 					}
 					start_dialogue(saved_dialogue, saved_dialogue_size);
 					delete[] saved_dialogue;
@@ -346,7 +345,7 @@ void NPC::update(float scale)
 					break;
 				}
 				default: {
-					single_dialogue[0] = npc_dialogues[generate_random(0, dialogues_num-1)];
+					single_dialogue[0] = npc_dialogues[(int)generate_random(0, float(dialogues_num - 1))];
 					start_dialogue(single_dialogue, 1);
 				}
 			}
@@ -387,7 +386,7 @@ void NPC::update(float scale)
 			default: {
 				Vector2f movement = { (abs(dt * move_speed * NPC_curr_movement.x) < abs(dist.x)) ? dt * move_speed * NPC_curr_movement.x : dist.x,
 									(abs(dt * move_speed * NPC_curr_movement.y) < abs(dist.y)) ? dt * move_speed * NPC_curr_movement.y : dist.y }, prev_hitbox = current_hitbox;;
-				if (legal_direction((movement) / 16.f, roundf(NPC_curr_movement.x), roundf(NPC_curr_movement.y)) && !collide_with_player(dt * move_speed * NPC_curr_movement)) {
+				if (legal_direction((movement) / 16.f, (short)roundf(NPC_curr_movement.x), (short)roundf(NPC_curr_movement.y)) && !collide_with_player(dt * move_speed * NPC_curr_movement)) {
 					dist.x -= movement.x, dist.y -= movement.y;
 					move(movement);
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "Entity.h"
-//#include "DialogueState.h"
+#include"Entity.h"
+#include"TradingState.h"
 struct NPC :
 	public Entity
 {

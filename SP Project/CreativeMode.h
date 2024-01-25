@@ -26,7 +26,7 @@ private:
 	Sprite notification_BG;
 	unsigned int a = 0, b = 0;
 	int curr_tex_set = 0, saved_delay = 0;
-	float scale = 1.15;
+	float scale = 1.15f;
 	bool selecting = 0;
 	sheet_properties* tile_props;
 	short sheets_no = 0; 

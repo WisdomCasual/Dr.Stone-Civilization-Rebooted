@@ -1,6 +1,6 @@
 #pragma once
 #include"State.h"
-#include"TradingState.h";
+#include"TradingState.h"
 #include"Global.h"
 using namespace globalvar;
 
@@ -192,7 +192,7 @@ public:
 	Entity& player_entity ;
 	Sprite entity_sprite;
 	render_tile**& static_map;
-	float delay = 0, animation_delay = 0.06, & map_x, & map_y, scale = -1, win_x = 0, win_y = 0;
+	float delay = 0, animation_delay = 0.06f, & map_x, & map_y, scale = -1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
 	float& x_offset, & y_offset;
 	short current_move = 3, current_frame = 0, prev_state = -1;
@@ -231,7 +231,7 @@ public:
 	float stun = 0;
 	//RectangleShape test;
 	float Lag = 0;
-	float knockback_v=0,hit_cooldown=0.8;
+	float knockback_v = 0,hit_cooldown = 0.8f;
 	Vector2f knockback_direction = { -1.f,-1.f };
 	/////////////////////////////////////////////////
 	//Public functions

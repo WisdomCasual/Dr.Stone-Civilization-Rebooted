@@ -9,17 +9,17 @@ void PasswordState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		bg.setColor(Color(255, 255, 255, transparency));
-		tissue.setColor(Color(255, 255, 255, transparency));
-		back_arrow.setColor(Color(255, 255, 255, transparency));
-		txt_box.setColor(Color(255, 255, 255, transparency));
+		bg.setColor(Color(255, 255, 255, (int)transparency));
+		tissue.setColor(Color(255, 255, 255, (int)transparency));
+		back_arrow.setColor(Color(255, 255, 255, (int)transparency));
+		txt_box.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness < 154) {
 			if (darkness + 154 * dt * 6 > 154)
 				darkness = 154;
 			else
 				darkness += 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 	}
 }
@@ -32,17 +32,17 @@ bool PasswordState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		bg.setColor(Color(255, 255, 255, transparency));
-		tissue.setColor(Color(255, 255, 255, transparency));
-		back_arrow.setColor(Color(255, 255, 255, transparency));
-		txt_box.setColor(Color(255, 255, 255, transparency));
+		bg.setColor(Color(255, 255, 255, (int)transparency));
+		tissue.setColor(Color(255, 255, 255, (int)transparency));
+		back_arrow.setColor(Color(255, 255, 255, (int)transparency));
+		txt_box.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness > 0) {
 			if (darkness - 154 * dt * 6 < 0)
 				darkness = 0;
 			else
 				darkness -= 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 		return false;
 	}
@@ -55,8 +55,8 @@ void PasswordState::update_arrow()
 
 	// giving positon to the back arrow and detecting for clicks
 
-	back_arrow.setPosition(x - 40 * scale, y - (float)8.5 * scale);
-	back_arrow.setScale(scale * 0.4, scale * 0.4);
+	back_arrow.setPosition(x - 40 * scale, y - 8.5f * scale);
+	back_arrow.setScale(scale * 0.4f, scale * 0.4f);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
@@ -65,7 +65,7 @@ void PasswordState::update_arrow()
 				game.play_sfx(1);
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
-			back_arrow.setScale(scale * 0.36, scale * 0.36);
+			back_arrow.setScale(scale * 0.36f, scale * 0.36f);
 		}
 		else {
 			if (arrow_pressed) {
@@ -87,11 +87,11 @@ void PasswordState::update_buttons()
 	if (!txt_box.empty()) {
 		if (wrong_password)
 			// if the password is wrong the and clicked on the button turns a bit red
-			buttontex.setColor(Color(255, 155, 155, transparency));
+			buttontex.setColor(Color(255, 155, 155, (int)transparency));
 		else
 			// set the button color to it's original color
-			buttontex.setColor(Color(255, 255, 255, transparency));
-		buttontex.setPosition(x + confirm.x * scale / 3.5, y + confirm.y * scale / 3.5);
+			buttontex.setColor(Color(255, 255, 255, (int)transparency));
+		buttontex.setPosition(x + confirm.x * scale / 3.5f, y + confirm.y * scale / 3.5f);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
@@ -113,29 +113,29 @@ void PasswordState::update_buttons()
 	}
 	else {
 		// when nothing is typed the button's color to a dim color
-		buttontex.setColor(Color(155, 155, 155, transparency));
+		buttontex.setColor(Color(155, 155, 155, (int)transparency));
 		wrong_password = 0;
 	}
 }
 
 void PasswordState::render_buttons()
 {
-	buttontex.setScale(scale / 3.5, scale / 3.5);
-	button_text.setCharacterSize(8.69 * scale);
+	buttontex.setScale(scale / 3.5f, scale / 3.5f);
+	button_text.setCharacterSize(int(8.69f * scale));
 	buttontex.setTextureRect(IntRect(0, confirm.pressed * 49, 108, 49));
-	buttontex.setPosition(x + confirm.x * scale / 3.5, y + confirm.y * scale / 3.5);
+	buttontex.setPosition(x + confirm.x * scale / 3.5f, y + confirm.y * scale / 3.5f);
 	button_text.setString(confirm.txt);
 	FloatRect bounds = button_text.getLocalBounds();
-	button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
-	button_text.setPosition(x + confirm.x * scale / 3.5, (confirm.pressed) ? y + confirm.y * scale / 3.5 + 2 * scale / 3.5 : y + confirm.y * scale / 3.5 - 2 * scale / 3.5);
+	button_text.setOrigin(bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+	button_text.setPosition(x + confirm.x * scale / 3.5f, (confirm.pressed) ? y + confirm.y * scale / 3.5f + 2 * scale / 3.5f : y + confirm.y * scale / 3.5f - 2 * scale / 3.5f);
 	if (confirm.hover && wrong_password) button_text.setFillColor(Color(235, 205, 205));
-	else if (confirm.hover) button_text.setFillColor(Color(255, 255, 255, transparency));
+	else if (confirm.hover) button_text.setFillColor(Color(255, 255, 255, (int)transparency));
 	else if (txt_box.empty())
-		button_text.setFillColor(Color(120, 120, 120, transparency));
+		button_text.setFillColor(Color(120, 120, 120, (int)transparency));
 	else if (wrong_password)
-		button_text.setFillColor(Color(200, 170, 170, transparency));
+		button_text.setFillColor(Color(200, 170, 170, (int)transparency));
 	else
-		button_text.setFillColor(Color(200, 200, 200, transparency));
+		button_text.setFillColor(Color(200, 200, 200, (int)transparency));
 
 	window->draw(buttontex);
 	window->draw(button_text);
@@ -144,10 +144,10 @@ void PasswordState::render_buttons()
 PasswordState::PasswordState()
 {
 
-	win_x = window->getSize().x, win_y = window->getSize().y;
-	x = win_x / 2, y = win_y / 2;
-	if (win_x / 150.0 < win_y / 150.0) scale = win_x / 150.0;
-	else scale = win_y / 150.0;
+	win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+	x = win_x / 2.f, y = win_y / 2.f;
+	if (win_x / 150.f < win_y / 150.f) scale = win_x / 150.f;
+	else scale = win_y / 150.f;
 	if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
 
 	initial_textures("password");
@@ -190,26 +190,26 @@ void PasswordState::update()
 
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
 		x = win_x / 2, y = win_y / 2;
-		if (win_x / 150.0 < win_y / 150.0) scale = win_x / 150.0;
-		else scale = win_y / 150.0;
+		if (win_x / 150.f < win_y / 150.f) scale = win_x / 150.f;
+		else scale = win_y / 150.f;
 
-		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
+		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7f) scale *= 0.75f;
 
 		///////////////////////////////////
 
 		tint.setSize({ win_x, win_y });
 
-		tissue.setScale(scale * 0.73, scale * 0.73);
+		tissue.setScale(scale * 0.73f, scale * 0.73f);
 		tissue.setPosition(x, y);
 
 		bg.setPosition(x, y);
-		bg.setScale(scale * 0.75, scale * 0.75);
+		bg.setScale(scale * 0.75f, scale * 0.75f);
 
-		txt_box.setPosition({ x, y - (float) 8.5 * scale });
+		txt_box.setPosition({ x, y - (float) 8.5f * scale });
 
-		txt_box.setScale(scale * 0.2);
+		txt_box.setScale(scale * 0.2f);
 	}
 
 	update_arrow();

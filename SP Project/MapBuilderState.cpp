@@ -23,19 +23,19 @@ MapBuilderState::MapBuilderState(string map_name, int a, int b) : size_x(a), siz
 	select_rect.setOutlineThickness(4);
 	select_rect.setOutlineColor(Color::Green);
 
-	srand(time(0));
+	srand(int(time(0)));
 }
 
 void MapBuilderState::update_info_text()
 {
-	info.setCharacterSize(40 * text_scale);
+	info.setCharacterSize(int(40.f * text_scale));
 	//displays picked tile properties
 	info.setString("\n        Selected Tile ID " + to_string(picked_tile.x) + " " + to_string(picked_tile.y) + " - spritesheet ID " + to_string(picked_tile.tex_id) + " - Selected Tile: " + to_string(selected_tile.x) + " " + to_string(selected_tile.y)
 		+ "\n        Layer (1,2,3,4) " + to_string(layer + 1) + " - brush size (+/-): " + to_string(brush_size) + " - spread chance (alt +/-): " + to_string(spread_chances[spread_chance]) + "^-1"
 		+ "\n        Blocked (b) " + to_string(blocked) + " - hitbox (h) " + to_string(hitbox) + " - Render Priority (f): " + to_string(view_layers) + " - destroyable (q): " + to_string(destroyable) + " - opaque (x): " + to_string(opaque));
 
 	//displays layer properties
-	layer_info.setCharacterSize(40 * text_scale);
+	layer_info.setCharacterSize(int(40.f * text_scale));
 	layer_info.setString("\t\t Back \tFront\nlayer 1:\t" + to_string(layer_toggle[0]) + "\t\t" + to_string(layer_toggle[4]) +
 		"\nlayer 2:\t" + to_string(layer_toggle[1]) + "\t\t" + to_string(layer_toggle[5]) + 
 		"\nlayer 3:\t" + to_string(layer_toggle[2]) + "\t\t" + to_string(layer_toggle[6]) + 
@@ -51,18 +51,18 @@ void MapBuilderState::dash_cam()
 	Vector2f movement = delta_movement();
 	x -= dt * cam_speed * movement.x * scale;
 	y -= dt * cam_speed * movement.y * scale;
-	x_offset = -x / (scale * 16);
-	y_offset = -y / (scale * 16);
+	x_offset = int(-x / (scale * 16.f));
+	y_offset = int(-y / (scale * 16.f));
 }
 
 void MapBuilderState::hover()
 {
 	if(picked_tile.select_done)
-		hover_rect.setSize(Vector2f(picked_tile.wdth * 16, picked_tile.hght * 16));
+		hover_rect.setSize(Vector2f(picked_tile.wdth * 16.f, picked_tile.hght * 16.f));
 	else if(picked_tile.global_select_done)
-		hover_rect.setSize(Vector2f(wdth * 16, hght * 16));
+		hover_rect.setSize(Vector2f(wdth * 16.f, hght * 16.f));
 	else
-		hover_rect.setSize(Vector2f( 16 * brush_size, 16 * brush_size ));
+		hover_rect.setSize(Vector2f( 16.f * brush_size, 16.f * brush_size ));
 	hover_rect.setPosition(hover_tile);
 	hover_rect.setScale(scale, scale);
 }
@@ -83,7 +83,7 @@ void MapBuilderState::grid(int x_win, int y_win)
 	//draws grid lines, "G" to activate/deactivate
 	if (active_grid) {
 		RectangleShape grid_rect;
-		grid_rect.setSize(Vector2f(2, y_win));
+		grid_rect.setSize(Vector2f(2.f, (float)y_win));
 		grid_rect.setFillColor(Color::Black);
 
 		float x_off = x + x_offset * 16 * scale;
@@ -93,7 +93,7 @@ void MapBuilderState::grid(int x_win, int y_win)
 			grid_rect.setPosition(x_off + i * scale * 16, 0);
 			window->draw(grid_rect);
 		}
-		grid_rect.setSize(Vector2f(x_win, 2));
+		grid_rect.setSize(Vector2f((float)x_win, 2.f));
 		for (int i = 0; y_off + i * 16 * scale <= y_win; i++) {
 			grid_rect.setPosition(0, y_off + i * scale * 16);
 			window->draw(grid_rect);
@@ -187,7 +187,7 @@ void MapBuilderState::update()
 
 	active_cursor = false;
 	if (prev_win != window->getSize()) {
-		x_scale = window->getSize().x / 1920.0, y_scale = window->getSize().y / 1080.0;
+		x_scale = window->getSize().x / 1920.f, y_scale = window->getSize().y / 1080.f;
 		global_scale = x_scale, text_scale = y_scale;
 		if (global_scale < text_scale)
 			swap(global_scale, text_scale);
@@ -347,7 +347,7 @@ void MapBuilderState::draw_tools()
 				}
 				for (int i = 0; i < line_length; i++) {
 					*indep = base + i;
-					*dep = slope * (*indep - base) + c;
+					*dep = int(slope * (*indep - base) + c);
 
 					//store changed area info
 					changes.add(change{ { point_on_line.x , point_on_line.y }, { point_on_line.x + brush_size, point_on_line.y + brush_size } });
@@ -370,7 +370,7 @@ void MapBuilderState::draw_tools()
 							if (i < 0) continue;
 							for (int j = point_on_line.y; j < point_on_line.y + brush_size && j < size_y; j++) {
 								if (j < 0) continue;
-								rand_spray = generate_random(0, spread_chances[spread_chance]);
+								rand_spray = (int)generate_random(0, (float)spread_chances[spread_chance]);
 								changes.atBack()->tiles[changes.atBack()->size] = tiles[i][j]; //<--store tiles before changes	
 								changes.atBack()->size++;
 
@@ -419,7 +419,7 @@ void MapBuilderState::erase_tools()
 			}
 			for (int i = 0; i < line_length; i++) {
 				*indep = base + i;
-				*dep = slope * (*indep - base) + c;
+				*dep = int(slope * (*indep - base) + c);
 
 				if (picked_tile.select_done) {
 					//store changed area info
@@ -493,13 +493,13 @@ void MapBuilderState::create_mini_map()
 							Vector3i layer_tile = layer.second;
 							old_color = new_color;
 							tile_color = tile_sheets_img[layer_tile.z].getPixel(layer_tile.x * 16 + 5 + k * 6, layer_tile.y * 16 + 5 + l * 6);
-							old_alpha = (float)old_color.a / 255.0, tile_alpha = (float)tile_color.a / 255.0;
-							sum_alpha = 1.0 - (1.0 - tile_alpha) * (1.0 - old_alpha);
-							new_color.a = sum_alpha * 255;
+							old_alpha = (float)old_color.a / 255.f, tile_alpha = (float)tile_color.a / 255.f;
+							sum_alpha = 1.f - (1.f - tile_alpha) * (1.f - old_alpha);
+							new_color.a = Uint8(sum_alpha * 255);
 							if (sum_alpha) {
-								new_color.r = tile_color.r * tile_alpha / sum_alpha + old_color.r * old_alpha * (1 - tile_alpha) / sum_alpha;
-								new_color.g = tile_color.g * tile_alpha / sum_alpha + old_color.g * old_alpha * (1 - tile_alpha) / sum_alpha;
-								new_color.b = tile_color.b * tile_alpha / sum_alpha + old_color.b * old_alpha * (1 - tile_alpha) / sum_alpha;
+								new_color.r = Uint8(tile_color.r * tile_alpha / sum_alpha + old_color.r * old_alpha * (1 - tile_alpha) / sum_alpha);
+								new_color.g = Uint8(tile_color.g * tile_alpha / sum_alpha + old_color.g * old_alpha * (1 - tile_alpha) / sum_alpha);
+								new_color.b = Uint8(tile_color.b * tile_alpha / sum_alpha + old_color.b * old_alpha * (1 - tile_alpha) / sum_alpha);
 							}
 							else
 								new_color = tile_color;
@@ -644,7 +644,7 @@ void MapBuilderState::undo()
 void MapBuilderState::render()
 {
 	int x_win = window->getSize().x, y_win = window->getSize().y; //<-- window boundaries
-	x_mid = x_offset + (x_win / (16 * scale) / 2), y_mid = y_offset + (y_win / (16 * scale) / 2); // updates offset
+	x_mid = int(x_offset + (x_win / (16 * scale) / 2)), y_mid = int(y_offset + (y_win / (16 * scale) / 2)); // updates offset
 
 	render_tiles(x_win, y_win, 0);
 	//----------render entities herre in game--------------
@@ -834,19 +834,19 @@ void MapBuilderState::pollevent()
 			//camera zoom
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved)
-				if (scale + event.mouseWheel.delta * 0.5 * scaling_speed > 1 && scale + event.mouseWheel.delta * scaling_speed < 20 * global_scale && scale>1) {
+				if (scale + event.mouseWheel.delta * 0.5f * scaling_speed > 1 && scale + event.mouseWheel.delta * scaling_speed < 20.f * global_scale && scale > 1) {
 					if (global_scale < 1)
-						scaling_speed = 1.0 / speed_list[(int)round(log(int(round(1 / global_scale))))];
+						scaling_speed = 1.f / speed_list[(int)round(log(int(round(1 / global_scale))))];
 					else
 						scaling_speed = round(global_scale);
-					x -= event.mouseWheel.delta * 8 * scaling_speed * x_mid;
-					y -= event.mouseWheel.delta * 8 * scaling_speed * y_mid;
-					scale += event.mouseWheel.delta * 0.5 * scaling_speed;
+					x -= event.mouseWheel.delta * 8.f * scaling_speed * x_mid;
+					y -= event.mouseWheel.delta * 8.f * scaling_speed * y_mid;
+					scale += event.mouseWheel.delta * 0.5f * scaling_speed;
 				}
-			else if (scale + event.mouseWheel.delta / 100.0 > 0.2 && scale + event.mouseWheel.delta * scaling_speed < 20 * global_scale) {
-					x -= event.mouseWheel.delta / 100.0 * 16 * x_mid;
-					y -= event.mouseWheel.delta / 100.0 * 16 * y_mid;
-					scale += event.mouseWheel.delta / 100.0;
+			else if (scale + event.mouseWheel.delta / 100.f > 0.2f && scale + event.mouseWheel.delta * scaling_speed < 20.f * global_scale) {
+					x -= event.mouseWheel.delta / 100.f * 16 * x_mid;
+					y -= event.mouseWheel.delta / 100.f * 16 * y_mid;
+					scale += event.mouseWheel.delta / 100.f;
 				}
 			break;
 		}
