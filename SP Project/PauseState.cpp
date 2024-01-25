@@ -5,7 +5,7 @@ void PauseState::update_buttons()
 {
 	for (int i = 0; i < 3; i++) {
 		buttontex.setTextureRect(IntRect(0, buttons[i].pressed * 49, 190, 49));
-		buttontex.setPosition(x + buttons[i].x * scale * 0.33, y + buttons[i].y * scale * 0.33);
+		buttontex.setPosition(x + buttons[i].x * scale * 0.33f, y + buttons[i].y * scale * 0.33f);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
@@ -33,17 +33,17 @@ void PauseState::update_buttons()
 
 void PauseState::render_buttons()
 {
-	buttontex.setScale(scale * 0.33, scale * 0.33);
-	button_text.setCharacterSize(7.5 * scale);
+	buttontex.setScale(scale * 0.33f, scale * 0.33f);
+	button_text.setCharacterSize(int(7.5f * scale));
 	for (auto& button : buttons) {
 		buttontex.setTextureRect(IntRect(0, button.pressed * 49, 190, 49));
-		buttontex.setPosition(x + button.x * scale * 0.33, y + button.y * scale * 0.33);
+		buttontex.setPosition(x + button.x * scale * 0.33f, y + button.y * scale * 0.33f);
 		button_text.setString(button.txt);
 		FloatRect bounds = button_text.getLocalBounds();
-		button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
-		button_text.setPosition(x + button.x * scale * 0.33, (button.pressed) ? y + button.y * scale * 0.33 + 2 * scale * 0.33 : y + button.y * scale * 0.33 - 2 * scale * 0.33);
-		if (button.hover)button_text.setFillColor(Color(255, 255, 255, transparency));
-		else button_text.setFillColor(Color(226, 211, 195, transparency));
+		button_text.setOrigin(bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+		button_text.setPosition(x + button.x * scale * 0.33f, (button.pressed) ? y + button.y * scale * 0.33f + 2 * scale * 0.33f : y + button.y * scale * 0.33f - 2 * scale * 0.33f);
+		if (button.hover)button_text.setFillColor(Color(255, 255, 255, (int)transparency));
+		else button_text.setFillColor(Color(226, 211, 195, (int)transparency));
 		window->draw(buttontex);
 		window->draw(button_text);
 	}
@@ -57,18 +57,18 @@ void PauseState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		buttontex.setColor(Color(255, 255, 255, transparency));
+		buttontex.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (bg_fade_in) {
-			panel.setColor(Color(255, 255, 255, transparency));
-			tissue.setColor(Color(255, 255, 255, transparency));
+			panel.setColor(Color(255, 255, 255, (int)transparency));
+			tissue.setColor(Color(255, 255, 255, (int)transparency));
 
 			if (darkness < 154) {
 				if (darkness + 154 * dt * 6 > 154)
 					darkness = 154;
 				else
 					darkness += 154 * dt * 6;
-				tint.setFillColor(Color(0, 0, 0, darkness));
+				tint.setFillColor(Color(0, 0, 0, (int)darkness));
 			}
 		}
 	}
@@ -82,18 +82,18 @@ bool PauseState::fade_out(bool bg_fade_out)
 		else
 			transparency -= 1500 * dt;
 
-		buttontex.setColor(Color(255, 255, 255, transparency));
+		buttontex.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (bg_fade_out) {
-			panel.setColor(Color(255, 255, 255, transparency));
-			tissue.setColor(Color(255, 255, 255, transparency));
+			panel.setColor(Color(255, 255, 255, (int)transparency));
+			tissue.setColor(Color(255, 255, 255, (int)transparency));
 
 			if (darkness > 0) {
 				if (darkness - 154 * dt * 6 < 0)
 					darkness = 0;
 				else
 					darkness -= 154 * dt * 6;
-				tint.setFillColor(Color(0, 0, 0, darkness));
+				tint.setFillColor(Color(0, 0, 0, (int)darkness));
 			}
 		}
 		return false;
@@ -140,10 +140,10 @@ void PauseState::update()
 
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
-		if (win_x / 120.0 < win_y / 120.0) scale = win_x / 120.0;
-		else scale = win_y / 120.0;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+		x = win_x / 2.f, y = win_y / 2.f;
+		if (win_x / 120.f < win_y / 120.f) scale = win_x / 120.f;
+		else scale = win_y / 120.f;
 
 		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
 		/////////////////////
@@ -151,10 +151,10 @@ void PauseState::update()
 		tint.setSize({ win_x, win_y });
 
 		panel.setPosition(x, y);
-		panel.setScale(scale * 0.17, scale * 0.17);
+		panel.setScale(scale * 0.17f, scale * 0.17f);
 
 		tissue.setPosition(x, y);
-		tissue.setScale(scale * 0.13, scale * 0.13);
+		tissue.setScale(scale * 0.13f, scale * 0.13f);
 	}
 
 	update_buttons();
@@ -244,6 +244,6 @@ void PauseState::render()
 	window->draw(tissue);
 	render_buttons();
 
-	text.setFillColor(Color(0, 0, 0, transparency));
-	draw_text("Paused", x, y - 35 * scale, 6.5 * scale);
+	text.setFillColor(Color(0, 0, 0, (int)transparency));
+	draw_text("Paused", x, y - 35 * scale, 6.5f * scale);
 }

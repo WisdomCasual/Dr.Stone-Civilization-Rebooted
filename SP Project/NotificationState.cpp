@@ -2,9 +2,9 @@
 void NotificationState::render_strings()
 {
 	y_pos = notification_BG.getPosition().y;
-	text_y = y_pos + 60 * (scale * .8) / 2.0;
+	text_y = y_pos + 60 * (scale * 0.8f) / 2.f;
 	
-	float i = (notification_lines / 2.0 - 2) * -1, dis = (92 / notification_lines) * scale*.9 ;
+	float i = (notification_lines / 2.f - 2) * -1, dis = (92 / notification_lines) * scale * 0.9f ;
 	text.setFillColor(Color::Black);
 	for (int j = 0; j < notification_lines - 3; j++, i++) {
 		draw_text(notification_strings[j], text_x, text_y + i * dis, (3 + 55 / notification_lines) * scale);
@@ -42,13 +42,13 @@ void NotificationState::update_velocity()
 
 NotificationState::NotificationState()
 {
-	scale = min(window->getSize().x / 350.0, window->getSize().y / 350.0);
+	scale = min(window->getSize().x / 350.f, window->getSize().y / 350.f);
 	pos_scale = scale;
-	if (window->getSize().x > 1280) scale *= 0.75;
+	if (window->getSize().x > 1280) scale *= 0.75f;
 	initial_textures("notification");
 	notification_BG.setTexture(*textures[0]);
 	notification_BG.setOrigin(145,0);
-	x_pos = window->getSize().x, y_pos = window->getSize().y;
+	x_pos = (float)window->getSize().x, y_pos = (float)window->getSize().y;
 	notification_BG.setPosition(x_pos, y_pos);
 }
 
@@ -66,19 +66,19 @@ void NotificationState::update()
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
 		y_pos /= pos_scale;
-		win_x = window->getSize().x, win_y = window->getSize().y;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
 
-		if (win_x / 350.0 < win_y / 350.0) scale = win_x / 350.0;
-		else scale = win_y / 350.0;
+		if (win_x / 350.f < win_y / 350.f) scale = win_x / 350.f;
+		else scale = win_y / 350.f;
 		pos_scale = scale;
 
-		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
+		if (VideoMode::getDesktopMode().width < win_x * 1.7f || VideoMode::getDesktopMode().height < win_y * 1.7f) scale *= 0.75f;
 
-		notification_BG.setScale(scale*.8, scale*.8);
+		notification_BG.setScale(scale * 0.8f, scale * 0.8f);
 		x_pos = win_x - 10 * pos_scale;
 		y_pos *= pos_scale;
-		text_x = x_pos - 145 * (scale*.8) / 2.0;
-		text_y = y_pos + 60 * (scale*.8) / 2.0;
+		text_x = x_pos - 145 * (scale * 0.8f) / 2.f;
+		text_y = y_pos + 60 * (scale * 0.8f) / 2.f;
 		notification_BG.setPosition(x_pos, y_pos);
 	}
 	if (prev(states->end())->first == NotificationID) {

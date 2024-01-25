@@ -9,17 +9,17 @@ void NewSaveState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		panel.setColor(Color(255, 255, 255, transparency));
-		tissue.setColor(Color(255, 255, 255, transparency));
-		back_arrow.setColor(Color(255, 255, 255, transparency));
-		txt_box.setColor(Color(255, 255, 255, transparency));
+		panel.setColor(Color(255, 255, 255, (int)transparency));
+		tissue.setColor(Color(255, 255, 255, (int)transparency));
+		back_arrow.setColor(Color(255, 255, 255, (int)transparency));
+		txt_box.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness < 154) {
 			if (darkness + 154 * dt * 6 > 154)
 				darkness = 154;
 			else
 				darkness += 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 	}
 }
@@ -32,17 +32,17 @@ bool NewSaveState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		panel.setColor(Color(255, 255, 255, transparency));
-		tissue.setColor(Color(255, 255, 255, transparency));
-		back_arrow.setColor(Color(255, 255, 255, transparency));
-		txt_box.setColor(Color(255, 255, 255, transparency));
+		panel.setColor(Color(255, 255, 255, (int)transparency));
+		tissue.setColor(Color(255, 255, 255, (int)transparency));
+		back_arrow.setColor(Color(255, 255, 255, (int)transparency));
+		txt_box.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness > 0) {
 			if (darkness - 154 * dt * 6 < 0)
 				darkness = 0;
 			else
 				darkness -= 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 		return false;
 	}
@@ -58,7 +58,7 @@ bool NewSaveState::black_out()
 			blackining = 255;
 		else
 			blackining += 500 * dt;
-		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		blackscreen.setFillColor(Color(0, 0, 0, (int)blackining));
 		return false;
 	}
 	return true;
@@ -70,7 +70,7 @@ void NewSaveState::update_arrow()
 	// add an arrow and position it as a back button
 
 	back_arrow.setPosition(x - 112  * scale, y - 104 * scale);
-	back_arrow.setScale(scale * 1.2, scale * 1.2);
+	back_arrow.setScale(scale * 1.2f, scale * 1.2f);
 	if (back_arrow.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 		clickable_cursor = true;
 		back_arrow.setTextureRect(IntRect(22, 0, 22, 21));
@@ -79,7 +79,7 @@ void NewSaveState::update_arrow()
 				game.play_sfx(1);
 			arrow_pressed = 1;
 			back_arrow.setTextureRect(IntRect(44, 0, 22, 21));
-			back_arrow.setScale(scale * 1.08, scale * 1.08);
+			back_arrow.setScale(scale * 1.08f, scale * 1.08f);
 		}
 		else {
 			if (arrow_pressed) {
@@ -104,8 +104,8 @@ void NewSaveState::update_buttons()
 	// check that the text box is not empty and a specific character is selected
 	
 	if (!txt_box.empty() && selected) {
-		buttontex.setColor(Color(255, 255, 255, transparency));
-		buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
+		buttontex.setColor(Color(255, 255, 255, (int)transparency));
+		buttontex.setPosition(x + confirm.x * scale / 3.f, y + confirm.y * scale / 3.f);
 		if (buttontex.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 			clickable_cursor = true;
 			if (Mouse::isButtonPressed(Mouse::Left) && buttontex.getGlobalBounds().contains(clicked_on)) {
@@ -127,25 +127,25 @@ void NewSaveState::update_buttons()
 	}
 	else {
 		// make the button a little bit dim when nothing is selected or the text box is empty(as a sign that you're missing something to confirm)
-		buttontex.setColor(Color(155, 155, 155, transparency));
+		buttontex.setColor(Color(155, 155, 155, (int)transparency));
 	}
 }
 
 void NewSaveState::render_buttons()
 {
-	buttontex.setScale(scale / 1.0, scale / 1.0);
-	button_text.setCharacterSize(23.69 * scale);
+	buttontex.setScale(scale, scale);
+	button_text.setCharacterSize(int(23.69f * scale));
 	buttontex.setTextureRect(IntRect(0, confirm.pressed * 49, 108, 49));
-	buttontex.setPosition(x + confirm.x * scale / 3.0, y + confirm.y * scale / 3.0);
+	buttontex.setPosition(x + confirm.x * scale / 3.f, y + confirm.y * scale / 3.f);
 	button_text.setString(confirm.txt);
 	FloatRect bounds = button_text.getLocalBounds();
-	button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
-	button_text.setPosition(x + confirm.x * scale / 3.0, (confirm.pressed) ? y + confirm.y * scale / 3.0 + 2 * scale / 1.0 : y + confirm.y * scale / 3.0 - 2 * scale / 1.0);
-	if (confirm.hover)button_text.setFillColor(Color(255, 255, 255, transparency));
+	button_text.setOrigin(bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+	button_text.setPosition(x + confirm.x * scale / 3.f, (confirm.pressed) ? y + confirm.y * scale / 3.f + 2 * scale / 1.f : y + confirm.y * scale / 3.f - 2 * scale / 1.f);
+	if (confirm.hover)button_text.setFillColor(Color(255, 255, 255, (int)transparency));
 	else if (txt_box.empty() || !selected)
-		button_text.setFillColor(Color(120, 120, 120, transparency));
+		button_text.setFillColor(Color(120, 120, 120, (int)transparency));
 	else
-		button_text.setFillColor(Color(200, 200, 200, transparency));
+		button_text.setFillColor(Color(200, 200, 200, (int)transparency));
 
 	window->draw(buttontex);
 	window->draw(button_text);
@@ -186,11 +186,11 @@ void NewSaveState::render_characters()
 		characters.setPosition(x - 44 * scale + 64 * scale * i, y + 26 * scale);
 		if (i + 1 == selected)
 		{
-			characters.setColor(Color( 255, 255, 255, transparency));
+			characters.setColor(Color( 255, 255, 255, (int)transparency));
 		}
 		else
 		{
-			characters.setColor(Color( 135 , 135, 135, transparency));
+			characters.setColor(Color( 135 , 135, 135, (int)transparency));
 		}
 		window->draw(characters);
 	}
@@ -231,29 +231,29 @@ NewSaveState::NewSaveState(int save_no)
 	State::initial_textures("newsave");
 
 	tissue.setTexture(*textures[0]);
-	tissue.setOrigin(700 / 2, 700 / 2);
+	tissue.setOrigin(700 / 2.f, 700 / 2.f);
 
 	panel.setTexture(*textures[5]);
-	panel.setOrigin(600 / 2, 600 / 2);
+	panel.setOrigin(600 / 2.f, 600 / 2.f);
 
 	back_arrow.setTexture(*textures[1]);
 	back_arrow.setTextureRect(IntRect(0, 0, 22, 21));
-	back_arrow.setOrigin(22 / 2, 21 / 2);
+	back_arrow.setOrigin(22 / 2.f, 21 / 2.f);
 
 	tint.setSize({ 1920, 1080 });
 	tint.setFillColor(Color(0, 0, 0, 154));
 
-	win_x = window->getSize().x, win_y = window->getSize().y;
-	scale = min(win_x / 1920.0, win_y / 1080.0);
-	if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
+	win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+	scale = min(win_x / 1920.f, win_y / 1080.f);
+	if (VideoMode::getDesktopMode().width < win_x * 1.7f || VideoMode::getDesktopMode().height < win_y * 1.7f) scale *= 0.75f;
 
 	// initializing the text box's text LoL
 
-	txt_box.initializeTextBox(test_str, *textures[2], "Enter name", Vector2f(win_x / 2.0, (win_y / 2) + 5 * scale), scale * 1.2);
+	txt_box.initializeTextBox(test_str, *textures[2], "Enter name", Vector2f(win_x / 2.f, (win_y / 2.f) + 5 * scale), scale * 1.2f);
 	txt_box.setLimit(165);
 	buttontex.setTexture(*textures[4]);
 	buttontex.setTextureRect(IntRect(0, 0, 108, 49));
-	buttontex.setOrigin(108 / 2, 49 / 2);
+	buttontex.setOrigin(108 / 2.f, 49 / 2.f);
 
 	button_text.setFont(font);
 	button_text.setCharacterSize(50);
@@ -283,23 +283,23 @@ void NewSaveState::update()
 	
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
-		if (win_x / 450.0 < win_y / 450.0) scale = win_x / 450.0;
-		else scale = win_y / 450.0;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+		x = win_x / 2.f, y = win_y / 2.f;
+		if (win_x / 450.f < win_y / 450.f) scale = win_x / 450.f;
+		else scale = win_y / 450.f;
 
 		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
 		////////////////////
 
-		tissue.setScale(scale * 0.4, scale * 0.4); 
+		tissue.setScale(scale * 0.4f, scale * 0.4f); 
 		tissue.setPosition(x, y);
-		panel.setScale(scale * 0.52, scale * 0.52);
+		panel.setScale(scale * 0.52f, scale * 0.52f);
 		panel.setPosition(x, y);
 		tint.setSize({ win_x, win_y });
 		blackscreen.setSize({ win_x, win_y });
-		txt_box.setScale(scale * 0.6);
+		txt_box.setScale(scale * 0.6f);
 		txt_box.setPosition({ x, y - 52 * scale });
-		characters.setScale(1.2 * scale, 1.2 * scale);
+		characters.setScale(1.2f * scale, 1.2f * scale);
 	}
 	tissue.setPosition(x, y);
 
@@ -351,7 +351,7 @@ void NewSaveState::render()
 	txt_box.drawTextBox(window);
 	window->draw(back_arrow);
 	render_buttons();
-	text.setFillColor(Color(0, 0, 0, transparency));
+	text.setFillColor(Color(0, 0, 0, (int)transparency));
 	draw_text("Choose name and", x, y - 112 * scale, 26 * scale);
 	draw_text("character", x, y - 112 * scale+ (20 * scale), 26 * scale);
 	render_characters();

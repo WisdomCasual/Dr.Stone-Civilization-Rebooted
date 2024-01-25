@@ -10,7 +10,7 @@ void InventoryState::render_items()
 	}
 	else{
 		if (inventory_order->size < 10) {
-			for (int i = -(inventory_order->size - 1) / 2.0 * 75 + 30, c = 0; it != NULL && i < 750; i += 75, c++) {
+			for (int i = int(-(inventory_order->size - 1) / 2.f * 75 + 30), c = 0; it != NULL && i < 750; i += 75, c++) {
 
 				item.setPosition(panel.getPosition().x - 160 * scale, panel.getPosition().y + i * scale);
 				item.setTextureRect(IntRect(it->itm * 16, 0, 16, 16));
@@ -19,7 +19,7 @@ void InventoryState::render_items()
 				draw_text(item_names[it->itm], panel.getPosition().x - (healing_value[it->itm] ? 20 * scale : 0), panel.getPosition().y + i * scale, 45 * scale);
 				draw_text("x" + to_string(inventory_count[it->itm]), panel.getPosition().x + (healing_value[it->itm] ? 120 : 140) * scale, panel.getPosition().y + i * scale, 45 * scale);
 
-				buttons[c].y = panel.getPosition().y + i * scale;
+				buttons[c].y = int(panel.getPosition().y + i * scale);
 				buttons[c].item_id = it->itm;
 
 				it = it->link;
@@ -34,7 +34,7 @@ void InventoryState::render_items()
 				draw_text(item_names[it->back_link->itm], panel.getPosition().x - (healing_value[it->itm] ? 20 * scale : 0), (205 + scroll_offset) * scale, 45 * scale);
 				draw_text("x" + to_string(inventory_count[it->back_link->itm]), panel.getPosition().x + (healing_value[it->itm] ? 120 : 140) * scale, (205 + scroll_offset) * scale, 45 * scale);
 
-				buttons[item_offset - 1].y = (205 + scroll_offset) * scale;
+				buttons[item_offset - 1].y = int((205 + scroll_offset) * scale);
 				buttons[item_offset - 1].item_id = it->back_link->itm;
 			}
 
@@ -47,7 +47,7 @@ void InventoryState::render_items()
 				draw_text(item_names[it->itm], panel.getPosition().x - (healing_value[it->itm] ? 20 * scale : 0), (280 + i + scroll_offset) * scale, 45 * scale);
 				draw_text("x" + to_string(inventory_count[it->itm]), panel.getPosition().x + (healing_value[it->itm] ? 120 : 140) * scale, (280 + i + scroll_offset) * scale, 45 * scale);
 
-				buttons[c].y = (280 + i + scroll_offset) * scale;
+				buttons[c].y = int((280 + i + scroll_offset) * scale);
 				buttons[c].item_id = it->itm;
 
 				it = it->link;
@@ -61,7 +61,7 @@ void InventoryState::update_buttons()
 	for (int i = (item_offset? item_offset - 1 : item_offset); i < inventory_order->size && i < item_offset + 10; i++) {
 		if (healing_value[buttons[i].item_id]) {
 			consumebutton.setTextureRect(IntRect(buttons[i].pressed * 45, 0, 45, 49));
-			consumebutton.setPosition(panel.getPosition().x + 180 * scale, buttons[i].y);
+			consumebutton.setPosition(panel.getPosition().x + 180 * scale, (float)buttons[i].y);
 			if (consumebutton.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window))) && Mouse::getPosition(*window).y > panel.getPosition().y - 320 * scale && Mouse::getPosition(*window).y < panel.getPosition().y + 400 * scale) {
 				clickable_cursor = true;
 				if (Mouse::isButtonPressed(Mouse::Left) && consumebutton.getGlobalBounds().contains(clicked_on)) {
@@ -73,7 +73,7 @@ void InventoryState::update_buttons()
 					if (buttons[i].pressed) {
 						inventory_count[buttons[i].item_id]--;
 							if (*player_health + player_max_health / 5.f * healing_value[buttons[i].item_id] < player_max_health)
-								*player_health += player_max_health / 5.f * healing_value[buttons[i].item_id];
+								*player_health += short(player_max_health / 5.f * healing_value[buttons[i].item_id]);
 							else
 								*player_health = player_max_health;
 						if (!inventory_count[buttons[i].item_id]) {
@@ -99,7 +99,7 @@ void InventoryState::render_buttons()
 	for (int i = (item_offset ? item_offset - 1 : item_offset); i < inventory_order->size && i < item_offset + 10; i++) {
 		if (healing_value[buttons[i].item_id]) {
 			consumebutton.setTextureRect(IntRect(buttons[i].pressed * 45, 0, 45, 49));
-			consumebutton.setPosition(panel.getPosition().x + 180 * scale, buttons[i].y);
+			consumebutton.setPosition(panel.getPosition().x + 180 * scale, (float)buttons[i].y);
 
 			window->draw(consumebutton);
 
@@ -173,19 +173,19 @@ void InventoryState::update()
 
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
-		scale = win_y / 1080.0;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+		x = win_x / 2.f, y = win_y / 2.f;
+		scale = win_y / 1080.f;
 
 		/////////////////////
 
 		tint.setSize({ win_x, win_y });
 
-		panel.setPosition(panel_pos * scale * 1.5, y);
-		panel.setScale(scale * 1.5, scale * 1.5);
+		panel.setPosition(panel_pos * scale * 1.5f, y);
+		panel.setScale(scale * 1.5f, scale * 1.5f);
 
-		tissue.setPosition(panel_pos * scale * 1.5, y);
-		tissue.setScale(scale * 1.5, scale * 1.5);
+		tissue.setPosition(panel_pos * scale * 1.5f, y);
+		tissue.setScale(scale * 1.5f, scale * 1.5f);
 
 		item.setScale(scale * 3, scale * 3);
 
@@ -193,17 +193,17 @@ void InventoryState::update()
 		heart.setScale(scale * 1.25f, scale * 1.25f);
 	}
 	if (close) {
-		if (panel_pos > -panel.getLocalBounds().width / 2) {
+		if (panel_pos > -panel.getLocalBounds().width / 2.f) {
 			panel_pos -= velocity * dt;
 			velocity += 1500 * dt;
-			panel.setPosition(panel_pos * scale * 1.5, y);
-			tissue.setPosition(panel_pos * scale * 1.5, y);
+			panel.setPosition(panel_pos * scale * 1.5f, y);
+			tissue.setPosition(panel_pos * scale * 1.5f, y);
 			if (darkness > 0) {
 				if (darkness - 154 * dt * 6 < 0)
 					darkness = 0;
 				else
 					darkness -= 154 * dt * 6;
-				tint.setFillColor(Color(0, 0, 0, darkness));
+				tint.setFillColor(Color(0, 0, 0, (int)darkness));
 			}
 		}
 		else {
@@ -212,20 +212,20 @@ void InventoryState::update()
 			return;
 		}
 	}
-	else if (panel_pos < panel.getLocalBounds().width / 2 + 12) {
-		if (panel_pos + velocity * dt > panel.getLocalBounds().width / 2 + 12)
-			panel_pos = panel.getLocalBounds().width / 2 + 12;
+	else if (panel_pos < panel.getLocalBounds().width / 2.f + 12) {
+		if (panel_pos + velocity * dt > panel.getLocalBounds().width / 2.f + 12)
+			panel_pos = panel.getLocalBounds().width / 2.f + 12;
 		else
 			panel_pos += velocity * dt;
 		velocity -= 1000 * dt;
-		panel.setPosition(panel_pos * scale * 1.5, y);
-		tissue.setPosition(panel_pos * scale * 1.5, y);
+		panel.setPosition(panel_pos * scale * 1.5f, y);
+		tissue.setPosition(panel_pos * scale * 1.5f, y);
 		if (darkness < 154) {
 			if (darkness + 154 * dt * 4 > 154)
 				darkness = 154;
 			else
 				darkness += 154 * dt * 4;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 	}
 	if (*combat_tag <= 0)
@@ -317,5 +317,5 @@ void InventoryState::render()
 	window->draw(panel);
 
 	text.setFillColor(Color::Black);
-	draw_text("Science Backpack", panel_pos * scale * 1.5, y - 375 * scale, 48 * scale);
+	draw_text("Science Backpack", panel_pos * scale * 1.5f, y - 375 * scale, 48 * scale);
 }

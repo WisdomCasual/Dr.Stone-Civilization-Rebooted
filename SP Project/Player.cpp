@@ -44,7 +44,7 @@ Vector2f Player::delta_movement()
 	if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
 		velocity.y++;
 	if (0 != velocity.x && 0 != velocity.y)
-		velocity.x *= 0.707, velocity.y *= 0.707;
+		velocity.x *= 0.707f, velocity.y *= 0.707f;
 	return velocity;
 }
 
@@ -56,7 +56,7 @@ void Player::knockback(Vector2f direction,float v) {
 void Player::damaged()
 {
 	entity_sprite.setColor(Color(255, 155, 155));
-	stun = 0.4;
+	stun = 0.4f;
 }
 
 void Player::Hitbox_align(int animation)
@@ -227,7 +227,7 @@ Vector2i Player::block_interaction()
 {
 	if (interact) {
 		for (int i = 0; i < 2; i++) {
-		short new_tile_x = getRelativePos().x / 16.f + i * current_direction.x, new_tile_y = getRelativePos().y / 16.f + i * current_direction.y;
+			short new_tile_x = short(getRelativePos().x / 16.f + i * current_direction.x), new_tile_y = short(getRelativePos().y / 16.f + i * current_direction.y);
 			if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {
 				interact = 0;
 				//cout << "a";
@@ -311,7 +311,7 @@ void Player::update(float scale)
 	if(!active_action&&stun<=0)
 		player_movement(movement.x, movement.y, entity_stats.base_movement_speed);
 	for (int i = 0; i < 2; i++) {
-		short new_tile_x = getRelativePos().x / 16.f + i * current_direction.x, new_tile_y = getRelativePos().y / 16.f + i * current_direction.y;
+		short new_tile_x = short(getRelativePos().x / 16.f + i * current_direction.x), new_tile_y = short(getRelativePos().y / 16.f + i * current_direction.y);
 		if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {
 			interaction_notification();
 		}

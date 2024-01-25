@@ -84,6 +84,7 @@ private:
     void settings_intializer();
     void update_checkbox(int);
     void render_checkbox(int);
+    void save();
 
 public:
     //constructors / destructors

@@ -9,16 +9,16 @@ void ConfirmationState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		BG.setColor(Color(255, 255, 255, transparency));
-		tex_bg.setColor(Color(255, 255, 255, transparency));
-		buttontex.setColor(Color(255, 255, 255, transparency));
+		BG.setColor(Color(255, 255, 255, (int)transparency));
+		tex_bg.setColor(Color(255, 255, 255, (int)transparency));
+		buttontex.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness < 154) {
 			if (darkness + 154 * dt * 6 > 154)
 				darkness = 154;
 			else
 				darkness += 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 	}
 }
@@ -31,16 +31,16 @@ bool ConfirmationState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		BG.setColor(Color(255, 255, 255, transparency));
-		tex_bg.setColor(Color(255, 255, 255, transparency));
-		buttontex.setColor(Color(255, 255, 255, transparency));
+		BG.setColor(Color(255, 255, 255, (int)transparency));
+		tex_bg.setColor(Color(255, 255, 255, (int)transparency));
+		buttontex.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness > 0) {
 			if (darkness - 154 * dt * 6 < 0)
 				darkness = 0;
 			else
 				darkness -= 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 		return false;
 	}
@@ -79,19 +79,19 @@ void ConfirmationState::update_buttons()
 
 void ConfirmationState::render_buttons()
 {
-	buttontex.setScale(scale * .73, scale * .73);
-	button_text.setCharacterSize(20 * scale);
+	buttontex.setScale(scale * 0.73f, scale * 0.73f);
+	button_text.setCharacterSize(unsigned int(20 * scale));
 	for (int i = 0; i < 2; i++) {
 		buttontex.setTextureRect(IntRect(0, buttons[i].pressed * 49, 108, 49));
 		buttontex.setPosition(x + buttons[i].x * scale, y + buttons[i].y * scale);
 		button_text.setString(buttons[i].txt);
 		FloatRect bounds = button_text.getLocalBounds();
-		button_text.setOrigin(bounds.width / 2.0, bounds.top + bounds.height / 2.0);
+		button_text.setOrigin(bounds.width / 2.f, bounds.top + bounds.height / 2.f);
 		button_text.setPosition(x + buttons[i].x * scale, (buttons[i].pressed) ? y + buttons[i].y * scale + 2 * scale : y + buttons[i].y * scale - 2 * scale);
 		if (buttons[i].hover)
-			button_text.setFillColor(Color(255, 255, 255, transparency));
+			button_text.setFillColor(Color(255, 255, 255, (int)transparency));
 		else
-			button_text.setFillColor(Color(200, 200, 200, transparency));
+			button_text.setFillColor(Color(200, 200, 200, (int)transparency));
 
 		window->draw(buttontex);
 		window->draw(button_text);
@@ -100,8 +100,8 @@ void ConfirmationState::render_buttons()
 
 void ConfirmationState::render_strings()
 {
-	float i = (lines / 2.0 - 2) * -1, dis = (92 / lines) * scale * 1.3;
-	text.setFillColor(Color(0, 0, 0, transparency));
+	float i = (lines / 2.f - 2) * -1, dis = (92 / lines) * scale * 1.3f;
+	text.setFillColor(Color(0, 0, 0, (int)transparency));
 	for (int j = 0; j < lines - 3; j++, i++) {
 		draw_text(text_strings[j], x, y + i * dis, (5 + 115 / lines) * scale);
 	}
@@ -141,10 +141,10 @@ void ConfirmationState::update()
 
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
-		if (win_x / 350.0 < win_y / 350.0) scale = win_x / 350.0;
-		else scale = win_y / 350.0;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+		x = win_x / 2.f, y = win_y / 2.f;
+		if (win_x / 350.f < win_y / 350.f) scale = win_x / 350.f;
+		else scale = win_y / 350.f;
 
 		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.75;
 
@@ -152,9 +152,9 @@ void ConfirmationState::update()
 
 		tint.setSize({ win_x, win_y });
 		BG.setPosition(x, y + 20 * scale);
-		BG.setScale(scale * .35, scale * .35);
+		BG.setScale(scale * 0.35f, scale * 0.35f);
 		tex_bg.setPosition(x, y);
-		tex_bg.setScale(scale * 1.3, scale * 1.3);
+		tex_bg.setScale(scale * 1.3f, scale * 1.3f);
 	}
 
 	if (no) {

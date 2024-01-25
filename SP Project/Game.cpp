@@ -57,22 +57,22 @@ void Game::initial_fps()
 {
 	font.loadFromFile("Resources/font.ttf");
 	fps_text.setFont(font);
-	fps_text.setCharacterSize(40 * ((float)window->getSize().y / 1080.0));
+	fps_text.setCharacterSize(int(40.f * ((float)window->getSize().y / 1080.f)));
 }
 
 void Game::calc_fps()
 {
 	//calculates framerate per second
-	delay += dt; frame_sum += 1.0 / dt; frame_count++;
+	delay += dt; frame_sum += int(1.f / dt); frame_count++;
 	if (delay > 1.0) { fps = frame_sum / frame_count; delay = 0, frame_sum = 0, frame_count = 0; }
 	fps_text.setString("  FPS " + to_string(fps));
-	fps_text.setCharacterSize(40 * ((float)window->getSize().y / 1080.0));
+	fps_text.setCharacterSize(int(40.f * ((float)window->getSize().y / 1080.f)));
 }
 
 void Game::initial_sounds()
 {
-	shuffle(ingame_music, ingame_music + ingame_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
-	shuffle(menu_music, menu_music + menu_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
+	shuffle(ingame_music, ingame_music + ingame_music_count, std::default_random_engine(generate_random(0, (float)INT_MAX)));
+	shuffle(menu_music, menu_music + menu_music_count, std::default_random_engine(generate_random(0, (float)INT_MAX)));
 
 	click_buff.loadFromFile("Audio/UI/click.ogg");
 	click.setBuffer(click_buff);
@@ -102,7 +102,7 @@ void Game::update_cursor()
 	else {
 		mouse_cursor.setTextureRect(IntRect(0, 0, 54, 55));
 		if (Mouse::isButtonPressed(Mouse::Left))
-			mouse_cursor.setScale(cursor_scale * 0.95, cursor_scale * 0.95);
+			mouse_cursor.setScale(cursor_scale * 0.95f, cursor_scale * 0.95f);
 	}
 	clickable_cursor = false;
 }
@@ -188,7 +188,7 @@ void Game::play_music(int track_num)
 			if (states.find(GameID) != states.end() || states.find(WorldMapID) != states.end() || states.find(MapBuilderID) != states.end()) {
 				if (ingame_music_idx > ingame_music_count - 1) {
 					ingame_music_idx = 0;
-					shuffle(ingame_music, ingame_music + ingame_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
+					shuffle(ingame_music, ingame_music + ingame_music_count, std::default_random_engine(generate_random(0, (float)INT_MAX)));
 				}
 				track_num = ingame_music[ingame_music_idx];
 				ingame_music_idx++;
@@ -196,7 +196,7 @@ void Game::play_music(int track_num)
 			else {
 				if (menu_music_idx > menu_music_count - 1) {
 					menu_music_idx = 0;
-					shuffle(menu_music, menu_music + menu_music_count, std::default_random_engine(generate_random(0, INT_MAX)));
+					shuffle(menu_music, menu_music + menu_music_count, std::default_random_engine(generate_random(0, (float)INT_MAX)));
 				}
 				track_num = menu_music[menu_music_idx];
 				menu_music_idx++;
@@ -249,12 +249,13 @@ void Game::update_window()
 		else
 			this->window = new RenderWindow(windowbounds, title);
 		globalvar::window = this->window;
+		window->setMouseCursorVisible(false);
 		initial_icon();
 	}
 	else if (prev_res != windowbounds) {
 		window->setSize({ windowbounds.width, windowbounds.height });
 		prev_res = windowbounds;
-		sf::FloatRect visibleArea(0, 0, windowbounds.width, windowbounds.height);
+		sf::FloatRect visibleArea(0, 0, (float)windowbounds.width, (float)windowbounds.height);
 		window->setView(sf::View(visibleArea));
 	}
 

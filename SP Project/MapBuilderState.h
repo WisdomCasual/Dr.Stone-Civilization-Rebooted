@@ -1,8 +1,7 @@
 #pragma once
 #include"State.h"
-#include "CreativeMode.h"
-#include "PauseState.h"
-
+#include"CreativeMode.h"
+#include"PauseState.h"
 #include"Global.h"
 
 #define spread_chances_num 11

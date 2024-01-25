@@ -9,18 +9,18 @@ void TradingState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		panel.setColor(Color(255, 255, 255, transparency));
-		tissue.setColor(Color(255, 255, 255, transparency));
-		items.setColor(Color(255, 255, 255, transparency));
-		get_button.setColor(Color(255, 255, 255, transparency));
-		pic.setColor(Color(255, 255, 255, transparency));
+		panel.setColor(Color(255, 255, 255, (int)transparency));
+		tissue.setColor(Color(255, 255, 255, (int)transparency));
+		items.setColor(Color(255, 255, 255, (int)transparency));
+		get_button.setColor(Color(255, 255, 255, (int)transparency));
+		pic.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness < 154) {
 			if (darkness + 154 * dt * 6 > 154)
 				darkness = 154;
 			else
 				darkness += 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 	}
 }
@@ -33,18 +33,18 @@ bool TradingState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		panel.setColor(Color(255, 255, 255, transparency));
-		tissue.setColor(Color(255, 255, 255, transparency));
-		items.setColor(Color(255, 255, 255, transparency));
-		get_button.setColor(Color(255, 255, 255, transparency));
-		pic.setColor(Color(255, 255, 255, transparency));
+		panel.setColor(Color(255, 255, 255, (int)transparency));
+		tissue.setColor(Color(255, 255, 255, (int)transparency));
+		items.setColor(Color(255, 255, 255, (int)transparency));
+		get_button.setColor(Color(255, 255, 255, (int)transparency));
+		pic.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness > 0) {
 			if (darkness - 154 * dt * 6 < 0)
 				darkness = 0;
 			else
 				darkness -= 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 		return false;
 	}
@@ -57,9 +57,9 @@ void TradingState::update_buttons()
 	for (int i = 0; i < trading_info.trades_count; i++) {
 		if (!buttons[i].disabled) {
 			get_button.setTextureRect(IntRect(buttons[i].pressed * 45, 0, 45, 49));
-			get_button.setPosition(x + 425 * scale, buttons[i].y);
+			get_button.setPosition(x + 425 * scale, (float)buttons[i].y);
 
-			if (get_button.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window))) && in_bounds(Mouse::getPosition(*window).y)) {
+			if (get_button.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window))) && in_bounds((float)Mouse::getPosition(*window).y)) {
 				clickable_cursor = true;
 				if (Mouse::isButtonPressed(Mouse::Left) && get_button.getGlobalBounds().contains(clicked_on)) {
 					if (!buttons[i].pressed)
@@ -92,22 +92,22 @@ void TradingState::update_buttons()
 void TradingState::render_buttons()
 {
 	for (int i = 0; i < trading_info.trades_count; i++) {
-		if (!in_bounds(buttons[i].y))
+		if (!in_bounds((float)buttons[i].y))
 			continue;
-		button_text.setFillColor(Color(226, 211, 195, transparency));
+		button_text.setFillColor(Color(226, 211, 195, (int)transparency));
 		if (!buttons[i].disabled) {
-			get_button.setColor(Color(255, 255, 255, transparency));
+			get_button.setColor(Color(255, 255, 255, (int)transparency));
 
 			if (buttons[i].hover)
-				button_text.setFillColor(Color(255, 255, 255, transparency));
+				button_text.setFillColor(Color(255, 255, 255, (int)transparency));
 		}
 		else {
-			get_button.setColor(Color(155, 155, 155, transparency));
-			button_text.setFillColor(Color(126, 111, 95, transparency));
+			get_button.setColor(Color(155, 155, 155, (int)transparency));
+			button_text.setFillColor(Color(126, 111, 95, (int)transparency));
 		}
 		button_text.setPosition(x + 425 * scale, (buttons[i].pressed) ? buttons[i].y + 2 * scale : buttons[i].y - 2 * scale);
 		get_button.setTextureRect(IntRect(buttons[i].pressed * 45, 0, 45, 49));
-		get_button.setPosition(x + 425 * scale, buttons[i].y);
+		get_button.setPosition(x + 425 * scale, (float)buttons[i].y);
 		window->draw(get_button);
 		window->draw(button_text);
 	}
@@ -122,9 +122,9 @@ void TradingState::render_trades()
 			buttons[i].disabled = false;
 			float x_start = x + 190 * scale - trading_info.trading_menu[i].ingredients_count / 2.f * x_stride * scale;
 			float y_pos = y - (trading_info.trades_count - 1) * 100 * scale + i * 200 * scale + 25 * scale;
-			buttons[i].y = y_pos;
+			buttons[i].y = (int)y_pos;
 
-			text.setFillColor(Color(0, 0, 0, transparency));
+			text.setFillColor(Color(0, 0, 0, (int)transparency));
 			draw_text(trading_info.trading_menu[i].item_name, x + 240 * scale, y_pos - 80 * scale, 50 * scale);
 
 			items.setTextureRect(IntRect(trading_info.trading_menu[i].result.ID * 16, 0, 16, 16));
@@ -141,7 +141,7 @@ void TradingState::render_trades()
 				draw_text((j == trading_info.trading_menu[i].ingredients_count - 1) ? "=" : "+", x_start + (j + 0.5f) * x_stride * scale, y_pos, 55 * scale);
 
 				if (inventory_count[trading_info.trading_menu[i].ingredients[j].ID] < trading_info.trading_menu[i].ingredients[j].count) {
-					text.setFillColor(Color(164, 0, 0, transparency));
+					text.setFillColor(Color(164, 0, 0, (int)transparency));
 					buttons[i].disabled = true;
 				}
 				draw_text(to_string(inventory_count[trading_info.trading_menu[i].ingredients[j].ID]) + '/' + to_string(trading_info.trading_menu[i].ingredients[j].count), x_start + j * x_stride * scale, y_pos + 25 * scale, 45 * scale);
@@ -153,9 +153,9 @@ void TradingState::render_trades()
 			float y_pos = y - (225 - i * 200 - scroll_offset) * scale;
 			buttons[i].disabled = false;
 			float x_start = x + 190 * scale - trading_info.trading_menu[i].ingredients_count / 2.f * x_stride * scale;
-			buttons[i].y = y_pos;
+			buttons[i].y = (int)y_pos;
 
-			text.setFillColor(Color(0, 0, 0, transparency));
+			text.setFillColor(Color(0, 0, 0, (int)transparency));
 			if (in_bounds(y_pos - 80 * scale))
 				draw_text(trading_info.trading_menu[i].item_name, x + 240 * scale, y_pos - 80 * scale, 50 * scale);
 
@@ -179,7 +179,7 @@ void TradingState::render_trades()
 					draw_text((j == trading_info.trading_menu[i].ingredients_count - 1) ? "=" : "+", x_start + (j + 0.5f) * x_stride * scale, y_pos, 55 * scale);
 
 				if (inventory_count[trading_info.trading_menu[i].ingredients[j].ID] < trading_info.trading_menu[i].ingredients[j].count) {
-					text.setFillColor(Color(164, 0, 0, transparency));
+					text.setFillColor(Color(164, 0, 0, (int)transparency));
 					buttons[i].disabled = true;
 				}
 				if (in_bounds(y_pos + 25 * scale))
@@ -198,7 +198,7 @@ bool TradingState::in_bounds(float y_pos)
 
 void TradingState::set_dialogue_lines()
 {
-	text.setCharacterSize(55 * scale);
+	text.setCharacterSize(int(55 * scale));
 	text.setOrigin(0, 0);
 	text.setPosition(0, 0);
 	for (auto &c : trading_info.dialogue) {
@@ -285,23 +285,23 @@ void TradingState::update()
 
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
-		if (win_x / 1920.0 > win_y / 1080.0) scale = win_x / 1920.0;
-		else scale = win_y / 1080.0;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+		x = win_x / 2.f, y = win_y / 2.f;
+		if (win_x / 1920.f > win_y / 1080.f) scale = win_x / 1920.f;
+		else scale = win_y / 1080.f;
 
 		///////////////////////////////////////////////////////////////////////
 
 		tint.setSize({ win_x, win_y });
 
 		panel.setPosition(x, y);
-		panel.setScale(scale * 1.4, scale * 1.4);
+		panel.setScale(scale * 1.4f, scale * 1.4f);
 
 		tissue.setPosition(x, y);
-		tissue.setScale(scale * 1.4, scale * 1.4);
+		tissue.setScale(scale * 1.4f, scale * 1.4f);
 
-		get_button.setScale(scale * 1.4, scale * 1.4);
-		button_text.setCharacterSize(32 * scale);
+		get_button.setScale(scale * 1.4f, scale * 1.4f);
+		button_text.setCharacterSize(int(32 * scale));
 		button_text.setOrigin(button_text.getLocalBounds().left + button_text.getLocalBounds().width / 2.f, button_text.getLocalBounds().top + button_text.getLocalBounds().height / 2.f);
 
 		items.setScale(scale * 3, scale * 3);
@@ -337,14 +337,14 @@ void TradingState::render()
 	/////////////////////////////
 	window->draw(panel);
 
-	text.setFillColor(Color(0, 0, 0, transparency));
+	text.setFillColor(Color(0, 0, 0, (int)transparency));
 
 	float y_start = y + (175 - (lines - 1) * 25.f) * scale;
 
 	for (int i = 0; i < lines; i++)
 		draw_text(output_strings[i], x - 277 * scale, y_start + i * 50.f * scale, 55 * scale);
 
-	text.setFillColor(Color(255, 255, 255, transparency));
+	text.setFillColor(Color(255, 255, 255, (int)transparency));
 	draw_text("Press ESC to exit", x, y + panel.getGlobalBounds().height / 2.f + 50.f * scale, 55 * scale);
 
 }

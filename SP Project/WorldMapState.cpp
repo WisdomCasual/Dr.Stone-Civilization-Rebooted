@@ -8,16 +8,16 @@ void WorldMapState::fade_in()
 		else
 			transparency += 1500 * dt;
 
-		worldmap.setColor(Color(255, 255, 255, transparency));
-		namebox.setColor(Color(255, 255, 255, transparency));
-		pin.setColor(Color(255, 255, 255, transparency));
+		worldmap.setColor(Color(255, 255, 255, (int)transparency));
+		namebox.setColor(Color(255, 255, 255, (int)transparency));
+		pin.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (tint_fade && darkness < 154) {
 			if (darkness + 154 * dt * 6 > 154)
 				darkness = 154;
 			else
 				darkness += 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 	}
 }
@@ -30,16 +30,16 @@ bool WorldMapState::fade_out()
 		else
 			transparency -= 1500 * dt;
 
-		worldmap.setColor(Color(255, 255, 255, transparency));
-		namebox.setColor(Color(255, 255, 255, transparency));
-		pin.setColor(Color(255, 255, 255, transparency));
+		worldmap.setColor(Color(255, 255, 255, (int)transparency));
+		namebox.setColor(Color(255, 255, 255, (int)transparency));
+		pin.setColor(Color(255, 255, 255, (int)transparency));
 
 		if (darkness > 0) {
 			if (darkness - 154 * dt * 6 < 0)
 				darkness = 0;
 			else
 				darkness -= 154 * dt * 6;
-			tint.setFillColor(Color(0, 0, 0, darkness));
+			tint.setFillColor(Color(0, 0, 0, (int)darkness));
 		}
 		return false;
 	}
@@ -55,7 +55,7 @@ bool WorldMapState::black_out()
 			blackining = 255;
 		else
 			blackining += 500 * dt;
-		blackscreen.setFillColor(Color(0, 0, 0, blackining));
+		blackscreen.setFillColor(Color(0, 0, 0, (int)blackining));
 		return false;
 	}
 	return true;
@@ -63,15 +63,15 @@ bool WorldMapState::black_out()
 
 void WorldMapState::update_pins()
 {
-	pin.setScale(scale * 3.1, scale * 3.1);
-	namebox.setScale(scale * 1.5, scale * 1.5);
+	pin.setScale(scale * 3.1f, scale * 3.1f);
+	namebox.setScale(scale * 1.5f, scale * 1.5f);
 
 	for (auto pn = pins.begin(); pn != pins.end(); pn++) {
 		namebox.setPosition(x + pn->second.x * scale, y + (pn->second.y - 90) * scale);
 		pin.setPosition(x + pn->second.x * scale, y + pn->second.y * scale);
 
-		pn->second.pin_scale = scale * 3.1;
-		pn->second.namebox_scale = scale * 1.5;
+		pn->second.pin_scale = scale * 3.1f;
+		pn->second.namebox_scale = scale * 1.5f;
 		pn->second.text_size = 54 * scale;
 		pn->second.hover = 0;
 
@@ -79,8 +79,8 @@ void WorldMapState::update_pins()
 			if (Mouse::isButtonPressed(Mouse::Left) && (namebox.getGlobalBounds().contains(clicked_on) || pin.getGlobalBounds().contains(clicked_on))) {
 				if(!pn->second.pressed)
 					game.play_sfx(0);
-				pn->second.pin_scale = scale * 2.9;
-				pn->second.namebox_scale = scale * 1.44;
+				pn->second.pin_scale = scale * 2.9f;
+				pn->second.namebox_scale = scale * 1.44f;
 				pn->second.text_size = 50 * scale;
 				pn->second.pressed = 1;
 			}
@@ -138,7 +138,7 @@ void WorldMapState::render_pins()
 		
 		window->draw(pin);
 		window->draw(namebox);
-		text.setFillColor(Color(0, 0, 0, transparency));
+		text.setFillColor(Color(0, 0, 0, (int)transparency));
 		draw_text(pn.first, x + pn.second.x * scale, y + (pn.second.y - 90) * scale, pn.second.text_size);
 	}
 
@@ -172,15 +172,15 @@ WorldMapState::WorldMapState(string& selected_map, bool admin, bool tint_fade)
 	tint.setFillColor(Color(0, 0, 0, 154));
 
 	worldmap.setTexture(*textures[0]);
-	worldmap.setOrigin(2150/2, 1150/2);
+	worldmap.setOrigin(2150/2.f, 1150/2.f);
 
 	namebox.setTexture(*textures[1]);
 	namebox.setTextureRect(IntRect(0, 0, 150, 55));
-	namebox.setOrigin(150 / 2, 55 / 2);
+	namebox.setOrigin(150 / 2.f, 55 / 2.f);
 
 	pin.setTexture(*textures[2]);
 	pin.setTextureRect(IntRect(0, 0, 21, 22));
-	pin.setOrigin(21 / 2, 22 / 2);
+	pin.setOrigin(21 / 2.f, 22 / 2.f);
 
 	load_maps();
 }
@@ -198,12 +198,12 @@ void WorldMapState::update()
 
 	if (prev_win != window->getSize()) {
 		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		x = win_x / 2, y = win_y / 2;
-		if (win_x / 2350.0 < win_y / 1350.0) scale = win_x / 2350.0;
-		else scale = win_y / 1350.0;
+		win_x = (float)window->getSize().x, win_y = (float)window->getSize().y;
+		x = win_x / 2.f, y = win_y / 2.f;
+		if (win_x / 2350.0f < win_y / 1350.0f) scale = win_x / 2350.0f;
+		else scale = win_y / 1350.0f;
 
-		if (VideoMode::getDesktopMode().width < win_x * 1.7 || VideoMode::getDesktopMode().height < win_y * 1.7) scale *= 0.9;
+		if (VideoMode::getDesktopMode().width < win_x * 1.7f || VideoMode::getDesktopMode().height < win_y * 1.7f) scale *= 0.9f;
 
 		////////////////////
 
@@ -211,8 +211,8 @@ void WorldMapState::update()
 		blackscreen.setSize({ win_x, win_y });
 		worldmap.setPosition(x, y);
 		worldmap.setScale(scale, scale);
-		pin.setScale(scale * 3.1, scale * 3.1);
-		namebox.setScale(scale*1.5, scale*1.5);
+		pin.setScale(scale * 3.1f, scale * 3.1f);
+		namebox.setScale(scale * 1.5f, scale * 1.5f);
 	}
 
 	update_pins();
@@ -276,7 +276,7 @@ void WorldMapState::render()
 	window->draw(tint);
 	window->draw(worldmap);
 	render_pins();
-	text.setFillColor(Color(255, 255, 255, transparency));
+	text.setFillColor(Color(255, 255, 255, (int)transparency));
 	if(!admin)
 		draw_text("Press ESC to exit", x, y + (worldmap.getLocalBounds().height / 2 + 60) * scale, scale * 70);
 	if(blacking_out)
