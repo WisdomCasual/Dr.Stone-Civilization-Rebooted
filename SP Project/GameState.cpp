@@ -27,6 +27,9 @@ bool GameState::black_out(float fade_speed)
 
 void GameState::save()
 {
+
+
+
 	ofstream ofs("Saves/Save " + to_string(save_num + 1) + "/Save.dat", ofstream::out, ofstream::trunc);
 
 	if (ofs.is_open()) {
@@ -1736,12 +1739,15 @@ void GameState::update()
 		shader.setUniform("ratio", win_x / win_y);
 	}
 
+	if (z_scale > 0.6)
+		z_scale -= 0.4f * dt;
+
 	if (fps_active)
 		fps_text.setString(fps_text.getString() + "\tCoordinates " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
 
 	cam_movement();
 
-	//entity spawning                *******FIX RANDOM DAMAGE WITH ENEMY SPAWNING*****
+	//entity spawning
 	spawn_cd += dt;
 	if (spawn_cd >= def_spawn_cd) {
 		spawn_cd = 0;
