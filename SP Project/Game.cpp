@@ -11,8 +11,8 @@ void Game::initial_window()
 		ifs >> vsync;
 		ifs >> game_volume;
 		ifs >> music_volume;
+		ifs.close();
 	}
-	ifs.close();
 
 	if(window != nullptr)
 		delete window;
