@@ -31,5 +31,5 @@ public:
 	void path_follow(short , short , short , short , short , short );
 	void update_looks();
 	void initialize_NPC(string*, in_order*, unsigned short*, short, Vector2f*, TradingInfo*);
-	void update();
+	void update(float scale);
 };

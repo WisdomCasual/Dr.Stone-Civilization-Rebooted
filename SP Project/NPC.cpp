@@ -254,21 +254,17 @@ void NPC::initialize_NPC(string* map, in_order* order, unsigned short* count, sh
 	travel_map = map, inventory_order = order, inventory_count = count, player_character_id = character_id, this->quest_location = quest_location, this->trade = trade;
 }
 
-void NPC::update()
+void NPC::update(float scale)
 {
 	if (in_dialogue) {
 		states->insert({ DialogueID,new DialogueState(curr_dialogue,{0, 140}, 1, curr_dialogue_num) });
 		states->at(DialogueID)->update();
 		in_dialogue = 0;
-		//cout << "\n------------------------------------\n";
 		return;
 	}
-	//cout << "A";
-	if (prev_win != window->getSize()) {
-		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
-		else scale = win_y / 304.5;
+
+	if (this->scale != scale) {
+		this->scale = scale;
 		////////////////
 		entity_sprite.setScale(scale * entity_stats.scale_const, scale * entity_stats.scale_const);
 	}

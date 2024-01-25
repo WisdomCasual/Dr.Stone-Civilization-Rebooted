@@ -240,17 +240,23 @@ void Game::save()
 
 void Game::update_window()
 {
-	save();
-
-	if (prev_res != windowbounds) {
+	if (prev_fullscreen != fullscreen) {
+		prev_fullscreen = fullscreen;
+		if (window != nullptr)
+			delete window;
+		if (fullscreen)
+			this->window = new RenderWindow(VideoMode::getDesktopMode(), title, Style::Fullscreen);
+		else
+			this->window = new RenderWindow(windowbounds, title);
+		globalvar::window = this->window;
+		initial_icon();
+	}
+	else if (prev_res != windowbounds) {
 		window->setSize({ windowbounds.width, windowbounds.height });
 		prev_res = windowbounds;
 		sf::FloatRect visibleArea(0, 0, windowbounds.width, windowbounds.height);
 		window->setView(sf::View(visibleArea));
 	}
-
-	if(prev_fullscreen != fullscreen)
-		initial_window();
 
 	for (auto& state : states)
 		state.second->update();
@@ -286,11 +292,12 @@ void Game::update()
 	if (exit_game)
 		window->close();
 
-	windowbounds.width = window->getSize().x;
-	windowbounds.height = window->getSize().y;
-
-	if (prev_res != windowbounds)
-		update_window();
+	if (!fullscreen) {
+		windowbounds.width = window->getSize().x;
+		windowbounds.height = window->getSize().y;
+		if (prev_res != windowbounds)
+			update_window();
+	}
 
 	update_cursor();
 }

@@ -37,6 +37,6 @@ public:
 	void setID(short);
 	void setVisArray(short***, bool* astar_done, short new_find_size_x = 50, short new_find_size_y = 50);
 	void Hitbox_align();
-	void update();
+	void update(float scale);
 };
 

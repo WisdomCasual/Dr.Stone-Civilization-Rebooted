@@ -61,7 +61,7 @@ private:
 
 	short blink_count = 0;
 	float blink_delay = 0;
-
+	float z_scale = 1.f;
 
 
 	base_stats object_stats[30], * destructable_objects = nullptr;

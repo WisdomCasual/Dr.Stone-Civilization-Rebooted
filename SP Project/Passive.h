@@ -23,5 +23,5 @@ public:
 	void updatePos();
 	bool legal_direction(Vector2f, short, short);
 	void stateMachine();
-	void update();
+	void update(float scale);
 };

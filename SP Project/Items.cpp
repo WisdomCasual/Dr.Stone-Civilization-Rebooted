@@ -34,23 +34,19 @@ void Items::intersect(){
 	}
 }
 
-void Items::update()
+void Items::update(float scale)
 {
 	if (game_time - despawn_timer > time_to_despawn && !persistant) {
 		despawn = 1;
 		return;
 	}
 	
-	if (prev_win != window->getSize()) {
-
-		prev_win = window->getSize();
-		win_x = window->getSize().x, win_y = window->getSize().y;
-		if (win_x / 540.0 < win_y / 304.5) scale = win_x / 540.0;
-		else scale = win_y / 304.5;
-		                //////////////////////////
+	if (this->scale != scale) {
+		this->scale = scale;
+		//////////////////////////
 		entity_sprite.setScale(scale, scale);
-
 	}
+
 	entity_sprite.setPosition(round(map_x * scale) + pos.x * scale, round(map_y * scale) + pos.y * scale);
 
 	

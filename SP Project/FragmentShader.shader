@@ -14,6 +14,7 @@ uniform sampler2D texture;
 uniform int lightsCount;
 uniform light lights[20];
 uniform float ratio;
+uniform float scale;
 
 //Ambient light
 uniform vec4 ambient_light;
@@ -31,7 +32,7 @@ void main()
 		lightToFrag.y = lightToFrag.y / ratio;
 
 		//Length of the vector (distance)
-		vecLength = clamp(length(lightToFrag) / lights[i].intensity + 0.07, 0, 1);
+		vecLength = clamp(length(lightToFrag) / lights[i].intensity * scale, 0, 1);
 		color_intensity.r += clamp(lights[i].color.r - sqrt(vecLength), 0, 1);
 		color_intensity.g += clamp(lights[i].color.g - sqrt(vecLength), 0, 1);
 		color_intensity.b += clamp(lights[i].color.b - sqrt(vecLength), 0, 1);
