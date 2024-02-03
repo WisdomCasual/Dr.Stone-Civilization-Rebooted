@@ -10,11 +10,11 @@ struct base_stats {
 	short speed = 0;
 };
 
-struct Player :
-    public Entity
-{
+struct Player : public Entity {
 	using::Entity::Entity;
 private:
+
+	float z_scale = 1;
 
 	//private functions
 	void player_movement(float,float,float);
@@ -36,7 +36,7 @@ public:
 	void damaged();
 	void Hitbox_align(int);
 	void setObjectStats(base_stats*, base_stats**, short*, short*);
-	virtual void setPosition(float, float);
+	void setPosition(float, float);
 	void use_tool();
 	void mine();
 	void move(Vector2f);
@@ -44,7 +44,7 @@ public:
 	void setHealth(short);
 	Vector2i block_interaction();
 	void interaction_notification(string interaction_type = "Interact");
-	void update(float scale);
+	void update(float scale, float z_scale);
 	void pollevent();
 
 };

@@ -254,7 +254,7 @@ void NPC::initialize_NPC(string* map, in_order* order, unsigned short* count, sh
 	travel_map = map, inventory_order = order, inventory_count = count, player_character_id = character_id, this->quest_location = quest_location, this->trade = trade;
 }
 
-void NPC::update(float scale)
+void NPC::update(float scale, float z_scale)
 {
 	if (in_dialogue) {
 		states->insert({ DialogueID,new DialogueState(curr_dialogue,{0, 140}, 1, curr_dialogue_num) });
@@ -263,10 +263,10 @@ void NPC::update(float scale)
 		return;
 	}
 
-	if (this->scale != scale) {
-		this->scale = scale;
+	if (this->scale != scale * z_scale) {
+		this->scale = scale * z_scale;
 		////////////////
-		entity_sprite.setScale(scale * entity_stats.scale_const, scale * entity_stats.scale_const);
+		entity_sprite.setScale(this->scale * entity_stats.scale_const, this->scale * entity_stats.scale_const);
 	}
 
 	update_looks();

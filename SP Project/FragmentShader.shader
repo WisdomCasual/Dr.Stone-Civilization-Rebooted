@@ -5,6 +5,7 @@ struct light {
 	vec2 position;
 	vec3 color;
 	float intensity;
+	bool oval;
 };
 
 in vec4 vert_pos;
@@ -30,12 +31,26 @@ void main()
 		//Convert light to view coords & Calculate the vector from light to pixel (Make circular)
 		lightToFrag = (gl_ModelViewProjectionMatrix * vec4(lights[i].position, 0, 1)).xy - vert_pos.xy;
 		lightToFrag.y = lightToFrag.y / ratio;
+		if(lights[i].oval)
+			lightToFrag.y *= 2.f;
 
 		//Length of the vector (distance)
 		vecLength = clamp(length(lightToFrag) / lights[i].intensity * scale, 0, 1);
-		color_intensity.r += clamp(lights[i].color.r - sqrt(vecLength), 0, 1);
-		color_intensity.g += clamp(lights[i].color.g - sqrt(vecLength), 0, 1);
-		color_intensity.b += clamp(lights[i].color.b - sqrt(vecLength), 0, 1);
+		float strength = sqrt(vecLength);
+		if(lights[i].color.r > 0)
+			color_intensity.r += clamp(lights[i].color.r - strength, 0, 1);
+		else
+			color_intensity.r += clamp(lights[i].color.r + strength, -1, 0);
+
+		if (lights[i].color.g > 0)
+			color_intensity.g += clamp(lights[i].color.g - strength, 0, 1);
+		else
+			color_intensity.g += clamp(lights[i].color.g + strength, -1, 0);
+
+		if (lights[i].color.b > 0)
+			color_intensity.b += clamp(lights[i].color.b - strength, 0, 1);
+		else
+			color_intensity.b += clamp(lights[i].color.b + strength, -1, 0);
 	}
 
     // lookup the pixel in the texture
@@ -44,6 +59,6 @@ void main()
 
     // multiply it by the color and lighting
 
-	gl_FragColor = gl_Color * pixel * (clamp(ambient_light + vec4(color_intensity.r, color_intensity.g, color_intensity.b, 1), 0, 1));
+	gl_FragColor = gl_Color * pixel * (clamp(ambient_light + vec4(color_intensity.r, color_intensity.g, color_intensity.b, 1), 0.1, 1));
 
 }

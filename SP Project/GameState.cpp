@@ -1116,6 +1116,7 @@ void GameState::destroyANDrestore_objects(Vector2i core_location, bool destroy, 
 	object_height = 1;
 	destroyANDrestore(core_location, destroy, ToEternityAndByound);
 	if (destroy && !ToEternityAndByound) {
+		poof_pop.setVolume(game_volume);
 		poof_pop.play();
 		effects.add({ 0, 0, 256, 256 }, 22, { core_location.x * 16 + 8 , core_location.y * 16 + 8 }, "Poof", sqrtf(object_height / 6.f), Color(255, 255, 255, 255), 0, map_x, map_y);
 	}
@@ -1256,7 +1257,7 @@ void GameState::render_entities()
 			passive.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)) {
 			if (passive.entities[i]->despawn)
 				continue;
-			dynamic_rendering.insert({ passive.entities[i]->pos.y, {-1, passive.entities[i]} });
+			dynamic_rendering.insert({ passive.entities[i]->getRelativePos().y, {-1, passive.entities[i]}});
 		}
 	}
 
@@ -1268,7 +1269,7 @@ void GameState::render_entities()
 			NPCs.entities[i]->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)) {
 			if (NPCs.entities[i]->despawn)
 				continue;
-			dynamic_rendering.insert({ NPCs.entities[i]->pos.y, {-1, NPCs.entities[i]} });
+			dynamic_rendering.insert({ NPCs.entities[i]->getRelativePos().y, {-1, NPCs.entities[i]} });
 		}
 	}
 
@@ -1424,11 +1425,11 @@ void GameState::entity_spawning()
 		if (valid_spawn) {
 			if (light_level <= 0.4) {
 				enemies.add(enemy_spawn(generate_random(0, float(number_of_enemies - 1))), { 16.f * spawn_x, 16.f * spawn_y });
-				enemies.entities[enemies.curr_idx - 1]->update((scale * z_scale));
+				enemies.entities[enemies.curr_idx - 1]->update(scale, z_scale);
 			}
 			else {
 				passive.add(passive_spawn(generate_random(0, float(number_of_passives - 1))), { 16.f * spawn_x, 16.f * spawn_y });
-				passive.entities[passive.curr_idx - 1]->update((scale * z_scale));
+				passive.entities[passive.curr_idx - 1]->update(scale, z_scale);
 
 			}
 		}
@@ -1477,6 +1478,7 @@ void GameState::DayLightCycle()
 				shader.setUniform("lights[" + to_string(count) + "].color", i->second.color);
 			shader.setUniform("lights[" + to_string(count) + "].position", (i->second.position + Vector2f(map_x, map_y)) * (scale * z_scale));
 			shader.setUniform("lights[" + to_string(count) + "].intensity", i->second.intensity * (scale * z_scale));
+			shader.setUniform("lights[" + to_string(count) + "].oval", false);
 			count++;
 		}
 	}
@@ -1492,6 +1494,15 @@ void GameState::DayLightCycle()
 		shader.setUniform("lights[" + to_string(count) + "].position", (player_entity->getRelativePos() + Vector2f(map_x, map_y)) * (scale * z_scale));
 		shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(0.95f, 0.92f, 0.7f));
 		shader.setUniform("lights[" + to_string(count) + "].intensity", torch_intensity * (scale * z_scale));
+		shader.setUniform("lights[" + to_string(count) + "].oval", false);
+		count++;
+	}
+
+	if (z_scale < 1.f) {
+		shader.setUniform("lights[" + to_string(count) + "].position", (player_entity->getRelativePos() + Vector2f(map_x, map_y)) * (scale * z_scale));
+		shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(-0.4f, -0.4f, -0.4f));
+		shader.setUniform("lights[" + to_string(count) + "].intensity", (1.3f - z_scale) * (scale * z_scale));
+		shader.setUniform("lights[" + to_string(count) + "].oval", true);
 		count++;
 	}
 
@@ -1725,8 +1736,7 @@ void GameState::update()
 		shader.setUniform("ratio", win_x / win_y);
 	}
 
-	//if (z_scale > 0.6)
-	//	z_scale -= 0.4f * dt;
+	z_scale = clamp<float>(z_scale + inc * dt, 0.5f, 1.f);
 
 	if (fps_active)
 		fps_text.setString(fps_text.getString() + "\tCoordinates " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
@@ -1764,12 +1774,13 @@ void GameState::update()
 	for (int i = 0; i < enemies.curr_idx; i++) {
 		if (!enemies.entities[i]->despawn) {
 			if (enemies.entities[i]->action_state != 0 || entity_in_range(enemies.entities[i]->pos, entity_update_distance))
-				enemies.entities[i]->update((scale * z_scale));
+				enemies.entities[i]->update(scale, z_scale);
 			if(enemies.entities[i]->got_hit)
 				effects.add({ 400,0,100,100 }, 20, { int(enemies.entities[i]->getRelativePos().x) , int(enemies.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9f, Color(136, 8, 8, 240), 0, map_x, map_y);
 		}
 		else {
 			if (enemies.entities[i]->health <= 0) {
+				poof_pop.setVolume(game_volume);
 				poof_pop.play();
 				effects.add({ 0, 0, 256, 256 }, 22, { (int)enemies.entities[i]->getRelativePos().x, (int)enemies.entities[i]->getRelativePos().y + 2}, "Poof", 0.5f, Color(255, 255, 255, 255), 0, map_x, map_y);
 				for (int j = 0; j < enemies.entities[i]->entity_stats.item_drop_count; j++)
@@ -1782,13 +1793,14 @@ void GameState::update()
 	for (int i = 0; i < passive.curr_idx; i++) {
 		if (!passive.entities[i]->despawn) {
 			if (passive.entities[i]->action_state != 0 || entity_in_range(passive.entities[i]->pos, entity_update_distance))
-				passive.entities[i]->update((scale * z_scale));
+				passive.entities[i]->update(scale, z_scale);
 			if (passive.entities[i]->got_hit)
 				effects.add({ 400,0,100,100 }, 20, { int(passive.entities[i]->getRelativePos().x) , int(passive.entities[i]->getRelativePos().y + 2) }, "break_animation", 0.9f, Color(136, 8, 8, 240), 0, map_x, map_y);
 		}
 		else {
 			if (passive.entities[i]->health <= 0) {
 				effects.add({ 0, 0, 256, 256 }, 22, { (int)passive.entities[i]->getRelativePos().x, (int)passive.entities[i]->getRelativePos().y + 2 }, "Poof", 0.5f, Color(255, 255, 255, 255), 0, map_x, map_y);
+				poof_pop.setVolume(game_volume);
 				poof_pop.play();
 				for (int j = 0; j < passive.entities[i]->entity_stats.item_drop_count; j++)
 					items.add(item_spawn(passive.entities[i]->entity_stats.item_drops[j]), passive.entities[i]->getRelativePos(), 0, 300.f);
@@ -1800,10 +1812,10 @@ void GameState::update()
 	for (int i = 0; i < NPCs.curr_idx; i++) {
 		if (!NPCs.entities[i]->despawn) {
 			if (NPCs.entities[i]->npc_type == 3 && game_time - NPCs.entities[i]->despawn_timer > NPCs.entities[i]->time_to_despawn / 3.f)
-				NPCs.entities[i]->update((scale * z_scale));
+				NPCs.entities[i]->update(scale, z_scale);
 			npc_id_to_idx[NPCs.entities[i]->id] = i;
 			if (NPCs.entities[i]->action_state != 0 || entity_in_range(NPCs.entities[i]->pos, entity_update_distance))
-				NPCs.entities[i]->update((scale * z_scale));
+				NPCs.entities[i]->update(scale, z_scale);
 		}
 		if(NPCs.entities[i]->despawn) {
 			NPCs.rem_ove(i);
@@ -1820,7 +1832,7 @@ void GameState::update()
 	}
 	if (!player_entity->despawn) {
 		no_update = 0;
-		player_entity->update((scale * z_scale));
+		player_entity->update(scale, z_scale);
 	}
 	else {
 		if (!no_update) {
@@ -1890,7 +1902,7 @@ void GameState::update()
 		}
 		else{
 			if(entity_in_range(items.entities[i]->pos, entity_update_distance))
-				items.entities[i]->update((scale * z_scale));
+				items.entities[i]->update(scale, z_scale);
 		}
 		
 	}
@@ -1933,6 +1945,8 @@ void GameState::pollevent()
 				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
+			case Keyboard::G:
+				inc *= -1; break;
 			case Keyboard::F6:
 				{	
 				string notification_s[] = { "Saved Successfully" };

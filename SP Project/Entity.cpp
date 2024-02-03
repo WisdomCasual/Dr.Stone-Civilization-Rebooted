@@ -18,7 +18,6 @@ Entity::Entity(entity& entity_stats, bool has_legs, render_tile**& static_map, s
 		health = 1;
 	}
 	else {
-
 		if(!entity_stats.is_player)
 			current_hitbox = entity_stats.animations[state][current_move].hitbox_rect;
 		entity_sprite.setTexture(*entity_stats.textures[state]);
@@ -67,7 +66,6 @@ void Entity::setPosition(float x_pos, float y_pos)
 void Entity::set_movement_speed(short speed)
 {
 	entity_stats.base_movement_speed = speed; //I AM SPEED
-
 }
 
 void Entity::setScale(float new_scale_const)
@@ -170,9 +168,9 @@ void Entity::render(Shader* shader)
 
 	//draws entity hitboxes for passive and hostile entities:
 	
-	/*RectangleShape hitbox_debug;
-	hitbox_debug.setSize({ entity_hitbox.width * scale, entity_hitbox.height * scale });
-	hitbox_debug.setPosition({ entity_hitbox.left * scale + map_x * scale, entity_hitbox.top * scale + map_y * scale });
-	hitbox_debug.setFillColor(Color(255,0,0,150));
-	window->draw(hitbox_debug);*/
+	//RectangleShape hitbox_debug;
+	//hitbox_debug.setSize({ entity_hitbox.width * scale, entity_hitbox.height * scale });
+	//hitbox_debug.setPosition({ entity_hitbox.left * scale + map_x * scale, entity_hitbox.top * scale + map_y * scale });
+	//hitbox_debug.setFillColor(Color(255,0,0,150));
+	//window->draw(hitbox_debug);
 }
