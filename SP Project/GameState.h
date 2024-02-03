@@ -356,7 +356,7 @@ private:
 	short destructable_count = 0;
 	Vector2i destroy_object_location = { -1, -1 };
 	int object_height = 0;
-	float map_x = 0, map_y = 0;
+	float map_x = 0, map_y = 0, cam_x = 0, cam_y = 0;
 	float scale = 1, x_scale = 1, y_scale = 1, win_x = 0, win_y = 0, torch_intensity = 0.6f, torch_delta = 0.2f;
 	RectangleShape blackscreen;
 	Vector2u prev_win = { 0, 0 };

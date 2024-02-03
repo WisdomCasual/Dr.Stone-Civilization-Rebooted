@@ -1059,50 +1059,37 @@ void GameState::initial_game(string current_map, Vector2f player_pos)
 
 void GameState::cam_movement()
 {
-	Vector2f camera_movement = { ((player_entity->getRelativePos().x + map_x - win_x / (scale * z_scale) / 2.f) * 1.3f) * dt / (win_x / win_y),
-								 ((player_entity->getRelativePos().y + map_y - win_y / (scale * z_scale) / 2.f) * 1.3f) * dt };
-	if (size_x * 16 * (scale * z_scale) > win_x)
-		move_cam(camera_movement.x, 0);
-	if (size_y * 16 * (scale * z_scale) > win_y)
-		move_cam(0, camera_movement.y);
+	Vector2f camera_movement = { ((player_entity->getRelativePos().x + cam_x) * 1.3f) * dt / (win_x / win_y),
+								 ((player_entity->getRelativePos().y + cam_y) * 1.3f) * dt };
+	move_cam(camera_movement.x, camera_movement.y);
 }
 
 void GameState::move_cam(float x_movement, float y_movement)
 {
-	if (map_x - x_movement <= 0 && map_x - x_movement >= -(size_x * 16 - win_x / (scale * z_scale))) {
-		map_x -= x_movement;
-		x_offset = -map_x / 16;
+	if (size_x * 16 * (scale * z_scale) > win_x) {
+		cam_x -= x_movement;
+		cam_x = clamp<float>(cam_x, -(size_x * 16.f - win_x / (2.f * scale * z_scale)), -win_x / (2.f * scale * z_scale));
 	}
-	if (map_y - y_movement <= 0 && map_y - y_movement >= -(size_y * 16 - win_y / (scale * z_scale))) {
-		map_y -= y_movement;
-		y_offset = -map_y / 16;
+	else
+		cam_x = -size_x * 8.f;
+	if (size_y * 16 * (scale * z_scale) > win_y) {
+		cam_y -= y_movement;
+		cam_y = clamp<float>(cam_y, -(size_y * 16.f - win_y / (2.f * scale * z_scale)), -win_y / (2.f * scale * z_scale));
 	}
+	else
+		cam_y = -size_y * 8.f;
+
+	map_x = cam_x + win_x / (2.f * scale * z_scale);
+	map_y = cam_y + win_y / (2.f * scale * z_scale);
+	x_offset = -map_x / 16;
+	y_offset = -map_y / 16;
 }
 
 void GameState::center_cam(Vector2f player_pos)
 {
-	map_x = -(player_pos.x - win_x / 2 / (scale * z_scale));
-	map_y = -(player_pos.y - win_y / 2 / (scale * z_scale));
-
-	if (size_x * 16 * (scale * z_scale) > win_x) {
-		if (-map_x < 0)
-			map_x = 0;
-		else if (-map_x > size_x * 16 - win_x / (scale * z_scale))
-			map_x = -(size_x * 16 - win_x / (scale * z_scale));
-	}
-	else
-		map_x = x/ (scale * z_scale) - size_x * 8;
-
-	if (size_y * 16 * (scale * z_scale) > win_y) {
-		if (-map_y < 0)
-			map_y = 0;
-		else if (-map_y > size_y * 16 - win_y / (scale * z_scale))
-			map_y = -(size_y * 16 - win_y / (scale * z_scale));
-	}
-	else
-		map_y = y / (scale * z_scale) - size_y * 8;
-
-	x_offset = -map_x / 16, y_offset = -map_y / 16;
+	cam_x = -player_pos.x;
+	cam_y = -player_pos.y;
+	move_cam(0.f, 0.f);
 
 	player_entity->setPosition(player_pos.x, player_pos.y);
 }
@@ -1481,9 +1468,9 @@ void GameState::DayLightCycle()
 	int count = 0;
 	const int viewDist = 13;
 
-	shader.setUniform("scale", scale * z_scale);
-	for (auto i = light_sources.lower_bound(-map_y - (viewDist * 16 * (scale * z_scale))); i != light_sources.end() && i->first <= -map_y + win_y / (scale * z_scale) + (viewDist * 16 * (scale * z_scale)); i++) {
-		if (i->second.position.x > -map_x - (viewDist * 16 * (scale * z_scale)) && i->second.position.x < -map_x + win_x / (scale * z_scale) + (viewDist * 16 * (scale * z_scale))) {
+	shader.setUniform("scale", scale);
+	for (auto i = light_sources.lower_bound(-map_y - (viewDist * 16 * (scale))); i != light_sources.end() && i->first <= -map_y + win_y / (scale) + (viewDist * 16 * (scale * z_scale)); i++) {
+		if (i->second.position.x > -map_x - (viewDist * 16 * (scale)) && i->second.position.x < -map_x + win_x / (scale * z_scale) + (viewDist * 16 * (scale))) {
 			if(i->second.day_light)
 				shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(light_level, light_level, light_level));
 			else
@@ -1710,7 +1697,6 @@ void GameState::update()
 		if (win_x / 540.f < win_y / 304.5f) scale = win_x / 540.f;
 		else scale = win_y / 304.5f;
 		/////////////////////
-		center_cam(player_entity->getRelativePos());
 		hotbar.setScale(scale * 0.1f, scale * 0.1f);
 		hotbar.setPosition(win_x / 2.f, win_y - 20.f * scale);
 		hotbar_selection.setScale(scale * 0.1f, scale * 0.1f);
@@ -1739,8 +1725,8 @@ void GameState::update()
 		shader.setUniform("ratio", win_x / win_y);
 	}
 
-	if (z_scale > 0.6)
-		z_scale -= 0.4f * dt;
+	//if (z_scale > 0.6)
+	//	z_scale -= 0.4f * dt;
 
 	if (fps_active)
 		fps_text.setString(fps_text.getString() + "\tCoordinates " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
