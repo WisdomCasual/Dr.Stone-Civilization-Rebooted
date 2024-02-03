@@ -34,20 +34,20 @@ void Items::intersect(){
 	}
 }
 
-void Items::update(float scale)
+void Items::update(float scale, float z_scale)
 {
 	if (game_time - despawn_timer > time_to_despawn && !persistant) {
 		despawn = 1;
 		return;
 	}
 	
-	if (this->scale != scale) {
-		this->scale = scale;
+	if (this->scale != scale * z_scale) {
+		this->scale = scale * z_scale;
 		//////////////////////////
-		entity_sprite.setScale(scale, scale);
+		entity_sprite.setScale(this->scale, this->scale);
 	}
 
-	entity_sprite.setPosition(round(map_x * scale) + pos.x * scale, round(map_y * scale) + pos.y * scale);
+	entity_sprite.setPosition(round(map_x * this->scale) + pos.x * this->scale, round(map_y * this->scale) + pos.y * this->scale);
 
 	
     intersect();

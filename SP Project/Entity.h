@@ -252,7 +252,7 @@ public:
 	virtual void damaged() {};
 	virtual void setID(short) {};
 	virtual void setVisArray(short***, bool*, short new_find_size_x = 50, short new_find_size_y = 50) {};
-	virtual void update(float scale) = 0;
+	virtual void update(float scale, float z_scale) = 0;
 	virtual void pollevent();
 	virtual void set_type(short) {};
 	virtual void set_dialogue(dialogue*, short) {};

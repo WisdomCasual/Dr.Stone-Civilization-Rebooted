@@ -12,23 +12,26 @@ void Player::player_movement(float x_movement,float y_movement,float velocity)
 	x_movement *= velocity * dt, y_movement *=  velocity * dt;
 	bool moving = false;
 
-	if (x_movement && legal_tile({ x_movement, 0 })) {
+	if (z_scale < 0.7 || (x_movement && legal_tile({ x_movement, 0 }))) {
 		moving = true;
 		pos.x += x_movement;
 	}
 	
 
-	if (y_movement && legal_tile({ 0, y_movement })) {
+	if (z_scale < 0.7 || (y_movement && legal_tile({ 0, y_movement }))) {
 		moving = true;
 		pos.y += y_movement;
 	}
+
+	moving &= z_scale == 1.f;
 
 	direction(delta_movement(), moving);
 }
 
 void Player::updatePos()
 {
-	entity_sprite.setPosition(round(map_x * scale) + pos.x * scale, round(map_y * scale) + pos.y * scale);
+	entity_sprite.setPosition(round(map_x * (scale * z_scale)) + pos.x * (scale * z_scale),
+							  round(map_y * (scale * z_scale)) + pos.y * (scale * z_scale) - (1 - z_scale) * 200.f * scale);
 }
 
 Vector2f Player::delta_movement()
@@ -107,6 +110,9 @@ void Player::setPosition(float x_pos, float y_pos)
 
 void Player::use_tool()
 {
+	if (z_scale < 1)
+		return;
+
 	if (Lag >= 0.8 && stun<=0) {
 		if (state == 3) { // sword
 			random_num = generate_random(0, 1);
@@ -225,6 +231,8 @@ void Player::setHealth(short new_health)
 
 Vector2i Player::block_interaction()
 {
+	if (z_scale < 1.f)
+		return Vector2i(-1, -1);
 	if (interact) {
 		for (int i = 0; i < 2; i++) {
 			short new_tile_x = short(getRelativePos().x / 16.f + i * current_direction.x), new_tile_y = short(getRelativePos().y / 16.f + i * current_direction.y);
@@ -246,12 +254,15 @@ void Player::interaction_notification(string interaction_type)
 	game.notification(notification_s, 1, dt);
 }
 
-void Player::update(float scale)
+void Player::update(float scale, float z_scale)
 {
+	this->z_scale = z_scale;
+
 	if (this->scale != scale) {
 		this->scale = scale;
 		entity_sprite.setScale(scale * entity_stats.scale_const, scale * entity_stats.scale_const);
 	}
+
 	if (state != prev_state) {
 		prev_state = state;
 		entity_sprite.setTexture(*entity_stats.textures[state]);
@@ -310,10 +321,12 @@ void Player::update(float scale)
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
 	if(!active_action&&stun<=0)
 		player_movement(movement.x, movement.y, entity_stats.base_movement_speed);
-	for (int i = 0; i < 2; i++) {
-		short new_tile_x = short(getRelativePos().x / 16.f + i * current_direction.x), new_tile_y = short(getRelativePos().y / 16.f + i * current_direction.y);
-		if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {
-			interaction_notification();
+	if(z_scale == 1.f){
+		for (int i = 0; i < 2; i++) {
+			short new_tile_x = short(getRelativePos().x / 16.f + i * current_direction.x), new_tile_y = short(getRelativePos().y / 16.f + i * current_direction.y);
+			if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {
+				interaction_notification();
+			}
 		}
 	}
 }
