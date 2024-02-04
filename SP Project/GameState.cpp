@@ -1106,7 +1106,7 @@ void GameState::initial_game(string current_map, Vector2f player_pos)
 void GameState::cam_movement()
 {
 	Vector2f camera_movement = { ((player_entity->getRelativePos().x + cam_x) * 1.3f) * dt / (win_x / win_y),
-								 ((player_entity->getRelativePos().y + cam_y) * 1.3f) * dt };
+								 ((player_entity->getRelativePos().y - (1 - z_scale) * 160.f * scale + cam_y) * 1.3f) * dt };
 	move_cam(camera_movement.x, camera_movement.y);
 }
 
@@ -1331,11 +1331,11 @@ void GameState::render_entities()
 		}
 	}
 
-	if (hotAirBalloon != nullptr &&
-		hotAirBalloon->pos.y >= -map_y - entity_render_distance &&
-		hotAirBalloon->pos.y <= -map_y + entity_render_distance * 2.f + win_y / (scale * z_scale) &&
-		hotAirBalloon->pos.x >= -map_x - entity_render_distance &&
-		hotAirBalloon->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)) {
+	if (hotAirBalloon != nullptr && (player_entity->inBalloon
+		|| (hotAirBalloon->pos.y >= -map_y - entity_render_distance &&
+			hotAirBalloon->pos.y <= -map_y + entity_render_distance * 2.f + win_y / (scale * z_scale) &&
+			hotAirBalloon->pos.x >= -map_x - entity_render_distance &&
+			hotAirBalloon->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)))) {
 		dynamic_rendering.insert({ hotAirBalloon->getRelativePos().y - 5, {-1, hotAirBalloon} });
 		dynamic_rendering.insert({ hotAirBalloon->getRelativePos().y, {-1, hotAirBalloon} });
 	}
@@ -1343,7 +1343,7 @@ void GameState::render_entities()
 	//int debug_ctr = 0;
 	//cout << "total entities/objects: " << dynamic_rendering.size() << '\n';
 	for (auto i = dynamic_rendering.lower_bound(-map_y - min(entity_render_distance, object_render_distance) - 32.f);
-		i != dynamic_rendering.end() && i->first <= -map_y + max(short(obj_up_offset + object_render_distance), entity_render_distance) + 32.f + win_y / (scale * z_scale); ) {
+		i != dynamic_rendering.end() && i->first <= -map_y + max(short(obj_up_offset + object_render_distance + (1.f - z_scale) * 100.f), entity_render_distance) + 32.f + win_y / (scale * z_scale); ) {
 		
 		if (i->second.tile != -1) {
 			if (dynamic_map.at[i->second.tile].at[0].position.x*16 < -map_x - obj_right_offest - object_render_distance ||
