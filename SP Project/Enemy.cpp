@@ -3,6 +3,8 @@
 
 bool Enemy::collide_with_player(Vector2f movement)
 {
+	if (z_scale < 0.9f) return false;
+
 	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
 
 	FloatRect entity_hitbox = FloatRect(getRelativePos().x + movement.x * move_speed * dt - current_hitbox.x / 2, getRelativePos().y + movement.y * move_speed * dt - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
@@ -582,6 +584,8 @@ void Enemy::Hitbox_align()
 
 void Enemy::update(float scale, float z_scale)
 {
+	this->z_scale = z_scale;
+
 	if (game_time - despawn_timer > time_to_despawn && !persistant) {
 		despawn = 1;
 		return;
@@ -629,7 +633,7 @@ void Enemy::update(float scale, float z_scale)
 	//cout << player_entity.current_move << endl;
 	//cout << knockback_ve << endl;
 	//////////////////Enemy Combat//////////////////////
-	if (hit_range.intersects(player_entity.Entity_Hitbox) || entity_sprite.getGlobalBounds().intersects(FloatRect(player_entity.getPosition().x - player_entity.current_hitbox.x * scale / 2, player_entity.getPosition().y - player_entity.current_hitbox.y * scale / 2, player_entity.current_hitbox.x * scale, player_entity.current_hitbox.y * scale))) {
+	if (z_scale > 0.9f && (hit_range.intersects(player_entity.Entity_Hitbox) || entity_sprite.getGlobalBounds().intersects(FloatRect(player_entity.getPosition().x - player_entity.current_hitbox.x * scale / 2, player_entity.getPosition().y - player_entity.current_hitbox.y * scale / 2, player_entity.current_hitbox.x * scale, player_entity.current_hitbox.y * scale)))) {
 		if (player_entity.cooldown <= 0&&hit_cooldown<=0) {
 			player_entity.current_frame = 0;
 			player_entity.damaged();

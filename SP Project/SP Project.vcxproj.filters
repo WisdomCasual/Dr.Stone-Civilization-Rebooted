@@ -99,9 +99,6 @@
     <ClCompile Include="Entity.cpp">
       <Filter>cpps\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Items.cpp">
-      <Filter>cpps\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>cpps\Source Files</Filter>
     </ClCompile>
@@ -119,6 +116,12 @@
     </ClCompile>
     <ClCompile Include="TradingState.cpp">
       <Filter>cpps\States</Filter>
+    </ClCompile>
+    <ClCompile Include="HotAirBalloon.cpp">
+      <Filter>cpps\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Items.cpp">
+      <Filter>cpps\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="TradingState.h">
       <Filter>Header Files\State Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="HotAirBalloon.h">
+      <Filter>Header Files\Entity Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

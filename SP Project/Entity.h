@@ -192,7 +192,7 @@ public:
 	Entity& player_entity ;
 	Sprite entity_sprite;
 	render_tile**& static_map;
-	float delay = 0, animation_delay = 0.06f, & map_x, & map_y, scale = -1, win_x = 0, win_y = 0;
+	float delay = 0, animation_delay = 0.06f, & map_x, & map_y, scale = -1, z_scale = -1, win_x = 0, win_y = 0;
 	int &size_x, &size_y;
 	float& x_offset, & y_offset;
 	short current_move = 3, current_frame = 0, prev_state = -1;
@@ -207,6 +207,7 @@ public:
 	const float corners[2] = { 1, -1 };
 	sheet_properties* tile_props;
 	Sound* sounds = nullptr;
+	bool inBalloon = false;
 
 	Vector2f NPC_curr_movement = {0.f, 0.f};
 	short NPC_prev_tile_x = -1, NPC_prev_tile_y = -1;
@@ -257,8 +258,8 @@ public:
 	virtual void set_type(short) {};
 	virtual void set_dialogue(dialogue*, short) {};
 	virtual Vector2i block_interaction() { return Vector2i(); };
-	virtual void interaction_notification(string interaction_type = "Interact") {};
+	virtual void interaction_notification(string interaction_message = "Press 'F' to Interact") {};
 	virtual void initialize_NPC(string* map, in_order* order, unsigned short* count, short, Vector2f*, TradingInfo*) {};
-	void render(Shader*);
+	virtual void render(Shader*);
 
 };
