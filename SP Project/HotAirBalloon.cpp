@@ -54,6 +54,7 @@ HotAirBalloon::HotAirBalloon(entity& entity_stats, bool has_legs, render_tile**&
 	bucket_back.setTexture(*entity_stats.textures[1]);
 	bucket_back.setOrigin(entity_stats.animations[state][current_move].origin);
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
+	prev_state = 4;
 }
 
 void HotAirBalloon::update(float scale, float z_scale)
@@ -83,10 +84,13 @@ void HotAirBalloon::update(float scale, float z_scale)
 
 			if (player_entity.inBalloon) {
 				player_entity.inBalloon = false;
+				player_entity.change_state(prev_state);
 				player_entity.setPosition(pos.x, pos.y + 20);
 			}
 			else {
 				player_entity.inBalloon = true;
+				prev_state = player_entity.state;
+				player_entity.change_state(4);
 				player_entity.setPosition(pos.x, pos.y);
 			}
 		}
