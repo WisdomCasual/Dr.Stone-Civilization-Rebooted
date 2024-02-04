@@ -1975,7 +1975,7 @@ void GameState::render()
 	render_static_map();
 	render_entities();
 	if (states->rbegin()->first == GameID || states->rbegin()->first == InventoryID || states->rbegin()->first == NotificationID || states->rbegin()->first == DialogueID) {
-		if(states->rbegin()->first != DialogueID){
+		if(states->rbegin()->first != DialogueID && !player_entity->inBalloon){
 			window->draw(hotbar);
 			for (int i = 0; i < 4; i++)
 				window->draw(tool_icons[i]);
@@ -2021,29 +2021,39 @@ void GameState::pollevent()
 				shader.setUniform("ratio", win_x / win_y);
 				break;
 			case Keyboard::Num1:
-				player_entity->change_state(4);
-				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
-				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
+				if (!player_entity->inBalloon) {
+					player_entity->change_state(4);
+					hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
+					tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
+				}
 				break;
 			case Keyboard::Num2:
-				player_entity->change_state(3);
-				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
-				tool_icons[0].setColor(Color(255, 255, 255)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
+				if (!player_entity->inBalloon) {
+					player_entity->change_state(3);
+					hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
+					tool_icons[0].setColor(Color(255, 255, 255)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
+				}
 				break;
 			case Keyboard::Num3:
-				player_entity->change_state(2);
-				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
-				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(255, 255, 255)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
+				if (!player_entity->inBalloon) {
+					player_entity->change_state(2);
+					hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
+					tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(255, 255, 255)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(130, 130, 130));
+				}
 				break;
 			case Keyboard::Num4:
-				player_entity->change_state(1);
-				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
-				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(255, 255, 255)), tool_icons[3].setColor(Color(130, 130, 130));
+				if (!player_entity->inBalloon) {
+					player_entity->change_state(1);
+					hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
+					tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(255, 255, 255)), tool_icons[3].setColor(Color(130, 130, 130));
+				}
 				break;
 			case Keyboard::Num5:
-				player_entity->change_state(0);
-				hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
-				tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(255, 255, 255));
+				if (!player_entity->inBalloon) {
+					player_entity->change_state(0);
+					hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12.f) * scale * 0.1f + (4.f - player_entity->state) * 248.f * scale * 0.1f, win_y - 20.f * scale);
+					tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130)), tool_icons[3].setColor(Color(255, 255, 255));
+				}
 				break;
 			case Keyboard::E:
 				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count, &player_entity->health, player_entity->entity_stats.max_health, &player_entity->combat_tag)});
@@ -2092,7 +2102,7 @@ void GameState::pollevent()
 			break;
 		case Event::MouseWheelMoved:
 			if (event.type == Event::MouseWheelMoved) {
-				if (!player_entity->active_action) {
+				if (!player_entity->inBalloon && !player_entity->active_action) {
 					int new_state = player_entity->state + event.mouseWheel.delta;
 					if (new_state > 4) new_state = 4;
 					else if (new_state < 0) new_state = 0;
