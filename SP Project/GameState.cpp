@@ -42,7 +42,7 @@ void GameState::save()
 		ofs << light_level << ' ' << day_increment << '\n';
 		ofs << quest_idx << '\n';
 		ofs << fixed << setprecision(7) << z_scale << '\n';
-		ofs << z_inc;
+		ofs << z_inc << '\n';
 
 		ofs << inventory_order.size << '\n';
 
@@ -247,6 +247,7 @@ void GameState::load_game()
 
 		int itm, count;
 		ifs >> count;                              // <-- current number of items in inventory
+
 		for (int i = 0; i < count; i++) {
 			ifs >> itm;                            // <-|
 			ifs >> inventory_count[itm];           // <-| inventory items
@@ -1907,6 +1908,9 @@ void GameState::update()
 			player_entity->health = player_stats.max_health;
 			player_entity->despawn = false;
 			player_entity->stun = 0;
+			z_scale = 1.f;
+			z_inc = 0.2;
+			player_entity->inBalloon = false;
 			player_entity->change_state(3);
 			hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12) * scale * 0.1f + (3 - player_entity->state) * 248 * scale * 0.1f, win_y - 20 * scale);
 			tool_icons[0].setColor(Color(130, 130, 130)), tool_icons[1].setColor(Color(130, 130, 130)), tool_icons[2].setColor(Color(130, 130, 130));
