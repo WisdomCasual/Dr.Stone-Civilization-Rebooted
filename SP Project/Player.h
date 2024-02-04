@@ -14,8 +14,6 @@ struct Player : public Entity {
 	using::Entity::Entity;
 private:
 
-	float z_scale = 1;
-
 	//private functions
 	void player_movement(float,float,float);
 	void updatePos();
@@ -43,7 +41,7 @@ public:
 	void setDamage(short);
 	void setHealth(short);
 	Vector2i block_interaction();
-	void interaction_notification(string interaction_type = "Interact");
+	void interaction_notification(string interaction_message = "Press 'F' to Interact");
 	void update(float scale, float z_scale);
 	void pollevent();
 

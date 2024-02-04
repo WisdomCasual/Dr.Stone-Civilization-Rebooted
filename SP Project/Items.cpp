@@ -36,6 +36,8 @@ void Items::intersect(){
 
 void Items::update(float scale, float z_scale)
 {
+	this->z_scale = z_scale;
+
 	if (game_time - despawn_timer > time_to_despawn && !persistant) {
 		despawn = 1;
 		return;

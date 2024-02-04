@@ -9,30 +9,32 @@ void NPC::player_collision_check()
 
 	player_hitbox.left += player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
 
-	if (entity_hitbox.intersects(player_hitbox))
+	if (entity_hitbox.intersects(player_hitbox) && z_scale > 0.9f)
 		player_entity.movement.x = 0;
 
 	player_hitbox.left -= player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
 	player_hitbox.top += player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
 
-	if (entity_hitbox.intersects(player_hitbox))
+	if (entity_hitbox.intersects(player_hitbox) && z_scale > 0.9f)
 		player_entity.movement.y = 0;
 
 	player_hitbox.top -= player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
 	player_hitbox.left += player_entity.knockback_direction.x * player_entity.knockback_v * dt;
 
-	if (entity_hitbox.intersects(player_hitbox))
+	if (entity_hitbox.intersects(player_hitbox) && z_scale > 0.9f)
 		player_entity.knockback_direction.x = 0;
 
 	player_hitbox.left -= player_entity.knockback_direction.x * player_entity.knockback_v * dt;
 	player_hitbox.top += player_entity.knockback_direction.y * player_entity.knockback_v * dt;
 
-	if (entity_hitbox.intersects(player_hitbox))
+	if (entity_hitbox.intersects(player_hitbox) && z_scale > 0.9f)
 		player_entity.knockback_direction.y = 0;
 }
 
 bool NPC::collide_with_player(Vector2f movement)
 {
+	if(z_scale < 0.9f) return false;
+
 	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
 
 	FloatRect entity_hitbox = FloatRect(getRelativePos().x + movement.x * move_speed * dt - current_hitbox.x / 2, getRelativePos().y + movement.y * move_speed * dt - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
@@ -256,6 +258,8 @@ void NPC::initialize_NPC(string* map, in_order* order, unsigned short* count, sh
 
 void NPC::update(float scale, float z_scale)
 {
+	this->z_scale = z_scale;
+
 	if (in_dialogue) {
 		states->insert({ DialogueID,new DialogueState(curr_dialogue,{0, 140}, 1, curr_dialogue_num) });
 		states->at(DialogueID)->update();
@@ -274,39 +278,41 @@ void NPC::update(float scale, float z_scale)
 	type_behaviour();
 	player_collision_check();
 	despawn_timer = game_time;
-	if (magnitude(player_entity.getRelativePos() - getRelativePos()) <= 48) {
-		string interaction_message;
-		switch (npc_type) {
+
+	if(!player_entity.inBalloon){
+		if (magnitude(player_entity.getRelativePos() - getRelativePos()) <= 48) {
+			string interaction_message;
+			switch (npc_type) {
 			case 2:
-				interaction_message = "save";
+				interaction_message = "Press 'F' to Save";
 				break;
 			default:
-				interaction_message = "talk";
-		}
-		player_entity.interaction_notification(interaction_message);
+				interaction_message = "Press 'F' to Talk";
+			}
+			player_entity.interaction_notification(interaction_message);
 
-		if (player_entity.interact) {
-			player_entity.interact = 0;
-			switch (npc_type) {
+			if (player_entity.interact) {
+				player_entity.interact = 0;
+				switch (npc_type) {
 				case 1: {      //quest
 					switch (quest_idx) {
 						if (id == 1) {      //Senku
-							case 4: {
-								if (inventory_count[0] >= 12 && inventory_count[1] >= 8) {
-									dialogue enough[2] = { {"Kaseki", "Great work! You can go now, await further orders", 0, 5}, {character_name, "You got it", 0, 1 + player_character_id} };
-									start_dialogue(enough, 2);
-									quest_idx++;
-									inventory_count[0] -= 12, inventory_count[1] -= 8;
-									if (!inventory_count[0]) inventory_order->erase(0);
-									if (!inventory_count[1]) inventory_order->erase(1);
-									npc_type = 0;
-								}
-								else {
-									dialogue not_enough[1] = { {"Kaseki", "What are you doing here? Go get me the resources", 0, 5} };
-									start_dialogue(not_enough, 1);
-								}
-								break;
-							}
+					case 4: {
+						if (inventory_count[0] >= 12 && inventory_count[1] >= 8) {
+							dialogue enough[2] = { {"Kaseki", "Great work! You can go now, await further orders", 0, 5}, {character_name, "You got it", 0, 1 + player_character_id} };
+							start_dialogue(enough, 2);
+							quest_idx++;
+							inventory_count[0] -= 12, inventory_count[1] -= 8;
+							if (!inventory_count[0]) inventory_order->erase(0);
+							if (!inventory_count[1]) inventory_order->erase(1);
+							npc_type = 0;
+						}
+						else {
+							dialogue not_enough[1] = { {"Kaseki", "What are you doing here? Go get me the resources", 0, 5} };
+							start_dialogue(not_enough, 1);
+						}
+						break;
+					}
 						}
 
 
@@ -318,14 +324,14 @@ void NPC::update(float scale, float z_scale)
 					short saved_dialogue_size = 0;
 					dialogue* saved_dialogue;
 					switch (id) {
-						default: {
-							saved_dialogue_size = 1;
-							saved_dialogue = new dialogue[1];
-							if(id == 1)
-								saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 6 };
-							else
-								saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 7 };
-						}
+					default: {
+						saved_dialogue_size = 1;
+						saved_dialogue = new dialogue[1];
+						if (id == 1)
+							saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 6 };
+						else
+							saved_dialogue[0] = { "???" ,"Thank you for saving me!", 0, 7 };
+					}
 					}
 					start_dialogue(saved_dialogue, saved_dialogue_size);
 					delete[] saved_dialogue;
@@ -347,6 +353,7 @@ void NPC::update(float scale, float z_scale)
 				default: {
 					single_dialogue[0] = npc_dialogues[(int)generate_random(0, float(dialogues_num - 1))];
 					start_dialogue(single_dialogue, 1);
+				}
 				}
 			}
 		}

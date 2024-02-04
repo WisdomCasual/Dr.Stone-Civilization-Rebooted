@@ -1,5 +1,6 @@
-#include "GameState.h"
-#include "MiniMapState.h"
+#include"GameState.h"
+#include"MiniMapState.h"
+#include<iomanip>
 
 void GameState::black_in(float fade_speed)
 {
@@ -27,9 +28,6 @@ bool GameState::black_out(float fade_speed)
 
 void GameState::save()
 {
-
-
-
 	ofstream ofs("Saves/Save " + to_string(save_num + 1) + "/Save.dat", ofstream::out, ofstream::trunc);
 
 	if (ofs.is_open()) {
@@ -39,9 +37,12 @@ void GameState::save()
 		ofs << current_map << '\n';
 		ofs << player_entity->getRelativePos().x << ' ' << player_entity->getRelativePos().y << '\n';
 		ofs << player_entity->health << '\n';
+		ofs << player_entity->inBalloon << '\n';
 		ofs << game_time << '\n';
 		ofs << light_level << ' ' << day_increment << '\n';
 		ofs << quest_idx << '\n';
+		ofs << fixed << setprecision(7) << z_scale << '\n';
+		ofs << z_inc;
 
 		ofs << inventory_order.size << '\n';
 
@@ -180,6 +181,14 @@ void GameState::save()
 
 		map_ofs << '\n';
 
+		if (hotAirBalloon != nullptr) {
+			map_ofs << 1 << '\n';
+			map_ofs << hotAirBalloon->getRelativePos().x << ' ' << hotAirBalloon->getRelativePos().y << '\n';
+		}
+		else
+			map_ofs << 0 << '\n';
+
+		map_ofs << '\n';
 	}
 	map_ofs.close();
 }
@@ -217,6 +226,7 @@ void GameState::load_game()
 
 	int health = -1;
 	Vector2f player_pos;
+	bool playerInBalloon;
 
 	ifs.seekg(ios::beg);
 	if (ifs.is_open()) {
@@ -227,10 +237,14 @@ void GameState::load_game()
 		getline(ifs, current_map);                 // <-- current map
 		ifs >> player_pos.x >> player_pos.y;	   // <-- current position
 		ifs >> health;							   // <-- current health
+		ifs >> playerInBalloon;           // <-- if in hot air balloon
+
 		ifs >> game_time;						   // <-- current game time
 		ifs >> light_level >> day_increment;	   // <-- current light level - time increments
 		ifs >> quest_idx;						   // <-- current quest index
-		
+		ifs >> z_scale;                            // <-- current z level
+		ifs >> z_inc;                              // <-- current z incremenmt
+
 		int itm, count;
 		ifs >> count;                              // <-- current number of items in inventory
 		for (int i = 0; i < count; i++) {
@@ -247,6 +261,7 @@ void GameState::load_game()
 	load_entities(player_pos.y);
 	initial_game(current_map, player_pos);
 
+	player_entity->inBalloon = playerInBalloon;
 	player_entity->setObjectStats(object_stats, &destructable_objects, item_drops, &item_drops_count);
 	player_entity->health = (health == -1) ? player_stats.max_health : health;
 }
@@ -592,6 +607,15 @@ void GameState::load_saved_map(string map_name)
 			ifs >> NPCs.entities[NPCs.curr_idx - 1]->NPC_prev_tile_x >> NPCs.entities[i]->NPC_prev_tile_y;
 		}
 
+		bool thereIsBalloon;
+		ifs >> thereIsBalloon;
+		if (thereIsBalloon) {
+			float balloon_x, balloon_y;
+			ifs >> balloon_x >> balloon_y;
+			hotAirBalloon = new HotAirBalloon(spawn_balloon);
+			hotAirBalloon->setPosition(balloon_x, balloon_y);
+		}
+
 	}
 	ifs.close();
 
@@ -919,6 +943,24 @@ void GameState::load_entities(float player_relative_y_pos)
 	player_entity->change_state(4);
 
 
+	balloon_stats.animations = new animation * [1];
+	balloon_stats.scale_const = 0.65f;
+	balloon_stats.base_movement_speed = 80;
+	balloon_stats.states_no = 1;
+	balloon_stats.base_animation_speed = 12;
+	balloon_stats.textures_count = 2;
+	balloon_stats.textures = new Texture * [balloon_stats.textures_count];
+	balloon_stats.textures[0] = new Texture;
+	balloon_stats.textures[1] = new Texture;
+
+	balloon_stats.textures[0]->loadFromFile("textures/game/entities/balloon/hotairballoon.png");
+	balloon_stats.textures[1]->loadFromFile("textures/game/entities/balloon/hotairballoonBACK.png");
+
+	balloon_stats.animations[0] = new animation[4];
+	balloon_stats.animations[0][0] = { 1, {0, 0, 144, 224}, {30,20}, {72,210} }; //back
+	balloon_stats.animations[0][1] = { 1, {0, 0, 144, 224}, {30,20}, {72,210} }; //right
+	balloon_stats.animations[0][2] = { 1, {0, 0, 144, 224}, {30,20}, {72,210} }; //left
+	balloon_stats.animations[0][3] = { 1, {0, 0, 144, 224}, {30,20}, {72,210} }; //front
 
 
 	//////////set NPC trades /////////////////
@@ -977,6 +1019,10 @@ void GameState::deload_map()
 		dynamic_rendering.clear();
 	dynamic_map.delete_all();
 
+	if (hotAirBalloon != nullptr) {
+		delete hotAirBalloon;
+		hotAirBalloon = nullptr;
+	}
 
 	items.clear();
 	enemies.clear();
@@ -1285,6 +1331,15 @@ void GameState::render_entities()
 		}
 	}
 
+	if (hotAirBalloon != nullptr &&
+		hotAirBalloon->pos.y >= -map_y - entity_render_distance &&
+		hotAirBalloon->pos.y <= -map_y + entity_render_distance * 2.f + win_y / (scale * z_scale) &&
+		hotAirBalloon->pos.x >= -map_x - entity_render_distance &&
+		hotAirBalloon->pos.x <= -map_x + entity_render_distance + win_x / (scale * z_scale)) {
+		dynamic_rendering.insert({ hotAirBalloon->getRelativePos().y - 5, {-1, hotAirBalloon} });
+		dynamic_rendering.insert({ hotAirBalloon->getRelativePos().y, {-1, hotAirBalloon} });
+	}
+
 	//int debug_ctr = 0;
 	//cout << "total entities/objects: " << dynamic_rendering.size() << '\n';
 	for (auto i = dynamic_rendering.lower_bound(-map_y - min(entity_render_distance, object_render_distance) - 32.f);
@@ -1485,7 +1540,7 @@ void GameState::DayLightCycle()
 	if (player_entity->state == 0) {
 		
 		if (torch_intensity > 0.7f)
-			torch_delta -= 0.2f;
+			torch_delta = -0.2f;
 		else if (torch_intensity < 0.6f)
 			torch_delta = 0.2f;
 
@@ -1498,10 +1553,10 @@ void GameState::DayLightCycle()
 		count++;
 	}
 
-	if (z_scale < 1.f) {
-		shader.setUniform("lights[" + to_string(count) + "].position", (player_entity->getRelativePos() + Vector2f(map_x, map_y)) * (scale * z_scale));
+	if (hotAirBalloon != nullptr) {
+		shader.setUniform("lights[" + to_string(count) + "].position", (hotAirBalloon->getRelativePos() + Vector2f(map_x, map_y)) * (scale * z_scale));
 		shader.setUniform("lights[" + to_string(count) + "].color", Vector3f(-0.4f, -0.4f, -0.4f));
-		shader.setUniform("lights[" + to_string(count) + "].intensity", (1.3f - z_scale) * (scale * z_scale));
+		shader.setUniform("lights[" + to_string(count) + "].intensity", (1.f - z_scale) * (1.5f * scale * z_scale));
 		shader.setUniform("lights[" + to_string(count) + "].oval", true);
 		count++;
 	}
@@ -1536,6 +1591,8 @@ void GameState::initial_entities()
 		npc_initalize;
 		NPCs.add(spawn_npc(3), { 904, 872 }, npc_details(1, 10, 2));
 		npc_initalize;
+		hotAirBalloon = new HotAirBalloon(spawn_balloon);
+		hotAirBalloon->setPosition(3008.f, 320.f);
 	}
 	else if (current_map == "Doz World") {
 		NPCs.add(spawn_npc(0), { 128, 112}, npc_details(1, 10, 0));
@@ -1736,7 +1793,7 @@ void GameState::update()
 		shader.setUniform("ratio", win_x / win_y);
 	}
 
-	z_scale = clamp<float>(z_scale + inc * dt, 0.5f, 1.f);
+	z_scale = clamp<float>(z_scale + z_inc * dt, 0.5f, 1.f);
 
 	if (fps_active)
 		fps_text.setString(fps_text.getString() + "\tCoordinates " + to_string(int(player_entity->getRelativePos().x / 16)) + ' ' + to_string(int(player_entity->getRelativePos().y / 16)));
@@ -1821,6 +1878,9 @@ void GameState::update()
 			NPCs.rem_ove(i);
 		}
 	}
+
+	if(hotAirBalloon != nullptr)
+		hotAirBalloon->update(scale, z_scale);
 	
 	if (enemies.astar_done) {
 		for (int i = 0; i < enemies.find_size_x; i++) {
@@ -1945,8 +2005,6 @@ void GameState::pollevent()
 				return; break;
 			case Keyboard::F3:
 				fps_active = !fps_active; break;
-			case Keyboard::G:
-				inc *= -1; break;
 			case Keyboard::F6:
 				{	
 				string notification_s[] = { "Saved Successfully" };
@@ -1991,9 +2049,6 @@ void GameState::pollevent()
 				states->insert({ InventoryID, new InventoryState(&inventory_order, inventory_count, &player_entity->health, player_entity->entity_stats.max_health, &player_entity->combat_tag)});
 				states->at(InventoryID)->update();
 				break;
-
-
-
 			case Keyboard::M:
 				states->insert({ MiniMapID, new MiniMapState(minimap_tex, player_entity->getRelativePos(), waypoint_position, quest_location) });
 				states->at(MiniMapID)->update();
@@ -2006,6 +2061,10 @@ void GameState::pollevent()
 				}
 				break;
 			}
+			case Keyboard::G:
+				if(player_entity->inBalloon)
+					z_inc *= -1; 
+				break;
 			case Keyboard::Space:
 				player_entity->use_tool();
 				if (player_entity->tool_used_on.x > -1) {

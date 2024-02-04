@@ -23,7 +23,10 @@ void Player::player_movement(float x_movement,float y_movement,float velocity)
 		pos.y += y_movement;
 	}
 
-	moving &= z_scale == 1.f;
+	pos.x = clamp<float>(pos.x, 0.f, size_x * 16.f);
+	pos.y = clamp<float>(pos.y, 0.f, size_y * 16.f);
+
+	moving &= (z_scale == 1.f);
 
 	direction(delta_movement(), moving);
 }
@@ -110,7 +113,7 @@ void Player::setPosition(float x_pos, float y_pos)
 
 void Player::use_tool()
 {
-	if (z_scale < 1)
+	if (inBalloon)
 		return;
 
 	if (Lag >= 0.8 && stun<=0) {
@@ -231,7 +234,7 @@ void Player::setHealth(short new_health)
 
 Vector2i Player::block_interaction()
 {
-	if (z_scale < 1.f)
+	if (inBalloon)
 		return Vector2i(-1, -1);
 	if (interact) {
 		for (int i = 0; i < 2; i++) {
@@ -247,10 +250,10 @@ Vector2i Player::block_interaction()
 	return Vector2i(-1, -1);
 }
 
-void Player::interaction_notification(string interaction_type)
+void Player::interaction_notification(string interaction_message)
 {
-	//cout << "a";
-	string notification_s[] = { "Press 'F' To " + interaction_type};
+
+	string notification_s[] = {interaction_message};
 	game.notification(notification_s, 1, dt);
 }
 
@@ -320,8 +323,8 @@ void Player::update(float scale, float z_scale)
 	entity_sprite.setTextureRect(IntRect(current_rect.left + current_frame * current_rect.width, current_rect.top, current_rect.width, current_rect.height));
 	entity_sprite.setOrigin(entity_stats.animations[state][current_move].origin);
 	if(!active_action&&stun<=0)
-		player_movement(movement.x, movement.y, entity_stats.base_movement_speed);
-	if(z_scale == 1.f){
+		player_movement(movement.x, movement.y, entity_stats.base_movement_speed * (inBalloon? (1 - z_scale) * 3.f : 1.f));
+	if(!inBalloon){
 		for (int i = 0; i < 2; i++) {
 			short new_tile_x = short(getRelativePos().x / 16.f + i * current_direction.x), new_tile_y = short(getRelativePos().y / 16.f + i * current_direction.y);
 			if (new_tile_x >= 0 && new_tile_y >= 0 && new_tile_x < size_x && new_tile_y < size_y && (static_map[new_tile_x][new_tile_y].tile_props & 4096)) {

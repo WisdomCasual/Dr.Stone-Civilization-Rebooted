@@ -8,30 +8,32 @@ void Passive::player_collision_check()
 
 	player_hitbox.left += player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
 
-	if (entity_hitbox.intersects(player_hitbox))
+	if (entity_hitbox.intersects(player_hitbox) && z_scale > 0.9f)
 		player_entity.movement.x = 0;
 
 	player_hitbox.left -= player_entity.movement.x * player_entity.entity_stats.base_movement_speed * dt;
 	player_hitbox.top += player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
 
-	if (entity_hitbox.intersects(player_hitbox))
+	if (entity_hitbox.intersects(player_hitbox) && z_scale > 0.9f)
 		player_entity.movement.y = 0;
 
 	player_hitbox.top -= player_entity.movement.y * player_entity.entity_stats.base_movement_speed * dt;
 	player_hitbox.left += player_entity.knockback_direction.x * player_entity.knockback_v * dt;
 
-	if (entity_hitbox.intersects(player_hitbox))
+	if (entity_hitbox.intersects(player_hitbox) && z_scale > 0.9f)
 		player_entity.knockback_direction.x = 0;
 
 	player_hitbox.left -= player_entity.knockback_direction.x * player_entity.knockback_v * dt;
 	player_hitbox.top += player_entity.knockback_direction.y * player_entity.knockback_v * dt;
 
-	if (entity_hitbox.intersects(player_hitbox))
+	if (entity_hitbox.intersects(player_hitbox) && z_scale > 0.9f)
 		player_entity.knockback_direction.y = 0;
 }
 
 bool Passive::collide_with_player(Vector2f movement)
 {
+	if (z_scale < 0.9f) return false;
+
 	FloatRect player_hitbox = FloatRect(player_entity.getRelativePos().x - player_entity.current_hitbox.x / 2, player_entity.getRelativePos().y - player_entity.current_hitbox.y / 2, player_entity.current_hitbox.x, player_entity.current_hitbox.y);
 
 	FloatRect entity_hitbox = FloatRect(getRelativePos().x + movement.x * move_speed * dt - current_hitbox.x / 2, getRelativePos().y + movement.y * move_speed * dt - current_hitbox.y / 2, current_hitbox.x, current_hitbox.y);
@@ -156,6 +158,8 @@ void Passive::stateMachine()
 
 void Passive::update(float scale, float z_scale)
 {
+	this->z_scale = z_scale;
+
 	if (game_time - despawn_timer > time_to_despawn && !persistant) {
 		despawn = 1;
 		return;
