@@ -42,7 +42,7 @@ void GameState::save()
 		ofs << light_level << ' ' << day_increment << '\n';
 		ofs << quest_idx << '\n';
 		ofs << fixed << setprecision(7) << z_scale << '\n';
-		ofs << z_inc;
+		ofs << z_inc << '\n';
 
 		ofs << inventory_order.size << '\n';
 
@@ -247,6 +247,7 @@ void GameState::load_game()
 
 		int itm, count;
 		ifs >> count;                              // <-- current number of items in inventory
+
 		for (int i = 0; i < count; i++) {
 			ifs >> itm;                            // <-|
 			ifs >> inventory_count[itm];           // <-| inventory items
