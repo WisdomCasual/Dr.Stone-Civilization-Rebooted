@@ -1596,7 +1596,7 @@ void GameState::initial_entities()
 		hotAirBalloon->setPosition(3008.f, 320.f);
 	}
 	else if (current_map == "Doz World") {
-		NPCs.add(spawn_npc(0), { 128, 112}, npc_details(1, 10, 0));
+		NPCs.add(spawn_npc(0), { 224, 160 }, npc_details(1, 10, 0));
 		npc_initalize;
 	}
 }
@@ -1672,8 +1672,10 @@ void GameState::quests()
 		case 5:
 			destroyANDrestore_objects({ 40, 46 }, 0);
 			quest_idx++;
+			break;
 		default:
 			quest_location.x = -1.f;
+			break;
 	}
 }
 
@@ -1909,7 +1911,7 @@ void GameState::update()
 			player_entity->despawn = false;
 			player_entity->stun = 0;
 			z_scale = 1.f;
-			z_inc = 0.2;
+			z_inc = 0.2f;
 			player_entity->inBalloon = false;
 			player_entity->change_state(3);
 			hotbar_selection.setPosition(win_x / 2.f - (hotbar.getLocalBounds().width / 2.f - 12) * scale * 0.1f + (3 - player_entity->state) * 248 * scale * 0.1f, win_y - 20 * scale);
