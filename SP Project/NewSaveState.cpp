@@ -206,12 +206,15 @@ void NewSaveState::add_save()
 		ofs << test_str << '\n';                // <-- name
 		ofs << (int)selected << '\n';           // <-- selected character ID
 		ofs << 0 << '\n';                       // <-- current quest
-		ofs << "Doz World" << '\n';              // <-- current map
-		ofs << 300 << ' ' << 160 << '\n';       // <-- current position
+		ofs << "Doz World" << '\n';             // <-- current map
+		ofs << 160 << ' ' << 164 << '\n';       // <-- current position
 		ofs << -1 << '\n';                      // <-- current health
+		ofs << 0 << '\n';                       // <-- in Balloon state
 		ofs << 0.0 << '\n';                     // <-- current game time
 		ofs << 0.1 << ' ' << 0.01 << '\n';      // <-- current light level - time increments
 		ofs << -1 << '\n';                      // <-- current quest index
+		ofs << 1.0 << '\n';                     // <-- current z level
+		ofs << 0.2 << '\n';                     // <-- current z incremenmt
 		ofs << 0 << '\n';                       // <-- current number of items in inventory
 	}
 	ofs.close();

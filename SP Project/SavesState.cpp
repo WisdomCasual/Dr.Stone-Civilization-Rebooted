@@ -102,6 +102,7 @@ void SavesState::update_saves()
 		}
 		if(!saves[i].empty){
 			del.setPosition(x + saves[i].x * scale, y + (saves[i].y + 115) * scale);
+			del.setScale(1.f, 1.f);
 			if (del.getGlobalBounds().contains(window->mapPixelToCoords(Mouse::getPosition(*window)))) {
 				clickable_cursor = true;
 				if (Mouse::isButtonPressed(Mouse::Left) && del.getGlobalBounds().contains(clicked_on)) {
