@@ -13,7 +13,7 @@ Animation::Animation(IntRect frame, int frame_count, Vector2i position, string a
 	animation_sprite.setTexture(animation_tex);
 	animation_sprite.setTextureRect(frame);
 	animation_sprite.setColor(texture_color);
-	animation_sprite.setOrigin(animation_sprite.getLocalBounds().width / 2.0, animation_sprite.getLocalBounds().height / 2.0);
+	animation_sprite.setOrigin(animation_sprite.getLocalBounds().width / 2.f, animation_sprite.getLocalBounds().height / 2.f);
 }
 
 Animation::~Animation()
@@ -29,7 +29,7 @@ void Animation::update(float scale)
 	}
 	
 	while (delay >= 0.025) {
-		delay -= 0.025;
+		delay -= 0.025f;
 		current_frame++;
 		if (current_frame >= frame_count) {
 			if (loop)
