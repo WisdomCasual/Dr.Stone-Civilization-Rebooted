@@ -2,10 +2,9 @@
 <div align="center">
   <img src="https://i.imgur.com/TwKjdFE.png" width="">
 </div>
-
 <div align="center">
     <a href="https://isocpp.org/">
-        <img src="https://img.shields.io/badge/Made%20with-C%2B%2B-5E97D0">
+        <img src="https://img.shields.io/badge/Made%20with%20-%20C%2B%2B%20-%20gray">
     </a>
     <a href="https://www.sfml-dev.org/">
         <img src="https://img.shields.io/badge/Graphics%20Made%20with-SFML-8cc445">
@@ -23,11 +22,10 @@ Awarded **1st** place in the **Structured Programming Best Project Award 2023** 
 
 * Broad open world map to explore freely with different tasks and quests to complete.
 * Pathfinding for enemies with entity point of view, hearing area, and heading towards the last seen position when losing track of the player.
-* Engaging combat system with knockback, stun, death animations, and ability to heal using food when out of combat
+* Engaging combat system with knockback, stun, death animations, and ability to heal using food when out of combat.
 * Different tools for the player to use to interact with world elements.
-Torch to light your way in the night
 * Day-night cycle with different colored lights.
-* inventory system for collected item drops.
+* Inventory system for collected item drops.
 * Hot air balloon to travel across the map with ease and experience the world from the skies.
 * Minimap that shows player position, quest positions, and the ability for the player to add waypoint.
 * Ability to enter buildings and caves.
