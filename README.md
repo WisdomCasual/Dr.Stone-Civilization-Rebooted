@@ -43,9 +43,8 @@ Torch to light your way in the night
 
 
 ## Screenshots
-|   |   |   |
-| - | - | - |
 | <img src="https://i.imgur.com/tgp8hUT.png" width="">  | <img src="https://i.imgur.com/YRJaj1I.png" width="">  |<img src="https://i.imgur.com/anifJKH.png" width="">  | 
+| - | - | - |
 | <img src="https://i.imgur.com/KKkdfto_d.webp?maxwidth=760&fidelity=grand" width="">  | <img src="https://i.imgur.com/uSikrzh.png" width=""> | <img src="https://i.imgur.com/CScSTp2.png" width=""> | 
 | <img src="https://i.imgur.com/QBURL2z.png" width="">  | <img src="https://i.imgur.com/YIB9jXB.png" width="">  | <img src="https://i.imgur.com/SZqSej5.png" width="">  |
 | <img src="https://i.imgur.com/AjMcyeq.png" width="">  | <img src="https://i.imgur.com/q9IS46h.png" width=""> | <img src="https://i.imgur.com/aAwnGz5.png" width="">  |
