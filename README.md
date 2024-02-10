@@ -1,6 +1,6 @@
 # Dr Stone: Civilization Rebooted - An open world 2D game
 <div align="center">
-    <img src="https://i.imgur.com/6xksPjk.png" width="">
+    <img src="https://imgur.com/a/kJPZvLi" width="">
 </div>
 
 <div align="center">
