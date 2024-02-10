@@ -5,7 +5,7 @@ void CreativeMode::change_tex()
 	delete this->Tex;
 	Tex = new Sprite;
 	Tex->setTexture(*textures[curr_tex_set]);
-	a = Tex->getGlobalBounds().width, b = Tex->getGlobalBounds().height;
+	a = (unsigned int)Tex->getGlobalBounds().width, b = (unsigned int)Tex->getGlobalBounds().height;
 	videomode = { a,b };
 	window_pos = sidewindow->getPosition();
 	delete this->sidewindow;
@@ -38,15 +38,15 @@ void CreativeMode::grid_lines()
 {
 	//display grid lines
 	RectangleShape rect;
-	rect.setSize(Vector2f(1, b));
+	rect.setSize(Vector2f(1.f, (float)b));
 	rect.setFillColor(Color::Black);
 	rect.setPosition({ 0, 0 });
-	for (float i = 0; i < a; i += 16) {
+	for (float i = 0; i < a; i += 16.f) {
 		rect.setPosition(i, 0);
 		sidewindow->draw(rect);
 	}
-	rect.setSize(Vector2f(a, 1));
-	for (float i = 0; i < b; i += 16) {
+	rect.setSize(Vector2f((float)a, 1.f));
+	for (float i = 0; i < b; i += 16.f) {
 		rect.setPosition(0, i);
 		sidewindow->draw(rect);
 	}
@@ -65,7 +65,7 @@ void CreativeMode::initial_rectangles()
 	selected_rect.setFillColor(Color::Transparent);
 	selected_rect.setOutlineThickness(1);
 	selected_rect.setOutlineColor(Color::Green);
-	selected_rect.setPosition(Vector2f(picked_tile->x * 16, picked_tile->y * 16));
+	selected_rect.setPosition(Vector2f(picked_tile->x * 16.f, picked_tile->y * 16.f));
 
 	//selection rectangle
 	select_rect.setSize(Vector2f(16, 16));
@@ -77,7 +77,7 @@ void CreativeMode::initial_rectangles()
 
 void CreativeMode::hover_tile()
 {
-	hover_rect.setPosition(Vector2f( current_tile.x * 16 , current_tile.y * 16));
+	hover_rect.setPosition(Vector2f( current_tile.x * 16.f , current_tile.y * 16.f));
 	sidewindow->draw(hover_rect);
 }
 
@@ -113,7 +113,7 @@ void CreativeMode::selected()
 	else if (active_highlight)
 		tile_props[curr_tex_set].properties[current_tile.x][current_tile.y].props ^= active_highlight;
 	else {
-		selected_rect.setPosition(Vector2f(current_tile.x * 16, current_tile.y * 16));
+		selected_rect.setPosition(Vector2f(current_tile.x * 16.f, current_tile.y * 16.f));
 		picked_tile->x = current_tile.x, picked_tile->y = current_tile.y;
 		picked_tile->tex_id = curr_tex_set;
 	}
@@ -125,9 +125,9 @@ void CreativeMode::selection()
 	if (selecting) {
 		picked_tile->start_x = min(picked_tile->selection_start.x, current_tile.x), 
 		picked_tile->start_y = min(picked_tile->selection_start.y, current_tile.y);
-		select_rect.setPosition(16 * picked_tile->start_x,16 * picked_tile->start_y);
+		select_rect.setPosition(16.f * picked_tile->start_x,16.f * picked_tile->start_y);
 		picked_tile->wdth = abs(picked_tile->selection_start.x - current_tile.x) + 1, picked_tile->hght = abs(picked_tile->selection_start.y - current_tile.y) + 1;
-		select_rect.setSize(Vector2f(picked_tile->wdth * 16,picked_tile->hght * 16));
+		select_rect.setSize(Vector2f(picked_tile->wdth * 16.f,picked_tile->hght * 16.f));
 		sidewindow->draw(select_rect);
 		
 	}
@@ -152,37 +152,37 @@ void CreativeMode::highlight()
 					highlight_color = Color(0, 0, 175, 80);
 
 				highlight_rect.setFillColor(highlight_color);
-				highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+				highlight_rect.setPosition(Vector2f(i * 16.f, j * 16.f));
 				sidewindow->draw(highlight_rect);
 			}
 			else if (active_highlight & 1) {
 				if (prop & 32 && prop & 128) {
 					highlight_color = Color(255, 255, 255, 80);
 					highlight_rect.setFillColor(highlight_color);
-					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+					highlight_rect.setPosition(Vector2f(i * 16.f, j * 16.f));
 					sidewindow->draw(highlight_rect);
 				}
 				else if (prop & 32) {
 					highlight_color = Color(250, 120, 0, 80);
 					highlight_rect.setFillColor(highlight_color);
-					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+					highlight_rect.setPosition(Vector2f(i * 16.f, j * 16.f));
 					sidewindow->draw(highlight_rect);
 				}
 				else if (prop & 128) {
 					highlight_color = Color(80, 80, 175, 80);
 					highlight_rect.setFillColor(highlight_color);
-					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+					highlight_rect.setPosition(Vector2f(i * 16.f, j * 16.f));
 					sidewindow->draw(highlight_rect);
 				}
 				else if (prop & 1) {
 					highlight_color = Color(0, 175, 0, 80);
 					highlight_rect.setFillColor(highlight_color);
-					highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+					highlight_rect.setPosition(Vector2f(i * 16.f, j * 16.f));
 					sidewindow->draw(highlight_rect);
 				}
 			}
 			else if (prop & active_highlight) {
-				highlight_rect.setPosition(Vector2f(i * 16, j * 16));
+				highlight_rect.setPosition(Vector2f(i * 16.f, j * 16.f));
 				sidewindow->draw(highlight_rect);
 			}
 		}
@@ -215,10 +215,10 @@ CreativeMode::CreativeMode(Texture** textures, int textures_no, State::tex_tile&
 
 	notification_tex.loadFromFile("textures/notification/notification_bg.png");
 	notification_BG.setTexture(notification_tex);
-	notification_BG.setScale(1.35, 1.35);
-	notification_BG.setPosition(10,10);
+	notification_BG.setScale(1.35f, 1.35f);
+	notification_BG.setPosition(10.f, 10.f);
 
-	highlight_rect.setSize({ 16, 16 });
+	highlight_rect.setSize({ 16.f, 16.f });
 }
 
 CreativeMode::~CreativeMode()
@@ -249,7 +249,7 @@ void CreativeMode::update()
 
 
 	mouse_pos = Mouse::getPosition(*sidewindow);
-	if(mouse_pos.x>0 && mouse_pos.x<sidewindow->getSize().x && mouse_pos.y > 0 && mouse_pos.y < sidewindow->getSize().y){
+	if(mouse_pos.x>0 && mouse_pos.x < (int)sidewindow->getSize().x && mouse_pos.y > 0 && mouse_pos.y < (int)sidewindow->getSize().y){
 		current_tile = { int(mouse_pos.x / scale / 16), int(mouse_pos.y / scale / 16) };
 	}
 }
@@ -298,11 +298,11 @@ void CreativeMode::pollevent(bool& picker)
 				window_pos.y += 48;
 				sidewindow->setPosition(window_pos); break;
 			case Keyboard::Equal:
-				scale += 0.05;
+				scale += 0.05f;
 				sidewindow->setSize({ (unsigned int)(a * scale),(unsigned int)(b * scale) });
 				break;
 			case Keyboard::Hyphen:
-				scale -= 0.05;
+				scale -= 0.05f;
 				sidewindow->setSize({ (unsigned int)(a * scale),(unsigned int)(b * scale) });
 				break;
 			case Keyboard::Comma:
